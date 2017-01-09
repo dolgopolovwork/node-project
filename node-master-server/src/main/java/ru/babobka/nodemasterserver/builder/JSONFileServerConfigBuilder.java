@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 import ru.babobka.nodemasterserver.exception.ServerConfigurationException;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.nodemasterserver.util.StreamUtil;
+import ru.babobka.nodeutils.util.StreamUtil;
 
 public interface JSONFileServerConfigBuilder {
 

@@ -6,6 +6,8 @@ import java.math.BigInteger;
 
 import org.junit.Test;
 
+import ru.babobka.nodeserials.crypto.RSA;
+
 public class RSATest {
 
 	private static final int keyBitLength = 256;

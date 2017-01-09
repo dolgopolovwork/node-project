@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public final class NodeResponse implements Serializable {
 
-	private static final long serialVersionUID = 8L;
+	private static final long serialVersionUID = 9L;
 
 	private final String taskName;
 
@@ -23,7 +23,7 @@ public final class NodeResponse implements Serializable {
 
 	private final String message;
 
-	private final Map<String, Serializable> addition = new HashMap<>();
+	private final Map<String, Serializable> data = new HashMap<>();
 
 	public NodeResponse(UUID taskId, UUID responseId, long timeTakes, Status status, String message,
 			Map<String, Serializable> addition, String taskName) {
@@ -34,7 +34,7 @@ public final class NodeResponse implements Serializable {
 		this.message = message;
 		this.taskName = taskName;
 		if (addition != null) {
-			this.addition.putAll(addition);
+			this.data.putAll(addition);
 		}
 		this.timeStamp = System.currentTimeMillis();
 	}
@@ -65,15 +65,15 @@ public final class NodeResponse implements Serializable {
 	}
 
 
-	public <T> T getAdditionValue(String key) {
-		Serializable value = addition.get(key);
+	public <T> T getDataValue(String key) {
+		Serializable value = data.get(key);
 		if (value != null)
 			return (T) value;
 		return null;
 	}
 
-	public <T> T getAdditionValue(String key, T defaultValue) {
-		Serializable value = addition.get(key);
+	public <T> T getDataValue(String key, T defaultValue) {
+		Serializable value = data.get(key);
 		if (value == null) {
 			return defaultValue;
 		}
@@ -127,15 +127,15 @@ public final class NodeResponse implements Serializable {
 		return timeStamp;
 	}
 
-	public Map<String, Serializable> getAddition() {
-		return addition;
+	public Map<String, Serializable> getData() {
+		return data;
 	}
 
 	@Override
 	public String toString() {
 		return "NodeResponse [taskName=" + taskName + ", taskId=" + taskId + ", responseId=" + responseId
 				+ ", timeTakes=" + timeTakes + ", timeStamp=" + timeStamp + ", status=" + status + ", message="
-				+ message + ", addition=" + addition + "]";
+				+ message + ", addition=" + data + "]";
 	}
 
 	public boolean isStopped() {

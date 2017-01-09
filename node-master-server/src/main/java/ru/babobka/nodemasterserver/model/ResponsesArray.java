@@ -1,11 +1,12 @@
 package ru.babobka.nodemasterserver.model;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.service.DistributionService;
+import ru.babobka.nodemasterserver.slave.SlaveThread;
+import ru.babobka.nodemasterserver.slave.Slaves;
 import ru.babobka.nodemasterserver.task.TaskContext;
-import ru.babobka.nodemasterserver.thread.SlaveThread;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 
@@ -35,24 +36,38 @@ public final class ResponsesArray {
 
 	private final AtomicReferenceArray<NodeResponse> responseArray;
 
-	private final DistributionService distributionService = Container
-			.getInstance().get(DistributionService.class);
+	private final DistributionService distributionService;
 
 	private final Object lock = new Object();
 
-	private final SimpleLogger logger = Container.getInstance()
-			.get(SimpleLogger.class);
+	private final SimpleLogger logger;
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final Slaves slaves;
 
-	public ResponsesArray(int maxSize, TaskContext taskContext,
-			Map<String, String> params) {
+	public ResponsesArray(int maxSize, TaskContext taskContext, Map<String, String> params) {
 		this.maxSize = maxSize;
 		this.responseArray = new AtomicReferenceArray<>(maxSize);
 		this.taskContext = taskContext;
-		this.meta = new ResponsesArrayMeta(taskContext.getConfig().getName(),
-				params, System.currentTimeMillis());
+		this.meta = new ResponsesArrayMeta(taskContext.getConfig().getName(), params, System.currentTimeMillis());
 		size = new AtomicInteger(0);
+		distributionService = Container.getInstance().get(DistributionService.class);
+		logger = Container.getInstance().get(SimpleLogger.class);
+		slaves = Container.getInstance().get(Slaves.class);
+	}
+
+	private ResponsesArray() {
+		this.maxSize = 1;
+		this.responseArray = new AtomicReferenceArray<>(maxSize);
+		this.taskContext = null;
+		this.meta = null;
+		size = null;
+		distributionService = null;
+		logger = null;
+		slaves = null;
+	}
+
+	static ResponsesArray dummyResponsesArray() {
+		return new ResponsesArray();
 	}
 
 	public boolean isComplete() {
@@ -86,27 +101,18 @@ public final class ResponsesArray {
 						if (size.intValue() == responseArray.length()) {
 							lock.notifyAll();
 							if (corruptedResponseCount == size.intValue()) {
-								logger.log(TASK + " " + response.getTaskId()
-										+ " was canceled");
+								logger.log(TASK + " " + response.getTaskId() + " was canceled");
 							} else {
-								logger.log(TASK + " " + response.getTaskId()
-										+ " is ready ");
+								logger.log(TASK + " " + response.getTaskId() + " is ready ");
 							}
 						} else if (taskContext.getConfig().isRaceStyle()
-								&& taskContext.getTask().getReducer()
-										.isValidResponse(response)) {
-							List<SlaveThread> slaveThreads = slaves
-									.getListByTaskId(response.getTaskId());
+								&& taskContext.getTask().getReducer().isValidResponse(response)) {
+							List<SlaveThread> slaveThreads = slaves.getListByTaskId(response.getTaskId());
 							try {
 								if (!slaveThreads.isEmpty()) {
-									logger.log(
-											"Cancel all requests for task id "
-													+ response.getTaskId());
-									distributionService.broadcastStopRequests(
-											slaveThreads,
-											new NodeRequest(
-													response.getTaskId(), true,
-													response.getTaskName()));
+									logger.log("Cancel all requests for task id " + response.getTaskId());
+									distributionService.broadcastStopRequests(slaveThreads,
+											new NodeRequest(response.getTaskId(), true, response.getTaskName()));
 								}
 							} catch (EmptyClusterException e) {
 								logger.log(e);
@@ -132,8 +138,7 @@ public final class ResponsesArray {
 						size.incrementAndGet();
 						if (size.intValue() == responseArray.length()) {
 							lock.notifyAll();
-							logger.log(TASK + " " + response.getTaskId()
-									+ " is ready due to filling");
+							logger.log(TASK + " " + response.getTaskId() + " is ready due to filling");
 							break;
 						}
 					}

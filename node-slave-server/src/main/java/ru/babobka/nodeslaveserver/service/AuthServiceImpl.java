@@ -1,15 +1,17 @@
 package ru.babobka.nodeslaveserver.service;
 
 import ru.babobka.nodeslaveserver.builder.AuthResponseBuilder;
-import ru.babobka.nodeslaveserver.logger.SimpleLogger;
+import ru.babobka.nodeslaveserver.exception.MasterServerIsFullException;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
-import ru.babobka.nodeslaveserver.util.StreamUtil;
-import ru.babobka.container.Container;
-import ru.babobka.nodeserials.PublicKey;
-import ru.babobka.nodeserials.RSA;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeserials.crypto.PublicKey;
+import ru.babobka.nodeserials.crypto.RSA;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Level;
 
 /**
  * Created by dolgopolov.a on 30.10.15.
@@ -25,10 +27,16 @@ public class AuthServiceImpl implements AuthService {
 
 		try {
 			socket.setSoTimeout(slaveServerConfig.getAuthTimeoutMillis());
-			PublicKey publicKey = StreamUtil.receiveObject(socket);
-			StreamUtil.sendObject(AuthResponseBuilder.build(new RSA(null, publicKey), login, password), socket);
+			boolean fittable = StreamUtil.receiveObject(socket);
+			if (fittable) {
+				PublicKey publicKey = StreamUtil.receiveObject(socket);
+				StreamUtil.sendObject(AuthResponseBuilder.build(new RSA(null, publicKey), login, password), socket);
+				return (Boolean) StreamUtil.receiveObject(socket);
+			} else {
+				logger.log(Level.WARNING, "Can not connect to master server due to connection limit");
+				throw new MasterServerIsFullException();
 
-			return (Boolean) StreamUtil.receiveObject(socket);
+			}
 		} catch (IOException e) {
 			logger.log(e);
 			return false;

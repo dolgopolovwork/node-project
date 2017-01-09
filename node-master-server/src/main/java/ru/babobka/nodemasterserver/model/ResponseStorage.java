@@ -5,7 +5,6 @@ import ru.babobka.nodeserials.NodeResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by dolgopolov.a on 03.08.15.
@@ -15,37 +14,37 @@ public class ResponseStorage {
 	private final Map<UUID, ResponsesArray> responsesMap;
 
 	public ResponseStorage() {
-		responsesMap = new ConcurrentHashMap<>();
+		responsesMap = new HashMap<>();
 	}
 
-	public void put(UUID taskId, ResponsesArray responses) {
+	public synchronized void create(UUID taskId, ResponsesArray responses) {
 		responsesMap.put(taskId, responses);
 	}
 
-	public ResponsesArray get(UUID taskId) {
+	public synchronized ResponsesArray get(UUID taskId) {
 
 		return responsesMap.get(taskId);
 	}
 
-	public boolean exists(UUID taskId) {
+	public synchronized boolean exists(UUID taskId) {
 		return responsesMap.containsKey(taskId);
 	}
 
-	public void addBadResponse(UUID taskId) {
+	public synchronized void addBadResponse(UUID taskId) {
 		ResponsesArray responsesArray = responsesMap.get(taskId);
 		if (responsesArray != null) {
 			responsesArray.add(NodeResponse.badResponse(taskId));
 		}
 	}
 
-	public void addStopResponse(UUID taskId) {
+	public synchronized void addStopResponse(UUID taskId) {
 		ResponsesArray responsesArray = responsesMap.get(taskId);
 		if (responsesArray != null) {
 			responsesArray.add(NodeResponse.stoppedResponse(taskId));
 		}
 	}
 
-	public void setStopAllResponses(UUID taskId) {
+	public synchronized void setStopAllResponses(UUID taskId) {
 		ResponsesArray responsesArray = responsesMap.get(taskId);
 		if (responsesArray != null) {
 			responsesArray.fill(NodeResponse.stoppedResponse(taskId));
@@ -62,7 +61,7 @@ public class ResponseStorage {
 		return taskMap;
 	}
 
-	public ResponsesArrayMeta getTaskMeta(UUID taskId) {
+	public synchronized ResponsesArrayMeta getTaskMeta(UUID taskId) {
 		ResponsesArray responsesArray = responsesMap.get(taskId);
 		if (responsesArray != null) {
 			return responsesArray.getMeta();
@@ -70,8 +69,12 @@ public class ResponseStorage {
 		return null;
 	}
 
-	public synchronized void clear(UUID taskId) {
+	public synchronized void remove(UUID taskId) {
 		responsesMap.remove(taskId);
+	}
+
+	public synchronized int size() {
+		return responsesMap.size();
 	}
 
 }

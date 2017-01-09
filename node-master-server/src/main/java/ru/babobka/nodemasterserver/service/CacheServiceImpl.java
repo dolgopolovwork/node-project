@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodemasterserver.dao.CacheDAO;
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.vsjws.model.HttpRequest;
 
 public class CacheServiceImpl implements CacheService {

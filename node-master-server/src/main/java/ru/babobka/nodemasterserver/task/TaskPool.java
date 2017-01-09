@@ -1,19 +1,20 @@
 package ru.babobka.nodemasterserver.task;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.CanNotInitTaskFactoryException;
 import ru.babobka.nodemasterserver.exception.EmptyFactoryPoolException;
 import ru.babobka.nodemasterserver.exception.TaskNotFoundException;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.nodemasterserver.util.StreamUtil;
 import ru.babobka.subtask.model.SubTask;
 
 /**
@@ -35,14 +36,21 @@ public class TaskPool {
 	private void init() throws CanNotInitTaskFactoryException {
 		try {
 			File tasksFolder = new File(masterServerConfig.getTasksFolder());
+			if(!tasksFolder.exists())
+			{
+				throw new FileNotFoundException(tasksFolder.getAbsolutePath()+" was not found");
+			}
 			String taskFolder = tasksFolder.getAbsolutePath();
 			List<String> files = StreamUtil
 					.getJarFileListFromFolder(taskFolder);
 			for (String file : files) {
 				try {
+					
 					String jarFilePath = taskFolder + File.separator + file;
+					
 					TaskConfig config = new TaskConfig(
 							StreamUtil.getConfigJson(jarFilePath));
+					
 					SubTask subTask = StreamUtil.getTaskClassFromJar(
 							jarFilePath, config.getClassName());
 					tasksMap.put(config.getName(),

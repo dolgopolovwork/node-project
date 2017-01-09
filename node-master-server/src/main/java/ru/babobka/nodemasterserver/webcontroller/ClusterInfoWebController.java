@@ -1,10 +1,11 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
-import ru.babobka.container.Container;
-import ru.babobka.nodemasterserver.model.Slaves;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodemasterserver.slave.Slaves;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.runnable.WebController;
+import ru.babobka.vsjws.webcontroller.WebController;
+
 
 public class ClusterInfoWebController extends WebController {
 

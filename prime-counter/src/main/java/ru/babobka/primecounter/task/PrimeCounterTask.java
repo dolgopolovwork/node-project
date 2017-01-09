@@ -61,8 +61,8 @@ public class PrimeCounterTask implements SubTask {
 		try {
 			if (!stopped) {
 				Map<String, Serializable> result = new HashMap<>();
-				long begin = Long.parseLong(request.getStringAdditionValue(BEGIN));
-				long end = Long.parseLong(request.getStringAdditionValue(END));
+				long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+				long end = Long.parseLong(request.getStringDataValue(END));
 				int cores = getCores(request);
 				try {
 					synchronized (this) {
@@ -105,8 +105,8 @@ public class PrimeCounterTask implements SubTask {
 			return new ValidationResult("Request is empty", false);
 		} else {
 			try {
-				long begin = Long.parseLong(request.getStringAdditionValue(BEGIN));
-				long end = Long.parseLong(request.getStringAdditionValue(END));
+				long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+				long end = Long.parseLong(request.getStringDataValue(END));
 				if (begin < 0 || end < 0 || begin > end) {
 					return new ValidationResult("begin is more than end", false);
 				}
@@ -150,8 +150,8 @@ public class PrimeCounterTask implements SubTask {
 
 	@Override
 	public boolean isRequestDataTooSmall(NodeRequest request) {
-		long begin = Long.parseLong(request.getStringAdditionValue(BEGIN));
-		long end = Long.parseLong(request.getStringAdditionValue(END));
+		long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+		long end = Long.parseLong(request.getStringDataValue(END));
 		if (end - begin > MIN_RANGE_TO_PARALLEL) {
 			return false;
 		}

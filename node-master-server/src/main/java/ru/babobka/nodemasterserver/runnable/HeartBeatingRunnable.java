@@ -3,10 +3,10 @@ package ru.babobka.nodemasterserver.runnable;
 import java.io.IOException;
 import java.util.List;
 
-import ru.babobka.container.Container;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
-import ru.babobka.nodemasterserver.model.Slaves;
-import ru.babobka.nodemasterserver.thread.SlaveThread;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodemasterserver.slave.SlaveThread;
+import ru.babobka.nodemasterserver.slave.Slaves;
 
 public class HeartBeatingRunnable implements Runnable {
 

@@ -1,1 +1,7 @@
-{"loggerFolder":"/Users/bbk/Documents/nodes/log","requestTimeoutMillis":45000,"tasksFolder":"/Users/bbk/Documents/nodes/tasks/","authTimeoutMillis":2000,"reconnectionTimeoutMillis":2000}
+{
+	"loggerFolder": "src/main/resources/log",
+	"requestTimeoutMillis": 45000,
+	"tasksFolder": "src/main/resources/tasks",
+	"authTimeoutMillis": 2000,
+	"reconnectionTimeoutMillis": 2000
+}

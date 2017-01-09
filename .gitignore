@@ -1,0 +1,10 @@
+*.class
+*.jar
+*.classpath
+*.project
+*.log
+*.lck
+.DS_Store
+.DS_Store?
+*/target/**
+*.prefs

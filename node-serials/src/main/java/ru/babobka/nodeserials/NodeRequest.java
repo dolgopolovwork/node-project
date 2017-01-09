@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public final class NodeRequest implements Serializable {
 
-	private static final long serialVersionUID = 7L;
+	private static final long serialVersionUID = 8L;
 
 	private final UUID taskId;
 
@@ -25,15 +25,15 @@ public final class NodeRequest implements Serializable {
 
 	private final long timeStamp;
 
-	private final Map<String, Serializable> addition = new HashMap<>();
+	private final Map<String, Serializable> data = new HashMap<>();
 
-	public NodeRequest(UUID taskId, UUID requestId, String taskName, Map<String, Serializable> addition,
+	public NodeRequest(UUID taskId, UUID requestId, String taskName, Map<String, Serializable> data,
 			boolean stoppingRequest, boolean raceStyle) {
 		this.taskId = taskId;
 		this.requestId = requestId;
 		this.taskName = taskName;
-		if (addition != null) {
-			this.addition.putAll(addition);
+		if (data != null) {
+			this.data.putAll(data);
 		}
 		this.stoppingRequest = stoppingRequest;
 		this.raceStyle = raceStyle;
@@ -50,8 +50,8 @@ public final class NodeRequest implements Serializable {
 	}
 
 
-	public String getStringAdditionValue(String key) {
-		Serializable value = addition.get(key);
+	public String getStringDataValue(String key) {
+		Serializable value = data.get(key);
 		if (value != null)
 			return value.toString();
 		return "";
@@ -99,15 +99,15 @@ public final class NodeRequest implements Serializable {
 		return timeStamp;
 	}
 
-	public Map<String, Serializable> getAddition() {
-		return addition;
+	public Map<String, Serializable> getData() {
+		return data;
 	}
 
 	@Override
 	public String toString() {
 		return "NodeRequest [taskId=" + taskId + ", requestId=" + requestId + ", stoppingRequest=" + stoppingRequest
 				+ ", raceStyle=" + raceStyle + ", taskName=" + taskName + ", timeStamp=" + timeStamp + ", addition="
-				+ addition + "]";
+				+ data + "]";
 	}
 
 }

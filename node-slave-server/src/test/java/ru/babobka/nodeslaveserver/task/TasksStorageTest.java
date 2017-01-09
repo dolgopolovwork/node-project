@@ -15,6 +15,7 @@ import static org.mockito.Mockito.*;
 public class TasksStorageTest {
 
 	private SubTask mockTask = mock(SubTask.class);
+	
 
 	private TasksStorage storage;
 

@@ -4,13 +4,14 @@ import java.util.UUID;
 
 import org.json.JSONException;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.ResponsesArrayMeta;
 
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.runnable.WebController;
+import ru.babobka.vsjws.webcontroller.WebController;
+
 
 public class TasksInfoWebController extends WebController {
 

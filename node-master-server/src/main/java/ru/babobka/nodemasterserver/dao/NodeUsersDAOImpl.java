@@ -9,8 +9,8 @@ import java.util.Map;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 import ru.babobka.nodemasterserver.datasource.RedisDatasource;
-import ru.babobka.container.Container;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.model.User;
 
 public class NodeUsersDAOImpl implements NodeUsersDAO {

@@ -7,19 +7,19 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.ResponsesArray;
-import ru.babobka.nodemasterserver.model.Slaves;
 import ru.babobka.nodemasterserver.model.Timer;
+import ru.babobka.nodemasterserver.slave.SlaveThread;
+import ru.babobka.nodemasterserver.slave.Slaves;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodemasterserver.task.TaskPool;
 import ru.babobka.nodemasterserver.task.TaskResult;
 import ru.babobka.nodemasterserver.task.TaskStartResult;
-import ru.babobka.nodemasterserver.thread.SlaveThread;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.subtask.model.RequestDistributor;
 import ru.babobka.subtask.model.SubTask;
@@ -32,17 +32,13 @@ public class TaskServiceImpl implements TaskService {
 
 	private final Slaves slaves = Container.getInstance().get(Slaves.class);
 
-	private final SimpleLogger logger = Container.getInstance()
-			.get(SimpleLogger.class);
+	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
-	private final ResponseStorage responseStorage = Container.getInstance()
-			.get(ResponseStorage.class);
+	private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
 
-	private final DistributionService distributionService = Container
-			.getInstance().get(DistributionService.class);
+	private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
 
-	private void startTask(TaskContext taskContext, UUID taskId,
-			Map<String, String> arguments, int maxNodes)
+	private void startTask(TaskContext taskContext, UUID taskId, Map<String, String> arguments, int maxNodes)
 			throws EmptyClusterException, DistributionException {
 		int currentClusterSize;
 		String taskName = taskContext.getConfig().getName();
@@ -50,16 +46,14 @@ public class TaskServiceImpl implements TaskService {
 			currentClusterSize = 1;
 		} else {
 			currentClusterSize = slaves.getClusterSize(taskName);
-			if (maxNodes > 0 && currentClusterSize > 0
-					&& maxNodes <= currentClusterSize) {
+			if (maxNodes > 0 && currentClusterSize > 0 && maxNodes <= currentClusterSize) {
 				currentClusterSize = maxNodes;
 			}
 		}
-		responseStorage.put(taskId,
-				new ResponsesArray(currentClusterSize, taskContext, arguments));
+		responseStorage.create(taskId, new ResponsesArray(currentClusterSize, taskContext, arguments));
 		if (currentClusterSize > 0) {
-			NodeRequest[] requests = taskContext.getTask().getDistributor()
-					.distribute(arguments, currentClusterSize, taskId);
+			NodeRequest[] requests = taskContext.getTask().getDistributor().distribute(arguments, currentClusterSize,
+					taskId);
 			distributionService.broadcastRequests(taskName, requests);
 
 		} else {
@@ -68,10 +62,8 @@ public class TaskServiceImpl implements TaskService {
 
 	}
 
-	private boolean isRequestDataIsTooSmall(SubTask task,
-			Map<String, String> arguments) {
-		NodeRequest request = task.getDistributor().distribute(arguments, 1,
-				UUID.randomUUID())[0];
+	private boolean isRequestDataIsTooSmall(SubTask task, Map<String, String> arguments) {
+		NodeRequest request = task.getDistributor().distribute(arguments, 1, UUID.randomUUID())[0];
 
 		if (task.isRequestDataTooSmall(request)) {
 			return true;
@@ -80,11 +72,10 @@ public class TaskServiceImpl implements TaskService {
 
 	}
 
-	private TaskStartResult startTask(Map<String, String> requestArguments,
-			TaskContext taskContext, UUID taskId, int maxNodes) {
+	private TaskStartResult startTask(Map<String, String> requestArguments, TaskContext taskContext, UUID taskId,
+			int maxNodes) {
 
-		RequestDistributor requestDistributor = taskContext.getTask()
-				.getDistributor();
+		RequestDistributor requestDistributor = taskContext.getTask().getDistributor();
 		if (requestDistributor.isValidArguments(requestArguments)) {
 			logger.log("Task id is " + taskId);
 			try {
@@ -93,19 +84,15 @@ public class TaskServiceImpl implements TaskService {
 			} catch (DistributionException e) {
 				logger.log(Level.SEVERE, e);
 				try {
-					distributionService.broadcastStopRequests(
-							slaves.getListByTaskId(taskId),
-							new NodeRequest(taskId, true,
-									taskContext.getConfig().getName()));
+					distributionService.broadcastStopRequests(slaves.getListByTaskId(taskId),
+							new NodeRequest(taskId, true, taskContext.getConfig().getName()));
 				} catch (EmptyClusterException e1) {
 					logger.log(e1);
 				}
-				return new TaskStartResult(taskId, true, true,
-						"Can not distribute your request");
+				return new TaskStartResult(taskId, true, true, "Can not distribute your request");
 			} catch (EmptyClusterException e) {
 				logger.log(e);
-				return new TaskStartResult(taskId, true, true,
-						"Can not distribute due to empty cluster");
+				return new TaskStartResult(taskId, true, true, "Can not distribute due to empty cluster");
 			}
 
 		} else {
@@ -115,13 +102,11 @@ public class TaskServiceImpl implements TaskService {
 
 	}
 
-	private Map<String, Serializable> getTaskResult(UUID taskId)
-			throws TimeoutException {
+	private Map<String, Serializable> getTaskResult(UUID taskId) throws TimeoutException {
 		try {
 			ResponsesArray responsesArray = responseStorage.get(taskId);
 			if (responsesArray != null) {
-				return taskPool.get(responsesArray.getMeta().getTaskName())
-						.getTask().getReducer()
+				return taskPool.get(responsesArray.getMeta().getTaskName()).getTask().getReducer()
 						.reduce(responsesArray.getResponseList());
 
 			} else {
@@ -145,33 +130,29 @@ public class TaskServiceImpl implements TaskService {
 			ResponsesArray responsesArray = responseStorage.get(taskId);
 			if (responsesArray != null) {
 				distributionService.broadcastStopRequests(clientThreads,
-						new NodeRequest(taskId, true,
-								responsesArray.getMeta().getTaskName()));
+						new NodeRequest(taskId, true, responsesArray.getMeta().getTaskName()));
 				responseStorage.setStopAllResponses(taskId);
 				return new TaskResult("Task " + taskId + " was canceled");
 			} else {
 				logger.log(Level.SEVERE, "No task was found for given task id");
-				throw new IllegalArgumentException(
-						"No task was found for given task id");
+				throw new IllegalArgumentException("No task was found for given task id");
 			}
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException(WRONG_ARGUMENTS, e);
 		} catch (EmptyClusterException e) {
 			logger.log(Level.SEVERE, e);
-			throw new IllegalStateException(
-					"Can not cancel task due to empty cluster", e);
+			throw new IllegalStateException("Can not cancel task due to empty cluster", e);
 		}
 	}
 
 	@Override
-	public TaskResult getResult(Map<String, String> requestArguments,
-			TaskContext taskContext, int maxNodes) throws TimeoutException {
+	public TaskResult getResult(Map<String, String> requestArguments, TaskContext taskContext, int maxNodes)
+			throws TimeoutException {
 		Map<String, Serializable> resultMap;
 
 		UUID taskId = UUID.randomUUID();
 		try {
-			TaskStartResult startResult = startTask(requestArguments,
-					taskContext, taskId, maxNodes);
+			TaskStartResult startResult = startTask(requestArguments, taskContext, taskId, maxNodes);
 			if (!startResult.isFailed()) {
 				Timer timer = new Timer();
 				resultMap = getTaskResult(startResult.getTaskId());
@@ -186,7 +167,7 @@ public class TaskServiceImpl implements TaskService {
 				throw new IllegalArgumentException(startResult.getMessage());
 			}
 		} finally {
-			responseStorage.clear(taskId);
+			responseStorage.remove(taskId);
 		}
 	}
 

@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
-import ru.babobka.nodemasterserver.logger.SimpleLogger;
-import ru.babobka.nodemasterserver.model.Slaves;
-import ru.babobka.nodemasterserver.thread.SlaveThread;
-import ru.babobka.nodemasterserver.util.MathUtil;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.MathUtil;
+import ru.babobka.nodemasterserver.slave.SlaveThread;
+import ru.babobka.nodemasterserver.slave.Slaves;
 import ru.babobka.nodeserials.NodeRequest;
 
 public final class DistributionService {

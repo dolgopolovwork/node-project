@@ -21,7 +21,7 @@ public class EllipticFactorReducer implements Reducer {
 		try {
 			for (NodeResponse response : responses) {
 				if (isValidResponse(response)) {
-					return response.getAddition();
+					return response.getData();
 				}
 			}
 		} catch (Exception e) {
@@ -34,8 +34,8 @@ public class EllipticFactorReducer implements Reducer {
 	public boolean isValidResponse(NodeResponse response) {
 		try {
 			if (response != null && response.getStatus() == NodeResponse.Status.NORMAL) {
-				BigInteger factor = response.getAdditionValue(EllipticCurveFactorTask.FACTOR);
-				BigInteger n = response.getAdditionValue(EllipticCurveFactorTask.NUMBER);
+				BigInteger factor = response.getDataValue(EllipticCurveFactorTask.FACTOR);
+				BigInteger n = response.getDataValue(EllipticCurveFactorTask.NUMBER);
 				if (factor != null && n != null && !factor.equals(BigInteger.ONE.negate())) {
 					if (n.mod(factor).equals(BigInteger.ZERO)) {
 						return true;

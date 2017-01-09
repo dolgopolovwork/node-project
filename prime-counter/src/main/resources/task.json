@@ -1,0 +1,6 @@
+{
+	"name": "Dummy prime counter",
+	"className": "ru.babobka.primecounter.task.PrimeCounterTask",
+	"description": "Counts prime numbers in a given range",
+	"raceStyle": false
+}

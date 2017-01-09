@@ -21,7 +21,7 @@ public final class PrimeCounterReducer implements Reducer {
 			int result = 0;
 			for (NodeResponse response : responses) {
 				if (isValidResponse(response)) {
-					Integer subResult = response.getAdditionValue(PrimeCounterTask.PRIME_COUNT);
+					Integer subResult = response.getDataValue(PrimeCounterTask.PRIME_COUNT);
 					if (subResult != null) {
 						result += subResult;
 					}
@@ -42,7 +42,7 @@ public final class PrimeCounterReducer implements Reducer {
 	@Override
 	public boolean isValidResponse(NodeResponse response) {
 		if (response != null && response.getStatus() == NodeResponse.Status.NORMAL
-				&& response.getAdditionValue(PrimeCounterTask.PRIME_COUNT) != null) {
+				&& response.getDataValue(PrimeCounterTask.PRIME_COUNT) != null) {
 			return true;
 		}
 		return false;

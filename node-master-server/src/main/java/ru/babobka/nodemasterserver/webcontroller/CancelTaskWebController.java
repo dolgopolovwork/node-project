@@ -2,12 +2,14 @@ package ru.babobka.nodemasterserver.webcontroller;
 
 import java.util.UUID;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
-import ru.babobka.vsjws.runnable.WebController;
+import ru.babobka.vsjws.webcontroller.WebController;
+
+
 
 public class CancelTaskWebController extends WebController {
 

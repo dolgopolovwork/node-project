@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.json.JSONObject;
 
 import ru.babobka.nodemasterserver.exception.InvalidUserException;
-import ru.babobka.nodemasterserver.util.MathUtil;
+import ru.babobka.nodeutils.util.MathUtil;
 
 /**
  * Created by dolgopolov.a on 29.10.15.
@@ -22,8 +22,6 @@ public final class User {
 	private int taskCount;
 
 	private String email;
-	
-	//TODO add salt
 
 	public User() {
 	}
@@ -54,7 +52,7 @@ public final class User {
 			throw new InvalidUserException("'taskCount' is negative");
 		}
 		this.taskCount = taskCount;
-		
+
 	}
 
 	public User(String name, String password, Integer taskCount, String email) {
@@ -104,6 +102,11 @@ public final class User {
 			this.hashedPassword = hashedPassword.clone();
 	}
 
+	public void setPassword(String password) {
+		if (!(password == null || password.isEmpty()))
+			this.hashedPassword = MathUtil.sha2(password);
+	}
+
 	public void setTaskCount(int taskCount) {
 		this.taskCount = taskCount;
 	}
@@ -116,7 +119,7 @@ public final class User {
 		if (name == null) {
 			throw new InvalidUserException("'name' must be set");
 		}
-		if (hashedPassword == null) {
+		if (hashedPassword == null || hashedPassword.length == 0) {
 			throw new InvalidUserException("'password' is null");
 		} else if (hashedPassword.length <= 0) {
 			throw new InvalidUserException("'password' must be set");

@@ -1,6 +1,6 @@
 package ru.babobka.nodeslaveserver.model;
 
-import ru.babobka.nodeslaveserver.util.TextUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 public class CommandLineArgs {
 

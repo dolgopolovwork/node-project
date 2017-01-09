@@ -1,8 +1,7 @@
 package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodemasterserver.model.AuthResult;
-import ru.babobka.nodeserials.RSA;
-
+import ru.babobka.nodeserials.crypto.RSA;
 
 import java.net.Socket;
 

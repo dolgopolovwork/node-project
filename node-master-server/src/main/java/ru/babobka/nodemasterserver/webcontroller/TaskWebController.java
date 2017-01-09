@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.concurrent.TimeoutException;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodemasterserver.task.TaskPool;
-import ru.babobka.nodemasterserver.util.TextUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.runnable.WebController;
+import ru.babobka.vsjws.webcontroller.WebController;
+
 
 public class TaskWebController extends WebController {
 

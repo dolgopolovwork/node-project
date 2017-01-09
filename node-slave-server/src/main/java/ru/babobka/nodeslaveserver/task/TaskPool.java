@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import ru.babobka.container.Container;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeslaveserver.exception.CanNotInitTaskFactoryException;
-import ru.babobka.nodeslaveserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
-import ru.babobka.nodeslaveserver.util.StreamUtil;
 import ru.babobka.subtask.model.SubTask;
 
 /**

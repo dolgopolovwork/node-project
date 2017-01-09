@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 
-import ru.babobka.container.Container;
-import ru.babobka.nodeslaveserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
 public class GlitchRunnable implements Runnable {
 

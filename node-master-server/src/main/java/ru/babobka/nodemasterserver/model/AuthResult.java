@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class AuthResult {
@@ -8,7 +9,7 @@ public class AuthResult {
 
 	private final String login;
 
-	private final Set<String> taskSet = new ConcurrentHashSet<>();
+	private final Set<String> taskSet = new HashSet<>();
 
 	public AuthResult(boolean valid, String login, Set<String> taskSet) {
 		this.valid = valid;

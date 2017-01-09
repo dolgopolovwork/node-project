@@ -1,11 +1,11 @@
 package ru.babobka.nodeslaveserver.server;
 
-import ru.babobka.container.Container;
-import ru.babobka.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.ContainerStrategyException;
 import ru.babobka.nodeslaveserver.controller.SocketController;
 import ru.babobka.nodeslaveserver.controller.SocketControllerImpl;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
-import ru.babobka.nodeslaveserver.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeslaveserver.model.CommandLineArgs;
 import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;

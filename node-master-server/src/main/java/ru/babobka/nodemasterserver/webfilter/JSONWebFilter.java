@@ -1,0 +1,51 @@
+package ru.babobka.nodemasterserver.webfilter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import ru.babobka.vsjws.model.FilterResponse;
+import ru.babobka.vsjws.model.HttpRequest;
+import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.webcontroller.WebFilter;
+
+public class JSONWebFilter implements WebFilter {
+
+	private final HttpRequest.HttpMethod[] methods;
+
+	public JSONWebFilter(HttpRequest.HttpMethod... methods) {
+		this.methods = methods;
+	}
+
+	@Override
+	public void afterFilter(HttpRequest request, HttpResponse response) {
+
+	}
+
+	@Override
+	public FilterResponse onFilter(HttpRequest request) {
+		for (HttpRequest.HttpMethod method : methods) {
+			if (request.getMethod() == method) {
+				if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
+					return FilterResponse
+							.response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
+				}
+			}
+		}
+		return FilterResponse.proceed();
+	}
+
+	private boolean isJSONValid(String test) {
+		try {
+			new JSONObject(test);
+		} catch (JSONException ex) {
+			try {
+				new JSONArray(test);
+			} catch (JSONException ex1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+}
