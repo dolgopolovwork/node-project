@@ -2,8 +2,12 @@ package ru.babobka.nodeutils.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public interface TextUtil {
+
+	Charset CHARSET = StandardCharsets.UTF_8;
 
 	static String notNull(String s) {
 		if (s == null) {
@@ -19,7 +23,6 @@ public interface TextUtil {
 			return defaultValue;
 		}
 	}
-	
 
 	static int tryParseInt(String s, int defaultValue) {
 		try {

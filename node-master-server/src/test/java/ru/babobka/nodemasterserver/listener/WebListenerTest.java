@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeoutException;
 
-import org.json.JSONException;
 import org.junit.Test;
 
 import ru.babobka.nodemasterserver.exception.TaskNotFoundException;
@@ -23,12 +22,7 @@ public class WebListenerTest {
 		HttpResponse response = new OnIllegalStateExceptionListener().onException(new IllegalStateException());
 		assertEquals(response.getResponseCode(), HttpResponse.ResponseCode.INTERNAL_SERVER_ERROR);
 	}
- 
-	@Test
-	public void onJsonExceptionListenerTest() {
-		HttpResponse response = new OnJSONExceptionListener().onException(new JSONException(""));
-		assertEquals(response.getResponseCode(), HttpResponse.ResponseCode.BAD_REQUEST);
-	}
+
 
 	@Test
 	public void onTaskNotFoundExceptionListenerTest() {

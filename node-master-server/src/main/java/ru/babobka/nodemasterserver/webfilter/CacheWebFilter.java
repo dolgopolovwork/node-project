@@ -1,6 +1,9 @@
 package ru.babobka.nodemasterserver.webfilter;
 
 import ru.babobka.nodeutils.container.Container;
+
+import java.nio.charset.Charset;
+
 import ru.babobka.nodemasterserver.service.CacheService;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
@@ -12,10 +15,12 @@ public class CacheWebFilter implements WebFilter {
 
 	private CacheService cacheService = Container.getInstance().get(CacheService.class);
 
+	private final Charset charset = Container.getInstance().get(Charset.class);
+
 	@Override
 	public void afterFilter(HttpRequest request, HttpResponse response) {
 		if (response.getResponseCode() == ResponseCode.OK) {
-			cacheService.putContent(request, new String(response.getContent()));
+			cacheService.putContent(request, new String(response.getContent(), charset));
 		}
 	}
 
@@ -27,7 +32,7 @@ public class CacheWebFilter implements WebFilter {
 			return FilterResponse.proceed();
 		} else if (request.getMethod() == HttpRequest.HttpMethod.GET) {
 			String cachedContent = cacheService.getContent(request);
-			
+
 			if (cachedContent != null) {
 				return FilterResponse.response(HttpResponse.jsonResponse(cachedContent));
 			}

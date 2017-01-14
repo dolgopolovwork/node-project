@@ -18,11 +18,13 @@ import ru.babobka.subtask.model.SubTask;
 public class TaskTest {
 
 	private static final SubTask TASK = new EllipticCurveFactorTask();
+	
+	private static final UUID DUMMY_UUID=new UUID(0,0);
 
 	public NodeRequest getNumberRequest(BigInteger number) {
 		Map<String, Serializable> additionMap = new HashMap<>();
 		additionMap.put("number", number);
-		return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), "ellipticFactor", additionMap, false, false);
+		return new NodeRequest(DUMMY_UUID, DUMMY_UUID, "ellipticFactor", additionMap, false, false);
 	}
 
 	public BigInteger getRandomHalfPrime(int bits) {
@@ -73,27 +75,11 @@ public class TaskTest {
 		for (int i = 0; i < tests; i++) {
 
 			BigInteger number = getRandomHalfPrime(bits);
-			System.out.println("Try to find factor " + number);
-			Timer timer = new Timer("Factorization");
-			BigInteger factor = (BigInteger) TASK.newInstance().execute(getNumberRequest(number)).getResultMap().get("factor");
+
+			BigInteger factor = (BigInteger) TASK.newInstance().execute(getNumberRequest(number)).getResultMap()
+					.get("factor");
 			assertEquals(number.mod(factor), BigInteger.ZERO);
-			System.out.println(timer);
 
-		}
-	}
-
-	private static class Timer {
-		private final long time;
-
-		private final String title;
-
-		public Timer(String title) {
-			this.time = System.currentTimeMillis();
-			this.title = title;
-		}
-
-		public String toString() {
-			return title + " takes " + (System.currentTimeMillis() - time) + "mls";
 		}
 	}
 }

@@ -13,20 +13,20 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 /**
  * Created by dolgopolov.a on 28.07.15.
  */
-public class Slaves {
+public class SlavesStorage {
 
-	private final AtomicReferenceArray<SlaveThread> threads;
+	private final AtomicReferenceArray<Slave> threads;
 
 	private final AtomicInteger size = new AtomicInteger(0);
 
-	public Slaves(int maxSize) {
+	public SlavesStorage(int maxSize) {
 		this.threads = new AtomicReferenceArray<>(maxSize);
 	}
 
 
 	public synchronized List<SlaveUser> getCurrentClusterUserList() {
 		List<SlaveUser> clusterUserList = new ArrayList<>();
-		SlaveThread st;
+		Slave st;
 		for (int i = 0; i < threads.length(); i++) {
 			if ((st = threads.get(i)) != null) {
 				clusterUserList
@@ -38,7 +38,7 @@ public class Slaves {
 		return clusterUserList;
 	}
 
-	synchronized boolean remove(SlaveThread slave) {
+	synchronized boolean remove(Slave slave) {
 		if (slave != null) {
 			for (int i = 0; i < threads.length(); i++) {
 				if (threads.get(i) == slave) {
@@ -53,7 +53,7 @@ public class Slaves {
 		return false;
 	}
 
-	synchronized boolean add(SlaveThread slave) {
+	synchronized boolean add(Slave slave) {
 		if (slave != null && size.intValue() != threads.length()) {
 			for (int i = 0; i < threads.length(); i++) {
 				if (threads.get(i) == null) {
@@ -68,10 +68,10 @@ public class Slaves {
 		return false;
 	}
 
-	public synchronized List<SlaveThread> getFullList() {
-		ArrayList<SlaveThread> slaveThreadList = new ArrayList<>();
+	public synchronized List<Slave> getFullList() {
+		ArrayList<Slave> slaveThreadList = new ArrayList<>();
 		for (int i = 0; i < threads.length(); i++) {
-			SlaveThread st = threads.get(i);
+			Slave st = threads.get(i);
 			if (st != null) {
 				slaveThreadList.add(st);
 			}
@@ -80,13 +80,13 @@ public class Slaves {
 		return slaveThreadList;
 	}
 
-	public synchronized List<SlaveThread> getList(String taskName) {
+	public synchronized List<Slave> getList(String taskName) {
 		return getList(taskName, -1);
 	}
 
-	public synchronized List<SlaveThread> getList(String taskName, int maxThreads) {
-		List<SlaveThread> slaveThreadList = new ArrayList<>();
-		SlaveThread st;
+	public synchronized List<Slave> getList(String taskName, int maxThreads) {
+		List<Slave> slaveThreadList = new ArrayList<>();
+		Slave st;
 		for (int i = 0; i < threads.length(); i++) {
 			st = threads.get(i);
 			if (st != null && st.getAvailableTasksSet() != null && st.getAvailableTasksSet().contains(taskName)) {
@@ -100,9 +100,9 @@ public class Slaves {
 		return slaveThreadList;
 	}
 
-	public synchronized List<SlaveThread> getListByTaskId(UUID taskId) {
-		List<SlaveThread> slaveThreadList = new ArrayList<>();
-		SlaveThread st;
+	public synchronized List<Slave> getListByTaskId(UUID taskId) {
+		List<Slave> slaveThreadList = new ArrayList<>();
+		Slave st;
 		for (int i = 0; i < threads.length(); i++) {
 			st = threads.get(i);
 			if (st != null && !st.getRequestMap().isEmpty()) {
@@ -125,7 +125,7 @@ public class Slaves {
 
 	public synchronized int getClusterSize(String taskName) {
 		int counter = 0;
-		SlaveThread st;
+		Slave st;
 		for (int i = 0; i < threads.length(); i++) {
 			st = threads.get(i);
 			if (st != null && st.getAvailableTasksSet().contains(taskName)) {
@@ -137,8 +137,8 @@ public class Slaves {
 
 	private synchronized void interruptAll() {
 
-		List<SlaveThread> clientThreadsList = getFullList();
-		for (SlaveThread st : clientThreadsList) {
+		List<Slave> clientThreadsList = getFullList();
+		for (Slave st : clientThreadsList) {
 			st.interrupt();
 		}
 	}

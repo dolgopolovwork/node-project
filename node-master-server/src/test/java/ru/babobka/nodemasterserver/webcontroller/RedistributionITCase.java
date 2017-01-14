@@ -17,40 +17,32 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ru.babobka.nodemasterserver.builder.TestUserBuilder;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeslaveserver.server.SlaveServerContainerStrategy;
-import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.container.Container;
 
 public class RedistributionITCase {
-
-	static {
-		new MasterServerContainerStrategy(
-				StreamUtil.getLocalResource(MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-		new SlaveServerContainerStrategy(
-				StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
 
 	private static SlaveServer[] slaveServers;
 
 	private static final int SLAVES = 3;
 
-	private static final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
+	private static MasterServerConfig config;
 
 	private static MasterServer masterServer;
+
+	private static String restLogin;
+
+	private static String restPassword;
+
+	private static int restPort;
+
+	private static String restURL;
 
 	private static final String LOGIN = TestUserBuilder.LOGIN;
 
 	private static final String PASSWORD = TestUserBuilder.PASSWORD;
-
-	private static final String REST_LOGIN = config.getRestServiceLogin();
-
-	private static final String REST_PASSWORD = config.getRestServicePassword();
 
 	private static final String LOGIN_HEADER = "X-Login";
 
@@ -58,14 +50,18 @@ public class RedistributionITCase {
 
 	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
-	private static final int PORT = config.getWebPort();
-
-	private static final String URL = "http://localhost:" + PORT + "/task";
-
 	private static final String DUMMY_PRIME_COUNTER_TASK_NAME = "Dummy prime counter";
 
 	@BeforeClass
 	public static void runServers() throws IOException, InterruptedException {
+		MasterServer.initTestContainer();
+		SlaveServer.initTestContainer();
+		config = Container.getInstance().get(MasterServerConfig.class);
+		restLogin = config.getRestServiceLogin();
+		restPassword = config.getRestServicePassword();
+		restPort = config.getWebPort();
+		restURL = "http://localhost:" + restPort + "/task";
+
 		masterServer = new MasterServer();
 		masterServer.start();
 
@@ -135,13 +131,13 @@ public class RedistributionITCase {
 
 		HttpGet get = null;
 		try {
-			String url = URL + "/" + URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8") + "?begin=" + begin
+			String url = restURL + "/" + URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8") + "?begin=" + begin
 					+ "&end=" + end + "&noCache=true";
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
 			return new JSONObject(new BasicResponseHandler().handleResponse(httpClient.execute(get)));
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 
 		} finally {
@@ -152,8 +148,8 @@ public class RedistributionITCase {
 	}
 
 	private void setCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, REST_LOGIN);
-		httpMessage.setHeader(PASSWORD_HEADER, REST_PASSWORD);
+		httpMessage.setHeader(LOGIN_HEADER, restLogin);
+		httpMessage.setHeader(PASSWORD_HEADER, restPassword);
 	}
 
 }

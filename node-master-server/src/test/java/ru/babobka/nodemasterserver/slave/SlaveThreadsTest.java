@@ -15,62 +15,62 @@ public class SlaveThreadsTest {
 
 	static final int N = 1000;
 	static final int MAX_THREADS = 10;
-	Slaves slaves;
-	final SlaveThread slaveThreadMock = mock(SlaveThread.class);
+	SlavesStorage slavesStorage;
+	final Slave slaveThreadMock = mock(Slave.class);
 
 	@Before
 	public void setUp() {
-		slaves = new Slaves(N);
+		slavesStorage = new SlavesStorage(N);
 	}
 
 	@After
 	public void tearDown() {
-		slaves.clear();
+		slavesStorage.clear();
 	}
 
 	@Test
 	public void testEmpty() {
-		assertTrue(slaves.isEmpty());
+		assertTrue(slavesStorage.isEmpty());
 	}
 
 	@Test
 	public void testMaxSize() {
 
 		for (int i = 0; i < N; i++) {
-			assertTrue(slaves.add(slaveThreadMock));
+			assertTrue(slavesStorage.add(slaveThreadMock));
 		}
-		assertFalse(slaves.add(slaveThreadMock));
+		assertFalse(slavesStorage.add(slaveThreadMock));
 	}
 
 	@Test
 	public void testAdd() {
 
-		assertTrue(slaves.add(slaveThreadMock));
+		assertTrue(slavesStorage.add(slaveThreadMock));
 	}
 
 	@Test
 	public void testClear() {
-		slaves.add(slaveThreadMock);
-		slaves.clear();
-		assertTrue(slaves.isEmpty());
+		slavesStorage.add(slaveThreadMock);
+		slavesStorage.clear();
+		assertTrue(slavesStorage.isEmpty());
 	}
 
 	@Test
 	public void testAddNull() {
-		assertFalse(slaves.add(null));
+		assertFalse(slavesStorage.add(null));
 	}
 
 	@Test
 	public void testRemoveNull() {
-		assertFalse(slaves.remove(null));
+		assertFalse(slavesStorage.remove(null));
 	}
 
 	@Test
 	public void testRemove() {
-		slaves.add(slaveThreadMock);
-		assertFalse(slaves.isEmpty());
-		assertTrue(slaves.remove(slaveThreadMock));
-		assertTrue(slaves.isEmpty());
+		slavesStorage.add(slaveThreadMock);
+		assertFalse(slavesStorage.isEmpty());
+		assertTrue(slavesStorage.remove(slaveThreadMock));
+		assertTrue(slavesStorage.isEmpty());
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class SlaveThreadsTest {
 				@Override
 				public void run() {
 					for (int i = 0; i < N; i++) {
-						if (slaves.add(slaveThreadMock)) {
+						if (slavesStorage.add(slaveThreadMock)) {
 							succededAdds.incrementAndGet();
 						}
 					}
@@ -99,14 +99,14 @@ public class SlaveThreadsTest {
 			addThread.join();
 		}
 		assertEquals(succededAdds.intValue(), N);
-		assertEquals(slaves.getClusterSize(), N);
-		assertEquals(slaves.getFullList().size(), N);
+		assertEquals(slavesStorage.getClusterSize(), N);
+		assertEquals(slavesStorage.getFullList().size(), N);
 	}
 
 	@Test
 	public void testRemoveParallel() throws InterruptedException {
 		for (int i = 0; i < N; i++) {
-			slaves.add(slaveThreadMock);
+			slavesStorage.add(slaveThreadMock);
 		}
 		Thread[] removeThreads = new Thread[MAX_THREADS];
 		final AtomicInteger succededRemoves = new AtomicInteger();
@@ -116,7 +116,7 @@ public class SlaveThreadsTest {
 				@Override
 				public void run() {
 					for (int i = 0; i < N; i++) {
-						if (slaves.remove(slaveThreadMock)) {
+						if (slavesStorage.remove(slaveThreadMock)) {
 							succededRemoves.incrementAndGet();
 						}
 					}
@@ -131,9 +131,9 @@ public class SlaveThreadsTest {
 			removeThread.join();
 		}
 		assertEquals(succededRemoves.intValue(), N);
-		assertEquals(slaves.getClusterSize(), 0);
-		assertTrue(slaves.isEmpty());
-		assertTrue(slaves.getFullList().isEmpty());
+		assertEquals(slavesStorage.getClusterSize(), 0);
+		assertTrue(slavesStorage.isEmpty());
+		assertTrue(slavesStorage.getFullList().isEmpty());
 	}
 
 }

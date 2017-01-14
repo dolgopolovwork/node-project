@@ -16,18 +16,20 @@ import ru.babobka.nodeserials.crypto.RSA;
 /**
  * Created by dolgopolov.a on 29.10.15.
  */
-public class AuthServiceImpl implements AuthService {
+public class MasterAuthService implements AuthService {
 
 	private final NodeUsersService usersService = Container.getInstance().get(NodeUsersService.class);
 
 	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
-
 	@Override
 	public AuthResult getAuthResult(RSA rsa, Socket socket) {
 		try {
+
 			StreamUtil.sendObject(rsa.getPublicKey(), socket);
+
 			NodeResponse authResponse = StreamUtil.receiveObject(socket);
+
 			if (authResponse.isAuthResponse()) {
 				BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
 				String login = authResponse.getDataValue("login");

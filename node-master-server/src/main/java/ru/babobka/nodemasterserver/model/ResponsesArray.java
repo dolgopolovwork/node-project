@@ -4,8 +4,8 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.service.DistributionService;
-import ru.babobka.nodemasterserver.slave.SlaveThread;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.Slave;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
@@ -42,7 +42,7 @@ public final class ResponsesArray {
 
 	private final SimpleLogger logger;
 
-	private final Slaves slaves;
+	private final SlavesStorage slavesStorage;
 
 	public ResponsesArray(int maxSize, TaskContext taskContext, Map<String, String> params) {
 		this.maxSize = maxSize;
@@ -52,7 +52,7 @@ public final class ResponsesArray {
 		size = new AtomicInteger(0);
 		distributionService = Container.getInstance().get(DistributionService.class);
 		logger = Container.getInstance().get(SimpleLogger.class);
-		slaves = Container.getInstance().get(Slaves.class);
+		slavesStorage = Container.getInstance().get(SlavesStorage.class);
 	}
 
 	private ResponsesArray() {
@@ -63,7 +63,7 @@ public final class ResponsesArray {
 		size = null;
 		distributionService = null;
 		logger = null;
-		slaves = null;
+		slavesStorage = null;
 	}
 
 	static ResponsesArray dummyResponsesArray() {
@@ -107,11 +107,11 @@ public final class ResponsesArray {
 							}
 						} else if (taskContext.getConfig().isRaceStyle()
 								&& taskContext.getTask().getReducer().isValidResponse(response)) {
-							List<SlaveThread> slaveThreads = slaves.getListByTaskId(response.getTaskId());
+							List<Slave> slaves = slavesStorage.getListByTaskId(response.getTaskId());
 							try {
-								if (!slaveThreads.isEmpty()) {
+								if (!slaves.isEmpty()) {
 									logger.log("Cancel all requests for task id " + response.getTaskId());
-									distributionService.broadcastStopRequests(slaveThreads,
+									distributionService.broadcastStopRequests(slaves,
 											new NodeRequest(response.getTaskId(), true, response.getTaskName()));
 								}
 							} catch (EmptyClusterException e) {

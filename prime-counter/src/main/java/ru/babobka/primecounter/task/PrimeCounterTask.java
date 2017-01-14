@@ -110,7 +110,7 @@ public class PrimeCounterTask implements SubTask {
 				if (begin < 0 || end < 0 || begin > end) {
 					return new ValidationResult("begin is more than end", false);
 				}
-			} catch (Exception e) {
+			} catch (NumberFormatException  e) {
 				e.printStackTrace();
 				return new ValidationResult(e.getMessage(), false);
 			}
@@ -167,5 +167,5 @@ public class PrimeCounterTask implements SubTask {
 	public boolean isStopped() {
 		return stopped;
 	}
-
+	
 }

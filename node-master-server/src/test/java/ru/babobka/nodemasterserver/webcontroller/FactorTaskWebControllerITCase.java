@@ -30,15 +30,6 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 public class FactorTaskWebControllerITCase {
 
-	static {
-		new MasterServerContainerStrategy(StreamUtil.getLocalResource(
-				MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-		new SlaveServerContainerStrategy(StreamUtil.getLocalResource(
-				SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
-
 	private static SlaveServer[] slaveServers;
 
 	private static final int SLAVES = 5;
@@ -46,31 +37,42 @@ public class FactorTaskWebControllerITCase {
 	private static MasterServer masterServer;
 
 	private static final String LOGIN = TestUserBuilder.LOGIN;
-
+	
 	private static final String PASSWORD = TestUserBuilder.PASSWORD;
-
-	private static final MasterServerConfig config = Container.getInstance()
-			.get(MasterServerConfig.class);
-
-	private static final String REST_LOGIN = config.getRestServiceLogin();
-
-	private static final String REST_PASSWORD = config.getRestServicePassword();
-
+	
+	private static MasterServerConfig config;
+	
+	private static String restLogin;
+	
+	private static String restPassword;
+	
+	private static int restPort;
+	
+	private static String restURL;
+	
 	private static final String LOGIN_HEADER = "X-Login";
 
 	private static final String PASSWORD_HEADER = "X-Password";
 
-	private static final HttpClient httpClient = HttpClientBuilder.create()
-			.build();
-
-	private static final int PORT = config.getWebPort();
-
-	private static final String URL = "http://localhost:" + PORT + "/task";
+	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
 	private static final String FACTOR_TASK_NAME = "Elliptic curve factor";
 
 	@BeforeClass
 	public static void runServers() throws IOException {
+		MasterServer.initTestContainer();
+		SlaveServer.initTestContainer();
+
+		config = Container.getInstance().get(MasterServerConfig.class);
+
+		restLogin = config.getRestServiceLogin();
+
+		restPassword = config.getRestServicePassword();
+
+		restPort = config.getWebPort();
+
+		restURL = "http://localhost:" + restPort + "/task";
+
 		masterServer = new MasterServer();
 		masterServer.start();
 		createSlaves();
@@ -94,12 +96,10 @@ public class FactorTaskWebControllerITCase {
 
 	private void generateTest(int test, int factorBits) {
 		for (int i = 0; i < test; i++) {
-			BigInteger number = BigInteger
-					.probablePrime(factorBits, new Random()).multiply(
-							BigInteger.probablePrime(factorBits, new Random()));
+			BigInteger number = BigInteger.probablePrime(factorBits, new Random())
+					.multiply(BigInteger.probablePrime(factorBits, new Random()));
 			JSONObject json = getFactorJson(number);
-			BigInteger factor = json.getJSONObject("resultMap")
-					.getBigInteger("factor");
+			BigInteger factor = json.getJSONObject("resultMap").getBigInteger("factor");
 			assertEquals(number.mod(factor), BigInteger.ZERO);
 
 		}
@@ -112,13 +112,9 @@ public class FactorTaskWebControllerITCase {
 
 	@Test
 	public void testInvalidTask() {
-		assertEquals(
-				getFactorHttpResponse(BigInteger.valueOf(-10)).getStatusLine()
-						.getStatusCode(),
-				ru.babobka.vsjws.model.HttpResponse.ResponseCode.BAD_REQUEST
-						.getCode());
+		assertEquals(getFactorHttpResponse(BigInteger.valueOf(-10)).getStatusLine().getStatusCode(),
+				ru.babobka.vsjws.model.HttpResponse.ResponseCode.BAD_REQUEST.getCode());
 	}
-
 
 	@Test
 	public void testMediumNumberFactor() {
@@ -138,8 +134,7 @@ public class FactorTaskWebControllerITCase {
 			BigInteger number = BigInteger.probablePrime(bits, new Random())
 					.multiply(BigInteger.probablePrime(bits, new Random()));
 			JSONObject json = getFactorJson(number);
-			BigInteger factor = json.getJSONObject("resultMap")
-					.getBigInteger("factor");
+			BigInteger factor = json.getJSONObject("resultMap").getBigInteger("factor");
 			assertEquals(number.mod(factor), BigInteger.ZERO);
 		}
 	}
@@ -156,13 +151,10 @@ public class FactorTaskWebControllerITCase {
 				public void run() {
 					for (int i = 0; i < 5; i++) {
 						int bits = random.nextInt(40) + 2;
-						BigInteger number = BigInteger
-								.probablePrime(bits, new Random())
-								.multiply(BigInteger.probablePrime(bits,
-										new Random()));
+						BigInteger number = BigInteger.probablePrime(bits, new Random())
+								.multiply(BigInteger.probablePrime(bits, new Random()));
 						JSONObject json = getFactorJson(number);
-						BigInteger factor = json.getJSONObject("resultMap")
-								.getBigInteger("factor");
+						BigInteger factor = json.getJSONObject("resultMap").getBigInteger("factor");
 						if (!number.mod(factor).equals(BigInteger.ZERO)) {
 							failedTests.incrementAndGet();
 							break;
@@ -199,8 +191,7 @@ public class FactorTaskWebControllerITCase {
 	public static void createSlaves() throws IOException {
 		slaveServers = new SlaveServer[SLAVES];
 		for (int i = 0; i < SLAVES; i++) {
-			slaveServers[i] = new SlaveServer("localhost",
-					config.getMainServerPort(), LOGIN, PASSWORD);
+			slaveServers[i] = new SlaveServer("localhost", config.getMainServerPort(), LOGIN, PASSWORD);
 		}
 	}
 
@@ -228,9 +219,8 @@ public class FactorTaskWebControllerITCase {
 	private HttpResponse getFactorHttpResponse(BigInteger number) {
 		HttpGet get = null;
 		try {
-			String url = URL + "/"
-					+ URLEncoder.encode(FACTOR_TASK_NAME, "UTF-8") + "?number="
-					+ number + "&noCache=true";
+			String url = restURL + "/" + URLEncoder.encode(FACTOR_TASK_NAME, "UTF-8") + "?number=" + number
+					+ "&noCache=true";
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
 			return httpClient.execute(get);
@@ -248,15 +238,13 @@ public class FactorTaskWebControllerITCase {
 
 		HttpGet get = null;
 		try {
-			String url = URL + "/"
-					+ URLEncoder.encode(FACTOR_TASK_NAME, "UTF-8") + "?number="
-					+ number + "&noCache=true";
+			String url = restURL + "/" + URLEncoder.encode(FACTOR_TASK_NAME, "UTF-8") + "?number=" + number
+					+ "&noCache=true";
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
-			return new JSONObject(new BasicResponseHandler()
-					.handleResponse(httpClient.execute(get)));
+			return new JSONObject(new BasicResponseHandler().handleResponse(httpClient.execute(get)));
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 
 		} finally {
@@ -267,8 +255,8 @@ public class FactorTaskWebControllerITCase {
 	}
 
 	private void setCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, REST_LOGIN);
-		httpMessage.setHeader(PASSWORD_HEADER, REST_PASSWORD);
+		httpMessage.setHeader(LOGIN_HEADER, restLogin);
+		httpMessage.setHeader(PASSWORD_HEADER, restPassword);
 	}
 
 }

@@ -2,23 +2,28 @@ package ru.babobka.nodemasterserver.task;
 
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.ContainerStrategyException;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
+import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 
 public class TaskPoolITCase {
 
-	static {
-		new MasterServerContainerStrategy(StreamUtil.getLocalResource(
-				MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
+	
+	@BeforeClass
+	public static void setUp() throws ContainerStrategyException, FileNotFoundException
+	{
+		MasterServer.initTestContainer();
 		
 	}
 

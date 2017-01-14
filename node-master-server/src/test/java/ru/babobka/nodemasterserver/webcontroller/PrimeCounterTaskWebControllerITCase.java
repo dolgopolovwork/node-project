@@ -27,15 +27,6 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 public class PrimeCounterTaskWebControllerITCase {
 
-	static {
-		new MasterServerContainerStrategy(StreamUtil.getLocalResource(
-				MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-		new SlaveServerContainerStrategy(StreamUtil.getLocalResource(
-				SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
-
 	private static SlaveServer[] slaveServers;
 
 	private static final int SLAVES = 3;
@@ -46,28 +37,33 @@ public class PrimeCounterTaskWebControllerITCase {
 
 	private static final String PASSWORD = TestUserBuilder.PASSWORD;
 
-	private static final MasterServerConfig config = Container.getInstance()
-			.get(MasterServerConfig.class);
+	private static MasterServerConfig config;
 
-	private static final String REST_LOGIN = config.getRestServiceLogin();
+	private static String restLogin;
 
-	private static final String REST_PASSWORD = config.getRestServicePassword();
+	private static String restPassword;
 
 	private static final String LOGIN_HEADER = "X-Login";
 
 	private static final String PASSWORD_HEADER = "X-Password";
 
-	private static final HttpClient httpClient = HttpClientBuilder.create()
-			.build();
+	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
-	private static final int PORT = config.getWebPort();
+	private static int restPort;
 
-	private static final String URL = "http://localhost:" + PORT + "/task";
+	private static String restURL;
 
 	private static final String DUMMY_PRIME_COUNTER_TASK_NAME = "Dummy prime counter";
 
 	@BeforeClass
 	public static void runServers() throws IOException, InterruptedException {
+		MasterServer.initTestContainer();
+		SlaveServer.initTestContainer();
+		config = Container.getInstance().get(MasterServerConfig.class);
+		restLogin = config.getRestServiceLogin();
+		restPassword = config.getRestServicePassword();
+		restPort = config.getWebPort();
+		restURL = "http://localhost:" + restPort + "/task";
 		masterServer = new MasterServer();
 		masterServer.start();
 		createSlaves();
@@ -94,33 +90,28 @@ public class PrimeCounterTaskWebControllerITCase {
 
 		for (int i = 0; i < 5000; i++) {
 			JSONObject jsonObject = getPrimesInRangeJson(0, 29);
-			assertEquals(
-					jsonObject.getJSONObject("resultMap").getInt("primeCount"),
-					10);
+			assertEquals(jsonObject.getJSONObject("resultMap").getInt("primeCount"), 10);
 		}
 	}
 
 	@Test
 	public void testInvalidTask() {
 
-		assertEquals(getPrimesInRangeHttpResponse(1_000_000, 500_000)
-				.getStatusLine().getStatusCode(), 400);
+		assertEquals(getPrimesInRangeHttpResponse(1_000_000, 500_000).getStatusLine().getStatusCode(), 400);
 
 	}
 
 	@Test
 	public void testMassInvalidTasks() {
 		for (int i = 0; i < 500; i++)
-			assertEquals(getPrimesInRangeHttpResponse(1_000_000, 500_000)
-					.getStatusLine().getStatusCode(), 400);
+			assertEquals(getPrimesInRangeHttpResponse(1_000_000, 500_000).getStatusLine().getStatusCode(), 400);
 
 	}
 
 	@Test
 	public void testMassDummyTasks() {
 		for (int i = 0; i < 500; i++)
-			assertEquals(getPrimesInRangeHttpResponse(1_000_000, 1_000_001)
-					.getStatusLine().getStatusCode(), 200);
+			assertEquals(getPrimesInRangeHttpResponse(1_000_000, 1_000_001).getStatusLine().getStatusCode(), 200);
 
 	}
 
@@ -129,9 +120,7 @@ public class PrimeCounterTaskWebControllerITCase {
 
 		for (int i = 0; i < 500; i++) {
 			JSONObject jsonObject = getPrimesInRangeJson(0, 7919);
-			assertEquals(
-					jsonObject.getJSONObject("resultMap").getInt("primeCount"),
-					1000);
+			assertEquals(jsonObject.getJSONObject("resultMap").getInt("primeCount"), 1000);
 		}
 	}
 
@@ -140,9 +129,7 @@ public class PrimeCounterTaskWebControllerITCase {
 
 		for (int i = 0; i < 50; i++) {
 			JSONObject jsonObject = getPrimesInRangeJson(0, 104729);
-			assertEquals(
-					jsonObject.getJSONObject("resultMap").getInt("primeCount"),
-					10000);
+			assertEquals(jsonObject.getJSONObject("resultMap").getInt("primeCount"), 10000);
 		}
 	}
 
@@ -151,18 +138,14 @@ public class PrimeCounterTaskWebControllerITCase {
 
 		for (int i = 0; i < 10; i++) {
 			JSONObject jsonObject = getPrimesInRangeJson(0, 15_485_863);
-			assertEquals(
-					jsonObject.getJSONObject("resultMap").getInt("primeCount"),
-					1_000_000);
+			assertEquals(jsonObject.getJSONObject("resultMap").getInt("primeCount"), 1_000_000);
 		}
 	}
 
 	public static void createSlaves() throws IOException {
 		slaveServers = new SlaveServer[SLAVES];
 		for (int i = 0; i < SLAVES; i++) {
-			slaveServers[i] = new SlaveServer("localhost",
-					config.getMainServerPort(), LOGIN,
-					PASSWORD);
+			slaveServers[i] = new SlaveServer("localhost", config.getMainServerPort(), LOGIN, PASSWORD);
 		}
 	}
 
@@ -182,9 +165,8 @@ public class PrimeCounterTaskWebControllerITCase {
 	private HttpResponse getPrimesInRangeHttpResponse(int begin, int end) {
 		HttpGet get = null;
 		try {
-			String url = URL + "/"
-					+ URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8")
-					+ "?begin=" + begin + "&end=" + end + "&noCache=true";
+			String url = restURL + "/" + URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8") + "?begin=" + begin
+					+ "&end=" + end + "&noCache=true";
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
 			return httpClient.execute(get);
@@ -202,15 +184,13 @@ public class PrimeCounterTaskWebControllerITCase {
 
 		HttpGet get = null;
 		try {
-			String url = URL + "/"
-					+ URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8")
-					+ "?begin=" + begin + "&end=" + end + "&noCache=true";
+			String url = restURL + "/" + URLEncoder.encode(DUMMY_PRIME_COUNTER_TASK_NAME, "UTF-8") + "?begin=" + begin
+					+ "&end=" + end + "&noCache=true";
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
-			return new JSONObject(new BasicResponseHandler()
-					.handleResponse(httpClient.execute(get)));
+			return new JSONObject(new BasicResponseHandler().handleResponse(httpClient.execute(get)));
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 
 		} finally {
@@ -221,8 +201,8 @@ public class PrimeCounterTaskWebControllerITCase {
 	}
 
 	private void setCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, REST_LOGIN);
-		httpMessage.setHeader(PASSWORD_HEADER, REST_PASSWORD);
+		httpMessage.setHeader(LOGIN_HEADER, restLogin);
+		httpMessage.setHeader(PASSWORD_HEADER, restPassword);
 	}
 
 }
