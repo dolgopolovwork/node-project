@@ -30,25 +30,17 @@ import ru.babobka.vsjws.model.HttpResponse;
 
 public class NodeUsersCRUDWebControllerITCase {
 
-	// TODO 'java.net.SocketException: Broken pipe' was found. Fix it.
-
-	static {
-		new MasterServerContainerStrategy(StreamUtil.getLocalResource(
-				MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-		new SlaveServerContainerStrategy(StreamUtil.getLocalResource(
-				SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
-
 	private static MasterServer masterServer;
 
-	private static final MasterServerConfig config = Container.getInstance()
-			.get(MasterServerConfig.class);
+	private static MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
 
-	private static final int PORT = config.getWebPort();
+	private static int restPort;
 
-	private static final String URL = "http://localhost:" + PORT + "/users";
+	private static String restURL;
+
+	private static String restLogin;
+
+	private static String restPassword;
 
 	private static final String USER_NAME = "test_rest_user";
 
@@ -56,19 +48,27 @@ public class NodeUsersCRUDWebControllerITCase {
 
 	private static JSONObject badEmailUserJson;
 
-	private static final String LOGIN = config.getRestServiceLogin();
-
-	private static final String PASSWORD = config.getRestServicePassword();
-
 	private static final String LOGIN_HEADER = "X-Login";
 
 	private static final String PASSWORD_HEADER = "X-Password";
 
-	private static final HttpClient httpClient = HttpClientBuilder.create()
-			.build();
+	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
 	@BeforeClass
 	public static void setUp() throws IOException {
+		MasterServer.initTestContainer();
+		SlaveServer.initTestContainer();
+
+		config = Container.getInstance().get(MasterServerConfig.class);
+
+		restPort = config.getWebPort();
+
+		restURL = "http://localhost:" + restPort + "/users";
+
+		restLogin = config.getRestServiceLogin();
+
+		restPassword = config.getRestServicePassword();
+
 		normalUserJson = new JSONObject();
 		normalUserJson.put("name", USER_NAME);
 		normalUserJson.put("taskCount", 0);
@@ -94,64 +94,51 @@ public class NodeUsersCRUDWebControllerITCase {
 	public void testDelete() throws ClientProtocolException, IOException {
 		add(normalUserJson);
 		assertEquals(delete(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
-		assertEquals(get(USER_NAME),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
+		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
 	}
 
 	@Test
 	public void testGet() throws ClientProtocolException, IOException {
-		assertEquals(get(USER_NAME),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
-		assertEquals(get(USER_NAME),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
+		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
 		add(normalUserJson);
 		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
-		assertEquals(get(USER_NAME + "abc"),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
+		assertEquals(get(USER_NAME + "abc"), HttpResponse.ResponseCode.NOT_FOUND.getCode());
 	}
 
 	@Test
 	public void testBadAdd() throws ClientProtocolException, IOException {
-		assertEquals(add(badEmailUserJson),
-				HttpResponse.ResponseCode.BAD_REQUEST.getCode());
-		assertEquals(get(USER_NAME),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
+		assertEquals(add(badEmailUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
+		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
 
 	}
 
 	@Test
 	public void tesAdd() throws ClientProtocolException, IOException {
-		assertEquals(add(normalUserJson),
-				HttpResponse.ResponseCode.OK.getCode());
+		assertEquals(add(normalUserJson), HttpResponse.ResponseCode.OK.getCode());
 		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
 	}
 
 	@Test
 	public void testDoubleAdd() throws ClientProtocolException, IOException {
 		add(normalUserJson);
-		assertEquals(add(normalUserJson),
-				HttpResponse.ResponseCode.BAD_REQUEST.getCode());
+		assertEquals(add(normalUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
 	}
 
 	@Test
-	public void testAuth()
-			throws ClientProtocolException, JSONException, IOException {
-		assertEquals(get(USER_NAME),
-				HttpResponse.ResponseCode.NOT_FOUND.getCode());
+	public void testAuth() throws ClientProtocolException, JSONException, IOException {
+		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
 	}
 
 	@Test
-	public void testBadAuth()
-			throws ClientProtocolException, JSONException, IOException {
-		assertEquals(badGet(USER_NAME),
-				HttpResponse.ResponseCode.UNAUTHORIZED.getCode());
+	public void testBadAuth() throws ClientProtocolException, JSONException, IOException {
+		assertEquals(badGet(USER_NAME), HttpResponse.ResponseCode.UNAUTHORIZED.getCode());
 	}
 
-	private int add(JSONObject userJSON)
-			throws ClientProtocolException, IOException {
+	private int add(JSONObject userJSON) throws ClientProtocolException, IOException {
 		HttpPatch patch = null;
 		try {
-			patch = new HttpPatch(URL);
+			patch = new HttpPatch(restURL);
 			setCredentialHeaders(patch);
 			StringEntity entity = new StringEntity(userJSON.toString());
 			patch.setEntity(entity);
@@ -163,11 +150,10 @@ public class NodeUsersCRUDWebControllerITCase {
 		}
 	}
 
-	private int delete(String userName)
-			throws ClientProtocolException, IOException {
+	private int delete(String userName) throws ClientProtocolException, IOException {
 		HttpDelete delete = null;
 		try {
-			delete = new HttpDelete(URL + "?userName=" + userName);
+			delete = new HttpDelete(restURL + "?userName=" + userName);
 			setCredentialHeaders(delete);
 			return httpClient.execute(delete).getStatusLine().getStatusCode();
 		} finally {
@@ -177,11 +163,10 @@ public class NodeUsersCRUDWebControllerITCase {
 		}
 	}
 
-	private int get(String userName)
-			throws ClientProtocolException, IOException {
+	private int get(String userName) throws ClientProtocolException, IOException {
 		HttpGet get = null;
 		try {
-			get = new HttpGet(URL + "?userName=" + userName);
+			get = new HttpGet(restURL + "?userName=" + userName);
 			setCredentialHeaders(get);
 			return httpClient.execute(get).getStatusLine().getStatusCode();
 		} finally {
@@ -191,15 +176,14 @@ public class NodeUsersCRUDWebControllerITCase {
 	}
 
 	private void setCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, LOGIN);
-		httpMessage.setHeader(PASSWORD_HEADER, PASSWORD);
+		httpMessage.setHeader(LOGIN_HEADER, restLogin);
+		httpMessage.setHeader(PASSWORD_HEADER, restPassword);
 	}
 
-	private int badGet(String userName)
-			throws ClientProtocolException, IOException {
+	private int badGet(String userName) throws ClientProtocolException, IOException {
 		HttpGet get = null;
 		try {
-			get = new HttpGet(URL + "?userName=" + userName);
+			get = new HttpGet(restURL + "?userName=" + userName);
 			setBadCredentialHeaders(get);
 			return httpClient.execute(get).getStatusLine().getStatusCode();
 		} finally {
@@ -209,8 +193,8 @@ public class NodeUsersCRUDWebControllerITCase {
 	}
 
 	private void setBadCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, LOGIN + "abc");
-		httpMessage.setHeader(PASSWORD_HEADER + "abc", PASSWORD);
+		httpMessage.setHeader(LOGIN_HEADER, restLogin + "abc");
+		httpMessage.setHeader(PASSWORD_HEADER + "abc", restPassword);
 	}
 
 }

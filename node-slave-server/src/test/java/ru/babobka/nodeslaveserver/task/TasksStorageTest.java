@@ -1,5 +1,9 @@
 package ru.babobka.nodeslaveserver.task;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import java.util.UUID;
 
 import org.junit.After;
@@ -9,13 +13,9 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.subtask.model.SubTask;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 public class TasksStorageTest {
 
 	private SubTask mockTask = mock(SubTask.class);
-	
 
 	private TasksStorage storage;
 
@@ -32,28 +32,27 @@ public class TasksStorageTest {
 	@Test
 	public void testStopTaskNormal() {
 		UUID taskId = UUID.randomUUID();
-		long timeStamp=System.currentTimeMillis()+10;
+		long timeStamp = System.currentTimeMillis() + 10;
 		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
 		storage.put(requestOne, mockTask);
 		storage.stopTask(taskId, timeStamp);
 		assertTrue(storage.wasStopped(taskId, requestOne.getTimeStamp()));
 	}
-	
+
 	@Test
 	public void testStopTaskReorder() {
 		UUID taskId = UUID.randomUUID();
-		long timeStamp=System.currentTimeMillis()-10;
+		long timeStamp = System.currentTimeMillis() - 10;
 		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
 		storage.put(requestOne, mockTask);
 		storage.stopTask(taskId, timeStamp);
 		assertFalse(storage.wasStopped(taskId, requestOne.getTimeStamp()));
 	}
 
-	
 	@Test
 	public void testStopTwoTaskNormal() {
 		UUID taskId = UUID.randomUUID();
-		long timeStamp=System.currentTimeMillis()+10;
+		long timeStamp = System.currentTimeMillis() + 10;
 		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
 		NodeRequest requestTwo = new NodeRequest(taskId, false, "test");
 		storage.put(requestOne, mockTask);
@@ -62,11 +61,11 @@ public class TasksStorageTest {
 		assertTrue(storage.wasStopped(taskId, requestOne.getTimeStamp()));
 		assertTrue(storage.wasStopped(taskId, requestTwo.getTimeStamp()));
 	}
-	
+
 	@Test
 	public void testStopTwoTaskReorder() {
 		UUID taskId = UUID.randomUUID();
-		long timeStamp=System.currentTimeMillis()-10;
+		long timeStamp = System.currentTimeMillis() - 10;
 		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
 		NodeRequest requestTwo = new NodeRequest(taskId, false, "test");
 		storage.stopTask(taskId, timeStamp);
@@ -75,6 +74,6 @@ public class TasksStorageTest {
 		assertFalse(storage.wasStopped(taskId, requestOne.getTimeStamp()));
 		assertFalse(storage.wasStopped(taskId, requestTwo.getTimeStamp()));
 	}
-	
-	
+
+
 }

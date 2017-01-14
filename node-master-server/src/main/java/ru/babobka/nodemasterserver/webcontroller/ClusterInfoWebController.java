@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.webcontroller.WebController;
@@ -9,11 +9,11 @@ import ru.babobka.vsjws.webcontroller.WebController;
 
 public class ClusterInfoWebController extends WebController {
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
 	@Override
 	public HttpResponse onGet(HttpRequest request) {
-		return HttpResponse.jsonResponse(slaves.getCurrentClusterUserList());
+		return HttpResponse.jsonResponse(slavesStorage.getCurrentClusterUserList());
 	}
 
 }

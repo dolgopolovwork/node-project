@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ru.babobka.nodemasterserver.builder.TestUserBuilder;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeslaveserver.exception.MasterServerIsFullException;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
@@ -20,18 +20,19 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 public class ServerAuthITCase {
 
-	static {
-		new MasterServerContainerStrategy(
-				StreamUtil.getLocalResource(MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-		new SlaveServerContainerStrategy(
-				StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
+	/*
+	 * static { new MasterServerContainerStrategy(
+	 * StreamUtil.getLocalResource(MasterServer.class,
+	 * MasterServer.MASTER_SERVER_TEST_CONFIG))
+	 * .contain(Container.getInstance()); new SlaveServerContainerStrategy(
+	 * StreamUtil.getLocalResource(SlaveServer.class,
+	 * SlaveServer.SLAVE_SERVER_TEST_CONFIG)) .contain(Container.getInstance());
+	 * }
+	 */
 
-	private static final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
+	private static MasterServerConfig config;
 
-	private static final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private static SlavesStorage slavesStorage;
 
 	private static SlaveServer[] slaveServers;
 
@@ -47,6 +48,13 @@ public class ServerAuthITCase {
 
 	@BeforeClass
 	public static void runMasterServer() throws IOException {
+		MasterServer.initTestContainer();
+		SlaveServer.initTestContainer();
+
+		config = Container.getInstance().get(MasterServerConfig.class);
+
+		slavesStorage = Container.getInstance().get(SlavesStorage.class);
+
 		masterServer = new MasterServer();
 		masterServer.start();
 	}
@@ -61,7 +69,7 @@ public class ServerAuthITCase {
 		for (int i = 0; i < TESTS; i++) {
 			createSlaves(config.getMaxSlaves());
 			startSlaves();
-			assertEquals(slaves.getClusterSize(), SLAVES);
+			assertEquals(slavesStorage.getClusterSize(), SLAVES);
 			closeSlaves();
 		}
 	}
@@ -80,7 +88,7 @@ public class ServerAuthITCase {
 			startSlaves();
 			closeSlaves();
 			Thread.sleep(200);
-			assertEquals(slaves.getClusterSize(), 0);
+			assertEquals(slavesStorage.getClusterSize(), 0);
 		}
 	}
 
@@ -91,10 +99,18 @@ public class ServerAuthITCase {
 
 	}
 
-	@Test(expected = SlaveAuthFailException.class)
-	public void logFailBadPassword() throws IOException {
+	@Test
+	public void logFailBadLogin() throws IOException {
 
-		new SlaveServer("localhost", config.getMainServerPort(), LOGIN + "abc", PASSWORD);
+		try {
+			new SlaveServer("localhost", config.getMainServerPort(), LOGIN + "abc", PASSWORD);
+			fail();
+		} catch (SlaveAuthFailException e) {
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
 
 	}
 

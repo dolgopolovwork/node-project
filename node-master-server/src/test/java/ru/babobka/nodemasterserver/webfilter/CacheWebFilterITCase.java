@@ -1,31 +1,35 @@
 package ru.babobka.nodemasterserver.webfilter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.FileNotFoundException;
 
 import org.json.JSONObject;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.container.ContainerStrategyException;
 import ru.babobka.vsjws.model.FilterResponse;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 
 public class CacheWebFilterITCase {
 
-	static {
-		new MasterServerContainerStrategy(
-				StreamUtil.getLocalResource(MasterServer.class, MasterServer.MASTER_SERVER_TEST_CONFIG))
-						.contain(Container.getInstance());
-	}
-
 	private static final String DUMMY_REQUEST_BODY = "Hello World";
 
 	private static final String VALID_JSON_RESPONSE = "{ \"name\":\"John\", \"age\":31, \"city\":\"New York\" }";
 
-	private CacheWebFilter cacheFilter = new CacheWebFilter();
+	private static CacheWebFilter cacheFilter;
+
+	@BeforeClass
+	public static void setUp() throws ContainerStrategyException, FileNotFoundException {
+		MasterServer.initTestContainer();
+
+		cacheFilter = new CacheWebFilter();
+	}
 
 	private HttpRequest createRequest(HttpRequest.HttpMethod method, String body, String uri) {
 		HttpRequest request = new HttpRequest();

@@ -1,0 +1,7 @@
+{
+	"loggerFolder": "src/test/resources/log",
+	"requestTimeoutMillis": 45000,
+	"tasksFolder": "src/test/resources/tasks",
+	"authTimeoutMillis": 2000,
+	"reconnectionTimeoutMillis": 2000
+}

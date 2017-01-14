@@ -12,8 +12,8 @@ import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.MathUtil;
-import ru.babobka.nodemasterserver.slave.SlaveThread;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.Slave;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
 
 public final class DistributionService {
@@ -23,15 +23,15 @@ public final class DistributionService {
 	private final SimpleLogger logger = Container.getInstance()
 			.get(SimpleLogger.class);
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
-	public void redistribute(SlaveThread slaveThread)
+	public void redistribute(Slave slave)
 			throws DistributionException, EmptyClusterException {
 
-		if (slaveThread.getRequestMap().size() > 0) {
-			if (!slaves.isEmpty()) {
+		if (slave.getRequestMap().size() > 0) {
+			if (!slavesStorage.isEmpty()) {
 				logger.log("Redistribution");
-				Map<String, LinkedList<NodeRequest>> requestsByUri = slaveThread
+				Map<String, LinkedList<NodeRequest>> requestsByUri = slave
 						.getRequestsGroupedByTask();
 				for (Map.Entry<String, LinkedList<NodeRequest>> requestByUriEntry : requestsByUri
 						.entrySet()) {
@@ -73,12 +73,12 @@ public final class DistributionService {
 	private void broadcastRequests(String taskName, NodeRequest[] requests,
 			int retry, int maxRetry)
 			throws EmptyClusterException, DistributionException {
-		List<SlaveThread> clientThreads = slaves.getList(taskName);
+		List<Slave> clientThreads = slavesStorage.getList(taskName);
 		if (clientThreads.isEmpty()) {
 			throw new EmptyClusterException();
 		} else {
 
-			Iterator<SlaveThread> iterator;
+			Iterator<Slave> iterator;
 			int i = 0;
 			try {
 				while (i < requests.length) {
@@ -102,14 +102,14 @@ public final class DistributionService {
 
 	}
 
-	public void broadcastStopRequests(List<SlaveThread> slaveThreads,
+	public void broadcastStopRequests(List<Slave> slaves,
 			NodeRequest stopRequest) throws EmptyClusterException {
-		if (slaveThreads.isEmpty()) {
+		if (slaves.isEmpty()) {
 			throw new EmptyClusterException();
 		} else {
-			for (SlaveThread slaveThread : slaveThreads) {
+			for (Slave slave : slaves) {
 				try {
-					slaveThread.sendStopRequest(stopRequest);
+					slave.sendStopRequest(stopRequest);
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, e);
 				}

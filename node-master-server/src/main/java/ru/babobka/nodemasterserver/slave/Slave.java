@@ -30,7 +30,7 @@ import ru.babobka.nodeserials.crypto.RSA;
 /**
  * Created by dolgopolov.a on 27.07.15.
  */
-public class SlaveThread extends Thread implements Comparable<SlaveThread> {
+public class Slave extends Thread {
 
 	private final RSA rsa;
 
@@ -42,7 +42,7 @@ public class SlaveThread extends Thread implements Comparable<SlaveThread> {
 
 	private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
 	private final AuthService authService = Container.getInstance().get(AuthService.class);
 
@@ -58,7 +58,7 @@ public class SlaveThread extends Thread implements Comparable<SlaveThread> {
 
 	private final Socket socket;
 
-	public SlaveThread(Socket socket) {
+	public Slave(Socket socket) {
 		if (socket != null) {
 			logger.log("New connection " + socket);
 			this.socket = socket;
@@ -104,7 +104,7 @@ public class SlaveThread extends Thread implements Comparable<SlaveThread> {
 				request = requestEntry.getValue();
 				responseStorage.addBadResponse(request.getTaskId());
 				try {
-					distributionService.broadcastStopRequests(slaves.getListByTaskId(request.getTaskId()),
+					distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(request.getTaskId()),
 							new NodeRequest(request.getTaskId(), true, request.getTaskName()));
 				} catch (EmptyClusterException e) {
 					logger.log(e);
@@ -187,9 +187,9 @@ public class SlaveThread extends Thread implements Comparable<SlaveThread> {
 			logger.log(e);
 		} finally {
 			logger.log("Removing connection " + socket);
-			slaves.remove(this);
+			slavesStorage.remove(this);
 
-			synchronized (SlaveThread.class) {
+			synchronized (Slave.class) {
 				if (!requestMap.isEmpty()) {
 					logger.log("Slave has a requests to redistribute");
 					try {
@@ -235,15 +235,6 @@ public class SlaveThread extends Thread implements Comparable<SlaveThread> {
 		return "requests " + getRequestCount();
 	}
 
-	@Override
-	public int compareTo(SlaveThread o) {
-		if (o.getRequestCount() > this.getRequestCount()) {
-			return -1;
-		} else if (o.getRequestCount() < this.getRequestCount()) {
-			return 1;
-		}
-		return 0;
-	}
 
 	@Override
 	public void interrupt() {

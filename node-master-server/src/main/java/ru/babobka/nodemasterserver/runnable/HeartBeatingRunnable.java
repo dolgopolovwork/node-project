@@ -5,8 +5,8 @@ import java.util.List;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
-import ru.babobka.nodemasterserver.slave.SlaveThread;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.Slave;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 
 public class HeartBeatingRunnable implements Runnable {
 
@@ -15,7 +15,7 @@ public class HeartBeatingRunnable implements Runnable {
 	private final SimpleLogger logger = Container.getInstance()
 			.get(SimpleLogger.class);
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
 	@Override
 	public void run() {
@@ -23,8 +23,8 @@ public class HeartBeatingRunnable implements Runnable {
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
 				Thread.sleep(HEARTBEAT_TIMEOUT_MILLIS);
-				List<SlaveThread> clientThreads = slaves.getFullList();
-				for (SlaveThread clientThread : clientThreads) {
+				List<Slave> clientThreads = slavesStorage.getFullList();
+				for (Slave clientThread : clientThreads) {
 					if (!Thread.currentThread().isInterrupted()) {
 						try {
 							clientThread.sendHeartBeating();

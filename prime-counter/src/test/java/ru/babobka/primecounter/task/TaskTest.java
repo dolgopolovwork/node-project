@@ -26,35 +26,24 @@ public class TaskTest {
 
 	private NodeRequest millionPrimesRequest;
 
+	private static final UUID DUMMY_UUID = new UUID(0, 0);
+
+	private NodeRequest createRequest(long begin, long end) {
+		Map<String, Serializable> additionMap = new HashMap<>();
+		additionMap.put("begin", begin);
+		additionMap.put("end", end);
+		return new NodeRequest(DUMMY_UUID, DUMMY_UUID, "millerPrimeCounter", additionMap, false, false);
+
+	}
+
 	@Before
 	public void init() {
 		task = new PrimeCounterTask();
-		Map<String, Serializable> additionMap = new HashMap<>();
-		additionMap.put("begin", 0L);
-		additionMap.put("end", 15_485_863L);
-		millionPrimesRequest = new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), "millerPrimeCounter", additionMap,
-				false, false);
-
-		additionMap = new HashMap<>();
-		additionMap.put("begin", 0L);
-		additionMap.put("end", 7919L);
-		thousandPrimesRequest = new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), "millerPrimeCounter", additionMap,
-				false, false);
-
-		additionMap = new HashMap<>();
-		additionMap.put("begin", 0L);
-		additionMap.put("end", 104729L);
-		tenThousandPrimesRequest = new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), "millerPrimeCounter",
-				additionMap, false, false);
-
-		additionMap = new HashMap<>();
-		additionMap.put("begin", 0L);
-		additionMap.put("end", 29L);
-		tenPrimesRequest = new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), "millerPrimeCounter", additionMap,
-				false, false);
+		millionPrimesRequest=createRequest(0,15_485_863);
+		thousandPrimesRequest =createRequest(0,7919);
+		tenThousandPrimesRequest =createRequest(0,104729);
+		tenPrimesRequest  =createRequest(0,29);
 	}
-
-	
 
 	@Test
 	public void testMillionPrimes() {

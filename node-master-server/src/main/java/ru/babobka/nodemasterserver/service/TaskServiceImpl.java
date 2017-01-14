@@ -14,8 +14,8 @@ import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.ResponsesArray;
 import ru.babobka.nodemasterserver.model.Timer;
-import ru.babobka.nodemasterserver.slave.SlaveThread;
-import ru.babobka.nodemasterserver.slave.Slaves;
+import ru.babobka.nodemasterserver.slave.Slave;
+import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodemasterserver.task.TaskPool;
 import ru.babobka.nodemasterserver.task.TaskResult;
@@ -30,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
 
 	private static final String WRONG_ARGUMENTS = "Wrong arguments";
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
 	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
@@ -45,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
 		if (isRequestDataIsTooSmall(taskContext.getTask(), arguments)) {
 			currentClusterSize = 1;
 		} else {
-			currentClusterSize = slaves.getClusterSize(taskName);
+			currentClusterSize = slavesStorage.getClusterSize(taskName);
 			if (maxNodes > 0 && currentClusterSize > 0 && maxNodes <= currentClusterSize) {
 				currentClusterSize = maxNodes;
 			}
@@ -84,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
 			} catch (DistributionException e) {
 				logger.log(Level.SEVERE, e);
 				try {
-					distributionService.broadcastStopRequests(slaves.getListByTaskId(taskId),
+					distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId),
 							new NodeRequest(taskId, true, taskContext.getConfig().getName()));
 				} catch (EmptyClusterException e1) {
 					logger.log(e1);
@@ -125,7 +125,7 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public TaskResult cancelTask(UUID taskId) {
 		try {
-			List<SlaveThread> clientThreads = slaves.getListByTaskId(taskId);
+			List<Slave> clientThreads = slavesStorage.getListByTaskId(taskId);
 			logger.log("Trying to cancel task " + taskId);
 			ResponsesArray responsesArray = responseStorage.get(taskId);
 			if (responsesArray != null) {

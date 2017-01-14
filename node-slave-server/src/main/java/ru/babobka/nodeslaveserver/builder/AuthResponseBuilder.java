@@ -24,6 +24,8 @@ public class AuthResponseBuilder {
 
 	private static final TaskPool taskPool = Container.getInstance().get(TaskPool.class);
 
+	private static final UUID DUMMY_UUID=new UUID(0,0);
+	
 	public static NodeResponse build(RSA rsa, String user, String password) {
 
 		Map<String, Serializable> addition = new HashMap<>();
@@ -32,7 +34,7 @@ public class AuthResponseBuilder {
 		List<String> tasksList = new LinkedList<>();
 		tasksList.addAll(taskPool.getTasksMap().keySet());
 		addition.put("tasksList", (Serializable) tasksList);
-		return new NodeResponse(UUID.randomUUID(), UUID.randomUUID(), 0, NodeResponse.Status.NORMAL, null, addition,
+		return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, addition,
 				Mappings.AUTH_TASK_NAME);
 
 	}

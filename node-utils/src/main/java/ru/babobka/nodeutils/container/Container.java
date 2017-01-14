@@ -24,37 +24,15 @@ public class Container {
 
 	}
 
-	private static boolean isInterfaceSuperClassOf(Class<?> clazz, Class<?> interfaze) {
-		Class<?>[] interfaces = clazz.getInterfaces();
-		for (Class<?> clazzInterfaces : interfaces) {
-			if (clazzInterfaces.equals(interfaze)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T get(Class<?> clazz) {
 		Object obj = null;
-		if (clazz.isInterface()) {
-			for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
-				if (isInterfaceSuperClassOf(entry.getKey(), clazz)) {
-					obj = entry.getValue();
-				}
+		for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
+			if (clazz.isAssignableFrom(entry.getKey())) {
+				obj = entry.getValue();
 			}
-		} else {
-			obj = containerMap.get(clazz);
-			if (obj == null) {
-				for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
-					if (entry.getKey().getSuperclass().equals(clazz)) {
-						obj = entry.getValue();
-					}
-
-				}
-			}
-
 		}
+
 		return (T) obj;
 
 	}

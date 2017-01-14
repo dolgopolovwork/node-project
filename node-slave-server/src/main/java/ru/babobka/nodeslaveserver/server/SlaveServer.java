@@ -6,11 +6,13 @@ import ru.babobka.nodeslaveserver.controller.SocketController;
 import ru.babobka.nodeslaveserver.controller.SocketControllerImpl;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.model.CommandLineArgs;
 import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +22,7 @@ import java.util.logging.Level;
 
 public class SlaveServer extends Thread {
 
-	public static final String SLAVE_SERVER_TEST_CONFIG = "slave_config.json";
+	private static final String SLAVE_SERVER_TEST_CONFIG ="slave_config.json";
 
 	private final AuthService authService = Container.getInstance().get(AuthService.class);
 
@@ -51,6 +53,14 @@ public class SlaveServer extends Thread {
 		} else {
 			glitchThread = null;
 		}
+	}
+	
+	
+	public static void initTestContainer() throws ContainerStrategyException, FileNotFoundException
+	{
+		new SlaveServerContainerStrategy(
+				StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
+						.contain(Container.getInstance());
 	}
 
 	@Override
@@ -97,18 +107,8 @@ public class SlaveServer extends Thread {
 			throws InterruptedException, ContainerStrategyException, FileNotFoundException {
 		new SlaveServerContainerStrategy(new FileInputStream(SLAVE_SERVER_TEST_CONFIG))
 				.contain(Container.getInstance());
-
-		/*
-		 * new SlaveServerContainerStrategy(StreamUtil.getLocalResource(
-		 * SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-		 * .contain(Container.getInstance());
-		 */
-
 		SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
 		CommandLineArgs command = new CommandLineArgs(args);
-		// CommandLineArgs command = new
-		// CommandLineArgs("localhost","1918","test_user","abc");
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
 				SlaveServer slaveSever = new SlaveServer(command.getHost(), command.getPort(), command.getLogin(),

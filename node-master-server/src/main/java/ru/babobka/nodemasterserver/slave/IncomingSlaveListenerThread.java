@@ -18,16 +18,16 @@ public class IncomingSlaveListenerThread extends Thread {
 
 	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
-	private final Slaves slaves = Container.getInstance().get(Slaves.class);
+	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
 	public IncomingSlaveListenerThread(int port) throws IOException {
 		ss = new ServerSocket(port);
 	}
 
-	private boolean fit(SlaveThread slaveThread) throws IOException {
-		synchronized (SlaveThread.class) {
-			boolean fittable = slaves.add(slaveThread);
-			StreamUtil.sendObject(fittable, slaveThread.getSocket());
+	private boolean fit(Slave slave) throws IOException {
+		synchronized (Slave.class) {
+			boolean fittable = slavesStorage.add(slave);
+			StreamUtil.sendObject(fittable, slave.getSocket());
 			return fittable;
 		}
 	}
@@ -39,10 +39,10 @@ public class IncomingSlaveListenerThread extends Thread {
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
 					Socket socket = ss.accept();
-					SlaveThread slaveThread = new SlaveThread(socket);
-					boolean fittable = fit(slaveThread);
+					Slave slave = new Slave(socket);
+					boolean fittable = fit(slave);
 					if (fittable) {
-						slaveThread.start();
+						slave.start();
 					} else {
 						logger.log(Level.WARNING, "Can not add new slave due to max connection limit " + socket);
 						socket.close();

@@ -2,6 +2,9 @@ package ru.babobka.nodeutils.container;
 
 import static org.junit.Assert.*;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -10,8 +13,9 @@ public class ContainerTest {
 	@BeforeClass
 	public static void setUp() {
 		Container.getInstance().put("abc");
-		Container.getInstance().put(new Integer(123));
+		Container.getInstance().put(Integer.valueOf(123));
 		Container.getInstance().put(new B());
+		Container.getInstance().put(StandardCharsets.UTF_8);
 
 	}
 
@@ -21,8 +25,14 @@ public class ContainerTest {
 	}
 
 	@Test
+	public void testGetCharset() {
+
+		assertNotNull(Container.getInstance().get(Charset.class));
+	}
+
+	@Test
 	public void testGetBySuperclass() {
-		assertEquals(new Integer(123), Container.getInstance().get(Number.class));
+		assertEquals(Integer.valueOf(123), Container.getInstance().get(Number.class));
 	}
 
 	@Test
@@ -42,5 +52,7 @@ public class ContainerTest {
 	static class B implements A {
 
 	}
+	
+
 
 }
