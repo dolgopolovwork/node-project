@@ -18,13 +18,14 @@ import ru.babobka.nodeslaveserver.task.TaskPool;
  */
 public class AuthResponseBuilder {
 
-	private AuthResponseBuilder() {
-
-	}
-
 	private static final TaskPool taskPool = Container.getInstance().get(TaskPool.class);
 
 	private static final UUID DUMMY_UUID=new UUID(0,0);
+	
+	private AuthResponseBuilder() {
+
+	}
+	
 	
 	public static NodeResponse build(RSA rsa, String user, String password) {
 

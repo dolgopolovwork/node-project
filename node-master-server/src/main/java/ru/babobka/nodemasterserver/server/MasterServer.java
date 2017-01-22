@@ -3,7 +3,6 @@ package ru.babobka.nodemasterserver.server;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeoutException;
 
 import ru.babobka.nodeutils.container.Container;
@@ -16,6 +15,7 @@ import ru.babobka.nodemasterserver.listener.OnTaskNotFoundExceptionListener;
 import ru.babobka.nodemasterserver.listener.OnTimeoutExceptionListener;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodemasterserver.runnable.HeartBeatingRunnable;
 import ru.babobka.nodemasterserver.service.NodeUsersService;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -76,7 +76,7 @@ public final class MasterServer extends Thread {
 		WebFilter authWebFilter = new AuthWebFilter();
 		WebFilter cacheWebFilter = new CacheWebFilter();
 		for (String taskName : taskPool.getTasksMap().keySet()) {
-			webServer.addController("task/" + URLEncoder.encode(taskName, "UTF-8"),
+			webServer.addController("task/" + TextUtil.toURL(taskName),
 					new TaskWebController().addWebFilter(authWebFilter).addWebFilter(cacheWebFilter));
 		}
 		webServer.addController("cancelTask", new CancelTaskWebController().addWebFilter(authWebFilter));

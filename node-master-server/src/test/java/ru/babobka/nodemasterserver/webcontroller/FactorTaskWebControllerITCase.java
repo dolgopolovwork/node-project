@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -20,13 +21,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ru.babobka.nodemasterserver.builder.TestUserBuilder;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeslaveserver.server.SlaveServerContainerStrategy;
-import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.TextUtil;
 
 public class FactorTaskWebControllerITCase {
 
@@ -56,7 +55,7 @@ public class FactorTaskWebControllerITCase {
 
 	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
-	private static final String FACTOR_TASK_NAME = "Elliptic curve factor";
+	private static final String FACTOR_TASK_NAME = TextUtil.toURL("Elliptic curve factor");
 
 	@BeforeClass
 	public static void runServers() throws IOException {

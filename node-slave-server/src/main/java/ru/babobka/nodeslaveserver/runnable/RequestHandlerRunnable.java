@@ -46,11 +46,12 @@ public class RequestHandlerRunnable implements Runnable {
 				logger.log("Response was sent");
 			}
 		} catch (NullPointerException e) {
+			logger.log(e);
 			try {
 				StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
 						request.getTaskName()), socket);
 			} catch (IOException e1) {
-				e1.printStackTrace();
+				logger.log(e1);
 			}
 
 		} catch (IOException e) {

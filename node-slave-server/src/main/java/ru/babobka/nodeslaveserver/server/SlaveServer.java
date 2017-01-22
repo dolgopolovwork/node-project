@@ -1,24 +1,23 @@
 package ru.babobka.nodeslaveserver.server;
 
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
-import ru.babobka.nodeslaveserver.controller.SocketController;
-import ru.babobka.nodeslaveserver.controller.SocketControllerImpl;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
-import ru.babobka.nodeutils.logger.SimpleLogger;
-import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeslaveserver.model.CommandLineArgs;
-import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
-import ru.babobka.nodeslaveserver.service.AuthService;
-import ru.babobka.nodeslaveserver.task.TasksStorage;
-
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
+
+import ru.babobka.nodeslaveserver.controller.SocketController;
+import ru.babobka.nodeslaveserver.controller.SocketControllerImpl;
+import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodeslaveserver.model.CommandLineArgs;
+import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
+import ru.babobka.nodeslaveserver.service.AuthService;
+import ru.babobka.nodeslaveserver.task.TasksStorage;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.StreamUtil;
 
 public class SlaveServer extends Thread {
 
@@ -107,7 +106,7 @@ public class SlaveServer extends Thread {
 			throws InterruptedException, ContainerStrategyException, FileNotFoundException {
 		new SlaveServerContainerStrategy(new FileInputStream(SLAVE_SERVER_TEST_CONFIG))
 				.contain(Container.getInstance());
-		SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+		SimpleLogger mainLogger = Container.getInstance().get(SimpleLogger.class); 
 		CommandLineArgs command = new CommandLineArgs(args);
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
@@ -117,11 +116,11 @@ public class SlaveServer extends Thread {
 				slaveSever.join();
 
 			} catch (SlaveAuthFailException e) {
-				logger.log(e);
+				mainLogger.log(e);
 				return;
 			} catch (IOException e) {
-				logger.log(e);
-				logger.log(Level.WARNING, "Reconnecting");
+				mainLogger.log(e);
+				mainLogger.log(Level.WARNING, "Reconnecting");
 				Thread.sleep(1000);
 			}
 		}

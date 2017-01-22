@@ -17,7 +17,7 @@
 		<module>node-serials</module>
 		<module>node-slave-server</module>
 		<module>node-utils</module>
-		<module>prime-counter</module>
+		<module>prime-counter-task</module>
 		<module>subtask</module>
 	</modules>
 

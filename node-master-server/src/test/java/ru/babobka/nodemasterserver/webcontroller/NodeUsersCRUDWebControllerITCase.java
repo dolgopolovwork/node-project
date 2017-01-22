@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
@@ -19,13 +19,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeslaveserver.server.SlaveServerContainerStrategy;
-import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.vsjws.model.HttpResponse;
 
 public class NodeUsersCRUDWebControllerITCase {

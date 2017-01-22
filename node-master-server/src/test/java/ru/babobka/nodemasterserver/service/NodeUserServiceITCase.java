@@ -1,6 +1,10 @@
 package ru.babobka.nodemasterserver.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
@@ -11,15 +15,12 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
 import ru.babobka.nodemasterserver.model.User;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
 import ru.babobka.nodeserials.crypto.RSA;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeslaveserver.server.SlaveServerContainerStrategy;
-import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.ContainerStrategyException;
 
 public class NodeUserServiceITCase {
 

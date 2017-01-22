@@ -47,6 +47,9 @@ public class FactorTest {
 		generateTests(tests, factorBits);
 	}
 
+	
+	
+	
 
 	private void generateTests(int tests, int factorBits) {
 		for (int i = 0; i < tests; i++) {

@@ -28,8 +28,7 @@ public class MathUtil {
 																	// BigDecimal,
 				.add(m.divide(s.multiply(s), UP)) // do the tricky
 													// division,
-				.divide(THREE_D, UP).toBigInteger())
-			; // and convert back.
+				.divide(THREE_D, UP).toBigInteger()); // and convert back.
 		return r; // return the value
 	}
 
@@ -55,8 +54,8 @@ public class MathUtil {
 		if (a < 2 || (a != 2 && a % 2 == 0)) {
 			return false;
 		} else {
-			long sqr = (long) (Math.sqrt(a) + 1);
-			for (int i = 3; i < sqr; i += 2) {
+			long sqr = (long) Math.sqrt(a);
+			for (int i = 3; i <= sqr; i += 2) {
 				if (a % i == 0) {
 					return false;
 				}

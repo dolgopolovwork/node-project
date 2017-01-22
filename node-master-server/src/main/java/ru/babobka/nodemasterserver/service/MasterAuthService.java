@@ -25,11 +25,8 @@ public class MasterAuthService implements AuthService {
 	@Override
 	public AuthResult getAuthResult(RSA rsa, Socket socket) {
 		try {
-
 			StreamUtil.sendObject(rsa.getPublicKey(), socket);
-
 			NodeResponse authResponse = StreamUtil.receiveObject(socket);
-
 			if (authResponse.isAuthResponse()) {
 				BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
 				String login = authResponse.getDataValue("login");

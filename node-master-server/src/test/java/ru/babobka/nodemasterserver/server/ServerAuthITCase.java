@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.server;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -14,9 +15,7 @@ import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeslaveserver.exception.MasterServerIsFullException;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeslaveserver.server.SlaveServerContainerStrategy;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.StreamUtil;
 
 public class ServerAuthITCase {
 

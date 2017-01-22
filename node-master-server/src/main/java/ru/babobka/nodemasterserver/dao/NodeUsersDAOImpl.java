@@ -22,11 +22,11 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 
 	private final Charset charset = Container.getInstance().get(Charset.class);
 
-	private final byte[] EMAIL = "email".getBytes(charset);
+	private final byte[] emailField = "email".getBytes(charset);
 
-	private final byte[] HASHED_PASSWORD = "hashed_password".getBytes(charset);
+	private final byte[] hashedPasswordField = "hashed_password".getBytes(charset);
 
-	private final byte[] TASK_COUNT = "task_count".getBytes(charset);
+	private final byte[] taskCountField = "task_count".getBytes(charset);
 
 	private final RedisDatasource datasource = Container.getInstance().get(RedisDatasource.class);
 
@@ -47,14 +47,14 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 		try (Jedis jedis = datasource.getPool().getResource();) {
 			Map<byte[], byte[]> map = jedis.hgetAll((USER_KEY + id).getBytes(charset));
 			String email = null;
-			if (map.get(EMAIL) != null) {
-				email = new String(map.get(EMAIL), charset);
+			if (map.get(emailField) != null) {
+				email = new String(map.get(emailField), charset);
 			}
 			int taskCount = 0;
-			if (map.get(TASK_COUNT) != null) {
-				taskCount = Integer.parseInt(new String(map.get(TASK_COUNT), charset));
+			if (map.get(taskCountField) != null) {
+				taskCount = Integer.parseInt(new String(map.get(taskCountField), charset));
 			}
-			byte[] hashedPassword = map.get(HASHED_PASSWORD);
+			byte[] hashedPassword = map.get(hashedPasswordField);
 
 			return new User(login, hashedPassword, taskCount, email);
 		}
@@ -91,11 +91,11 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 			long usersCount = jedis.incr("users_count:");
 			Map<byte[], byte[]> userMap = new HashMap<>();
 			if (user.getEmail() != null) {
-				userMap.put(EMAIL, user.getEmail().getBytes(charset));
+				userMap.put(emailField, user.getEmail().getBytes(charset));
 			}
-			userMap.put(HASHED_PASSWORD, user.getHashedPassword());
+			userMap.put(hashedPasswordField, user.getHashedPassword());
 			if (user.getTaskCount() != null) {
-				userMap.put(TASK_COUNT, String.valueOf(user.getTaskCount()).getBytes(charset));
+				userMap.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
 			}
 			Map<String, String> loginIdMap = new HashMap<>();
 			loginIdMap.put(user.getName(), String.valueOf(usersCount));
@@ -170,13 +170,13 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 				}
 				Map<byte[], byte[]> map = new HashMap<>();
 				if (user.getEmail() != null) {
-					map.put(EMAIL, user.getEmail().getBytes(charset));
+					map.put(emailField, user.getEmail().getBytes(charset));
 				}
 				if (user.getHashedPassword() != null) {
-					map.put(HASHED_PASSWORD, user.getHashedPassword());
+					map.put(hashedPasswordField, user.getHashedPassword());
 				}
 				if (user.getTaskCount() != null) {
-					map.put(TASK_COUNT, String.valueOf(user.getTaskCount()).getBytes(charset));
+					map.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
 				}
 				t.hmset((USER_KEY + userId).getBytes(charset), map);
 				t.exec();
@@ -206,7 +206,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 		try (Jedis jedis = datasource.getPool().getResource();) {
 			Integer userId = getUserId(login);
 			if (userId != null) {
-				jedis.hincrBy(USER_KEY + userId, new String(TASK_COUNT, charset), 1L);
+				jedis.hincrBy(USER_KEY + userId, new String(taskCountField, charset), 1L);
 				return true;
 			}
 		}

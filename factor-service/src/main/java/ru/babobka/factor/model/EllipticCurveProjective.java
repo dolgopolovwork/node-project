@@ -9,18 +9,19 @@ import java.util.Random;
  * Created by dolgopolov.a on 17.11.15.
  */
 public class EllipticCurveProjective {
+	private static final BigInteger TWO = BigInteger.valueOf(2);
 
-	public static final BigInteger TWO = BigInteger.valueOf(2);
+	private static final BigInteger THREE = BigInteger.valueOf(3);
 
-	public static final BigInteger THREE = BigInteger.valueOf(3);
+	private static final BigInteger FOUR = BigInteger.valueOf(4);
 
-	public static final BigInteger FOUR = BigInteger.valueOf(4);
-
-	public static final BigInteger EIGHT = BigInteger.valueOf(8);
+	private static final BigInteger EIGHT = BigInteger.valueOf(8);
 
 	private final BigInteger x;
 
 	private final BigInteger y;
+
+	private final BigInteger z;
 
 	private final BigInteger a;
 
@@ -28,19 +29,18 @@ public class EllipticCurveProjective {
 
 	private final BigInteger n;
 
-	private final BigInteger z;
-
 	private EllipticCurveProjective(BigInteger x, BigInteger y, BigInteger z, BigInteger a, BigInteger b,
 			BigInteger n) {
+		super();
 		this.x = x;
 		this.y = y;
+		this.z = z;
 		this.a = a;
 		this.b = b;
 		this.n = n;
-		this.z = z;
 	}
 
-	public EllipticCurveProjective(int x, int y, int z, int a, int b, int n) {
+	private EllipticCurveProjective(int x, int y, int z, int a, int b, int n) {
 		this.x = BigInteger.valueOf(x);
 		this.y = BigInteger.valueOf(y);
 		this.a = BigInteger.valueOf(a);
@@ -49,79 +49,184 @@ public class EllipticCurveProjective {
 		this.z = BigInteger.valueOf(z);
 	}
 
-	public static EllipticCurveProjective generateRandomCurve(BigInteger n) {
-		BigInteger x = BigInteger.probablePrime(n.bitLength(), new Random()).mod(n);
-		BigInteger y = BigInteger.probablePrime(n.bitLength(), new Random()).mod(n);
-		BigInteger a = BigInteger.probablePrime(n.bitLength(), new Random()).mod(n);
-		BigInteger b = (y.pow(2).subtract(x.pow(3)).subtract(a.multiply(x))).mod(n);
-		if (!(y.pow(2).subtract(x.pow(3)).subtract(a.multiply(x))).mod(n).equals(b)) {
-			return generateRandomCurve(n);
-		}
-		BigInteger g = n.gcd(FOUR.multiply(a.pow(3)).add(BigInteger.valueOf(27).multiply(b.pow(2))));
-		if (g.equals(n)) {
-			return generateRandomCurve(n);
-		}
-
-		return new EllipticCurveProjective(x, y, BigInteger.ONE, a, b, n);
-	}
-
 	public static EllipticCurveProjective dummyCurve() {
 
 		return new EllipticCurveProjective(0, 0, 0, 0, 0, 1);
 	}
 
-	public EllipticCurveProjective doublePoint() {
+	public static EllipticCurveProjective generateRandomCurve(BigInteger n) {
+		BigInteger x = BigInteger.probablePrime(n.bitLength(), new Random()).mod(n);
+		BigInteger y = BigInteger.probablePrime(n.bitLength() - 1, new Random()).mod(n);
+		BigInteger a = BigInteger.probablePrime(n.bitLength() - 1, new Random()).mod(n);
+		// This b should fit Weierstrass equation y^2=x^3+ax+b, where
+		// b=y^2-x^3-ax
+		BigInteger b = (y.modPow(TWO, n).subtract(x.modPow(THREE, n)).subtract(a.multiply(x))).mod(n);
+		return new EllipticCurveProjective(x, y, BigInteger.ONE, a, b, n);
+	}
 
+	public EllipticCurveProjective doublePoint() {
+		/*
+		 * if (Y == 0) return POINT_AT_INFINITY
+		 */
 		if (y.equals(BigInteger.ZERO)) {
 			return getInfinityPoint();
 		}
-		BigInteger w, s, b, h, x3, y3, z3;
-		if (a.equals(THREE.negate())) {
-			w = THREE.multiply(x.add(y)).multiply(x.subtract(z));
-		} else {
-			w = a.multiply(z.pow(2)).add(THREE.multiply(x.pow(2)));
-		}
-		s = y.multiply(z);
-		b = x.multiply(y).multiply(s);
-		h = w.pow(2).subtract(EIGHT.multiply(b));
-		x3 = TWO.multiply(h).multiply(s);
-		y3 = w.multiply(FOUR.multiply(b).subtract(h)).subtract(EIGHT.multiply(y.pow(2)).multiply(s.pow(2)));
-		z3 = EIGHT.multiply(s.pow(3));
-		return new EllipticCurveProjective(x3.mod(n), y3.mod(n), z3.mod(n), this.a, this.b, this.n);
+		// W = a*Z^2 + 3*X^2
+		BigInteger w = a.multiply(z.modPow(TWO, n)).add(THREE.multiply(x.modPow(TWO, n)));
+		// S = Y*Z
+		BigInteger s = y.multiply(z).mod(n);
+		// B = X*Y*S
+		BigInteger b = x.multiply(y).mod(n).multiply(s).mod(n);
+		// H = W^2 - 8*B
+		BigInteger h = w.modPow(TWO, n).subtract(EIGHT.multiply(b)).mod(n);
+		// X' = 2*H*S
+		BigInteger x3 = TWO.multiply(h).mod(n).multiply(s).mod(n);
+		// Y' = W*(4*B - H) - 8*Y^2*S^2
+		BigInteger y3 = w.multiply(FOUR.multiply(b).subtract(h).mod(n)).mod(n)
+				.subtract(EIGHT.multiply(y.modPow(TWO, n)).multiply(s.modPow(TWO, n)).mod(n)).mod(n);
+		// Z' = 8*S^3
+		BigInteger z3 = EIGHT.multiply(s.modPow(THREE, n)).mod(n);
+		return new EllipticCurveProjective(x3, y3, z3, a, this.b, n);
 	}
 
 	public EllipticCurveProjective add(EllipticCurveProjective ec) {
-
-		BigInteger u1, u2, v1, v2, u, v, w, a, x3, y3, z3, x2, y2, z2, x1, y1, z1;
-		z2 = ec.getZ();
-		y2 = ec.getY();
-		x2 = ec.getX();
-		x1 = this.x;
-		y1 = this.y;
-		z1 = this.z;
-		u1 = y2.multiply(z1);
-		u2 = y1.multiply(z2);
-		v1 = x2.multiply(z1);
-		v2 = x1.multiply(z2);
+		/*
+		 * if (ec.equals(this)) { return this.doublePoint(); }
+		 */
+		// U1 = Y2*Z1
+		BigInteger u1 = ec.getY().multiply(z).mod(n);
+		// U2 = Y1*Z2
+		BigInteger u2 = y.multiply(ec.getZ()).mod(n);
+		// V1 = X2*Z1
+		BigInteger v1 = ec.getX().multiply(z).mod(n);
+		// V2 = X1*Z2
+		BigInteger v2 = x.multiply(ec.getZ()).mod(n);
+		// if (V1 == V2)
 		if (v1.equals(v2)) {
+			// if (U1 != U2)
 			if (!u1.equals(u2)) {
 				return getInfinityPoint();
 			} else {
-				return ec.doublePoint();
+				// return POINT_DOUBLE(X1, Y1, Z1)
+				return this.doublePoint();
 			}
 		}
-		u = u1.subtract(u2);
-		v = v1.subtract(v2);
-		w = z1.multiply(z2);
-		a = u.pow(2).multiply(w).subtract(v.pow(3)).subtract(TWO.multiply(v.pow(2)).multiply(v2));
-		x3 = v.multiply(a);
-		y3 = u.multiply(v.pow(2).multiply(v2).subtract(a)).subtract(v.pow(3).multiply(u2));
-		z3 = v.pow(3).multiply(w);
-
-		return new EllipticCurveProjective(x3.mod(n), y3.mod(n), z3.mod(n), this.a, this.b, this.n);
+		// U = U1 - U2
+		BigInteger u = u1.subtract(u2).mod(n);
+		// V = V1 - V2
+		BigInteger v = v1.subtract(v2).mod(n);
+		// W = Z1*Z2
+		BigInteger w = z.multiply(ec.getZ()).mod(n);
+		// A = U^2*W - V^3 - 2*V^2*V2
+		BigInteger A = u.modPow(TWO, n).multiply(w).mod(n).subtract(v.modPow(THREE, n)).mod(n)
+				.subtract(TWO.multiply(v.modPow(TWO, n)).multiply(v2)).mod(n);
+		// X3 = V*A
+		BigInteger x3 = v.multiply(A).mod(n);
+		// U*(V^2*V2 - A) - V^3*U2
+		BigInteger y3 = u.multiply(v.modPow(TWO, n).multiply(v2).mod(n).subtract(A))
+				.subtract(v.modPow(THREE, n).multiply(u2)).mod(n);
+		// Z3 = V^3*W
+		BigInteger z3 = v.modPow(THREE, n).multiply(w).mod(n);
+		return new EllipticCurveProjective(x3, y3, z3, a, b, n);
 	}
 
-	public EllipticCurveProjective multiply(long times)  {
+	public EllipticCurveProjective getInfinityPoint() {
+		return new EllipticCurveProjective(BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, a, b, n);
+	}
+
+	public BigInteger getX() {
+		return x;
+	}
+
+	public BigInteger getY() {
+		return y;
+	}
+
+	public BigInteger getZ() {
+		return z;
+	}
+
+	public BigInteger getA() {
+		return a;
+	}
+
+	public BigInteger getB() {
+		return b;
+	}
+
+	public BigInteger getN() {
+		return n;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((a == null) ? 0 : a.hashCode());
+		result = prime * result + ((b == null) ? 0 : b.hashCode());
+		result = prime * result + ((n == null) ? 0 : n.hashCode());
+		result = prime * result + ((x == null) ? 0 : x.hashCode());
+		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		result = prime * result + ((z == null) ? 0 : z.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EllipticCurveProjective other = (EllipticCurveProjective) obj;
+		if (a == null) {
+			if (other.a != null)
+				return false;
+		} else if (!a.equals(other.a))
+			return false;
+		if (b == null) {
+			if (other.b != null)
+				return false;
+		} else if (!b.equals(other.b))
+			return false;
+		if (n == null) {
+			if (other.n != null)
+				return false;
+		} else if (!n.equals(other.n))
+			return false;
+		if (n != null) {
+			BigInteger x1 = x.multiply(z.modInverse(n)).mod(n);
+			BigInteger x2 = other.getX().multiply(other.getZ().modInverse(n)).mod(n);
+
+			if (!x1.equals(x2)) {
+				return false;
+			}
+		}
+		if (n != null) {
+			BigInteger y1 = y.multiply(z.modInverse(n)).mod(n);
+			BigInteger y2 = other.getY().multiply(other.getZ().modInverse(n)).mod(n);
+			if (!y1.equals(y2)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EllipticCurveProjective [x=" + x + ", y=" + y + ", z=" + z + ", a=" + a + ", b=" + b + ", n=" + n + "]";
+	}
+
+	public boolean isInfinityPoint() {
+		if (x.equals(BigInteger.ZERO) && y.equals(BigInteger.ONE) && z.equals(BigInteger.ZERO)) {
+			return true;
+		}
+		return false;
+	}
+
+	public EllipticCurveProjective multiply(long times) {
 
 		EllipticCurveProjective total = null;
 		EllipticCurveProjective subTotal;
@@ -156,117 +261,8 @@ public class EllipticCurveProjective {
 		return total;
 	}
 
-	public EllipticCurveProjective oldMultiply(long times){
-
-		EllipticCurveProjective total = null;
-		EllipticCurveProjective subTotal;
-		boolean[] booleans = MathUtil.toBinary(times);
-		for (int i = 0; i < booleans.length; i++) {
-			if (booleans[i]) {
-				subTotal = this.copy();
-				int k = booleans.length - 1 - i;
-				for (int j = 0; j < k; j++) {
-					subTotal = subTotal.doublePoint();
-				}
-				if (total == null) {
-					total = subTotal;
-				} else {
-					total = total.add(subTotal);
-				}
-			}
-		}
-		return total;
-	}
-
-	public BigInteger getX() {
-		return x;
-	}
-
-	public BigInteger getY() {
-		return y;
-	}
-
-	public BigInteger getA() {
-		return a;
-	}
-
-	public BigInteger getB() {
-		return b;
-	}
-
-	public BigInteger getN() {
-		return n;
-	}
-
-	public BigInteger getZ() {
-		return z;
-	}
-
-	public boolean isInfinityPoint() {
-		if (x.equals(BigInteger.ZERO) && y.equals(BigInteger.ONE) && z.equals(BigInteger.ZERO)) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return "EllipticCurveProjective{" + "x=" + x + ", y=" + y + ", a=" + a + ", b=" + b + ", n=" + n + ", z=" + z
-				+ '}';
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof EllipticCurveProjective))
-			return false;
-
-		EllipticCurveProjective that = (EllipticCurveProjective) o;
-
-		if (!a.equals(that.a))
-			return false;
-		if (!b.equals(that.b))
-			return false;
-		if (!n.equals(that.n))
-			return false;
-		if (!x.equals(that.x))
-			return false;
-		if (!y.equals(that.y))
-			return false;
-		if (!z.equals(that.z))
-			return false;
-
-		return true;
-	}
-
-	public EllipticCurveProjective getInfinityPoint() {
-		return new EllipticCurveProjective(BigInteger.ZERO, BigInteger.ONE, BigInteger.ZERO, a, b, n);
-	}
-
 	public EllipticCurveProjective copy() {
 		return new EllipticCurveProjective(x, y, z, a, b, n);
 	}
 
-	@Override
-	public int hashCode() {
-		int result = x.hashCode();
-		result = 31 * result + y.hashCode();
-		result = 31 * result + a.hashCode();
-		result = 31 * result + b.hashCode();
-		result = 31 * result + n.hashCode();
-		result = 31 * result + z.hashCode();
-		return result;
-	}
-
-	public static void main(String[] args) {
-		EllipticCurveProjective a = new EllipticCurveProjective(5, 6, 4, 1, 2, 10);
-		EllipticCurveProjective b = a.copy();
-		int mult = 10;
-		a = a.multiply(mult);
-		b = b.oldMultiply(mult);
-
-		System.out.println(a + "\n" + b);
-
-	}
 }

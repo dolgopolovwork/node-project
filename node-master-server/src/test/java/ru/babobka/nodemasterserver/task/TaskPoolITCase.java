@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.task;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,12 +9,9 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerStrategyException;
-import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerContainerStrategy;
-import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeutils.util.StreamUtil;
 
 
 public class TaskPoolITCase {

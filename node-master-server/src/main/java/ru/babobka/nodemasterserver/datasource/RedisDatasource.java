@@ -23,14 +23,13 @@ public class RedisDatasource {
 		public int getNumber() {
 			return number;
 		}
-	};
+	}
 
 	private JedisPool pool;
 
 	public RedisDatasource(DatabaseNumber databaseNumber) {
-		pool = new JedisPool(new GenericObjectPoolConfig(), HOST, PORT,
-				Protocol.DEFAULT_TIMEOUT, null, databaseNumber.getNumber(),
-				null);
+		pool = new JedisPool(new GenericObjectPoolConfig(), HOST, PORT, Protocol.DEFAULT_TIMEOUT, null,
+				databaseNumber.getNumber(), null);
 
 	}
 

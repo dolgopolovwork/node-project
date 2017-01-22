@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public interface TextUtil {
 
@@ -32,13 +33,19 @@ public interface TextUtil {
 		}
 	}
 
-	public static String getStringFromException(Exception ex) {
+	static String toURL(String text) {
+		if (text != null)
+			return text.toLowerCase(Locale.getDefault()).replaceAll("[^A-Za-z0-9]", "-");
+		return "";
+	}
+
+	static String getStringFromException(Exception ex) {
 		StringWriter errors = new StringWriter();
 		ex.printStackTrace(new PrintWriter(errors));
 		return errors.toString();
 	}
 
-	public static String beautifyServerName(String serverName, int port) {
+	static String beautifyServerName(String serverName, int port) {
 		return "'" + serverName + "':" + port;
 	}
 
