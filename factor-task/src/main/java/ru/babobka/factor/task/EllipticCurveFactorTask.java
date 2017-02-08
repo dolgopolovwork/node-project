@@ -20,13 +20,13 @@ import ru.babobka.subtask.model.ValidationResult;
 /**
  * Created by dolgopolov.a on 08.12.15.
  */
-public class EllipticCurveFactorTask implements SubTask {
+public class EllipticCurveFactorTask extends SubTask {
 
 	public static final String NUMBER = "number";
 
 	public static final String FACTOR = "factor";
 
-	private final EllipticFactorDistributor distributor = new EllipticFactorDistributor();
+	private final EllipticFactorDistributor distributor;
 
 	private final EllipticFactorReducer reducer = new EllipticFactorReducer();
 
@@ -40,7 +40,13 @@ public class EllipticCurveFactorTask implements SubTask {
 
 	private static final String B = "b";
 
-	private volatile boolean stopped;
+	private static final String NAME = "Elliptic curve factor";
+
+	private static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
+
+	public EllipticCurveFactorTask() {
+		this.distributor = new EllipticFactorDistributor(NAME);
+	}
 
 	@Override
 	public ExecutionResult execute(NodeRequest request) {
@@ -56,9 +62,9 @@ public class EllipticCurveFactorTask implements SubTask {
 				result.put(Y, factoringResult.getEllipticCurveProjective().getY());
 				result.put(A, factoringResult.getEllipticCurveProjective().getA());
 				result.put(B, factoringResult.getEllipticCurveProjective().getB());
-				return new ExecutionResult(stopped, result);
+				return new ExecutionResult(isStopped(), result);
 			}
-			return new ExecutionResult(stopped, null);
+			return new ExecutionResult(isStopped(), null);
 		} finally {
 			factorService.stop();
 		}
@@ -66,7 +72,7 @@ public class EllipticCurveFactorTask implements SubTask {
 
 	@Override
 	public synchronized void stopTask() {
-		stopped = true;
+		setStopped(true);
 		factorService.stop();
 	}
 
@@ -113,9 +119,18 @@ public class EllipticCurveFactorTask implements SubTask {
 	}
 
 	@Override
-	public boolean isStopped() {
+	public String getDescription() {
+		return DESCRIPTION;
+	}
 
-		return stopped;
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	public boolean isRaceStyle() {
+		return true;
 	}
 
 }

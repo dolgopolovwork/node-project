@@ -12,15 +12,14 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.net.URLClassLoader;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
-import org.json.JSONObject;
-
-import ru.babobka.nodeutils.classloder.JarClassLoader;
 import ru.babobka.subtask.model.SubTask;
 
 /**
@@ -32,12 +31,6 @@ public final class StreamUtil {
 	private StreamUtil() {
 
 	}
-
-	/*
-	 * public static String getLocalResourcePath(Class<?> clazz, String
-	 * resourceName) { return
-	 * clazz.getClassLoader().getResource(resourceName).getPath(); }
-	 */
 
 	public static InputStream getLocalResource(Class<?> clazz, String resourceName) throws FileNotFoundException {
 
@@ -68,8 +61,8 @@ public final class StreamUtil {
 
 		StringBuilder content = new StringBuilder();
 		String lineBreak = "";
-		try (BufferedReader reader = new BufferedReader(
-				new InputStreamReader(new FileInputStream(file), TextUtil.CHARSET.name()));) {
+		try (FileInputStream fis = new FileInputStream(file);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(fis, TextUtil.CHARSET.name()));) {
 			String sCurrentLine;
 			while ((sCurrentLine = reader.readLine()) != null) {
 				content.append(lineBreak);
@@ -108,31 +101,35 @@ public final class StreamUtil {
 		return folder;
 	}
 
-	public static JSONObject getConfigJson(String jarFilePath) throws IOException {
-		return new JSONObject(readTextFileFromJar(jarFilePath, "task.json"));
-	}
-
 	public static String readTextFileFromJar(String jarFilePath, String fileName) throws IOException {
 		URL url = new URL("jar:file:" + jarFilePath + "!/" + fileName);
 		InputStream is = url.openStream();
 		return readFile(is);
 	}
 
-	public static SubTask getTaskClassFromJar(final String jarFilePath, String className) throws IOException {
-		try {
-			JarClassLoader jarLoader = AccessController.doPrivileged(new PrivilegedAction<JarClassLoader>() {
-				public JarClassLoader run() {
-					try {
-						return new JarClassLoader(jarFilePath);
-					} catch (IOException e) {
-						throw new IllegalStateException(e);
-					}
+	public static List<SubTask> getSubtasks(String jarFilePath) throws IOException {
+		List<SubTask> subTasks = new LinkedList<>();
+		try (JarFile jarFile = new JarFile(jarFilePath);
+				URLClassLoader cl = URLClassLoader
+						.newInstance(new URL[] { new URL("jar:file:" + jarFilePath + "!/") })) {
+			Enumeration<JarEntry> e = jarFile.entries();
+			while (e.hasMoreElements()) {
+				JarEntry je = e.nextElement();
+				if (je.isDirectory() || !je.getName().endsWith(".class")) {
+					continue;
 				}
-			});
-			return (SubTask) (jarLoader.loadClass(className, true).newInstance());
-		} catch (ClassNotFoundException | IllegalAccessException | InstantiationException | RuntimeException e) {
-			throw new IOException("Can not get " + className, e);
+				// -6 because of .class
+				String className = je.getName().substring(0, je.getName().length() - 6);
+				className = className.replace('/', '.');
+				Class<?> c = cl.loadClass(className);
+				if (SubTask.class.isAssignableFrom(c) && !SubTask.class.equals(c)) {
+					subTasks.add((SubTask) c.newInstance());
+				}
+			}
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			throw new IOException(e);
 		}
+		return subTasks;
 	}
 
 	public static void sendObject(Object object, Socket socket) throws IOException {

@@ -61,6 +61,9 @@ public class EllipticCurveProjective {
 		// This b should fit Weierstrass equation y^2=x^3+ax+b, where
 		// b=y^2-x^3-ax
 		BigInteger b = (y.modPow(TWO, n).subtract(x.modPow(THREE, n)).subtract(a.multiply(x))).mod(n);
+		if (!(y.pow(2).subtract(x.pow(3)).subtract(a.multiply(x))).mod(n).equals(b)) {
+			return generateRandomCurve(n);
+		}
 		return new EllipticCurveProjective(x, y, BigInteger.ONE, a, b, n);
 	}
 
@@ -165,8 +168,14 @@ public class EllipticCurveProjective {
 		result = prime * result + ((a == null) ? 0 : a.hashCode());
 		result = prime * result + ((b == null) ? 0 : b.hashCode());
 		result = prime * result + ((n == null) ? 0 : n.hashCode());
-		result = prime * result + ((x == null) ? 0 : x.hashCode());
-		result = prime * result + ((y == null) ? 0 : y.hashCode());
+		if (x != null) {
+			BigInteger x1 = x.multiply(z.modInverse(n)).mod(n);
+			result = prime * result + x1.hashCode();
+		}
+		if (y != null) {
+			BigInteger y1 = y.multiply(z.modInverse(n)).mod(n);
+			result = prime * result + y1.hashCode();
+		}
 		result = prime * result + ((z == null) ? 0 : z.hashCode());
 		return result;
 	}

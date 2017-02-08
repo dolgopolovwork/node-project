@@ -37,9 +37,11 @@ public class TaskPool {
 			for (String file : files) {
 				try {
 					String jarFilePath = taskFolder + File.separator + file;
-					TaskConfig config = new TaskConfig(StreamUtil.getConfigJson(jarFilePath));
-					SubTask subTask = StreamUtil.getTaskClassFromJar(jarFilePath, config.getClassName());
-					tasksMap.put(config.getName(), new TaskContext(subTask, config));
+					List<SubTask> subTasks = StreamUtil.getSubtasks(jarFilePath);
+					for (SubTask subTask : subTasks) {
+						TaskConfig config = new TaskConfig(subTask);
+						tasksMap.put(config.getName(), new TaskContext(subTask, config));
+					}
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Can not init factory with file " + file);
 					logger.log(e);

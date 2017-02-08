@@ -18,8 +18,8 @@ import ru.babobka.subtask.model.SubTask;
 public class TaskTest {
 
 	private static final SubTask TASK = new EllipticCurveFactorTask();
-	
-	private static final UUID DUMMY_UUID=new UUID(0,0);
+
+	private static final UUID DUMMY_UUID = new UUID(0, 0);
 
 	public NodeRequest getNumberRequest(BigInteger number) {
 		Map<String, Serializable> additionMap = new HashMap<>();

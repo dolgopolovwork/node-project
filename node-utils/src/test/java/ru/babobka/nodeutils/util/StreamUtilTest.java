@@ -5,8 +5,10 @@ import static org.junit.Assert.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.List;
 import org.junit.Test;
+
+import ru.babobka.subtask.model.SubTask;
 
 public class StreamUtilTest {
 
@@ -41,5 +43,14 @@ public class StreamUtilTest {
 		assertFalse(text.isEmpty());
 		assertEquals(ACTUAL_TEXT, text);
 
+	}
+
+	@Test
+	public void getAllTasksTest() throws IOException {
+		List<SubTask> subTasks = StreamUtil.getSubtasks("src/test/resources/tasks/prime-counter-task-1.0-SNAPSHOT.jar");
+		assertEquals(subTasks.size(), 1);
+		subTasks = StreamUtil
+				.getSubtasks("src/test/resources/tasks/factor-task-1.0-SNAPSHOT-jar-with-dependencies.jar");
+		assertEquals(subTasks.size(), 1);
 	}
 }

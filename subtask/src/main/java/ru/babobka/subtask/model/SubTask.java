@@ -1,28 +1,40 @@
 package ru.babobka.subtask.model;
 
-
 import ru.babobka.nodeserials.NodeRequest;
 
 /**
  * Created by dolgopolov.a on 08.12.15.
  */
-public interface SubTask{
+public abstract class SubTask {
 
-	public ExecutionResult execute(NodeRequest request);
+	private volatile boolean stopped;
 
-	public void stopTask();
+	public abstract ExecutionResult execute(NodeRequest request);
 
-	public ValidationResult validateRequest(NodeRequest request);
+	public abstract void stopTask();
 
-	public boolean isRequestDataTooSmall(NodeRequest request);
+	public abstract ValidationResult validateRequest(NodeRequest request);
 
-	public RequestDistributor getDistributor();
+	public abstract boolean isRequestDataTooSmall(NodeRequest request);
 
-	public Reducer getReducer();
-	
-	public SubTask newInstance();
-	
-	public boolean isStopped();
+	public abstract RequestDistributor getDistributor();
 
+	public abstract String getDescription();
+
+	public abstract String getName();
+
+	public abstract boolean isRaceStyle();
+
+	public abstract Reducer getReducer();
+
+	public abstract SubTask newInstance();
+
+	public boolean isStopped() {
+		return stopped;
+	}
+
+	protected void setStopped(boolean stopped) {
+		this.stopped = stopped;
+	}
 
 }

@@ -11,6 +11,7 @@ public class JarClassLoader extends MultiClassLoader {
 	public JarClassLoader(String jarName) throws IOException {
 		// Create the JarResource and suck in the jar file.
 		jarResources = new JarResource(jarName);
+
 	}
 
 	protected byte[] loadClassBytes(String className) {

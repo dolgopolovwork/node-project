@@ -26,8 +26,6 @@ public final class ResponsesArray {
 
 	private final int maxSize;
 
-	private final TaskContext taskContext;
-
 	private final ResponsesArrayMeta meta;
 
 	private static final String TASK = "Task";
@@ -40,14 +38,16 @@ public final class ResponsesArray {
 
 	private final Object lock = new Object();
 
+	private final TaskContext taskContext;
+
 	private final SimpleLogger logger;
 
 	private final SlavesStorage slavesStorage;
 
 	public ResponsesArray(int maxSize, TaskContext taskContext, Map<String, String> params) {
 		this.maxSize = maxSize;
-		this.responseArray = new AtomicReferenceArray<>(maxSize);
 		this.taskContext = taskContext;
+		this.responseArray = new AtomicReferenceArray<>(maxSize);
 		this.meta = new ResponsesArrayMeta(taskContext.getConfig().getName(), params, System.currentTimeMillis());
 		size = new AtomicInteger(0);
 		distributionService = Container.getInstance().get(DistributionService.class);

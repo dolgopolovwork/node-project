@@ -48,8 +48,6 @@ public class FactorTest {
 	}
 
 	
-	
-	
 
 	private void generateTests(int tests, int factorBits) {
 		for (int i = 0; i < tests; i++) {

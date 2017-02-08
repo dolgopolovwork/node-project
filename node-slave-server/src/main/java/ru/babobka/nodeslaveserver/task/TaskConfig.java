@@ -2,27 +2,29 @@ package ru.babobka.nodeslaveserver.task;
 
 import org.json.JSONObject;
 
+import ru.babobka.subtask.model.SubTask;
+
 public class TaskConfig {
 
 	private final String name;
-
-	private final String className;
 
 	private final String description;
 
 	private final boolean raceStyle;
 
-	public TaskConfig(String name, String className, String description, boolean raceStyle) {
+	public TaskConfig(String name, String description, boolean raceStyle) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.raceStyle = raceStyle;
-		this.className = className;
+	}
+
+	public TaskConfig(SubTask subTask) {
+		this(subTask.getName(), subTask.getDescription(), subTask.isRaceStyle());
 	}
 
 	public TaskConfig(JSONObject jsonObject) {
-		this(jsonObject.getString("name"), jsonObject.getString("className"), jsonObject.getString("description"),
-				jsonObject.getBoolean("raceStyle"));
+		this(jsonObject.getString("name"), jsonObject.getString("description"), jsonObject.getBoolean("raceStyle"));
 	}
 
 	public String getName() {
@@ -37,12 +39,8 @@ public class TaskConfig {
 		return raceStyle;
 	}
 
-	public String getClassName() {
-		return className;
-	}
-
 	public TaskConfig newInstance() {
-		return new TaskConfig(name, className, description, raceStyle);
+		return new TaskConfig(name, description, raceStyle);
 	}
 
 }

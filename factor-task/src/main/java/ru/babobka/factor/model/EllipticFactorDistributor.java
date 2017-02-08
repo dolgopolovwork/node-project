@@ -14,9 +14,13 @@ import ru.babobka.subtask.model.RequestDistributor;
  */
 public class EllipticFactorDistributor implements RequestDistributor {
 
-	private static final String TASK_NAME = "Elliptic curve factor";
-
 	private static final String NUMBER = "number";
+
+	private final String taskName;
+
+	public EllipticFactorDistributor(String taskName) {
+		this.taskName = taskName;
+	}
 
 	@Override
 	public NodeRequest[] distribute(Map<String, String> addition, int nodes, UUID id) {
@@ -25,7 +29,7 @@ public class EllipticFactorDistributor implements RequestDistributor {
 		Map<String, Serializable> innerAdditionMap = new HashMap<>();
 		innerAdditionMap.put(NUMBER, n);
 		for (int i = 0; i < requests.length; i++) {
-			requests[i] = new NodeRequest(id, UUID.randomUUID(), TASK_NAME, innerAdditionMap, false, true);
+			requests[i] = new NodeRequest(id, UUID.randomUUID(), taskName, innerAdditionMap, false, true);
 		}
 		return requests;
 	}

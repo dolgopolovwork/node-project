@@ -26,7 +26,7 @@ import java.util.concurrent.Future;
 /**
  * Created by dolgopolov.a on 15.12.15.
  */
-public class PrimeCounterTask implements SubTask {
+public class PrimeCounterTask extends SubTask {
 
 	private volatile ExecutorService threadPool;
 
@@ -42,15 +42,17 @@ public class PrimeCounterTask implements SubTask {
 
 	private final PrimeCounterDistributor distributor;
 
-	private volatile boolean stopped;
+	private static final String NAME = "Dummy prime counter";
+
+	private static final String DESCRIPTION = "Counts prime numbers in a given range";
 
 	public PrimeCounterTask() {
-		distributor = new PrimeCounterDistributor("Dummy prime counter");
+		distributor = new PrimeCounterDistributor(NAME);
 	}
 
 	@Override
 	public synchronized void stopTask() {
-		stopped = true;
+		setStopped(true);
 		if (threadPool != null)
 			threadPool.shutdownNow();
 
@@ -59,27 +61,27 @@ public class PrimeCounterTask implements SubTask {
 	@Override
 	public ExecutionResult execute(NodeRequest request) {
 		try {
-			if (!stopped) {
+			if (!isStopped()) {
 				Map<String, Serializable> result = new HashMap<>();
 				long begin = Long.parseLong(request.getStringDataValue(BEGIN));
 				long end = Long.parseLong(request.getStringDataValue(END));
 				int cores = getCores(request);
 				try {
 					synchronized (this) {
-						if (!stopped) {
+						if (!isStopped()) {
 							threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 						}
 					}
 					int primes = countPrimes(threadPool, begin, end, cores);
 					result.put(PRIME_COUNT, primes);
 				} catch (InterruptedException | ExecutionException e) {
-					if (!stopped) {
+					if (!isStopped()) {
 						e.printStackTrace();
 					}
 				}
-				return new ExecutionResult(stopped, result);
+				return new ExecutionResult(isStopped(), result);
 			} else {
-				return new ExecutionResult(stopped, null);
+				return new ExecutionResult(isStopped(), null);
 			}
 		} finally {
 			if (threadPool != null)
@@ -110,7 +112,7 @@ public class PrimeCounterTask implements SubTask {
 				if (begin < 0 || end < 0 || begin > end) {
 					return new ValidationResult("begin is more than end", false);
 				}
-			} catch (NumberFormatException  e) {
+			} catch (NumberFormatException e) {
 				e.printStackTrace();
 				return new ValidationResult(e.getMessage(), false);
 			}
@@ -130,7 +132,7 @@ public class PrimeCounterTask implements SubTask {
 			for (Future<Integer> future : futureList) {
 				result += future.get();
 			}
-			if (stopped) {
+			if (isStopped()) {
 				result = 0;
 			}
 		}
@@ -164,8 +166,18 @@ public class PrimeCounterTask implements SubTask {
 	}
 
 	@Override
-	public boolean isStopped() {
-		return stopped;
+	public String getDescription() {
+		return DESCRIPTION;
 	}
-	
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+
+	@Override
+	public boolean isRaceStyle() {
+		return false;
+	}
+
 }
