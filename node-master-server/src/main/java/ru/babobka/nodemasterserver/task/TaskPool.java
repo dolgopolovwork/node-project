@@ -12,6 +12,7 @@ import ru.babobka.nodemasterserver.exception.CanNotInitTaskFactoryException;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.subtask.model.SubTask;
 
 /**
@@ -40,7 +41,7 @@ public class TaskPool {
 					List<SubTask> subTasks = StreamUtil.getSubtasks(jarFilePath);
 					for (SubTask subTask : subTasks) {
 						TaskConfig config = new TaskConfig(subTask);
-						tasksMap.put(config.getName(), new TaskContext(subTask, config));
+						tasksMap.put(TextUtil.toURL(config.getName()), new TaskContext(subTask, config));
 					}
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Can not init factory with file " + file);
@@ -65,8 +66,8 @@ public class TaskPool {
 	}
 
 	public TaskContext get(String name) throws IOException {
-
-		TaskContext taskContext = tasksMap.get(name);
+		
+		TaskContext taskContext = tasksMap.get(TextUtil.toURL(name));
 		if (taskContext != null) {
 			return taskContext.newInstance();
 		} else {

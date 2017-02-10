@@ -21,6 +21,7 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.TextUtil;
 
 public class RedistributionITCase {
 
@@ -50,7 +51,7 @@ public class RedistributionITCase {
 
 	private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
-	private static final String DUMMY_PRIME_COUNTER_TASK_NAME = "Dummy prime counter";
+	private static final String DUMMY_PRIME_COUNTER_TASK_NAME = TextUtil.toURL("Dummy prime counter");
 
 	@BeforeClass
 	public static void runServers() throws IOException, InterruptedException {
@@ -136,7 +137,6 @@ public class RedistributionITCase {
 			get = new HttpGet(url);
 			setCredentialHeaders(get);
 			return new JSONObject(new BasicResponseHandler().handleResponse(httpClient.execute(get)));
-
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 
