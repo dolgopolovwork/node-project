@@ -22,9 +22,9 @@ public class TaskTest {
 	private static final UUID DUMMY_UUID = new UUID(0, 0);
 
 	public NodeRequest getNumberRequest(BigInteger number) {
-		Map<String, Serializable> additionMap = new HashMap<>();
-		additionMap.put("number", number);
-		return new NodeRequest(DUMMY_UUID, DUMMY_UUID, "ellipticFactor", additionMap, false, false);
+		Map<String, Serializable> dataMap = new HashMap<>();
+		dataMap.put("number", number);
+		return NodeRequest.race(DUMMY_UUID, "ellipticFactor", dataMap);
 	}
 
 	public BigInteger getRandomHalfPrime(int bits) {

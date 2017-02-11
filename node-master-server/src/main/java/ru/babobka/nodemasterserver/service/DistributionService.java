@@ -20,40 +20,32 @@ public final class DistributionService {
 
 	private static final int MAX_RETRY = 5;
 
-	private final SimpleLogger logger = Container.getInstance()
-			.get(SimpleLogger.class);
+	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
 	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
-	public void redistribute(Slave slave)
-			throws DistributionException, EmptyClusterException {
-
-		if (slave.getRequestMap().size() > 0) {
+	public void redistribute(Slave slave) throws DistributionException, EmptyClusterException {
+		if (!slave.getRequestMap().isEmpty()) {
 			if (!slavesStorage.isEmpty()) {
 				logger.log("Redistribution");
-				Map<String, LinkedList<NodeRequest>> requestsByUri = slave
-						.getRequestsGroupedByTask();
-				for (Map.Entry<String, LinkedList<NodeRequest>> requestByUriEntry : requestsByUri
-						.entrySet()) {
+				Map<String, LinkedList<NodeRequest>> requestsByUri = slave.getRequestsGroupedByTask();
+				for (Map.Entry<String, LinkedList<NodeRequest>> requestByUriEntry : requestsByUri.entrySet()) {
 					try {
-						broadcastRequests(requestByUriEntry.getKey(),
-								requestByUriEntry.getValue(), MAX_RETRY);
+						broadcastRequests(requestByUriEntry.getKey(), requestByUriEntry.getValue(), MAX_RETRY);
 					} catch (Exception e) {
 						logger.log(Level.SEVERE, "Redistribution failed");
 						throw new DistributionException(e);
 					}
 				}
 			} else {
-				logger.log(Level.SEVERE,
-						"Redistribution failed due to empty cluster");
+				logger.log(Level.SEVERE, "Redistribution failed due to empty cluster");
 				throw new EmptyClusterException();
 			}
 		}
 
 	}
 
-	private void broadcastRequests(String taskName,
-			LinkedList<NodeRequest> requests, int maxBroadcastRetry)
+	private void broadcastRequests(String taskName, LinkedList<NodeRequest> requests, int maxBroadcastRetry)
 			throws IOException, EmptyClusterException, DistributionException {
 		NodeRequest[] requestArray = new NodeRequest[requests.size()];
 		int i = 0;
@@ -70,14 +62,12 @@ public final class DistributionService {
 		broadcastRequests(taskName, requests, 0, MAX_RETRY);
 	}
 
-	private void broadcastRequests(String taskName, NodeRequest[] requests,
-			int retry, int maxRetry)
+	private void broadcastRequests(String taskName, NodeRequest[] requests, int retry, int maxRetry)
 			throws EmptyClusterException, DistributionException {
 		List<Slave> clientThreads = slavesStorage.getList(taskName);
 		if (clientThreads.isEmpty()) {
 			throw new EmptyClusterException();
 		} else {
-
 			Iterator<Slave> iterator;
 			int i = 0;
 			try {
@@ -91,8 +81,7 @@ public final class DistributionService {
 			} catch (IOException e) {
 				if (retry < maxRetry) {
 					logger.log("Broadcast retry " + retry);
-					broadcastRequests(taskName, MathUtil.subArray(requests, i),
-							retry + 1, maxRetry);
+					broadcastRequests(taskName, MathUtil.subArray(requests, i), retry + 1, maxRetry);
 				} else {
 					throw new DistributionException(e);
 				}
@@ -102,8 +91,7 @@ public final class DistributionService {
 
 	}
 
-	public void broadcastStopRequests(List<Slave> slaves,
-			NodeRequest stopRequest) throws EmptyClusterException {
+	public void broadcastStopRequests(List<Slave> slaves, NodeRequest stopRequest) throws EmptyClusterException {
 		if (slaves.isEmpty()) {
 			throw new EmptyClusterException();
 		} else {

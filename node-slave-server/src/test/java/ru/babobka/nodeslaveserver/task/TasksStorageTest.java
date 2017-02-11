@@ -33,7 +33,7 @@ public class TasksStorageTest {
 	public void testStopTaskNormal() {
 		UUID taskId = UUID.randomUUID();
 		long timeStamp = System.currentTimeMillis() + 10;
-		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
+		NodeRequest requestOne = NodeRequest.regular(taskId, "test", null);
 		storage.put(requestOne, mockTask);
 		storage.stopTask(taskId, timeStamp);
 		assertTrue(storage.wasStopped(taskId, requestOne.getTimeStamp()));
@@ -43,7 +43,7 @@ public class TasksStorageTest {
 	public void testStopTaskReorder() {
 		UUID taskId = UUID.randomUUID();
 		long timeStamp = System.currentTimeMillis() - 10;
-		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
+		NodeRequest requestOne = NodeRequest.regular(taskId, "test", null);
 		storage.put(requestOne, mockTask);
 		storage.stopTask(taskId, timeStamp);
 		assertFalse(storage.wasStopped(taskId, requestOne.getTimeStamp()));
@@ -53,8 +53,8 @@ public class TasksStorageTest {
 	public void testStopTwoTaskNormal() {
 		UUID taskId = UUID.randomUUID();
 		long timeStamp = System.currentTimeMillis() + 10;
-		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
-		NodeRequest requestTwo = new NodeRequest(taskId, false, "test");
+		NodeRequest requestOne = NodeRequest.regular(taskId, "test", null);
+		NodeRequest requestTwo = NodeRequest.regular(taskId, "test", null);
 		storage.put(requestOne, mockTask);
 		storage.put(requestTwo, mockTask);
 		storage.stopTask(taskId, timeStamp);
@@ -66,14 +66,13 @@ public class TasksStorageTest {
 	public void testStopTwoTaskReorder() {
 		UUID taskId = UUID.randomUUID();
 		long timeStamp = System.currentTimeMillis() - 10;
-		NodeRequest requestOne = new NodeRequest(taskId, false, "test");
-		NodeRequest requestTwo = new NodeRequest(taskId, false, "test");
+		NodeRequest requestOne = NodeRequest.regular(taskId, "test", null);
+		NodeRequest requestTwo = NodeRequest.regular(taskId, "test", null);
 		storage.stopTask(taskId, timeStamp);
 		storage.put(requestOne, mockTask);
 		storage.put(requestTwo, mockTask);
 		assertFalse(storage.wasStopped(taskId, requestOne.getTimeStamp()));
 		assertFalse(storage.wasStopped(taskId, requestTwo.getTimeStamp()));
 	}
-
 
 }

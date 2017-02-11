@@ -25,25 +25,25 @@ public final class PrimeCounterDistributor implements RequestDistributor {
 	}
 
 	@Override
-	public NodeRequest[] distribute(Map<String, String> addition, int nodes, UUID taskId) {
+	public NodeRequest[] distribute(Map<String, String> dataMap, int nodes, UUID taskId) {
 
-		long begin = Long.parseLong(addition.get(BEGIN));
-		long end = Long.parseLong(addition.get(END));
+		long begin = Long.parseLong(dataMap.get(BEGIN));
+		long end = Long.parseLong(dataMap.get(END));
 		Range[] ranges = MathUtil.getRangeArray(begin, end, nodes);
 		NodeRequest[] requests = new NodeRequest[nodes];
-		Map<String, Serializable> innerAdditionMap;
+		Map<String, Serializable> innerDataMap;
 		for (int i = 0; i < requests.length; i++) {
-			innerAdditionMap = new HashMap<>();
-			innerAdditionMap.put(BEGIN, ranges[i].getBegin());
-			innerAdditionMap.put(END, ranges[i].getEnd());
-			requests[i] = new NodeRequest(taskId, UUID.randomUUID(), taskName, innerAdditionMap, false, false);
+			innerDataMap = new HashMap<>();
+			innerDataMap.put(BEGIN, ranges[i].getBegin());
+			innerDataMap.put(END, ranges[i].getEnd());
+			requests[i] = NodeRequest.regular(taskId, taskName, innerDataMap);
 		}
 		return requests;
 
 	}
 
 	@Override
-	public boolean isValidArguments(Map<String, String> addition) {
+	public boolean validArguments(Map<String, String> addition) {
 		try {
 			long begin = Long.parseLong(addition.get(BEGIN));
 			long end = Long.parseLong(addition.get(END));

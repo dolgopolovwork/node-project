@@ -46,7 +46,7 @@ public class TaskServiceImpl implements TaskService {
 			currentClusterSize = 1;
 		} else {
 			currentClusterSize = slavesStorage.getClusterSize(taskName);
-			if (maxNodes > 0 && currentClusterSize > 0 && maxNodes <= currentClusterSize) {
+			if (maxNodes > 0 && currentClusterSize > 0 && maxNodes < currentClusterSize) {
 				currentClusterSize = maxNodes;
 			}
 		}
@@ -76,28 +76,28 @@ public class TaskServiceImpl implements TaskService {
 			int maxNodes) {
 
 		RequestDistributor requestDistributor = taskContext.getTask().getDistributor();
-		if (requestDistributor.isValidArguments(requestArguments)) {
+		if (requestDistributor.validArguments(requestArguments)) {
 			logger.log("Task id is " + taskId);
 			try {
 				startTask(taskContext, taskId, requestArguments, maxNodes);
-				return new TaskStartResult(taskId);
+				return TaskStartResult.ok(taskId);
 			} catch (DistributionException e) {
 				logger.log(Level.SEVERE, e);
 				try {
 					distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId),
-							new NodeRequest(taskId, true, taskContext.getConfig().getName()));
+							NodeRequest.stop(taskId, taskContext.getConfig().getName()));
 				} catch (EmptyClusterException e1) {
 					logger.log(e1);
 				}
-				return new TaskStartResult(taskId, true, true, "Can not distribute your request");
+				return TaskStartResult.systemError(taskId, "Can not distribute your request");
 			} catch (EmptyClusterException e) {
 				logger.log(e);
-				return new TaskStartResult(taskId, true, true, "Can not distribute due to empty cluster");
+				return TaskStartResult.systemError(taskId, "Can not distribute due to empty cluster");
 			}
 
 		} else {
 			logger.log(Level.SEVERE, WRONG_ARGUMENTS);
-			return new TaskStartResult(taskId, true, false, WRONG_ARGUMENTS);
+			return TaskStartResult.failed(taskId, WRONG_ARGUMENTS);
 		}
 
 	}
@@ -107,7 +107,7 @@ public class TaskServiceImpl implements TaskService {
 			ResponsesArray responsesArray = responseStorage.get(taskId);
 			if (responsesArray != null) {
 				return taskPool.get(responsesArray.getMeta().getTaskName()).getTask().getReducer()
-						.reduce(responsesArray.getResponseList());
+						.reduce(responsesArray.getResponseList()).map();
 
 			} else {
 				logger.log(Level.SEVERE, "No such task");
@@ -130,7 +130,7 @@ public class TaskServiceImpl implements TaskService {
 			ResponsesArray responsesArray = responseStorage.get(taskId);
 			if (responsesArray != null) {
 				distributionService.broadcastStopRequests(clientThreads,
-						new NodeRequest(taskId, true, responsesArray.getMeta().getTaskName()));
+						NodeRequest.stop(taskId, responsesArray.getMeta().getTaskName()));
 				responseStorage.setStopAllResponses(taskId);
 				return new TaskResult("Task " + taskId + " was canceled");
 			} else {

@@ -27,7 +27,7 @@ public final class NodeRequest implements Serializable {
 
 	private final Map<String, Serializable> data = new HashMap<>();
 
-	public NodeRequest(UUID taskId, UUID requestId, String taskName, Map<String, Serializable> data,
+	private NodeRequest(UUID taskId, UUID requestId, String taskName, Map<String, Serializable> data,
 			boolean stoppingRequest, boolean raceStyle) {
 		this.taskId = taskId;
 		this.requestId = requestId;
@@ -40,15 +40,26 @@ public final class NodeRequest implements Serializable {
 		this.timeStamp = System.currentTimeMillis();
 	}
 
-	public NodeRequest(UUID taskId, UUID requestId, boolean stoppingRequest, String taskName) {
+	private NodeRequest(UUID taskId, UUID requestId, boolean stoppingRequest, String taskName) {
 		this(taskId, requestId, taskName, null, stoppingRequest, false);
-
 	}
 
-	public NodeRequest(UUID taskId, boolean stoppingRequest, String taskName) {
+	private NodeRequest(UUID taskId, boolean stoppingRequest, String taskName) {
 		this(taskId, UUID.randomUUID(), taskName, null, stoppingRequest, false);
 	}
 
+	public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data) {
+		return new NodeRequest(taskId, UUID.randomUUID(), taskName, data, false, false);
+	}
+
+	public static NodeRequest race(UUID taskId, String taskName, Map<String, Serializable> data) {
+		return new NodeRequest(taskId, UUID.randomUUID(), taskName, data, false, true);
+	}
+
+	public static NodeRequest stop(UUID taskId, String taskName) {
+		return new NodeRequest(taskId, true, taskName);
+	}
+	
 
 	public String getStringDataValue(String key) {
 		Serializable value = data.get(key);
@@ -106,8 +117,8 @@ public final class NodeRequest implements Serializable {
 	@Override
 	public String toString() {
 		return "NodeRequest [taskId=" + taskId + ", requestId=" + requestId + ", stoppingRequest=" + stoppingRequest
-				+ ", raceStyle=" + raceStyle + ", taskName=" + taskName + ", timeStamp=" + timeStamp + ", addition="
-				+ data + "]";
+				+ ", raceStyle=" + raceStyle + ", taskName=" + taskName + ", timeStamp=" + timeStamp + ", data=" + data
+				+ "]";
 	}
 
 }

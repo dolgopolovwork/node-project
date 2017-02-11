@@ -106,13 +106,13 @@ public final class ResponsesArray {
 								logger.log(TASK + " " + response.getTaskId() + " is ready ");
 							}
 						} else if (taskContext.getConfig().isRaceStyle()
-								&& taskContext.getTask().getReducer().isValidResponse(response)) {
+								&& taskContext.getTask().getReducer().validResponse(response)) {
 							List<Slave> slaves = slavesStorage.getListByTaskId(response.getTaskId());
 							try {
 								if (!slaves.isEmpty()) {
 									logger.log("Cancel all requests for task id " + response.getTaskId());
 									distributionService.broadcastStopRequests(slaves,
-											new NodeRequest(response.getTaskId(), true, response.getTaskName()));
+											NodeRequest.stop(response.getTaskId(), response.getTaskName()));
 								}
 							} catch (EmptyClusterException e) {
 								logger.log(e);

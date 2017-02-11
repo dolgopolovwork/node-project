@@ -51,7 +51,7 @@ public class TasksStorage {
 		Map<UUID, SubTask> localTaskMap = tasksMap.get(taskId);
 		if (localTaskMap != null) {
 			for (Map.Entry<UUID, SubTask> task : localTaskMap.entrySet()) {
-				task.getValue().stopTask();
+				task.getValue().stopProcess();
 			}
 		}
 		tasksMap.remove(taskId);
@@ -65,16 +65,14 @@ public class TasksStorage {
 
 	public synchronized boolean wasStopped(UUID taskId, long taskTimeStamp) {
 		Long stoppedRequestTimeStamp = stoppedTasksMap.get(taskId);
-		
-		
+
 		if (stoppedRequestTimeStamp != null) {
 			return stoppedRequestTimeStamp > taskTimeStamp;
 		}
 		return false;
 	}
-	
-	public synchronized void clear()
-	{
+
+	public synchronized void clear() {
 		tasksMap.clear();
 		stoppedTasksMap.clear();
 	}

@@ -13,6 +13,6 @@ public interface RequestDistributor {
 	public NodeRequest[] distribute(Map<String, String> arguments,
 			int nodes, UUID taskId);
 
-	public boolean isValidArguments(Map<String, String> arguments);
+	public boolean validArguments(Map<String, String> arguments);
 
 }

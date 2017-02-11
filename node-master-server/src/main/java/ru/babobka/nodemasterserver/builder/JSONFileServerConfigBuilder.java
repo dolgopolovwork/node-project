@@ -13,13 +13,10 @@ public interface JSONFileServerConfigBuilder {
 	public static MasterServerConfig build(InputStream is) {
 
 		try {
-
 			return new MasterServerConfig(new JSONObject(StreamUtil.readFile(is)));
-
 		} catch (Exception e) {
 			throw new ServerConfigurationException("Can not build server configuration", e);
 		}
-
 	}
 
 }

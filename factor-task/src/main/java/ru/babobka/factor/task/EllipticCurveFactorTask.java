@@ -64,37 +64,36 @@ public class EllipticCurveFactorTask extends SubTask {
 				result.put(B, factoringResult.getEllipticCurveProjective().getB());
 				return new ExecutionResult(isStopped(), result);
 			}
-			return new ExecutionResult(isStopped(), null);
+			return new ExecutionResult(isStopped());
 		} finally {
 			factorService.stop();
 		}
 	}
 
 	@Override
-	public synchronized void stopTask() {
-		setStopped(true);
+	protected void stopCurrentTask() {
 		factorService.stop();
 	}
 
 	@Override
 	public ValidationResult validateRequest(NodeRequest request) {
 		if (request == null) {
-			return new ValidationResult("Empty request", false);
+			return ValidationResult.fail("Empty request");
 		} else {
 			try {
 
 				BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
 				if (number.compareTo(BigInteger.valueOf(3)) <= 0) {
-					return new ValidationResult("number must be greater than 3", false);
+					return ValidationResult.fail("number must be greater than 3");
 				} else if (MathUtil.isPrime(number)) {
-					return new ValidationResult("number is not composite", false);
+					return ValidationResult.fail("number is not composite");
 				}
 
 			} catch (Exception e) {
-				return new ValidationResult(e, false);
+				return ValidationResult.fail(e);
 			}
 		}
-		return new ValidationResult(true);
+		return ValidationResult.ok();
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class Slave extends Thread {
 				responseStorage.addBadResponse(request.getTaskId());
 				try {
 					distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(request.getTaskId()),
-							new NodeRequest(request.getTaskId(), true, request.getTaskName()));
+							NodeRequest.stop(request.getTaskId(), request.getTaskName()));
 				} catch (EmptyClusterException e) {
 					logger.log(e);
 				}
@@ -147,12 +147,10 @@ public class Slave extends Thread {
 		return requestMap.size();
 	}
 
-	
-
 	@Override
 	public void run() {
 		try {
-		
+
 			socket.setSoTimeout(masterServerConfig.getAuthTimeOutMillis());
 			AuthResult authResult = authService.getAuthResult(rsa, socket);
 			if (authResult.isValid()) {
@@ -234,7 +232,6 @@ public class Slave extends Thread {
 	public String toString() {
 		return "requests " + getRequestCount();
 	}
-
 
 	@Override
 	public void interrupt() {

@@ -4,12 +4,11 @@ import ru.babobka.factor.task.EllipticCurveFactorTask;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.Reducer;
+import ru.babobka.subtask.model.ReducingResult;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dolgopolov.a on 22.12.15.
@@ -17,21 +16,21 @@ import java.util.Map;
 public class EllipticFactorReducer implements Reducer {
 
 	@Override
-	public Map<String, Serializable> reduce(List<NodeResponse> responses) throws ReducingException {
+	public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException {
 		try {
 			for (NodeResponse response : responses) {
-				if (isValidResponse(response)) {
-					return response.getData();
+				if (validResponse(response)) {
+					return new ReducingResult().add(response.getData());
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new ReducingException(e);
 		}
 		throw new ReducingException();
 	}
 
 	@Override
-	public boolean isValidResponse(NodeResponse response) {
+	public boolean validResponse(NodeResponse response) {
 		try {
 			if (response != null && response.getStatus() == NodeResponse.Status.NORMAL) {
 				BigInteger factor = response.getDataValue(EllipticCurveFactorTask.FACTOR);

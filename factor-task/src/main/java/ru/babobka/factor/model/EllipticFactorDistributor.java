@@ -23,22 +23,22 @@ public class EllipticFactorDistributor implements RequestDistributor {
 	}
 
 	@Override
-	public NodeRequest[] distribute(Map<String, String> addition, int nodes, UUID id) {
-		BigInteger n = new BigInteger(addition.get(NUMBER));
+	public NodeRequest[] distribute(Map<String, String> dataMap, int nodes, UUID id) {
+		BigInteger n = new BigInteger(dataMap.get(NUMBER));
 		NodeRequest[] requests = new NodeRequest[nodes];
-		Map<String, Serializable> innerAdditionMap = new HashMap<>();
-		innerAdditionMap.put(NUMBER, n);
+		Map<String, Serializable> innerDataMap = new HashMap<>();
+		innerDataMap.put(NUMBER, n);
 		for (int i = 0; i < requests.length; i++) {
-			requests[i] = new NodeRequest(id, UUID.randomUUID(), taskName, innerAdditionMap, false, true);
+			requests[i] = NodeRequest.race(id, taskName, innerDataMap);
 		}
 		return requests;
 	}
 
 	@Override
-	public boolean isValidArguments(Map<String, String> addition) {
+	public boolean validArguments(Map<String, String> dataMap) {
 		try {
 
-			BigInteger n = new BigInteger(addition.getOrDefault(NUMBER, ""));
+			BigInteger n = new BigInteger(dataMap.getOrDefault(NUMBER, ""));
 			if (n.compareTo(BigInteger.ZERO) < 0) {
 				return false;
 			}

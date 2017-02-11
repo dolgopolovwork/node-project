@@ -29,20 +29,20 @@ public class TaskTest {
 	private static final UUID DUMMY_UUID = new UUID(0, 0);
 
 	private NodeRequest createRequest(long begin, long end) {
-		Map<String, Serializable> additionMap = new HashMap<>();
-		additionMap.put("begin", begin);
-		additionMap.put("end", end);
-		return new NodeRequest(DUMMY_UUID, DUMMY_UUID, "millerPrimeCounter", additionMap, false, false);
+		Map<String, Serializable> dataMap = new HashMap<>();
+		dataMap.put("begin", begin);
+		dataMap.put("end", end);
+		return NodeRequest.regular(DUMMY_UUID, "millerPrimeCounter", dataMap);
 
 	}
 
 	@Before
 	public void init() {
 		task = new PrimeCounterTask();
-		millionPrimesRequest=createRequest(0,15_485_863);
-		thousandPrimesRequest =createRequest(0,7919);
-		tenThousandPrimesRequest =createRequest(0,104729);
-		tenPrimesRequest  =createRequest(0,29);
+		millionPrimesRequest = createRequest(0, 15_485_863);
+		thousandPrimesRequest = createRequest(0, 7919);
+		tenThousandPrimesRequest = createRequest(0, 104729);
+		tenPrimesRequest = createRequest(0, 29);
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class TaskTest {
 			public void run() {
 				try {
 					Thread.sleep(1000);
-					task.stopTask();
+					task.stopProcess();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

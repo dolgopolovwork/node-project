@@ -51,11 +51,9 @@ public class PrimeCounterTask extends SubTask {
 	}
 
 	@Override
-	public synchronized void stopTask() {
-		setStopped(true);
+	protected void stopCurrentTask() {
 		if (threadPool != null)
 			threadPool.shutdownNow();
-
 	}
 
 	@Override
@@ -104,20 +102,20 @@ public class PrimeCounterTask extends SubTask {
 	public ValidationResult validateRequest(NodeRequest request) {
 
 		if (request == null) {
-			return new ValidationResult("Request is empty", false);
+			return ValidationResult.fail("Request is empty");
 		} else {
 			try {
 				long begin = Long.parseLong(request.getStringDataValue(BEGIN));
 				long end = Long.parseLong(request.getStringDataValue(END));
 				if (begin < 0 || end < 0 || begin > end) {
-					return new ValidationResult("begin is more than end", false);
+					return ValidationResult.fail("begin is more than end");
 				}
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
-				return new ValidationResult(e.getMessage(), false);
+				return ValidationResult.fail(e);
 			}
 		}
-		return new ValidationResult(true);
+		return ValidationResult.ok();
 	}
 
 	private int countPrimes(ExecutorService threadPool, long rangeBegin, long rangeEnd, int cores)

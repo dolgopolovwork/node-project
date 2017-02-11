@@ -26,22 +26,22 @@ public final class NodeResponse implements Serializable {
 	private final Map<String, Serializable> data = new HashMap<>();
 
 	public NodeResponse(UUID taskId, UUID responseId, long timeTakes, Status status, String message,
-			Map<String, Serializable> addition, String taskName) {
+			Map<String, Serializable> dataMap, String taskName) {
 		this.taskId = taskId;
 		this.responseId = responseId;
 		this.timeTakes = timeTakes;
 		this.status = status;
 		this.message = message;
 		this.taskName = taskName;
-		if (addition != null) {
-			this.data.putAll(addition);
+		if (dataMap != null) {
+			this.data.putAll(dataMap);
 		}
 		this.timeStamp = System.currentTimeMillis();
 	}
 
-	public NodeResponse(UUID taskId, long timeTakes, Status status, String message, Map<String, Serializable> addition,
+	public NodeResponse(UUID taskId, long timeTakes, Status status, String message, Map<String, Serializable> dataMap,
 			String taskName) {
-		this(taskId, UUID.randomUUID(), timeTakes, status, message, addition, taskName);
+		this(taskId, UUID.randomUUID(), timeTakes, status, message, dataMap, taskName);
 	}
 
 	public NodeResponse(UUID taskId, Status status) {
@@ -135,7 +135,7 @@ public final class NodeResponse implements Serializable {
 	public String toString() {
 		return "NodeResponse [taskName=" + taskName + ", taskId=" + taskId + ", responseId=" + responseId
 				+ ", timeTakes=" + timeTakes + ", timeStamp=" + timeStamp + ", status=" + status + ", message="
-				+ message + ", addition=" + data + "]";
+				+ message + ", data=" + data + "]";
 	}
 
 	public boolean isStopped() {

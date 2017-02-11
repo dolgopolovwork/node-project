@@ -11,7 +11,12 @@ public abstract class SubTask {
 
 	public abstract ExecutionResult execute(NodeRequest request);
 
-	public abstract void stopTask();
+	protected abstract void stopCurrentTask();
+
+	public final synchronized void stopProcess() {
+		stopped = true;
+		stopCurrentTask();
+	}
 
 	public abstract ValidationResult validateRequest(NodeRequest request);
 
@@ -31,10 +36,6 @@ public abstract class SubTask {
 
 	public boolean isStopped() {
 		return stopped;
-	}
-
-	protected void setStopped(boolean stopped) {
-		this.stopped = stopped;
 	}
 
 }

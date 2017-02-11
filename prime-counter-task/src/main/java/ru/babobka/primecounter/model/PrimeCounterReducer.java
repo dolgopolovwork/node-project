@@ -4,11 +4,9 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.primecounter.task.PrimeCounterTask;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.Reducer;
+import ru.babobka.subtask.model.ReducingResult;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dolgopolov.a on 03.08.15.
@@ -16,31 +14,29 @@ import java.util.Map;
 public final class PrimeCounterReducer implements Reducer {
 
 	@Override
-	public Map<String, Serializable> reduce(List<NodeResponse> responses) throws ReducingException {
+	public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException {
 		try {
 			int result = 0;
 			for (NodeResponse response : responses) {
-				if (isValidResponse(response)) {
+				if (validResponse(response)) {
 					Integer subResult = response.getDataValue(PrimeCounterTask.PRIME_COUNT);
 					if (subResult != null) {
 						result += subResult;
 					}
-
 				} else {
 					throw new ReducingException();
 				}
 			}
-			Map<String, Serializable> resultMap = new HashMap<>();
-			resultMap.put(PrimeCounterTask.PRIME_COUNT, result);
-			return resultMap;
+			ReducingResult reducingResult = new ReducingResult();
+			reducingResult.add(PrimeCounterTask.PRIME_COUNT, result);
+			return reducingResult;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new ReducingException(e);
 		}
-		throw new ReducingException();
 	}
 
 	@Override
-	public boolean isValidResponse(NodeResponse response) {
+	public boolean validResponse(NodeResponse response) {
 		if (response != null && response.getStatus() == NodeResponse.Status.NORMAL
 				&& response.getDataValue(PrimeCounterTask.PRIME_COUNT) != null) {
 			return true;
