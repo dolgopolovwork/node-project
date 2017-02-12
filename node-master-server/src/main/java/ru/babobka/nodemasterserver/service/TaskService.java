@@ -9,9 +9,9 @@ import ru.babobka.nodemasterserver.task.TaskResult;
 
 public interface TaskService {
 
-	TaskResult getResult(Map<String, String> requestArguments,
-			TaskContext taskContext, int maxNodes) throws TimeoutException;
+    TaskResult getResult(Map<String, String> requestArguments, TaskContext taskContext, int maxNodes)
+	    throws TimeoutException;
 
-	TaskResult cancelTask(UUID taskId);
+    TaskResult cancelTask(UUID taskId);
 
 }

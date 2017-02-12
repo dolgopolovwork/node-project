@@ -18,72 +18,71 @@ import ru.babobka.factor.util.MathUtil;
  */
 public class EllipticCurveFactorService {
 
-	private volatile ExecutorService threadPool;
+    private volatile ExecutorService threadPool;
 
-	private volatile boolean stopped;
+    private volatile boolean stopped;
 
-	public FactoringResult factor(BigInteger number) {
-		return factor(number, Runtime.getRuntime().availableProcessors());
+    public FactoringResult factor(BigInteger number) {
+	return factor(number, Runtime.getRuntime().availableProcessors());
+    }
+
+    public FactoringResult factor(BigInteger number, int cores) {
+
+	try {
+	    if (!stopped) {
+		FactoringResult factoringResult;
+		if (number.bitLength() < 50) {
+		    factoringResult = new FactoringResult(BigInteger.valueOf(MathUtil.dummyFactor(number.longValue())),
+			    EllipticCurveProjective.dummyCurve());
+		} else {
+		    synchronized (this) {
+			if (!stopped && threadPool == null) {
+			    threadPool = Executors.newFixedThreadPool(cores);
+			}
+		    }
+		    factoringResult = ellipticFactorParallel(threadPool, number,
+			    Runtime.getRuntime().availableProcessors());
+		}
+		return factoringResult;
+	    }
+	    return null;
+	} finally {
+	    stopped = false;
 	}
 
-	public FactoringResult factor(BigInteger number, int cores) {
+    }
 
+    public synchronized void stop() {
+	stopped = true;
+	if (threadPool != null) {
+	    threadPool.shutdownNow();
+	}
+    }
+
+    private FactoringResult ellipticFactorParallel(ExecutorService threadPool, BigInteger n, int cores) {
+	if (threadPool != null) {
+	    List<Future<FactoringResult>> futures = new ArrayList<>();
+	    for (int i = 0; i < cores; i++) {
+		futures.add(threadPool.submit(new EllipticCurveProjectiveFactorCallable(threadPool, n)));
+
+	    }
+	    for (Future<FactoringResult> future : futures) {
+		FactoringResult result;
 		try {
-			if (!stopped) {
-				FactoringResult factoringResult;
-				if (number.bitLength() < 50) {
-					factoringResult = new FactoringResult(BigInteger.valueOf(MathUtil.dummyFactor(number.longValue())),
-							EllipticCurveProjective.dummyCurve());
-				} else {
-					synchronized (this) {
-						if (!stopped && threadPool == null) {
-							threadPool = Executors.newFixedThreadPool(cores);
-						}
-					}
-					factoringResult = ellipticFactorParallel(threadPool, number,
-							Runtime.getRuntime().availableProcessors());
-				}
-				return factoringResult;
-			}
-			return null;
-		} finally {
-			stopped = false;
+		    result = future.get();
+		    if (result != null) {
+			return result;
+		    }
+		} catch (InterruptedException | ExecutionException e) {
+		    e.printStackTrace();
+		    continue;
 		}
 
-	}
-
-	public synchronized void stop() {
-		stopped = true;
-		if (threadPool != null) {
-			threadPool.shutdownNow();
-		}
-	}
-
-	private FactoringResult ellipticFactorParallel(ExecutorService threadPool, BigInteger n, int cores) {
-		if (threadPool != null) {
-			List<Future<FactoringResult>> futures = new ArrayList<>();
-			for (int i = 0; i < cores; i++) {
-				futures.add(threadPool.submit(new EllipticCurveProjectiveFactorCallable(threadPool, n)));
-
-			}
-			for (Future<FactoringResult> future : futures) {
-				FactoringResult result;
-				try {
-					result = future.get();
-					if (result != null) {
-						return result;
-					}
-				} catch (InterruptedException | ExecutionException e) {
-
-					e.printStackTrace();
-					continue;
-				}
-
-			}
-
-		}
-		return null;
+	    }
 
 	}
+	return null;
+
+    }
 
 }

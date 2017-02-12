@@ -18,26 +18,25 @@ import ru.babobka.nodeslaveserver.task.TaskPool;
  */
 public class AuthResponseBuilder {
 
-	private static final TaskPool taskPool = Container.getInstance().get(TaskPool.class);
+    private static final TaskPool taskPool = Container.getInstance().get(TaskPool.class);
 
-	private static final UUID DUMMY_UUID=new UUID(0,0);
-	
-	private AuthResponseBuilder() {
+    private static final UUID DUMMY_UUID = new UUID(0, 0);
 
-	}
-	
-	
-	public static NodeResponse build(RSA rsa, String user, String password) {
+    private AuthResponseBuilder() {
 
-		Map<String, Serializable> dataMap = new HashMap<>();
-		dataMap.put("login", user);
-		dataMap.put("password", rsa.encrypt(password));
-		List<String> tasksList = new LinkedList<>();
-		tasksList.addAll(taskPool.getTasksMap().keySet());
-		dataMap.put("tasksList", (Serializable) tasksList);
-		return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, dataMap,
-				Mappings.AUTH_TASK_NAME);
+    }
 
-	}
+    public static NodeResponse build(RSA rsa, String user, String password) {
+
+	Map<String, Serializable> dataMap = new HashMap<>();
+	dataMap.put("login", user);
+	dataMap.put("password", rsa.encrypt(password));
+	List<String> tasksList = new LinkedList<>();
+	tasksList.addAll(taskPool.getTasksMap().keySet());
+	dataMap.put("tasksList", (Serializable) tasksList);
+	return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, dataMap,
+		Mappings.AUTH_TASK_NAME);
+
+    }
 
 }

@@ -10,9 +10,8 @@ import java.util.List;
  */
 public interface Reducer {
 
-	public ReducingResult reduce(
-			List<NodeResponse> responses) throws ReducingException;
+    public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException;
 
-	public boolean validResponse(NodeResponse response);
+    public boolean validResponse(NodeResponse response);
 
 }

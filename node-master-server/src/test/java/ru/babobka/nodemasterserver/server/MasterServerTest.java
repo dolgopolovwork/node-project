@@ -8,10 +8,9 @@ import ru.babobka.nodeutils.container.ContainerStrategyException;
 
 public class MasterServerTest {
 
-	@Test
-	public void initContainerTest() throws ContainerStrategyException, IOException {
-		MasterServer.initTestContainer();
-	}
+    @Test
+    public void initContainerTest() throws ContainerStrategyException, IOException {
+	MasterServer.initTestContainer();
+    }
 
-	
 }

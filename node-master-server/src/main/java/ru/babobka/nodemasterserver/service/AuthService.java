@@ -10,6 +10,6 @@ import java.net.Socket;
  */
 public interface AuthService {
 
-	AuthResult getAuthResult(RSA rsa,  Socket socket);
+    AuthResult getAuthResult(RSA rsa, Socket socket);
 
 }

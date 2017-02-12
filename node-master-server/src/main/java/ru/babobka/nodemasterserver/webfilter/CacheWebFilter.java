@@ -13,30 +13,30 @@ import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class CacheWebFilter implements WebFilter {
 
-	private CacheService cacheService = Container.getInstance().get(CacheService.class);
+    private CacheService cacheService = Container.getInstance().get(CacheService.class);
 
-	private final Charset charset = Container.getInstance().get(Charset.class);
+    private final Charset charset = Container.getInstance().get(Charset.class);
 
-	@Override
-	public void afterFilter(HttpRequest request, HttpResponse response) {
-		if (response.getResponseCode() == ResponseCode.OK) {
-			cacheService.putContent(request, new String(response.getContent(), charset));
-		}
+    @Override
+    public void afterFilter(HttpRequest request, HttpResponse response) {
+	if (response.getResponseCode() == ResponseCode.OK) {
+	    cacheService.putContent(request, new String(response.getContent(), charset));
 	}
+    }
 
-	@Override
-	public FilterResponse onFilter(HttpRequest request) {
+    @Override
+    public FilterResponse onFilter(HttpRequest request) {
 
-		String noCache = request.getUrlParam("noCache");
-		if (noCache != null && noCache.equals("true")) {
-			return FilterResponse.proceed();
-		} else if (request.getMethod() == HttpRequest.HttpMethod.GET) {
-			String cachedContent = cacheService.getContent(request);
+	String noCache = request.getUrlParam("noCache");
+	if (noCache != null && noCache.equals("true")) {
+	    return FilterResponse.proceed();
+	} else if (request.getMethod() == HttpRequest.HttpMethod.GET) {
+	    String cachedContent = cacheService.getContent(request);
 
-			if (cachedContent != null) {
-				return FilterResponse.response(HttpResponse.jsonResponse(cachedContent));
-			}
-		}
-		return FilterResponse.proceed();
+	    if (cachedContent != null) {
+		return FilterResponse.response(HttpResponse.jsonResponse(cachedContent));
+	    }
 	}
+	return FilterResponse.proceed();
+    }
 }

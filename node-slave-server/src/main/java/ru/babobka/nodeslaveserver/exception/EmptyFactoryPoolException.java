@@ -6,17 +6,17 @@ package ru.babobka.nodeslaveserver.exception;
 public class EmptyFactoryPoolException extends Exception {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 3573280529720344853L;
+     * 
+     */
+    private static final long serialVersionUID = 3573280529720344853L;
 
-	//Parameterless Constructor
-    public EmptyFactoryPoolException() {}
+    // Parameterless Constructor
+    public EmptyFactoryPoolException() {
+    }
 
-    //Constructor that accepts a message
-    public EmptyFactoryPoolException(String message)
-    {
-        super(message);
+    // Constructor that accepts a message
+    public EmptyFactoryPoolException(String message) {
+	super(message);
     }
 
 }

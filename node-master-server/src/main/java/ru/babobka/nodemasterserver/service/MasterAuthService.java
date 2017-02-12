@@ -18,37 +18,37 @@ import ru.babobka.nodeserials.crypto.RSA;
  */
 public class MasterAuthService implements AuthService {
 
-	private final NodeUsersService usersService = Container.getInstance().get(NodeUsersService.class);
+    private final NodeUsersService usersService = Container.getInstance().get(NodeUsersService.class);
 
-	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
-	@Override
-	public AuthResult getAuthResult(RSA rsa, Socket socket) {
-		try {
-			StreamUtil.sendObject(rsa.getPublicKey(), socket);
-			NodeResponse authResponse = StreamUtil.receiveObject(socket);
-			if (authResponse.isAuthResponse()) {
-				BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
-				String login = authResponse.getDataValue("login");
-				List<String> tasksList = authResponse.getDataValue("tasksList");
-				if (tasksList != null && !tasksList.isEmpty()) {
-					Set<String> taskSet = new HashSet<>();
-					taskSet.addAll(tasksList);
-					boolean authSuccess = usersService.auth(login, integerHashedPassword);
-					StreamUtil.sendObject(authSuccess, socket);
-					if (authSuccess) {
-						return new AuthResult(true, login, taskSet);
-					}
-				} else {
-					return new AuthResult(false);
-				}
-				return new AuthResult(false);
-			} else {
-				return new AuthResult(false);
-			}
-		} catch (Exception e) {
-			logger.log(e);
-			return new AuthResult(false);
+    @Override
+    public AuthResult getAuthResult(RSA rsa, Socket socket) {
+	try {
+	    StreamUtil.sendObject(rsa.getPublicKey(), socket);
+	    NodeResponse authResponse = StreamUtil.receiveObject(socket);
+	    if (authResponse.isAuthResponse()) {
+		BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
+		String login = authResponse.getDataValue("login");
+		List<String> tasksList = authResponse.getDataValue("tasksList");
+		if (tasksList != null && !tasksList.isEmpty()) {
+		    Set<String> taskSet = new HashSet<>();
+		    taskSet.addAll(tasksList);
+		    boolean authSuccess = usersService.auth(login, integerHashedPassword);
+		    StreamUtil.sendObject(authSuccess, socket);
+		    if (authSuccess) {
+			return new AuthResult(true, login, taskSet);
+		    }
+		} else {
+		    return new AuthResult(false);
 		}
+		return new AuthResult(false);
+	    } else {
+		return new AuthResult(false);
+	    }
+	} catch (Exception e) {
+	    logger.error(e);
+	    return new AuthResult(false);
 	}
+    }
 }

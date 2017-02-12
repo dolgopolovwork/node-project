@@ -13,30 +13,26 @@ import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.webcontroller.WebController;
 
-
 public class TaskWebController extends WebController {
 
-	private TaskService taskService = Container.getInstance()
-			.get(TaskService.class);
+    private TaskService taskService = Container.getInstance().get(TaskService.class);
 
-	private TaskPool taskPool = Container.getInstance().get(TaskPool.class);
+    private TaskPool taskPool = Container.getInstance().get(TaskPool.class);
 
-	@Override
-	public HttpResponse onGet(HttpRequest request)
-			throws IOException, TimeoutException {
-		String taskName = request.getUri().replaceFirst("/", "");
-		taskName = taskName.substring(taskName.indexOf('/') + 1,
-				taskName.indexOf('?'));
-		TaskContext taskContext = taskPool
-				.get(URLDecoder.decode(taskName, "UTF-8"));
-		int maxNodes = TextUtil.tryParseInt("maxNodes", -1);
-		return HttpResponse.jsonResponse(taskService
-				.getResult(request.getUrlParams(), taskContext, maxNodes));
-	}
+    @Override
+    public HttpResponse onGet(HttpRequest request) throws IOException, TimeoutException {
 
-	@Override
-	public HttpResponse onHead(HttpRequest request) {
-		return HttpResponse.ok();
-	}
+	String taskName = request.getUri().replaceFirst("/", "");
+	taskName = taskName.substring(taskName.indexOf('/') + 1, taskName.indexOf('?'));
+
+	TaskContext taskContext = taskPool.get(URLDecoder.decode(taskName, "UTF-8"));
+	int maxNodes = TextUtil.tryParseInt("maxNodes", -1);
+	return HttpResponse.jsonResponse(taskService.getResult(request.getUrlParams(), taskContext, maxNodes));
+    }
+
+    @Override
+    public HttpResponse onHead(HttpRequest request) {
+	return HttpResponse.ok();
+    }
 
 }

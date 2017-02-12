@@ -7,22 +7,20 @@ import ru.babobka.nodemasterserver.model.User;
 
 public interface NodeUsersService {
 
-	List<User> getList();
+    List<User> getList();
 
-	User get(String userName);
+    User get(String userName);
 
-	boolean remove(String userName);
+    boolean remove(String userName);
 
-	boolean add(User user);
+    boolean add(User user);
 
-	boolean addTestUser();
+    boolean addTestUser();
 
-	boolean incrementTaskCount(String login);
+    boolean incrementTaskCount(String login);
 
-	boolean update(String userLoginToUpdate, User user);
+    boolean update(String userLoginToUpdate, User user);
 
-	boolean auth(String login, String password);
-
-	boolean auth(String login, BigInteger integerHashedPassword);
+    boolean auth(String login, BigInteger integerHashedPassword);
 
 }

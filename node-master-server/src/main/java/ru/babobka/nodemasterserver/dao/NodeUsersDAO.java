@@ -9,18 +9,18 @@ import ru.babobka.nodemasterserver.model.User;
  */
 public interface NodeUsersDAO {
 
-	User get(String login);
+    User get(String login);
 
-	List<User> getList();
+    List<User> getList();
 
-	boolean add(User user);
+    boolean add(User user);
 
-	boolean exists(String login);
+    boolean exists(String login);
 
-	boolean remove(String login);
+    boolean remove(String login);
 
-	boolean update(String login, User user);
+    boolean update(String login, User user);
 
-	boolean incrTaskCount(String login);
+    boolean incrTaskCount(String login);
 
 }

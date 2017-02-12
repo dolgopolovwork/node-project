@@ -27,171 +27,171 @@ import ru.babobka.vsjws.model.HttpResponse;
 
 public class NodeUsersCRUDWebControllerITCase {
 
-	private static MasterServer masterServer;
+    private static MasterServer masterServer;
 
-	private static MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
+    private static MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
 
-	private static int restPort;
+    private static int restPort;
 
-	private static String restURL;
+    private static String restURL;
 
-	private static String restLogin;
+    private static String restLogin;
 
-	private static String restPassword;
+    private static String restPassword;
 
-	private static final String USER_NAME = "test_rest_user";
+    private static final String USER_NAME = "test_rest_user";
 
-	private static JSONObject normalUserJson;
+    private static JSONObject normalUserJson;
 
-	private static JSONObject badEmailUserJson;
+    private static JSONObject badEmailUserJson;
 
-	private static final String LOGIN_HEADER = "X-Login";
+    private static final String LOGIN_HEADER = "X-Login";
 
-	private static final String PASSWORD_HEADER = "X-Password";
+    private static final String PASSWORD_HEADER = "X-Password";
 
-	private static final HttpClient httpClient = HttpClientBuilder.create().build();
+    private static final HttpClient httpClient = HttpClientBuilder.create().build();
 
-	@BeforeClass
-	public static void setUp() throws IOException {
-		MasterServer.initTestContainer();
-		SlaveServer.initTestContainer();
+    @BeforeClass
+    public static void setUp() throws IOException {
+	MasterServer.initTestContainer();
+	SlaveServer.initTestContainer();
 
-		config = Container.getInstance().get(MasterServerConfig.class);
+	config = Container.getInstance().get(MasterServerConfig.class);
 
-		restPort = config.getWebPort();
+	restPort = config.getWebPort();
 
-		restURL = "http://localhost:" + restPort + "/users";
+	restURL = "http://localhost:" + restPort + "/users";
 
-		restLogin = config.getRestServiceLogin();
+	restLogin = config.getRestServiceLogin();
 
-		restPassword = config.getRestServicePassword();
+	restPassword = config.getRestServicePassword();
 
-		normalUserJson = new JSONObject();
-		normalUserJson.put("name", USER_NAME);
-		normalUserJson.put("taskCount", 0);
-		normalUserJson.put("password", "abc");
-		normalUserJson.put("email", "babobka@bk.ru");
-		badEmailUserJson = new JSONObject(normalUserJson.toString());
-		badEmailUserJson.put("email", "abc");
-		masterServer = new MasterServer();
-		masterServer.start();
+	normalUserJson = new JSONObject();
+	normalUserJson.put("name", USER_NAME);
+	normalUserJson.put("taskCount", 0);
+	normalUserJson.put("password", "abc");
+	normalUserJson.put("email", "babobka@bk.ru");
+	badEmailUserJson = new JSONObject(normalUserJson.toString());
+	badEmailUserJson.put("email", "abc");
+	masterServer = new MasterServer();
+	masterServer.start();
+    }
+
+    @AfterClass
+    public static void closeServer() {
+	masterServer.interrupt();
+    }
+
+    @After
+    public void tearDown() throws ClientProtocolException, IOException {
+	delete(USER_NAME);
+    }
+
+    @Test
+    public void testDelete() throws ClientProtocolException, IOException {
+	add(normalUserJson);
+	assertEquals(delete(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+    }
+
+    @Test
+    public void testGet() throws ClientProtocolException, IOException {
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+	add(normalUserJson);
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
+	assertEquals(get(USER_NAME + "abc"), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+    }
+
+    @Test
+    public void testBadAdd() throws ClientProtocolException, IOException {
+	assertEquals(add(badEmailUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+
+    }
+
+    @Test
+    public void tesAdd() throws ClientProtocolException, IOException {
+	assertEquals(add(normalUserJson), HttpResponse.ResponseCode.OK.getCode());
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
+    }
+
+    @Test
+    public void testDoubleAdd() throws ClientProtocolException, IOException {
+	add(normalUserJson);
+	assertEquals(add(normalUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
+    }
+
+    @Test
+    public void testAuth() throws ClientProtocolException, JSONException, IOException {
+	assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+    }
+
+    @Test
+    public void testBadAuth() throws ClientProtocolException, JSONException, IOException {
+	assertEquals(badGet(USER_NAME), HttpResponse.ResponseCode.UNAUTHORIZED.getCode());
+    }
+
+    private int add(JSONObject userJSON) throws ClientProtocolException, IOException {
+	HttpPatch patch = null;
+	try {
+	    patch = new HttpPatch(restURL);
+	    setCredentialHeaders(patch);
+	    StringEntity entity = new StringEntity(userJSON.toString());
+	    patch.setEntity(entity);
+	    return httpClient.execute(patch).getStatusLine().getStatusCode();
+	} finally {
+	    if (patch != null) {
+		patch.releaseConnection();
+	    }
 	}
+    }
 
-	@AfterClass
-	public static void closeServer() {
-		masterServer.interrupt();
+    private int delete(String userName) throws ClientProtocolException, IOException {
+	HttpDelete delete = null;
+	try {
+	    delete = new HttpDelete(restURL + "?userName=" + userName);
+	    setCredentialHeaders(delete);
+	    return httpClient.execute(delete).getStatusLine().getStatusCode();
+	} finally {
+	    if (delete != null) {
+		delete.releaseConnection();
+	    }
 	}
+    }
 
-	@After
-	public void tearDown() throws ClientProtocolException, IOException {
-		delete(USER_NAME);
+    private int get(String userName) throws ClientProtocolException, IOException {
+	HttpGet get = null;
+	try {
+	    get = new HttpGet(restURL + "?userName=" + userName);
+	    setCredentialHeaders(get);
+	    return httpClient.execute(get).getStatusLine().getStatusCode();
+	} finally {
+	    if (get != null)
+		get.releaseConnection();
 	}
+    }
 
-	@Test
-	public void testDelete() throws ClientProtocolException, IOException {
-		add(normalUserJson);
-		assertEquals(delete(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
+    private void setCredentialHeaders(HttpMessage httpMessage) {
+	httpMessage.setHeader(LOGIN_HEADER, restLogin);
+	httpMessage.setHeader(PASSWORD_HEADER, restPassword);
+    }
+
+    private int badGet(String userName) throws ClientProtocolException, IOException {
+	HttpGet get = null;
+	try {
+	    get = new HttpGet(restURL + "?userName=" + userName);
+	    setBadCredentialHeaders(get);
+	    return httpClient.execute(get).getStatusLine().getStatusCode();
+	} finally {
+	    if (get != null)
+		get.releaseConnection();
 	}
+    }
 
-	@Test
-	public void testGet() throws ClientProtocolException, IOException {
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
-		add(normalUserJson);
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
-		assertEquals(get(USER_NAME + "abc"), HttpResponse.ResponseCode.NOT_FOUND.getCode());
-	}
-
-	@Test
-	public void testBadAdd() throws ClientProtocolException, IOException {
-		assertEquals(add(badEmailUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
-
-	}
-
-	@Test
-	public void tesAdd() throws ClientProtocolException, IOException {
-		assertEquals(add(normalUserJson), HttpResponse.ResponseCode.OK.getCode());
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.OK.getCode());
-	}
-
-	@Test
-	public void testDoubleAdd() throws ClientProtocolException, IOException {
-		add(normalUserJson);
-		assertEquals(add(normalUserJson), HttpResponse.ResponseCode.BAD_REQUEST.getCode());
-	}
-
-	@Test
-	public void testAuth() throws ClientProtocolException, JSONException, IOException {
-		assertEquals(get(USER_NAME), HttpResponse.ResponseCode.NOT_FOUND.getCode());
-	}
-
-	@Test
-	public void testBadAuth() throws ClientProtocolException, JSONException, IOException {
-		assertEquals(badGet(USER_NAME), HttpResponse.ResponseCode.UNAUTHORIZED.getCode());
-	}
-
-	private int add(JSONObject userJSON) throws ClientProtocolException, IOException {
-		HttpPatch patch = null;
-		try {
-			patch = new HttpPatch(restURL);
-			setCredentialHeaders(patch);
-			StringEntity entity = new StringEntity(userJSON.toString());
-			patch.setEntity(entity);
-			return httpClient.execute(patch).getStatusLine().getStatusCode();
-		} finally {
-			if (patch != null) {
-				patch.releaseConnection();
-			}
-		}
-	}
-
-	private int delete(String userName) throws ClientProtocolException, IOException {
-		HttpDelete delete = null;
-		try {
-			delete = new HttpDelete(restURL + "?userName=" + userName);
-			setCredentialHeaders(delete);
-			return httpClient.execute(delete).getStatusLine().getStatusCode();
-		} finally {
-			if (delete != null) {
-				delete.releaseConnection();
-			}
-		}
-	}
-
-	private int get(String userName) throws ClientProtocolException, IOException {
-		HttpGet get = null;
-		try {
-			get = new HttpGet(restURL + "?userName=" + userName);
-			setCredentialHeaders(get);
-			return httpClient.execute(get).getStatusLine().getStatusCode();
-		} finally {
-			if (get != null)
-				get.releaseConnection();
-		}
-	}
-
-	private void setCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, restLogin);
-		httpMessage.setHeader(PASSWORD_HEADER, restPassword);
-	}
-
-	private int badGet(String userName) throws ClientProtocolException, IOException {
-		HttpGet get = null;
-		try {
-			get = new HttpGet(restURL + "?userName=" + userName);
-			setBadCredentialHeaders(get);
-			return httpClient.execute(get).getStatusLine().getStatusCode();
-		} finally {
-			if (get != null)
-				get.releaseConnection();
-		}
-	}
-
-	private void setBadCredentialHeaders(HttpMessage httpMessage) {
-		httpMessage.setHeader(LOGIN_HEADER, restLogin + "abc");
-		httpMessage.setHeader(PASSWORD_HEADER + "abc", restPassword);
-	}
+    private void setBadCredentialHeaders(HttpMessage httpMessage) {
+	httpMessage.setHeader(LOGIN_HEADER, restLogin + "abc");
+	httpMessage.setHeader(PASSWORD_HEADER + "abc", restPassword);
+    }
 
 }

@@ -12,23 +12,20 @@ public class FactoringResult {
     private final EllipticCurveProjective ellipticCurveProjective;
 
     public FactoringResult(BigInteger factor, EllipticCurveProjective ellipticCurveProjective) {
-        this.factor = factor;
-        this.ellipticCurveProjective = ellipticCurveProjective;
+	this.factor = factor;
+	this.ellipticCurveProjective = ellipticCurveProjective;
     }
 
     public BigInteger getFactor() {
-        return factor;
+	return factor;
     }
 
     public EllipticCurveProjective getEllipticCurveProjective() {
-        return ellipticCurveProjective;
+	return ellipticCurveProjective;
     }
 
     @Override
     public String toString() {
-        return "FactoringResult{" +
-                "factor=" + factor +
-                ", ellipticCurveProjective=" + ellipticCurveProjective +
-                '}';
+	return "FactoringResult{" + "factor=" + factor + ", ellipticCurveProjective=" + ellipticCurveProjective + '}';
     }
 }

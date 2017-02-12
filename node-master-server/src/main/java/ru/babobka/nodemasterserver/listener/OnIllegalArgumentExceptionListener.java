@@ -6,9 +6,9 @@ import ru.babobka.vsjws.model.HttpResponse;
 
 public class OnIllegalArgumentExceptionListener implements OnExceptionListener {
 
-	@Override
-	public HttpResponse onException(Exception e) {
-		return HttpResponse.textResponse(TextUtil.notNull(e.getMessage()), HttpResponse.ResponseCode.BAD_REQUEST);
-	}
+    @Override
+    public HttpResponse onException(Exception e) {
+	return HttpResponse.textResponse(TextUtil.notNull(e.getMessage()), HttpResponse.ResponseCode.BAD_REQUEST);
+    }
 
 }

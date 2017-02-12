@@ -8,45 +8,45 @@ import java.util.Locale;
 
 public interface TextUtil {
 
-	Charset CHARSET = StandardCharsets.UTF_8;
+    Charset CHARSET = StandardCharsets.UTF_8;
 
-	static String notNull(String s) {
-		if (s == null) {
-			return "";
-		}
-		return s;
+    static String notNull(String s) {
+	if (s == null) {
+	    return "";
 	}
+	return s;
+    }
 
-	static long tryParseLong(String s, long defaultValue) {
-		try {
-			return Long.parseLong(s);
-		} catch (NumberFormatException e) {
-			return defaultValue;
-		}
+    static long tryParseLong(String s, long defaultValue) {
+	try {
+	    return Long.parseLong(s);
+	} catch (NumberFormatException e) {
+	    return defaultValue;
 	}
+    }
 
-	static int tryParseInt(String s, int defaultValue) {
-		try {
-			return Integer.parseInt(s);
-		} catch (NumberFormatException e) {
-			return defaultValue;
-		}
+    static int tryParseInt(String s, int defaultValue) {
+	try {
+	    return Integer.parseInt(s);
+	} catch (NumberFormatException e) {
+	    return defaultValue;
 	}
+    }
 
-	static String toURL(String text) {
-		if (text != null)
-			return text.toLowerCase(Locale.getDefault()).replaceAll("[^A-Za-z0-9]", "-");
-		return "";
-	}
+    static String toURL(String text) {
+	if (text != null)
+	    return text.toLowerCase(Locale.getDefault()).replaceAll("[^A-Za-z0-9]", "-");
+	return "";
+    }
 
-	static String getStringFromException(Exception ex) {
-		StringWriter errors = new StringWriter();
-		ex.printStackTrace(new PrintWriter(errors));
-		return errors.toString();
-	}
+    static String getStringFromException(Exception ex) {
+	StringWriter errors = new StringWriter();
+	ex.printStackTrace(new PrintWriter(errors));
+	return errors.toString();
+    }
 
-	static String beautifyServerName(String serverName, int port) {
-		return "'" + serverName + "':" + port;
-	}
+    static String beautifyServerName(String serverName, int port) {
+	return "'" + serverName + "':" + port;
+    }
 
 }

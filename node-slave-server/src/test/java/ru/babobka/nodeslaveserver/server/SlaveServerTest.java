@@ -8,10 +8,8 @@ import ru.babobka.nodeutils.container.ContainerStrategyException;
 
 public class SlaveServerTest {
 
-	
-	@Test
-	public void initContainerTest() throws ContainerStrategyException, FileNotFoundException
-	{
-		SlaveServer.initTestContainer();
-	}
+    @Test
+    public void initContainerTest() throws ContainerStrategyException, FileNotFoundException {
+	SlaveServer.initTestContainer();
+    }
 }

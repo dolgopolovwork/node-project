@@ -11,41 +11,41 @@ import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class JSONWebFilter implements WebFilter {
 
-	private final HttpRequest.HttpMethod[] methods;
+    private final HttpRequest.HttpMethod[] methods;
 
-	public JSONWebFilter(HttpRequest.HttpMethod... methods) {
-		this.methods = methods;
-	}
+    public JSONWebFilter(HttpRequest.HttpMethod... methods) {
+	this.methods = methods;
+    }
 
-	@Override
-	public void afterFilter(HttpRequest request, HttpResponse response) {
+    @Override
+    public void afterFilter(HttpRequest request, HttpResponse response) {
 
-	}
+    }
 
-	@Override
-	public FilterResponse onFilter(HttpRequest request) {
-		for (HttpRequest.HttpMethod method : methods) {
-			if (request.getMethod() == method) {
-				if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
-					return FilterResponse
-							.response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
-				}
-			}
+    @Override
+    public FilterResponse onFilter(HttpRequest request) {
+	for (HttpRequest.HttpMethod method : methods) {
+	    if (request.getMethod() == method) {
+		if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
+		    return FilterResponse
+			    .response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
 		}
-		return FilterResponse.proceed();
+	    }
 	}
+	return FilterResponse.proceed();
+    }
 
-	private boolean isJSONValid(String test) {
-		try {
-			new JSONObject(test);
-		} catch (JSONException ex) {
-			try {
-				new JSONArray(test);
-			} catch (JSONException ex1) {
-				return false;
-			}
-		}
-		return true;
+    private boolean isJSONValid(String test) {
+	try {
+	    new JSONObject(test);
+	} catch (JSONException ex) {
+	    try {
+		new JSONArray(test);
+	    } catch (JSONException ex1) {
+		return false;
+	    }
 	}
+	return true;
+    }
 
 }

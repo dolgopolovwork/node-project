@@ -9,32 +9,32 @@ import java.util.Map;
  */
 public class ExecutionResult {
 
-	private final boolean stopped;
+    private final boolean stopped;
 
-	private final Map<String, Serializable> resultMap = new HashMap<>();
+    private final Map<String, Serializable> resultMap = new HashMap<>();
 
-	public ExecutionResult(boolean stopped, Map<String, Serializable> resultMap) {
-		this.stopped = stopped;
-		if (resultMap != null)
-			this.resultMap.putAll(resultMap);
-	}
+    public ExecutionResult(boolean stopped, Map<String, Serializable> resultMap) {
+	this.stopped = stopped;
+	if (resultMap != null)
+	    this.resultMap.putAll(resultMap);
+    }
 
-	public ExecutionResult(boolean stopped) {
-		this(stopped, null);
+    public ExecutionResult(boolean stopped) {
+	this(stopped, null);
 
-	}
+    }
 
-	public boolean isStopped() {
-		return stopped;
-	}
+    public boolean isStopped() {
+	return stopped;
+    }
 
-	public Map<String, Serializable> getResultMap() {
-		return resultMap;
-	}
+    public Map<String, Serializable> getResultMap() {
+	return resultMap;
+    }
 
-	@Override
-	public String toString() {
-		return "ExecutionResult [stopped=" + stopped + ", resultMap=" + resultMap + "]";
-	}
+    @Override
+    public String toString() {
+	return "ExecutionResult [stopped=" + stopped + ", resultMap=" + resultMap + "]";
+    }
 
 }

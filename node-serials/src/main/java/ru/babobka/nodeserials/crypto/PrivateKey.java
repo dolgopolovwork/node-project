@@ -6,7 +6,7 @@ import java.math.BigInteger;
 /**
  * Created by dolgopolov.a on 29.10.15.
  */
-public class PrivateKey  implements Serializable {
+public class PrivateKey implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -14,22 +14,17 @@ public class PrivateKey  implements Serializable {
 
     private final BigInteger d;
 
-
     public PrivateKey(BigInteger n, BigInteger d) {
-        this.n = n;
-        this.d = d;
+	this.n = n;
+	this.d = d;
     }
 
-
     public BigInteger getN() {
-        return n;
+	return n;
     }
 
     public BigInteger getD() {
-        return d;
+	return d;
     }
-
-
-
 
 }

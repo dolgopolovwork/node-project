@@ -10,26 +10,23 @@ public class Range {
     private long end;
 
     public long getBegin() {
-        return begin;
+	return begin;
     }
 
     public void setBegin(long begin) {
-        this.begin = begin;
+	this.begin = begin;
     }
 
     public long getEnd() {
-        return end;
+	return end;
     }
 
     public void setEnd(long end) {
-        this.end = end;
+	this.end = end;
     }
 
     @Override
     public String toString() {
-        return "Range{" +
-                "begin=" + begin +
-                ", end=" + end +
-                '}';
+	return "Range{" + "begin=" + begin + ", end=" + end + '}';
     }
 }

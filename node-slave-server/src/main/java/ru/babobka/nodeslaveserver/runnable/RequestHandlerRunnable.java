@@ -12,51 +12,49 @@ import ru.babobka.subtask.model.SubTask;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.logging.Level;
 
 /**
  * Created by dolgopolov.a on 27.07.15.
  */
 public class RequestHandlerRunnable implements Runnable {
 
-	private final Socket socket;
+    private final Socket socket;
 
-	private final NodeRequest request;
+    private final NodeRequest request;
 
-	private final SubTask subTask;
+    private final SubTask subTask;
 
-	private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
-	private final TasksStorage tasksStorage;
+    private final TasksStorage tasksStorage;
 
-	public RequestHandlerRunnable(Socket socket, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
-		this.socket = socket;
-		this.request = request;
-		this.subTask = subTask;
-		this.tasksStorage = tasksStorage;
+    public RequestHandlerRunnable(Socket socket, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
+	this.socket = socket;
+	this.request = request;
+	this.subTask = subTask;
+	this.tasksStorage = tasksStorage;
+    }
+
+    @Override
+    public void run() {
+	try {
+	    NodeResponse response = TaskRunner.runTask(tasksStorage, request, subTask);
+	    if (!response.isStopped()) {
+		StreamUtil.sendObject(response, socket);
+		logger.info(response);
+		logger.info("Response was sent");
+	    }
+	} catch (NullPointerException e) {
+	    logger.error(e);
+	    try {
+		StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
+			request.getTaskName()), socket);
+	    } catch (IOException e1) {
+		logger.error(e1);
+	    }
+
+	} catch (IOException e) {
+	    logger.error("Response wasn't sent", e);
 	}
-
-	@Override
-	public void run() {
-		try {
-			NodeResponse response = TaskRunner.runTask(tasksStorage, request, subTask);
-			if (!response.isStopped()) {
-				StreamUtil.sendObject(response, socket);
-				logger.log(response.toString());
-				logger.log("Response was sent");
-			}
-		} catch (NullPointerException e) {
-			logger.log(e);
-			try {
-				StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
-						request.getTaskName()), socket);
-			} catch (IOException e1) {
-				logger.log(e1);
-			}
-
-		} catch (IOException e) {
-			logger.log(e);
-			logger.log(Level.SEVERE, "Response wasn't sent");
-		}
-	}
+    }
 }

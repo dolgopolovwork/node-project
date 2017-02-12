@@ -6,14 +6,13 @@ import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.webcontroller.WebController;
 
-
 public class ClusterInfoWebController extends WebController {
 
-	private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
+    private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
-	@Override
-	public HttpResponse onGet(HttpRequest request) {
-		return HttpResponse.jsonResponse(slavesStorage.getCurrentClusterUserList());
-	}
+    @Override
+    public HttpResponse onGet(HttpRequest request) {
+	return HttpResponse.jsonResponse(slavesStorage.getCurrentClusterUserList());
+    }
 
 }

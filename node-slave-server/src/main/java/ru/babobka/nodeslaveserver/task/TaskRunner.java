@@ -12,36 +12,27 @@ import ru.babobka.subtask.model.ValidationResult;
  */
 public interface TaskRunner {
 
-
-	public static NodeResponse runTask(TasksStorage tasksStorage,NodeRequest request, SubTask subTask) {
-		try {			
-			ValidationResult validationResult = subTask
-					.validateRequest(request);
-			if (validationResult.isValid()) {
-				Timer timer = new Timer();
-				ExecutionResult result = subTask.execute(request);
-				if (result.isStopped()) {
-					return new NodeResponse(request.getTaskId(),
-							request.getRequestId(), timer.getTimePassed(),
-							NodeResponse.Status.STOPPED, null, null,
-							request.getTaskName());
-				} else {
-					return new NodeResponse(request.getTaskId(),
-							request.getRequestId(), timer.getTimePassed(),
-							NodeResponse.Status.NORMAL, null,
-							result.getResultMap(),
-							request.getTaskName());
-				}
-			} else {
-				return new NodeResponse(request.getTaskId(),
-						request.getRequestId(), -1, NodeResponse.Status.FAILED,
-						validationResult.getMessage(), null,
-						request.getTaskName());
-			}
-
-		} finally {
-			tasksStorage.removeRequest(request);
+    public static NodeResponse runTask(TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
+	try {
+	    ValidationResult validationResult = subTask.validateRequest(request);
+	    if (validationResult.isValid()) {
+		Timer timer = new Timer();
+		ExecutionResult result = subTask.execute(request);
+		if (result.isStopped()) {
+		    return new NodeResponse(request.getTaskId(), request.getRequestId(), timer.getTimePassed(),
+			    NodeResponse.Status.STOPPED, null, null, request.getTaskName());
+		} else {
+		    return new NodeResponse(request.getTaskId(), request.getRequestId(), timer.getTimePassed(),
+			    NodeResponse.Status.NORMAL, null, result.getResultMap(), request.getTaskName());
 		}
+	    } else {
+		return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.FAILED,
+			validationResult.getMessage(), null, request.getTaskName());
+	    }
+
+	} finally {
+	    tasksStorage.removeRequest(request);
 	}
+    }
 
 }

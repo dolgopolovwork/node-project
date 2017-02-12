@@ -4,26 +4,26 @@ import ru.babobka.subtask.model.SubTask;
 
 public class TaskContext {
 
-	private final SubTask task;
+    private final SubTask task;
 
-	private final TaskConfig config;
+    private final TaskConfig config;
 
-	public TaskContext(SubTask task, TaskConfig config) {
-		super();
-		this.task = task;
-		this.config = config;
-	}
+    public TaskContext(SubTask task, TaskConfig config) {
+	super();
+	this.task = task;
+	this.config = config;
+    }
 
-	public SubTask getTask() {
-		return task;
-	}
+    public SubTask getTask() {
+	return task;
+    }
 
-	public TaskConfig getConfig() {
-		return config;
-	}
+    public TaskConfig getConfig() {
+	return config;
+    }
 
-	public TaskContext newInstance() {
-		return new TaskContext(task.newInstance(), config.newInstance());
-	}
+    public TaskContext newInstance() {
+	return new TaskContext(task.newInstance(), config.newInstance());
+    }
 
 }

@@ -10,9 +10,8 @@ import ru.babobka.nodeserials.NodeRequest;
  */
 public interface RequestDistributor {
 
-	public NodeRequest[] distribute(Map<String, String> arguments,
-			int nodes, UUID taskId);
+    public NodeRequest[] distribute(Map<String, String> arguments, int nodes, UUID taskId);
 
-	public boolean validArguments(Map<String, String> arguments);
+    public boolean validArguments(Map<String, String> arguments);
 
 }
