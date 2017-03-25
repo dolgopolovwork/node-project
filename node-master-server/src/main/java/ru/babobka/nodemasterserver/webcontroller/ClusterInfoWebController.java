@@ -1,18 +1,18 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.webcontroller.WebController;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.vsjws.model.JSONRequest;
+import ru.babobka.vsjws.model.JSONResponse;
+import ru.babobka.vsjws.webcontroller.JSONWebController;
 
-public class ClusterInfoWebController extends WebController {
+public class ClusterInfoWebController extends JSONWebController {
 
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
     @Override
-    public HttpResponse onGet(HttpRequest request) {
-	return HttpResponse.jsonResponse(slavesStorage.getCurrentClusterUserList());
+    public JSONResponse onGet(JSONRequest request) {
+	return JSONResponse.ok(slavesStorage.getCurrentClusterUserList());
     }
 
 }

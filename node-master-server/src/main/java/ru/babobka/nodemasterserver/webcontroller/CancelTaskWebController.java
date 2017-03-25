@@ -7,9 +7,9 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
-import ru.babobka.vsjws.webcontroller.WebController;
+import ru.babobka.vsjws.webcontroller.HttpWebController;
 
-public class CancelTaskWebController extends WebController {
+public class CancelTaskWebController extends HttpWebController {
 
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
 
@@ -17,7 +17,7 @@ public class CancelTaskWebController extends WebController {
 
     @Override
     public HttpResponse onDelete(HttpRequest request) {
-	String taskIdParam = request.getParam("taskId");
+	String taskIdParam = request.getUrlParam("taskId");
 	if (!taskIdParam.matches(UUID_REGULAR)) {
 	    return HttpResponse.textResponse("Invalid 'taskId'", ResponseCode.BAD_REQUEST);
 	}

@@ -50,7 +50,7 @@ public final class PrimeCounterDistributor implements RequestDistributor {
 	    if (begin >= end || begin < 0) {
 		return false;
 	    }
-	} catch (NumberFormatException e) {
+	} catch (RuntimeException e) {
 	    return false;
 	}
 	return true;

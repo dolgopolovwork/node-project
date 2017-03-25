@@ -16,8 +16,12 @@ public class SlaveServerConfig {
 
     private final String tasksFolder;
 
-    public SlaveServerConfig(int requestTimeoutMillis, int authTimeoutMillis, String loggerFolder, String tasksFolder)
-	    throws ServerConfigurationException {
+    private final int threads;
+
+    private static final int MAX_THREADS = 128;
+
+    public SlaveServerConfig(int requestTimeoutMillis, int authTimeoutMillis, int threads, String loggerFolder,
+	    String tasksFolder) throws ServerConfigurationException {
 
 	if (requestTimeoutMillis <= 0) {
 	    throw new ServerConfigurationException("'requestTimeoutMillis' value must be positive");
@@ -28,6 +32,13 @@ public class SlaveServerConfig {
 	    throw new ServerConfigurationException("'authTimeoutMillis' value must be positive");
 	}
 	this.authTimeoutMillis = authTimeoutMillis;
+
+	if (threads < 1) {
+	    throw new ServerConfigurationException("'threads' is too small");
+	} else if (threads > MAX_THREADS) {
+	    throw new ServerConfigurationException("'threads' is too big");
+	}
+	this.threads = threads;
 
 	if (loggerFolder == null) {
 	    throw new ServerConfigurationException("'loggerFolder' is null");
@@ -51,7 +62,8 @@ public class SlaveServerConfig {
 
     public SlaveServerConfig(JSONObject jsonObject) throws ServerConfigurationException {
 	this(jsonObject.getInt("requestTimeoutMillis"), jsonObject.getInt("authTimeoutMillis"),
-		jsonObject.getString("loggerFolder"), jsonObject.getString("tasksFolder"));
+		jsonObject.getInt("threads"), jsonObject.getString("loggerFolder"),
+		jsonObject.getString("tasksFolder"));
 
     }
 
@@ -71,10 +83,18 @@ public class SlaveServerConfig {
 	return tasksFolder;
     }
 
+    public int getThreads() {
+        return threads;
+    }
+
     @Override
     public String toString() {
 	return "SlaveServerConfig [requestTimeoutMillis=" + requestTimeoutMillis + ", authTimeoutMillis="
-		+ authTimeoutMillis + ", loggerFolder=" + loggerFolder + ", tasksFolder=" + tasksFolder + "]";
+		+ authTimeoutMillis + ", loggerFolder=" + loggerFolder + ", tasksFolder=" + tasksFolder + ", threads="
+		+ threads + "]";
     }
 
+
+    
+    
 }

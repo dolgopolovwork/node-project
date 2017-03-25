@@ -28,8 +28,7 @@ public class MathUtil {
 								  // BigDecimal,
 		.add(m.divide(s.multiply(s), UP)) // do the tricky
 						  // division,
-		.divide(THREE_D, UP).toBigInteger())
-	    ; // and convert back.
+		.divide(THREE_D, UP).toBigInteger());// and convert back.
 	return r; // return the value
     }
 

@@ -42,8 +42,13 @@ public class ContainerTest {
 
     @Test
     public void testNonExisting() {
-	assertNull(Container.getInstance().get(Thread.class));
+	try {
+	    Container.getInstance().get(Thread.class);
+	    fail();
+	} catch (ContainerException e) {
+	}
     }
+
 
     static interface A {
 

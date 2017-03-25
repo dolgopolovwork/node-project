@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.FilterResponse;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
@@ -11,10 +12,10 @@ import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class JSONWebFilter implements WebFilter {
 
-    private final HttpRequest.HttpMethod[] methods;
+    private final HttpMethod[] methods;
 
-    public JSONWebFilter(HttpRequest.HttpMethod... methods) {
-	this.methods = methods;
+    public JSONWebFilter(HttpMethod... methods) {
+        this.methods = methods;
     }
 
     @Override
@@ -24,28 +25,28 @@ public class JSONWebFilter implements WebFilter {
 
     @Override
     public FilterResponse onFilter(HttpRequest request) {
-	for (HttpRequest.HttpMethod method : methods) {
-	    if (request.getMethod() == method) {
-		if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
-		    return FilterResponse
-			    .response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
-		}
-	    }
-	}
-	return FilterResponse.proceed();
+        for (HttpMethod method : methods) {
+            if (request.getMethod() == method) {
+                if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
+                    return FilterResponse
+                            .response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
+                }
+            }
+        }
+        return FilterResponse.proceed();
     }
 
     private boolean isJSONValid(String test) {
-	try {
-	    new JSONObject(test);
-	} catch (JSONException ex) {
-	    try {
-		new JSONArray(test);
-	    } catch (JSONException ex1) {
-		return false;
-	    }
-	}
-	return true;
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

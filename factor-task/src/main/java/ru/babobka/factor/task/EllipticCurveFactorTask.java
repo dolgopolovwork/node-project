@@ -49,12 +49,13 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
-    public ExecutionResult execute(NodeRequest request) {
+    public ExecutionResult execute(int threads, NodeRequest request) {
 
 	try {
 	    Map<String, Serializable> result = new HashMap<>();
 	    BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-	    FactoringResult factoringResult = factorService.factor(number);
+	    FactoringResult factoringResult = factorService.factor(number,
+		    Math.min(threads, Runtime.getRuntime().availableProcessors()));
 	    if (factoringResult != null) {
 		result.put(NUMBER, number);
 		result.put(FACTOR, factoringResult.getFactor());

@@ -42,7 +42,7 @@ public class EllipticFactorDistributor implements RequestDistributor {
 	    if (n.compareTo(BigInteger.ZERO) < 0) {
 		return false;
 	    }
-	} catch (NumberFormatException e) {
+	} catch (RuntimeException e) {
 	    return false;
 	}
 	return true;

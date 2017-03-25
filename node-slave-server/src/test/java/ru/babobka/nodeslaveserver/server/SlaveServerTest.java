@@ -4,12 +4,12 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 
 public class SlaveServerTest {
 
     @Test
-    public void initContainerTest() throws ContainerStrategyException, FileNotFoundException {
+    public void initContainerTest() throws ContainerException, FileNotFoundException {
 	SlaveServer.initTestContainer();
     }
 }

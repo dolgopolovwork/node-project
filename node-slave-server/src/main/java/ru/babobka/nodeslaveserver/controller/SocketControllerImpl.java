@@ -5,8 +5,6 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-
-import ru.babobka.nodeslaveserver.builder.HeartBeatingResponseBuilder;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
@@ -15,6 +13,7 @@ import ru.babobka.nodeslaveserver.task.TaskPool;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.subtask.model.SubTask;
 
 public class SocketControllerImpl implements SocketController {
@@ -38,7 +37,7 @@ public class SocketControllerImpl implements SocketController {
 	socket.setSoTimeout(slaveServerConfig.getRequestTimeoutMillis());
 	NodeRequest request = StreamUtil.receiveObject(socket);
 	if (request.isHeartBeatingRequest()) {
-	    StreamUtil.sendObject(HeartBeatingResponseBuilder.build(), socket);
+	    StreamUtil.sendObject(NodeResponse.heartBeat(), socket);
 	} else if (request.isStoppingRequest()) {
 	    logger.info(request);
 	    tasksStorage.stopTask(request.getTaskId(), request.getTimeStamp());

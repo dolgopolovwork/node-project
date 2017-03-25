@@ -10,13 +10,13 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public void putContent(HttpRequest request, String content) {
-	cacheDAO.put(request.getUri() + request.getUrlParams(), content);
+	cacheDAO.put(request.getUri(), content);
 
     }
 
     @Override
     public String getContent(HttpRequest request) {
-	return cacheDAO.get(request.getUri() + request.getUrlParams());
+	return cacheDAO.get(request.getUri());
     }
 
 }

@@ -5,11 +5,12 @@ import java.io.InputStream;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerStrategy;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeslaveserver.builder.JSONFileServerConfigBuilder;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskPool;
+import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 
 public class SlaveServerContainerStrategy implements ContainerStrategy {
 
@@ -20,17 +21,18 @@ public class SlaveServerContainerStrategy implements ContainerStrategy {
     }
 
     @Override
-    public void contain(Container container) throws ContainerStrategyException {
+    public void contain(Container container) throws ContainerException {
 	try {
 
 	    container.put(slaveServerConfig);
 	    container.put(new SimpleLogger("slave", slaveServerConfig.getLoggerFolder(), "slave"));
 	    container.put(new TaskPool());
 	    container.put(new SlaveAuthService());
+	    container.put(new TaskRunnerService());
 	    SimpleLogger logger = container.get(SimpleLogger.class);
 	    logger.info("Container was successfully initialized");
 	} catch (IOException | RuntimeException e) {
-	    throw new ContainerStrategyException(e);
+	    throw new ContainerException(e);
 	}
     }
 

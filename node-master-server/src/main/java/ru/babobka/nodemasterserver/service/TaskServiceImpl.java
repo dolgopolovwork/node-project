@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.service;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
@@ -13,7 +13,6 @@ import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.ResponsesArray;
 import ru.babobka.nodemasterserver.model.Timer;
-import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodemasterserver.task.TaskPool;
@@ -63,7 +62,6 @@ public class TaskServiceImpl implements TaskService {
 
     private boolean isRequestDataIsTooSmall(SubTask task, Map<String, String> arguments) {
 	NodeRequest request = task.getDistributor().distribute(arguments, 1, UUID.randomUUID())[0];
-
 	if (task.isRequestDataTooSmall(request)) {
 	    return true;
 	}
@@ -118,17 +116,16 @@ public class TaskServiceImpl implements TaskService {
 	} catch (Exception e) {
 	    logger.error(e);
 	}
-	return null;
+	return new HashMap<>();
     }
 
     @Override
     public TaskResult cancelTask(UUID taskId) {
 	try {
-	    List<Slave> clientThreads = slavesStorage.getListByTaskId(taskId);
 	    logger.info("Trying to cancel task " + taskId);
 	    ResponsesArray responsesArray = responseStorage.get(taskId);
 	    if (responsesArray != null) {
-		distributionService.broadcastStopRequests(clientThreads,
+		distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId),
 			NodeRequest.stop(taskId, responsesArray.getMeta().getTaskName()));
 		responseStorage.setStopAllResponses(taskId);
 		return new TaskResult("Task " + taskId + " was canceled");
@@ -147,15 +144,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResult getResult(Map<String, String> requestArguments, TaskContext taskContext, int maxNodes)
 	    throws TimeoutException {
-	Map<String, Serializable> resultMap;
-
 	UUID taskId = UUID.randomUUID();
 	try {
 	    TaskStartResult startResult = startTask(requestArguments, taskContext, taskId, maxNodes);
 	    if (!startResult.isFailed()) {
 		Timer timer = new Timer();
-		resultMap = getTaskResult(startResult.getTaskId());
-		if (resultMap != null) {
+		Map<String, Serializable> resultMap = getTaskResult(startResult.getTaskId());
+		if (!resultMap.isEmpty()) {
 		    return new TaskResult(timer.getTimePassed(), resultMap);
 		} else {
 		    throw new IllegalStateException("Can not find result");

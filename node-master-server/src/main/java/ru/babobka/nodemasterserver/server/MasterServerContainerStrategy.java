@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerStrategy;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodemasterserver.builder.JSONFileServerConfigBuilder;
 import ru.babobka.nodemasterserver.dao.CacheDAOImpl;
 import ru.babobka.nodemasterserver.dao.DebugCacheDAOImpl;
@@ -32,7 +32,7 @@ public class MasterServerContainerStrategy implements ContainerStrategy {
     }
 
     @Override
-    public void contain(Container container) throws ContainerStrategyException {
+    public void contain(Container container) throws ContainerException {
 	try {
 
 	    container.put(masterServerConfig);
@@ -63,7 +63,7 @@ public class MasterServerContainerStrategy implements ContainerStrategy {
 	    SimpleLogger logger = container.get(SimpleLogger.class);
 	    logger.info("Container was successfully initialized");
 	} catch (IOException | RuntimeException e) {
-	    throw new ContainerStrategyException(e);
+	    throw new ContainerException(e);
 	}
     }
 

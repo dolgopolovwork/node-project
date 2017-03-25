@@ -5,6 +5,7 @@ import ru.babobka.nodeutils.container.Container;
 import java.nio.charset.Charset;
 
 import ru.babobka.nodemasterserver.service.CacheService;
+import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.HttpRequest;
 import ru.babobka.vsjws.model.HttpResponse;
 import ru.babobka.vsjws.model.FilterResponse;
@@ -30,7 +31,7 @@ public class CacheWebFilter implements WebFilter {
 	String noCache = request.getUrlParam("noCache");
 	if (noCache != null && noCache.equals("true")) {
 	    return FilterResponse.proceed();
-	} else if (request.getMethod() == HttpRequest.HttpMethod.GET) {
+	} else if (request.getMethod() == HttpMethod.GET) {
 	    String cachedContent = cacheService.getContent(request);
 
 	    if (cachedContent != null) {

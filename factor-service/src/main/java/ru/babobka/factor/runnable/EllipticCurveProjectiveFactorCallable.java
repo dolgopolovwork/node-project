@@ -77,6 +77,7 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
 		    break;
 		}
 	    } catch (InterruptedException e) {
+		Thread.currentThread().interrupt();
 		break;
 	    }
 	}

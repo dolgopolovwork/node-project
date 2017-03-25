@@ -33,21 +33,21 @@ public class ResponseStorage {
     public synchronized void addBadResponse(UUID taskId) {
 	ResponsesArray responsesArray = responsesMap.get(taskId);
 	if (responsesArray != null) {
-	    responsesArray.add(NodeResponse.badResponse(taskId));
+	    responsesArray.add(NodeResponse.failed(taskId));
 	}
     }
 
     public synchronized void addStopResponse(UUID taskId) {
 	ResponsesArray responsesArray = responsesMap.get(taskId);
 	if (responsesArray != null) {
-	    responsesArray.add(NodeResponse.stoppedResponse(taskId));
+	    responsesArray.add(NodeResponse.stopped(taskId));
 	}
     }
 
     public synchronized void setStopAllResponses(UUID taskId) {
 	ResponsesArray responsesArray = responsesMap.get(taskId);
 	if (responsesArray != null) {
-	    responsesArray.fill(NodeResponse.stoppedResponse(taskId));
+	    responsesArray.fill(NodeResponse.stopped(taskId));
 	}
     }
 

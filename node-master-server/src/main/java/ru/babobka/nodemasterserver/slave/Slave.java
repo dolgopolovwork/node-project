@@ -73,7 +73,7 @@ public class Slave extends Thread {
 	    userService.incrementTaskCount(authResult.getLogin());
 	} else {
 	    logger.info("Request  " + request + " was ignored due to race style");
-	    responseStorage.get(request.getTaskId()).add(NodeResponse.dummyResponse(request.getTaskId()));
+	    responseStorage.get(request.getTaskId()).add(NodeResponse.dummy(request.getTaskId()));
 	}
     }
 

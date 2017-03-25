@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class NodeResponse implements Serializable {
+    
+    private static final UUID DUMMY_UUID = new UUID(0, 0);
 
     private static final long serialVersionUID = 9L;
 
@@ -52,16 +54,37 @@ public final class NodeResponse implements Serializable {
 	this(taskId, UUID.randomUUID(), 0, status, null, null, taskName);
     }
 
-    public static NodeResponse badResponse(UUID taskId) {
+    public static NodeResponse failed(UUID taskId) {
 	return new NodeResponse(taskId, NodeResponse.Status.FAILED);
     }
 
-    public static NodeResponse dummyResponse(UUID taskId) {
-	return new NodeResponse(taskId, NodeResponse.Status.NORMAL);
+    public static NodeResponse failed(NodeRequest request, String message) {
+	return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.FAILED, message,
+		null, request.getTaskName());
     }
 
-    public static NodeResponse stoppedResponse(UUID taskId) {
+    public static NodeResponse stopped(NodeRequest request) {
+	return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.STOPPED, null,
+		null, request.getTaskName());
+    }
+
+    public static NodeResponse dummy(UUID taskId) {
+	return new NodeResponse(taskId, NodeResponse.Status.NORMAL);
+    }
+    
+    public static NodeResponse heartBeat()
+    {
+	return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, null,
+		Mappings.HEART_BEAT_TASK_NAME);
+    }
+
+    public static NodeResponse stopped(UUID taskId) {
 	return new NodeResponse(taskId, NodeResponse.Status.STOPPED);
+    }
+
+    public static NodeResponse normal(Map<String, Serializable> result, NodeRequest request, long timePassed) {
+	return new NodeResponse(request.getTaskId(), request.getRequestId(), timePassed, NodeResponse.Status.NORMAL,
+		null, result, request.getTaskName());
     }
 
     public <T> T getDataValue(String key) {

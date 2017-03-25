@@ -57,17 +57,17 @@ public class PrimeCounterTask extends SubTask {
     }
 
     @Override
-    public ExecutionResult execute(NodeRequest request) {
+    public ExecutionResult execute(int threads,NodeRequest request) {
 	try {
 	    if (!isStopped()) {
 		Map<String, Serializable> result = new HashMap<>();
 		long begin = Long.parseLong(request.getStringDataValue(BEGIN));
 		long end = Long.parseLong(request.getStringDataValue(END));
-		int cores = getCores(request);
+		int cores = Math.min(getCores(request),threads);
 		try {
 		    synchronized (this) {
 			if (!isStopped()) {
-			    threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+			    threadPool = Executors.newFixedThreadPool(cores);
 			}
 		    }
 		    int primes = countPrimes(threadPool, begin, end, cores);
@@ -79,7 +79,7 @@ public class PrimeCounterTask extends SubTask {
 		}
 		return new ExecutionResult(isStopped(), result);
 	    } else {
-		return new ExecutionResult(isStopped(), null);
+		return new ExecutionResult(isStopped());
 	    }
 	} finally {
 	    if (threadPool != null)
@@ -111,7 +111,6 @@ public class PrimeCounterTask extends SubTask {
 		    return ValidationResult.fail("begin is more than end");
 		}
 	    } catch (NumberFormatException e) {
-		e.printStackTrace();
 		return ValidationResult.fail(e);
 	    }
 	}

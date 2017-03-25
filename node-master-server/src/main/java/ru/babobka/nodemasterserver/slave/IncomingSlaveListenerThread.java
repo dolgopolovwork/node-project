@@ -35,7 +35,6 @@ public class IncomingSlaveListenerThread extends Thread {
 		}
 	    }
 	} finally {
-
 	    try {
 		ss.close();
 	    } catch (IOException e) {

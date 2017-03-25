@@ -26,14 +26,14 @@ public class Container {
 
     @SuppressWarnings("unchecked")
     public <T> T get(Class<?> clazz) {
-	Object obj = null;
+
 	for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
 	    if (clazz.isAssignableFrom(entry.getKey())) {
-		obj = entry.getValue();
+		return (T) entry.getValue();
 	    }
 	}
 
-	return (T) obj;
+	throw new ContainerException("Object inheriting " + clazz + " was not found");
 
     }
 

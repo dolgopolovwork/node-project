@@ -11,12 +11,12 @@ import org.junit.Test;
 
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 
 public class TaskPoolITCase {
 
     @BeforeClass
-    public static void setUp() throws ContainerStrategyException, FileNotFoundException {
+    public static void setUp() throws ContainerException, FileNotFoundException {
 	MasterServer.initTestContainer();
 
     }

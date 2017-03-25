@@ -24,6 +24,7 @@ public final class User {
     private String email;
 
     public User() {
+	//for tests
     }
 
     public User(String name, byte[] hashedPassword, int taskCount, String email) {

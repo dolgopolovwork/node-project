@@ -14,7 +14,7 @@ import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 
@@ -53,7 +53,7 @@ public class SlaveServer extends Thread {
 	}
     }
 
-    public static void initTestContainer() throws ContainerStrategyException, FileNotFoundException {
+    public static void initTestContainer() throws ContainerException, FileNotFoundException {
 	new SlaveServerContainerStrategy(
 		StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
 			.contain(Container.getInstance());
@@ -100,9 +100,8 @@ public class SlaveServer extends Thread {
     }
 
     public static void main(String[] args)
-	    throws InterruptedException, ContainerStrategyException, FileNotFoundException {
-	new SlaveServerContainerStrategy(new FileInputStream(SLAVE_SERVER_TEST_CONFIG))
-		.contain(Container.getInstance());
+	    throws InterruptedException, ContainerException, FileNotFoundException {
+	initTestContainer();
 	SimpleLogger mainLogger = Container.getInstance().get(SimpleLogger.class);
 	CommandLineArgs command = new CommandLineArgs(args);
 	while (!Thread.currentThread().isInterrupted()) {

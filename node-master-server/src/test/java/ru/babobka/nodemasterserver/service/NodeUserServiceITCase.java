@@ -20,7 +20,7 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeserials.crypto.RSA;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerStrategyException;
+import ru.babobka.nodeutils.container.ContainerException;
 
 public class NodeUserServiceITCase {
 
@@ -33,7 +33,7 @@ public class NodeUserServiceITCase {
     private final User testUser = new User(USER_NAME, PASSWORD, 0, "test@email.com");
 
     @BeforeClass
-    public static void setUp() throws ContainerStrategyException, FileNotFoundException {
+    public static void setUp() throws ContainerException, FileNotFoundException {
 
 	MasterServer.initTestContainer();
 	SlaveServer.initTestContainer();

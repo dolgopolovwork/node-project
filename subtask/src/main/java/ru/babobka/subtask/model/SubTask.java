@@ -9,7 +9,11 @@ public abstract class SubTask {
 
     private volatile boolean stopped;
 
-    public abstract ExecutionResult execute(NodeRequest request);
+    public final ExecutionResult execute(NodeRequest request) {
+	return execute(Runtime.getRuntime().availableProcessors(), request);
+    }
+
+    public abstract ExecutionResult execute(int threads, NodeRequest request);
 
     protected abstract void stopCurrentTask();
 
