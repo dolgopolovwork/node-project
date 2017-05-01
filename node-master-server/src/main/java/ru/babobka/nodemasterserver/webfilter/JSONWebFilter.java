@@ -5,9 +5,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ru.babobka.vsjws.enumerations.HttpMethod;
+import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.model.FilterResponse;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.webserver.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpResponse;
 import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class JSONWebFilter implements WebFilter {
@@ -29,7 +30,7 @@ public class JSONWebFilter implements WebFilter {
             if (request.getMethod() == method) {
                 if (!request.getBody().isEmpty() && !isJSONValid(request.getBody())) {
                     return FilterResponse
-                            .response(HttpResponse.textResponse("Invalid JSON", HttpResponse.ResponseCode.BAD_REQUEST));
+                            .response(HttpResponse.text("Invalid JSON", ResponseCode.BAD_REQUEST));
                 }
             }
         }

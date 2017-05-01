@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
-import ru.babobka.vsjws.model.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpRequest;
 
 public interface CacheService {
 

@@ -13,9 +13,10 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.vsjws.enumerations.HttpMethod;
+import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.model.FilterResponse;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.webserver.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpResponse;
 
 public class CacheWebFilterITCase {
 
@@ -42,14 +43,14 @@ public class CacheWebFilterITCase {
         return request;
     }
 
-    private HttpResponse createResponse(HttpResponse.ResponseCode code, String body) {
-        return HttpResponse.textResponse(body, code);
+    private HttpResponse createResponse(ResponseCode code, String body) {
+        return HttpResponse.text(body, code);
     }
 
     @Test
     public void testGetRequestCache() {
         HttpRequest request = createRequest(HttpMethod.GET, DUMMY_REQUEST_BODY, null);
-        HttpResponse response = createResponse(HttpResponse.ResponseCode.OK, VALID_JSON_RESPONSE);
+        HttpResponse response = createResponse(ResponseCode.OK, VALID_JSON_RESPONSE);
         FilterResponse filterResponse = cacheFilter.onFilter(request);
         assertTrue(filterResponse.isProceed());
         cacheFilter.afterFilter(request, response);
@@ -63,7 +64,7 @@ public class CacheWebFilterITCase {
     @Test
     public void testPutRequestCache() {
         HttpRequest request = createRequest(HttpMethod.PUT, DUMMY_REQUEST_BODY, null);
-        HttpResponse response = createResponse(HttpResponse.ResponseCode.OK, VALID_JSON_RESPONSE);
+        HttpResponse response = createResponse(ResponseCode.OK, VALID_JSON_RESPONSE);
         FilterResponse filterResponse = cacheFilter.onFilter(request);
         assertTrue(filterResponse.isProceed());
         cacheFilter.afterFilter(request, response);

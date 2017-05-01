@@ -31,32 +31,32 @@ public class RequestHandlerRunnable implements Runnable {
     private final TasksStorage tasksStorage;
 
     public RequestHandlerRunnable(Socket socket, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
-	this.socket = socket;
-	this.request = request;
-	this.subTask = subTask;
-	this.tasksStorage = tasksStorage;
+        this.socket = socket;
+        this.request = request;
+        this.subTask = subTask;
+        this.tasksStorage = tasksStorage;
     }
 
     @Override
     public void run() {
-	try {
-	    NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-	    if (!response.isStopped()) {
-		StreamUtil.sendObject(response, socket);
-		logger.info(response);
-		logger.info("Response was sent");
-	    }
-	} catch (RuntimeException e) {
-	    logger.error(e);
-	    try {
-		StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
-			request.getTaskName()), socket);
-	    } catch (IOException e1) {
-		logger.error(e1);
-	    }
+        try {
+            NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
+            if (!response.isStopped()) {
+                StreamUtil.sendObject(response, socket);
+                logger.info(response);
+                logger.info("Response was sent");
+            }
+        } catch (RuntimeException e) {
+            logger.error(e);
+            try {
+                StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
+                        request.getTaskName()), socket);
+            } catch (IOException e1) {
+                logger.error(e1);
+            }
 
-	} catch (IOException e) {
-	    logger.error("Response wasn't sent", e);
-	}
+        } catch (IOException e) {
+            logger.error("Response wasn't sent", e);
+        }
     }
 }

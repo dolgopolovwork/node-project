@@ -2,9 +2,11 @@ package ru.babobka.nodemasterserver.webcontroller;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.task.TaskPool;
-import ru.babobka.vsjws.model.JSONRequest;
-import ru.babobka.vsjws.model.JSONResponse;
 import ru.babobka.vsjws.webcontroller.JSONWebController;
+import ru.babobka.vsjws.webserver.JSONRequest;
+import ru.babobka.vsjws.webserver.JSONResponse;
+
+import java.io.Serializable;
 
 public class AvailableTasksWebController extends JSONWebController {
 
@@ -12,7 +14,7 @@ public class AvailableTasksWebController extends JSONWebController {
 
     @Override
     public JSONResponse onGet(JSONRequest request) {
-	return JSONResponse.ok(taskPool.getTasksMap().keySet());
+        return JSONResponse.ok((Serializable) taskPool.getTasksMap().keySet());
     }
 
 }

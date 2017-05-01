@@ -26,6 +26,7 @@ import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.TextUtil;
+import ru.babobka.vsjws.enumerations.ResponseCode;
 
 public class FactorTaskWebControllerITCase {
 
@@ -112,7 +113,7 @@ public class FactorTaskWebControllerITCase {
     @Test
     public void testInvalidTask() {
 	assertEquals(getFactorHttpResponse(BigInteger.valueOf(-10)).getStatusLine().getStatusCode(),
-		ru.babobka.vsjws.model.HttpResponse.ResponseCode.BAD_REQUEST.getCode());
+		ResponseCode.BAD_REQUEST.getCode());
     }
 
     @Test
@@ -179,12 +180,12 @@ public class FactorTaskWebControllerITCase {
 
     @Test
     public void testVeryBigNumberFactor() {
-	generateTest(15, 40);
+	generateTest(10, 40);
     }
 
     @Test
     public void testExtraBigNumberFactor() {
-	generateTest(5, 48);
+	generateTest(15, 48);
     }
 
     public static void createSlaves() throws IOException {

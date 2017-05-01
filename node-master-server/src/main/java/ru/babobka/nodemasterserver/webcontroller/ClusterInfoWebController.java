@@ -2,9 +2,12 @@ package ru.babobka.nodemasterserver.webcontroller;
 
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.vsjws.model.JSONRequest;
-import ru.babobka.vsjws.model.JSONResponse;
+
 import ru.babobka.vsjws.webcontroller.JSONWebController;
+import ru.babobka.vsjws.webserver.JSONRequest;
+import ru.babobka.vsjws.webserver.JSONResponse;
+
+import java.io.Serializable;
 
 public class ClusterInfoWebController extends JSONWebController {
 
@@ -12,7 +15,7 @@ public class ClusterInfoWebController extends JSONWebController {
 
     @Override
     public JSONResponse onGet(JSONRequest request) {
-	return JSONResponse.ok(slavesStorage.getCurrentClusterUserList());
+	return JSONResponse.ok((Serializable) slavesStorage.getCurrentClusterUserList());
     }
 
 }

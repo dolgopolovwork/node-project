@@ -1,12 +1,13 @@
 package ru.babobka.nodemasterserver.listener;
 
+import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.listener.OnExceptionListener;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.webserver.HttpResponse;
 
 public class OnTaskNotFoundExceptionListener implements OnExceptionListener {
 
     @Override
     public HttpResponse onException(Exception e) {
-	return HttpResponse.textResponse("Task was not found", HttpResponse.ResponseCode.NOT_FOUND);
+	return HttpResponse.text("Task was not found", ResponseCode.NOT_FOUND);
     }
 }

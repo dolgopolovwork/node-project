@@ -18,17 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by dolgopolov.a on 15.12.15.
  */
 public class PrimeCounterTask extends SubTask {
 
-    private volatile ExecutorService threadPool;
+    private volatile ThreadPoolExecutor threadPool;
 
     private static final String BEGIN = "begin";
 
@@ -47,134 +44,134 @@ public class PrimeCounterTask extends SubTask {
     private static final String DESCRIPTION = "Counts prime numbers in a given range";
 
     public PrimeCounterTask() {
-	distributor = new PrimeCounterDistributor(NAME);
+        distributor = new PrimeCounterDistributor(NAME);
     }
 
     @Override
     protected void stopCurrentTask() {
-	if (threadPool != null)
-	    threadPool.shutdownNow();
+        if (threadPool != null)
+            threadPool.shutdownNow();
     }
 
     @Override
-    public ExecutionResult execute(int threads,NodeRequest request) {
-	try {
-	    if (!isStopped()) {
-		Map<String, Serializable> result = new HashMap<>();
-		long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-		long end = Long.parseLong(request.getStringDataValue(END));
-		int cores = Math.min(getCores(request),threads);
-		try {
-		    synchronized (this) {
-			if (!isStopped()) {
-			    threadPool = Executors.newFixedThreadPool(cores);
-			}
-		    }
-		    int primes = countPrimes(threadPool, begin, end, cores);
-		    result.put(PRIME_COUNT, primes);
-		} catch (InterruptedException | ExecutionException e) {
-		    if (!isStopped()) {
-			e.printStackTrace();
-		    }
-		}
-		return new ExecutionResult(isStopped(), result);
-	    } else {
-		return new ExecutionResult(isStopped());
-	    }
-	} finally {
-	    if (threadPool != null)
-		threadPool.shutdownNow();
+    public ExecutionResult execute(int threads, NodeRequest request) {
+        try {
+            if (!isStopped()) {
+                Map<String, Serializable> result = new HashMap<>();
+                long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+                long end = Long.parseLong(request.getStringDataValue(END));
+                int cores = Math.min(getCores(request), threads);
+                try {
+                    synchronized (this) {
+                        if (!isStopped()) {
+                            threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
+                        }
+                    }
+                    int primes = countPrimes(threadPool, begin, end);
+                    result.put(PRIME_COUNT, primes);
+                } catch (InterruptedException | ExecutionException e) {
+                    if (!isStopped()) {
+                        e.printStackTrace();
+                    }
+                }
+                return new ExecutionResult(isStopped(), result);
+            } else {
+                return new ExecutionResult(isStopped());
+            }
+        } finally {
+            if (threadPool != null)
+                threadPool.shutdownNow();
 
-	}
+        }
     }
 
     private int getCores(NodeRequest request) {
 
-	if (isRequestDataTooSmall(request)) {
-	    return 1;
-	} else {
-	    return Runtime.getRuntime().availableProcessors();
-	}
+        if (isRequestDataTooSmall(request)) {
+            return 1;
+        } else {
+            return Runtime.getRuntime().availableProcessors();
+        }
 
     }
 
     @Override
     public ValidationResult validateRequest(NodeRequest request) {
 
-	if (request == null) {
-	    return ValidationResult.fail("Request is empty");
-	} else {
-	    try {
-		long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-		long end = Long.parseLong(request.getStringDataValue(END));
-		if (begin < 0 || end < 0 || begin > end) {
-		    return ValidationResult.fail("begin is more than end");
-		}
-	    } catch (NumberFormatException e) {
-		return ValidationResult.fail(e);
-	    }
-	}
-	return ValidationResult.ok();
+        if (request == null) {
+            return ValidationResult.fail("Request is empty");
+        } else {
+            try {
+                long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+                long end = Long.parseLong(request.getStringDataValue(END));
+                if (begin < 0 || end < 0 || begin > end) {
+                    return ValidationResult.fail("begin is more than end");
+                }
+            } catch (NumberFormatException e) {
+                return ValidationResult.fail(e);
+            }
+        }
+        return ValidationResult.ok();
     }
 
-    private int countPrimes(ExecutorService threadPool, long rangeBegin, long rangeEnd, int cores)
-	    throws InterruptedException, ExecutionException {
-	int result = 0;
-	if (threadPool != null) {
-	    Range[] ranges = MathUtil.getRangeArray(rangeBegin, rangeEnd, cores);
-	    List<Future<Integer>> futureList = new ArrayList<>(ranges.length);
-	    for (int i = 0; i < ranges.length; i++) {
-		futureList.add(threadPool.submit(new PrimeCounterCallable(ranges[i])));
-	    }
-	    for (Future<Integer> future : futureList) {
-		result += future.get();
-	    }
-	    if (isStopped()) {
-		result = 0;
-	    }
-	}
-	return result;
+    private int countPrimes(ThreadPoolExecutor threadPool, long rangeBegin, long rangeEnd)
+            throws InterruptedException, ExecutionException {
+        int result = 0;
+        if (threadPool != null) {
+            Range[] ranges = MathUtil.getRangeArray(rangeBegin, rangeEnd, threadPool.getMaximumPoolSize());
+            List<Future<Integer>> futureList = new ArrayList<>(ranges.length);
+            for (int i = 0; i < ranges.length; i++) {
+                futureList.add(threadPool.submit(new PrimeCounterCallable(ranges[i])));
+            }
+            for (Future<Integer> future : futureList) {
+                result += future.get();
+            }
+            if (isStopped()) {
+                result = 0;
+            }
+        }
+        return result;
 
     }
 
     @Override
     public RequestDistributor getDistributor() {
-	return distributor;
+        return distributor;
     }
 
     @Override
     public Reducer getReducer() {
-	return reducer;
+        return reducer;
     }
 
     @Override
     public boolean isRequestDataTooSmall(NodeRequest request) {
-	long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-	long end = Long.parseLong(request.getStringDataValue(END));
-	if (end - begin > MIN_RANGE_TO_PARALLEL) {
-	    return false;
-	}
-	return true;
+        long begin = Long.parseLong(request.getStringDataValue(BEGIN));
+        long end = Long.parseLong(request.getStringDataValue(END));
+        if (end - begin > MIN_RANGE_TO_PARALLEL) {
+            return false;
+        }
+        return true;
 
     }
 
     public SubTask newInstance() {
-	return new PrimeCounterTask();
+        return new PrimeCounterTask();
     }
 
     @Override
     public String getDescription() {
-	return DESCRIPTION;
+        return DESCRIPTION;
     }
 
     @Override
     public String getName() {
-	return NAME;
+        return NAME;
     }
 
     @Override
     public boolean isRaceStyle() {
-	return false;
+        return false;
     }
 
 }

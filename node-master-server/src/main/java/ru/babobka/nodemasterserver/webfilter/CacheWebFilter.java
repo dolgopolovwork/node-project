@@ -6,10 +6,10 @@ import java.nio.charset.Charset;
 
 import ru.babobka.nodemasterserver.service.CacheService;
 import ru.babobka.vsjws.enumerations.HttpMethod;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.enumerations.ResponseCode;
+import ru.babobka.vsjws.webserver.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpResponse;
 import ru.babobka.vsjws.model.FilterResponse;
-import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
 import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class CacheWebFilter implements WebFilter {
@@ -35,7 +35,7 @@ public class CacheWebFilter implements WebFilter {
 	    String cachedContent = cacheService.getContent(request);
 
 	    if (cachedContent != null) {
-		return FilterResponse.response(HttpResponse.jsonResponse(cachedContent));
+		return FilterResponse.response(HttpResponse.json(cachedContent));
 	    }
 	}
 	return FilterResponse.proceed();

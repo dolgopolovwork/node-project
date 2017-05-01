@@ -31,7 +31,7 @@ import ru.babobka.nodemasterserver.webfilter.AuthWebFilter;
 import ru.babobka.nodemasterserver.webfilter.CacheWebFilter;
 import ru.babobka.nodemasterserver.webfilter.JSONWebFilter;
 import ru.babobka.vsjws.enumerations.HttpMethod;
-import ru.babobka.vsjws.model.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpRequest;
 import ru.babobka.vsjws.webcontroller.WebFilter;
 import ru.babobka.vsjws.webserver.WebServer;
 
@@ -56,7 +56,7 @@ public final class MasterServer extends Thread {
 
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
 
-    private final RedisDatasource datasource = Container.getInstance().get(RedisDatasource.class);
+    private final RedisDatasource datasource = Container.getInstance().get(RedisDatasource.class, null);
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
@@ -82,8 +82,7 @@ public final class MasterServer extends Thread {
         }
         webServer.addController("cancelTask", new CancelTaskWebController()).addWebFilter(authWebFilter);
         webServer.addController("clusterInfo", new ClusterInfoWebController()).addWebFilter(authWebFilter);
-        webServer.addController("users", new NodeUsersCRUDWebController().addWebFilter(authWebFilter)
-                .addWebFilter(new JSONWebFilter(HttpMethod.PATCH, HttpMethod.POST)));
+        webServer.addController("users", new NodeUsersCRUDWebController()).addWebFilter(authWebFilter);
         webServer.addController("tasksInfo", new TasksInfoWebController()).addWebFilter(authWebFilter);
         webServer.addController("availableTasks", new AvailableTasksWebController()).addWebFilter(authWebFilter);
         webServer.addExceptionListener(IllegalArgumentException.class, new OnIllegalArgumentExceptionListener());

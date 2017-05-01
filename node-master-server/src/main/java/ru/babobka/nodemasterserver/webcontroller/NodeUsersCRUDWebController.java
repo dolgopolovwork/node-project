@@ -7,77 +7,80 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.InvalidUserException;
 import ru.babobka.nodemasterserver.model.User;
 import ru.babobka.nodemasterserver.service.NodeUsersService;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
-import ru.babobka.vsjws.webcontroller.HttpWebController;
 
-import static ru.babobka.vsjws.model.HttpResponse.ResponseCode.NOT_FOUND;
+import ru.babobka.vsjws.webcontroller.JSONWebController;
 
-public class NodeUsersCRUDWebController extends HttpWebController {
+import ru.babobka.vsjws.enumerations.ResponseCode;
+import ru.babobka.vsjws.webserver.JSONRequest;
+import ru.babobka.vsjws.webserver.JSONResponse;
+
+import java.io.Serializable;
+
+
+public class NodeUsersCRUDWebController extends JSONWebController {
 
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     @Override
-    public HttpResponse onGet(HttpRequest request) throws JSONException {
+    public JSONResponse onGet(JSONRequest request) throws JSONException {
         String userName = request.getUrlParam("userName");
         if (!userName.isEmpty()) {
             User user = nodeUsersService.get(userName);
             if (user == null) {
-                return HttpResponse.code(NOT_FOUND);
+                return JSONResponse.code(ResponseCode.NOT_FOUND);
             } else {
-                return HttpResponse.jsonResponse(user);
+                return JSONResponse.ok(user);
             }
         } else {
-            return HttpResponse.jsonResponse(nodeUsersService.getList());
+            return JSONResponse.ok((Serializable) nodeUsersService.getList());
         }
     }
 
     @Override
-    public HttpResponse onDelete(HttpRequest request) {
+    public JSONResponse onDelete(JSONRequest request) {
 
         String userName = request.getUrlParam("userName");
         if (userName == null) {
-            return HttpResponse.textResponse("Parameter 'userName' was not set", ResponseCode.BAD_REQUEST);
+            return JSONResponse.badRequest("Parameter 'userName' was not set");
         } else {
             if (nodeUsersService.remove(userName)) {
-                return HttpResponse.ok();
+                return JSONResponse.ok();
             } else {
-                return HttpResponse.code(ResponseCode.BAD_REQUEST);
+                return JSONResponse.code(ResponseCode.BAD_REQUEST);
             }
         }
 
     }
 
     @Override
-    public HttpResponse onPatch(HttpRequest request) {
+    public JSONResponse onPatch(JSONRequest request) {
         try {
             User user = new User(new JSONObject(request.getBody()));
             user.validate();
             if (nodeUsersService.add(user)) {
-                return HttpResponse.ok();
+                return JSONResponse.ok();
             } else {
-                return HttpResponse.code(ResponseCode.BAD_REQUEST);
+                return JSONResponse.code(ResponseCode.BAD_REQUEST);
             }
         } catch (InvalidUserException e) {
-            return HttpResponse.exceptionResponse(e, ResponseCode.BAD_REQUEST);
+            return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
         }
 
     }
 
     @Override
-    public HttpResponse onPost(HttpRequest request) throws JSONException {
+    public JSONResponse onPost(JSONRequest request) throws JSONException {
         try {
             String userName = request.getUrlParam("name");
             User user = new User(new JSONObject(request.getBody()));
             user.validate();
             if (nodeUsersService.update(userName, user)) {
-                return HttpResponse.ok();
+                return JSONResponse.ok();
             } else {
-                return HttpResponse.code(ResponseCode.INTERNAL_SERVER_ERROR);
+                return JSONResponse.code(ResponseCode.INTERNAL_SERVER_ERROR);
             }
         } catch (InvalidUserException e) {
-            return HttpResponse.exceptionResponse(e, ResponseCode.BAD_REQUEST);
+            return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
         }
     }
 }

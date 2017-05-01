@@ -12,8 +12,8 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskContext;
 import ru.babobka.nodemasterserver.task.TaskPool;
 import ru.babobka.nodeutils.util.TextUtil;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.webserver.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpResponse;
 import ru.babobka.vsjws.model.Param;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
 
@@ -30,7 +30,7 @@ public class TaskWebController extends HttpWebController {
         TaskContext taskContext = taskPool.get(URLDecoder.decode(taskName, "UTF-8"));
         int maxNodes = TextUtil.tryParseInt("maxNodes", -1);
         return HttpResponse
-                .jsonResponse(taskService.getResult(paramListToMap(request.getUrlParams()), taskContext, maxNodes));
+                .json(taskService.getResult(paramListToMap(request.getUrlParams()), taskContext, maxNodes));
     }
 
     @Override

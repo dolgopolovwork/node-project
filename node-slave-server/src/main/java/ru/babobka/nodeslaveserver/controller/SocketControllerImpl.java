@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
@@ -18,7 +20,9 @@ import ru.babobka.subtask.model.SubTask;
 
 public class SocketControllerImpl implements SocketController {
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static final int MAX_POOL_SIZE = 10;
+
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_POOL_SIZE);
 
     private final TaskPool taskPool = Container.getInstance().get(TaskPool.class);
 
@@ -29,37 +33,35 @@ public class SocketControllerImpl implements SocketController {
     private final TasksStorage tasksStorage;
 
     public SocketControllerImpl(TasksStorage tasksStorage) {
-	this.tasksStorage = tasksStorage;
+        this.tasksStorage = tasksStorage;
     }
 
     @Override
     public void control(Socket socket) throws IOException {
-	socket.setSoTimeout(slaveServerConfig.getRequestTimeoutMillis());
-	NodeRequest request = StreamUtil.receiveObject(socket);
-	if (request.isHeartBeatingRequest()) {
-	    StreamUtil.sendObject(NodeResponse.heartBeat(), socket);
-	} else if (request.isStoppingRequest()) {
-	    logger.info(request);
-	    tasksStorage.stopTask(request.getTaskId(), request.getTimeStamp());
-	} else if (request.isRaceStyle() && tasksStorage.exists(request.getTaskId())) {
-	    logger.warning(request.getTaskName() + " is race style task. Repeated request was not handled.");
-	} else if (!tasksStorage.wasStopped(request.getTaskId(), request.getTimeStamp())) {
-	    logger.info("Got request " + request);
-	    SubTask subTask = taskPool.get(request.getTaskName()).getTask();
-	    tasksStorage.put(request, subTask);
-	    try {
-		threadPool.submit(new RequestHandlerRunnable(socket, tasksStorage, request, subTask));
-	    } catch (RejectedExecutionException e) {
-		logger.warning("New request was rejected", e);
-	    }
-
-	}
-
+        socket.setSoTimeout(slaveServerConfig.getRequestTimeoutMillis());
+        NodeRequest request = StreamUtil.receiveObject(socket);
+        if (request.isHeartBeatingRequest()) {
+            StreamUtil.sendObject(NodeResponse.heartBeat(), socket);
+        } else if (request.isStoppingRequest()) {
+            logger.info("Stopping request " + request);
+            tasksStorage.stopTask(request.getTaskId(), request.getTimeStamp());
+        } else if (request.isRaceStyle() && tasksStorage.exists(request.getTaskId())) {
+            logger.warning(request.getTaskName() + " is race style task. Repeated request was not handled.");
+        } else if (!tasksStorage.wasStopped(request.getTaskId(), request.getTimeStamp())) {
+            logger.info("Got request " + request);
+            SubTask subTask = taskPool.get(request.getTaskName()).getTask();
+            tasksStorage.put(request, subTask);
+            try {
+                threadPool.submit(new RequestHandlerRunnable(socket, tasksStorage, request, subTask));
+            } catch (RejectedExecutionException e) {
+                logger.warning("New request was rejected", e);
+            }
+        }
     }
 
     @Override
     public void close() throws IOException {
-	threadPool.shutdownNow();
+        threadPool.shutdownNow();
     }
 
 }

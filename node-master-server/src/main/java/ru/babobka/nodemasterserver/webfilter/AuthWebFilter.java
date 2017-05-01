@@ -2,9 +2,10 @@ package ru.babobka.nodemasterserver.webfilter;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
+import ru.babobka.vsjws.enumerations.ResponseCode;
+import ru.babobka.vsjws.webserver.HttpRequest;
+import ru.babobka.vsjws.webserver.HttpResponse;
+
 import ru.babobka.vsjws.webcontroller.WebFilter;
 import ru.babobka.vsjws.model.FilterResponse;
 
@@ -23,7 +24,7 @@ public class AuthWebFilter implements WebFilter {
 	if (!login.equals(masterServerConfig.getRestServiceLogin())
 		|| !password.equals(masterServerConfig.getRestServicePassword())) {
 	    return FilterResponse
-		    .response(HttpResponse.textResponse("Bad login/password combination", ResponseCode.UNAUTHORIZED));
+		    .response(HttpResponse.text("Bad login/password combination", ResponseCode.UNAUTHORIZED));
 	} else {
 	    return FilterResponse.proceed();
 	}

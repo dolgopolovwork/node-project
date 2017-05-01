@@ -4,10 +4,12 @@ import java.util.UUID;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.service.TaskService;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
-import ru.babobka.vsjws.model.HttpResponse.ResponseCode;
+import ru.babobka.vsjws.enumerations.ResponseCode;
+import ru.babobka.vsjws.webserver.HttpRequest;
+//import ru.babobka.vsjws.webserver.HttpResponse;
+import ru.babobka.vsjws.webserver.HttpResponse;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
+
 
 public class CancelTaskWebController extends HttpWebController {
 
@@ -19,10 +21,10 @@ public class CancelTaskWebController extends HttpWebController {
     public HttpResponse onDelete(HttpRequest request) {
 	String taskIdParam = request.getUrlParam("taskId");
 	if (!taskIdParam.matches(UUID_REGULAR)) {
-	    return HttpResponse.textResponse("Invalid 'taskId'", ResponseCode.BAD_REQUEST);
+	    return HttpResponse.text("Invalid 'taskId'", ResponseCode.BAD_REQUEST);
 	}
 	UUID taskId = UUID.fromString(taskIdParam);
-	return HttpResponse.jsonResponse(taskService.cancelTask(taskId));
+	return HttpResponse.json(taskService.cancelTask(taskId));
     }
 
 }

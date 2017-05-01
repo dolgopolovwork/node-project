@@ -1,10 +1,12 @@
 package ru.babobka.nodemasterserver.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class ResponsesArrayMeta {
+public class ResponsesArrayMeta implements Serializable{
 
+    private static final long serialVersionUID = 6357739718733111325L;
     private String taskName;
 
     private Map<String, String> params;

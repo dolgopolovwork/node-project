@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.json.JSONObject;
@@ -10,12 +11,13 @@ import ru.babobka.nodeutils.util.MathUtil;
 /**
  * Created by dolgopolov.a on 29.10.15.
  */
-public final class User {
+public final class User implements Serializable{
 
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 	    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	private static final long serialVersionUID = 6569577055168857213L;
 
-    private String name;
+	private String name;
 
     private byte[] hashedPassword;
 

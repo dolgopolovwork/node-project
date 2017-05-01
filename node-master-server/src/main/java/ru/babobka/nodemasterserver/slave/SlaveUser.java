@@ -1,7 +1,10 @@
 package ru.babobka.nodemasterserver.slave;
 
-class SlaveUser {
+import java.io.Serializable;
 
+class SlaveUser implements Serializable{
+
+    private static final long serialVersionUID = -494398760871103796L;
     private final String login;
 
     private final int localPort;

@@ -45,91 +45,91 @@ public class EllipticCurveFactorTask extends SubTask {
     private static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
 
     public EllipticCurveFactorTask() {
-	this.distributor = new EllipticFactorDistributor(NAME);
+        this.distributor = new EllipticFactorDistributor(NAME);
     }
 
     @Override
     public ExecutionResult execute(int threads, NodeRequest request) {
 
-	try {
-	    Map<String, Serializable> result = new HashMap<>();
-	    BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-	    FactoringResult factoringResult = factorService.factor(number,
-		    Math.min(threads, Runtime.getRuntime().availableProcessors()));
-	    if (factoringResult != null) {
-		result.put(NUMBER, number);
-		result.put(FACTOR, factoringResult.getFactor());
-		result.put(X, factoringResult.getEllipticCurveProjective().getX());
-		result.put(Y, factoringResult.getEllipticCurveProjective().getY());
-		result.put(A, factoringResult.getEllipticCurveProjective().getA());
-		result.put(B, factoringResult.getEllipticCurveProjective().getB());
-		return new ExecutionResult(isStopped(), result);
-	    }
-	    return new ExecutionResult(isStopped());
-	} finally {
-	    factorService.stop();
-	}
+        try {
+            Map<String, Serializable> result = new HashMap<>();
+            BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
+            FactoringResult factoringResult = factorService.factor(number,
+                    Math.min(threads, Runtime.getRuntime().availableProcessors()));
+            if (factoringResult != null) {
+                result.put(NUMBER, number);
+                result.put(FACTOR, factoringResult.getFactor());
+                result.put(X, factoringResult.getEllipticCurveProjective().getX());
+                result.put(Y, factoringResult.getEllipticCurveProjective().getY());
+                result.put(A, factoringResult.getEllipticCurveProjective().getA());
+                result.put(B, factoringResult.getEllipticCurveProjective().getB());
+                return new ExecutionResult(isStopped(), result);
+            }
+            return new ExecutionResult(isStopped());
+        } finally {
+            factorService.stop();
+        }
     }
 
     @Override
     protected void stopCurrentTask() {
-	factorService.stop();
+        factorService.stop();
     }
 
     @Override
     public ValidationResult validateRequest(NodeRequest request) {
-	if (request == null) {
-	    return ValidationResult.fail("Empty request");
-	}
-	try {
-	    BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-	    if (number.compareTo(BigInteger.valueOf(3)) <= 0) {
-		return ValidationResult.fail("number must be greater than 3");
-	    } else if (MathUtil.isPrime(number)) {
-		return ValidationResult.fail("number is not composite");
-	    }
+        if (request == null) {
+            return ValidationResult.fail("Empty request");
+        }
+        try {
+            BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
+            if (number.compareTo(BigInteger.valueOf(3)) <= 0) {
+                return ValidationResult.fail("number must be greater than 3");
+            } else if (MathUtil.isPrime(number)) {
+                return ValidationResult.fail("number is not composite");
+            }
 
-	} catch (Exception e) {
-	    return ValidationResult.fail(e);
-	}
+        } catch (Exception e) {
+            return ValidationResult.fail(e);
+        }
 
-	return ValidationResult.ok();
+        return ValidationResult.ok();
     }
 
     @Override
     public RequestDistributor getDistributor() {
-	return distributor;
+        return distributor;
     }
 
     @Override
     public Reducer getReducer() {
-	return reducer;
+        return reducer;
     }
 
     @Override
     public boolean isRequestDataTooSmall(NodeRequest request) {
-	BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-	return number.bitLength() < 50;
+        BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
+        return number.bitLength() < 50;
     }
 
     @Override
     public SubTask newInstance() {
-	return new EllipticCurveFactorTask();
+        return new EllipticCurveFactorTask();
     }
 
     @Override
     public String getDescription() {
-	return DESCRIPTION;
+        return DESCRIPTION;
     }
 
     @Override
     public String getName() {
-	return NAME;
+        return NAME;
     }
 
     @Override
     public boolean isRaceStyle() {
-	return true;
+        return true;
     }
 
 }
