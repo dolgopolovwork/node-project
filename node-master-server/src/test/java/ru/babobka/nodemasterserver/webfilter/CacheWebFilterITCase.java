@@ -49,7 +49,7 @@ public class CacheWebFilterITCase {
 
     @Test
     public void testGetRequestCache() {
-        HttpRequest request = createRequest(HttpMethod.GET, DUMMY_REQUEST_BODY, null);
+        HttpRequest request = createRequest(HttpMethod.GET, DUMMY_REQUEST_BODY, "");
         HttpResponse response = createResponse(ResponseCode.OK, VALID_JSON_RESPONSE);
         FilterResponse filterResponse = cacheFilter.onFilter(request);
         assertTrue(filterResponse.isProceed());
@@ -63,7 +63,7 @@ public class CacheWebFilterITCase {
 
     @Test
     public void testPutRequestCache() {
-        HttpRequest request = createRequest(HttpMethod.PUT, DUMMY_REQUEST_BODY, null);
+        HttpRequest request = createRequest(HttpMethod.PUT, DUMMY_REQUEST_BODY, "");
         HttpResponse response = createResponse(ResponseCode.OK, VALID_JSON_RESPONSE);
         FilterResponse filterResponse = cacheFilter.onFilter(request);
         assertTrue(filterResponse.isProceed());

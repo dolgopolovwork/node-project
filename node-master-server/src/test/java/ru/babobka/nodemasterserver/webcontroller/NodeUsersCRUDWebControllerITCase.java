@@ -84,20 +84,19 @@ public class NodeUsersCRUDWebControllerITCase {
     }
 
     @After
-    public void tearDown() throws ClientProtocolException, IOException {
+    public void tearDown() throws IOException {
         delete(USER_NAME);
     }
 
     @Test
-    public void testDelete() throws ClientProtocolException, IOException {
+    public void testDelete() throws  IOException {
         add(normalUserJson);
         assertEquals(delete(USER_NAME), ResponseCode.OK.getCode());
         assertEquals(get(USER_NAME), ResponseCode.NOT_FOUND.getCode());
     }
 
     @Test
-    public void testGet() throws ClientProtocolException, IOException {
-        assertEquals(get(USER_NAME), ResponseCode.NOT_FOUND.getCode());
+    public void testGet() throws IOException {
         assertEquals(get(USER_NAME), ResponseCode.NOT_FOUND.getCode());
         add(normalUserJson);
         assertEquals(get(USER_NAME), ResponseCode.OK.getCode());
@@ -105,14 +104,14 @@ public class NodeUsersCRUDWebControllerITCase {
     }
 
     @Test
-    public void testBadAdd() throws ClientProtocolException, IOException {
+    public void testBadAdd() throws IOException {
         assertEquals(add(badEmailUserJson), ResponseCode.BAD_REQUEST.getCode());
         assertEquals(get(USER_NAME), ResponseCode.NOT_FOUND.getCode());
 
     }
 
     @Test
-    public void tesAdd() throws ClientProtocolException, IOException {
+    public void tesAdd() throws IOException {
         assertEquals(add(normalUserJson), ResponseCode.OK.getCode());
         assertEquals(get(USER_NAME), ResponseCode.OK.getCode());
     }
@@ -178,7 +177,7 @@ public class NodeUsersCRUDWebControllerITCase {
         httpMessage.setHeader(PASSWORD_HEADER, restPassword);
     }
 
-    private int badGet(String userName) throws ClientProtocolException, IOException {
+    private int badGet(String userName) throws IOException {
         HttpGet get = null;
         try {
             get = new HttpGet(restURL + "?userName=" + userName);

@@ -55,7 +55,7 @@ public class NodeUsersCRUDWebController extends JSONWebController {
     @Override
     public JSONResponse onPatch(JSONRequest request) {
         try {
-            User user = new User(new JSONObject(request.getBody()));
+            User user = new User(request.getBody());
             user.validate();
             if (nodeUsersService.add(user)) {
                 return JSONResponse.ok();
@@ -63,6 +63,7 @@ public class NodeUsersCRUDWebController extends JSONWebController {
                 return JSONResponse.code(ResponseCode.BAD_REQUEST);
             }
         } catch (InvalidUserException e) {
+            e.printStackTrace();
             return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
         }
 
@@ -72,7 +73,7 @@ public class NodeUsersCRUDWebController extends JSONWebController {
     public JSONResponse onPost(JSONRequest request) throws JSONException {
         try {
             String userName = request.getUrlParam("name");
-            User user = new User(new JSONObject(request.getBody()));
+            User user = new User(request.getBody());
             user.validate();
             if (nodeUsersService.update(userName, user)) {
                 return JSONResponse.ok();
