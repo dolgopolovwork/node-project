@@ -3,6 +3,8 @@ package ru.babobka.nodemasterserver.webfilter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
@@ -20,9 +22,9 @@ public class JSONWebFilterTest {
             HttpMethod.PUT);
 
     private HttpRequest createRequest(HttpMethod method, String body) {
-        HttpRequest request = new HttpRequest();
-        request.setMethod(method);
-        request.setBody(body);
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getMethod()).thenReturn(method);
+        when(request.getBody()).thenReturn(body);
         return request;
     }
 

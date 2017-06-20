@@ -14,27 +14,26 @@ public class ExecutionResult {
     private final Map<String, Serializable> resultMap = new HashMap<>();
 
     public ExecutionResult(boolean stopped, Map<String, Serializable> resultMap) {
-	this.stopped = stopped;
-	if (resultMap != null)
-	    this.resultMap.putAll(resultMap);
+        this.stopped = stopped;
+        if (resultMap != null)
+            this.resultMap.putAll(resultMap);
     }
 
-    public ExecutionResult(boolean stopped) {
-	this(stopped, null);
-
+    public static ExecutionResult stopped(boolean stopped) {
+        return new ExecutionResult(stopped,null);
     }
 
     public boolean isStopped() {
-	return stopped;
+        return stopped;
     }
 
     public Map<String, Serializable> getResultMap() {
-	return resultMap;
+        return resultMap;
     }
 
     @Override
     public String toString() {
-	return "ExecutionResult [stopped=" + stopped + ", resultMap=" + resultMap + "]";
+        return "ExecutionResult [stopped=" + stopped + ", resultMap=" + resultMap + "]";
     }
 
 }

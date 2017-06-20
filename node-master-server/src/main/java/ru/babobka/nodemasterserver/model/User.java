@@ -21,7 +21,7 @@ public final class User implements Serializable{
 
     private byte[] hashedPassword;
 
-    private int taskCount;
+    private Integer taskCount;
 
     private String email;
 
@@ -169,7 +169,7 @@ public final class User implements Serializable{
 		return false;
 	} else if (!name.equals(other.name))
 	    return false;
-	if (taskCount != other.taskCount)
+	if (!taskCount.equals(other.taskCount))
 	    return false;
 	return true;
     }

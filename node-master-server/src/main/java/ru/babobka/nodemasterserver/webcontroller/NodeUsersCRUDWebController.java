@@ -1,7 +1,5 @@
 package ru.babobka.nodemasterserver.webcontroller;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.InvalidUserException;
@@ -22,7 +20,7 @@ public class NodeUsersCRUDWebController extends JSONWebController {
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     @Override
-    public JSONResponse onGet(JSONRequest request) throws JSONException {
+    public JSONResponse onGet(JSONRequest request) {
         String userName = request.getUrlParam("userName");
         if (!userName.isEmpty()) {
             User user = nodeUsersService.get(userName);
@@ -63,14 +61,13 @@ public class NodeUsersCRUDWebController extends JSONWebController {
                 return JSONResponse.code(ResponseCode.BAD_REQUEST);
             }
         } catch (InvalidUserException e) {
-            e.printStackTrace();
             return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
         }
 
     }
 
     @Override
-    public JSONResponse onPost(JSONRequest request) throws JSONException {
+    public JSONResponse onPost(JSONRequest request) {
         try {
             String userName = request.getUrlParam("name");
             User user = new User(request.getBody());

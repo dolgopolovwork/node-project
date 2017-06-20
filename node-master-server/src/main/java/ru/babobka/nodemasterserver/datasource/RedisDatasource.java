@@ -12,29 +12,29 @@ public class RedisDatasource {
     private static final int PORT = 6379;
 
     public enum DatabaseNumber {
-	PRODUCTION_DATABASE(1), TEST_DATABASE(2);
+        PRODUCTION_DATABASE(1), TEST_DATABASE(2);
 
-	private final int number;
+        private final int number;
 
-	private DatabaseNumber(int number) {
-	    this.number = number;
-	}
+        DatabaseNumber(int number) {
+            this.number = number;
+        }
 
-	public int getNumber() {
-	    return number;
-	}
+        public int getNumber() {
+            return number;
+        }
     }
 
     private JedisPool pool;
 
     public RedisDatasource(DatabaseNumber databaseNumber) {
-	pool = new JedisPool(new GenericObjectPoolConfig(), HOST, PORT, Protocol.DEFAULT_TIMEOUT, null,
-		databaseNumber.getNumber(), null);
+        pool = new JedisPool(new GenericObjectPoolConfig(), HOST, PORT, Protocol.DEFAULT_TIMEOUT, null,
+                databaseNumber.getNumber(), null);
 
     }
 
     public JedisPool getPool() {
-	return pool;
+        return pool;
     }
 
 }

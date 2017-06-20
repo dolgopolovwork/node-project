@@ -13,34 +13,29 @@ public class TaskConfig {
     private final boolean raceStyle;
 
     public TaskConfig(String name, String description, boolean raceStyle) {
-	super();
-	this.name = name;
-	this.description = description;
-	this.raceStyle = raceStyle;
+        this.name = name;
+        this.description = description;
+        this.raceStyle = raceStyle;
     }
 
     public TaskConfig(SubTask subTask) {
-	this(subTask.getName(), subTask.getDescription(), subTask.isRaceStyle());
-    }
-
-    public TaskConfig(JSONObject jsonObject) {
-	this(jsonObject.getString("name"), jsonObject.getString("description"), jsonObject.getBoolean("raceStyle"));
+        this(subTask.getName(), subTask.getDescription(), subTask.isRaceStyle());
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public String getDescription() {
-	return description;
+        return description;
     }
 
     public boolean isRaceStyle() {
-	return raceStyle;
+        return raceStyle;
     }
 
     public TaskConfig newInstance() {
-	return new TaskConfig(name, description, raceStyle);
+        return new TaskConfig(name, description, raceStyle);
     }
 
 }

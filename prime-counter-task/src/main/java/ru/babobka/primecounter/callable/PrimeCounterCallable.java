@@ -16,22 +16,22 @@ public class PrimeCounterCallable implements Callable<Integer> {
     private static final PrimeTester tester = new DummyPrimeTester();
 
     public PrimeCounterCallable(Range range) {
-	this.range = range;
+        this.range = range;
     }
 
     @Override
     public Integer call() throws Exception {
 
-	int result = 0;
-	long counter = range.getBegin();
+        int result = 0;
+        long counter = range.getBegin();
 
-	while (!Thread.currentThread().isInterrupted() && counter != range.getEnd() + 1) {
-	    if (tester.isPrime(counter)) {
-		result++;
-	    }
-	    counter++;
-	}
-	return result;
+        while (!Thread.currentThread().isInterrupted() && counter <= range.getEnd()) {
+            if (tester.isPrime(counter)) {
+                result++;
+            }
+            counter++;
+        }
+        return result;
     }
 
 }

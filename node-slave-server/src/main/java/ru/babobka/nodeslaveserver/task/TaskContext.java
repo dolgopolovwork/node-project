@@ -9,21 +9,20 @@ public class TaskContext {
     private final TaskConfig config;
 
     public TaskContext(SubTask task, TaskConfig config) {
-	super();
-	this.task = task;
-	this.config = config;
+        this.task = task;
+        this.config = config;
     }
 
     public SubTask getTask() {
-	return task;
+        return task;
     }
 
     public TaskConfig getConfig() {
-	return config;
+        return config;
     }
 
     public TaskContext newInstance() {
-	return new TaskContext(task.newInstance(), config.newInstance());
+        return new TaskContext(task.newInstance(), config.newInstance());
     }
 
 }

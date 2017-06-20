@@ -16,28 +16,28 @@ public class GlitchRunnable implements Runnable {
     public GlitchRunnable(Socket socket)
 
     {
-	this.socket = socket;
+        this.socket = socket;
     }
 
     @Override
     public void run() {
-	Random random = new Random();
-	while (!Thread.currentThread().isInterrupted()) {
-	    int timeToWaitSec = random.nextInt(60);
-	    logger.info("Seconds to glitch " + timeToWaitSec);
-	    try {
-		Thread.sleep(timeToWaitSec * 1000L);
-		try {
-		    logger.info("Closing socket in GlitchRunnable");
-		    socket.close();
-		} catch (IOException e) {
-		    logger.info(e);
-		}
-	    } catch (InterruptedException e) {
-		logger.warning(e);
-		Thread.currentThread().interrupt();
-	    }
-	}
+        Random random = new Random();
+        while (!Thread.currentThread().isInterrupted()) {
+            int timeToWaitSec = random.nextInt(60);
+            logger.info("Seconds to glitch " + timeToWaitSec);
+            try {
+                Thread.sleep(timeToWaitSec * 1000L);
+                try {
+                    logger.info("Closing socket in GlitchRunnable");
+                    socket.close();
+                } catch (IOException e) {
+                    logger.info(e);
+                }
+            } catch (InterruptedException e) {
+                logger.warning(e);
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
 }

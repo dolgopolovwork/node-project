@@ -19,32 +19,31 @@ public class EllipticFactorDistributor implements RequestDistributor {
     private final String taskName;
 
     public EllipticFactorDistributor(String taskName) {
-	this.taskName = taskName;
+        this.taskName = taskName;
     }
 
     @Override
     public NodeRequest[] distribute(Map<String, String> dataMap, int nodes, UUID id) {
-	BigInteger n = new BigInteger(dataMap.get(NUMBER));
-	NodeRequest[] requests = new NodeRequest[nodes];
-	Map<String, Serializable> innerDataMap = new HashMap<>();
-	innerDataMap.put(NUMBER, n);
-	for (int i = 0; i < requests.length; i++) {
-	    requests[i] = NodeRequest.race(id, taskName, innerDataMap);
-	}
-	return requests;
+        BigInteger n = new BigInteger(dataMap.get(NUMBER));
+        NodeRequest[] requests = new NodeRequest[nodes];
+        Map<String, Serializable> innerDataMap = new HashMap<>();
+        innerDataMap.put(NUMBER, n);
+        for (int i = 0; i < requests.length; i++) {
+            requests[i] = NodeRequest.race(id, taskName, innerDataMap);
+        }
+        return requests;
     }
 
     @Override
     public boolean validArguments(Map<String, String> dataMap) {
-	try {
-
-	    BigInteger n = new BigInteger(dataMap.getOrDefault(NUMBER, ""));
-	    if (n.compareTo(BigInteger.ZERO) < 0) {
-		return false;
-	    }
-	} catch (RuntimeException e) {
-	    return false;
-	}
-	return true;
+        try {
+            BigInteger n = new BigInteger(dataMap.getOrDefault(NUMBER, ""));
+            if (n.compareTo(BigInteger.ZERO) < 0) {
+                return false;
+            }
+        } catch (RuntimeException e) {
+            return false;
+        }
+        return true;
     }
 }

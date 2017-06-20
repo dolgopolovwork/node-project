@@ -24,57 +24,54 @@ public class TaskPool {
 
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
 
-    public TaskPool() throws CanNotInitTaskFactoryException {
-	init();
-    }
 
-    private void init() throws CanNotInitTaskFactoryException {
-	try {
-	    File tasksFolder = new File(slaveServerConfig.getTasksFolder());
-	    String taskFolder = tasksFolder.getAbsolutePath();
-	    List<String> files = StreamUtil.getJarFileListFromFolder(taskFolder);
-	    for (String file : files) {
-		try {
-		    String jarFilePath = taskFolder + File.separator + file;
-		    List<SubTask> subTasks = StreamUtil.getSubtasks(jarFilePath);
-		    for (SubTask subTask : subTasks) {
-			TaskConfig config = new TaskConfig(subTask);
-			tasksMap.put(config.getName(), new TaskContext(subTask, config));
-		    }
-		} catch (Exception e) {
-		    logger.error("Can not init factory with file " + file, e);
-		    throw new CanNotInitTaskFactoryException(e);
-		}
-	    }
+    public TaskPool() {
+        try {
+            File tasksFolder = new File(slaveServerConfig.getTasksFolder());
+            String taskFolder = tasksFolder.getAbsolutePath();
+            List<String> files = StreamUtil.getJarFileListFromFolder(taskFolder);
+            for (String file : files) {
+                try {
+                    String jarFilePath = taskFolder + File.separator + file;
+                    List<SubTask> subTasks = StreamUtil.getSubtasks(jarFilePath);
+                    for (SubTask subTask : subTasks) {
+                        TaskConfig config = new TaskConfig(subTask);
+                        tasksMap.put(config.getName(), new TaskContext(subTask, config));
+                    }
+                } catch (Exception e) {
+                    logger.error("Can not init factory with file " + file, e);
+                    throw new CanNotInitTaskFactoryException(e);
+                }
+            }
 
-	} catch (RuntimeException e) {
-	    throw new CanNotInitTaskFactoryException(
-		    "Can not init factory pool. Try to redownload new jars to node-slave-server task folder", e);
-	}
-	if (tasksMap.isEmpty()) {
-	    throw new CanNotInitTaskFactoryException(
-		    "Can not init factory pool. No task to run. Try to redownload new jars to node-slave-server task folder");
-	}
+        } catch (RuntimeException e) {
+            throw new CanNotInitTaskFactoryException(
+                    "Can not init factory pool. Try to redownload new jars to node-slave-server task folder", e);
+        }
+        if (tasksMap.isEmpty()) {
+            throw new CanNotInitTaskFactoryException(
+                    "Can not init factory pool. No task to run. Try to redownload new jars to node-slave-server task folder");
+        }
 
     }
 
     public Map<String, TaskContext> getTasksMap() {
-	return tasksMap;
+        return tasksMap;
     }
 
     public TaskContext get(String name) throws IOException {
 
-	TaskContext taskContext = tasksMap.get(name);
-	if (taskContext != null) {
-	    return taskContext.newInstance();
-	} else {
-	    throw new IOException("Task " + name + " was not found");
-	}
+        TaskContext taskContext = tasksMap.get(name);
+        if (taskContext != null) {
+            return taskContext.newInstance();
+        } else {
+            throw new IOException("Task " + name + " was not found");
+        }
 
     }
 
     public boolean isEmpty() {
-	return tasksMap.isEmpty();
+        return tasksMap.isEmpty();
     }
 
 }

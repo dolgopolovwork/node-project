@@ -10,7 +10,7 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 public interface JSONFileServerConfigBuilder {
 
-    public static MasterServerConfig build(InputStream is) {
+	static MasterServerConfig build(InputStream is) {
 
 	try {
 	    return new MasterServerConfig(new JSONObject(StreamUtil.readFile(is)));

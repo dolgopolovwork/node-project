@@ -15,15 +15,15 @@ public class PublicKey implements Serializable {
     private final BigInteger e;
 
     public PublicKey(BigInteger n, BigInteger e) {
-	this.n = n;
-	this.e = e;
+        this.n = n;
+        this.e = e;
     }
 
     public BigInteger getN() {
-	return n;
+        return n;
     }
 
     public BigInteger getE() {
-	return e;
+        return e;
     }
 }

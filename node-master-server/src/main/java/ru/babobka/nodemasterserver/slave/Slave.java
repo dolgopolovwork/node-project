@@ -55,190 +55,192 @@ public class Slave extends Thread {
     private final Socket socket;
 
     public Slave(Socket socket) {
-	if (socket != null) {
-	    logger.info("New connection " + socket);
-	    this.socket = socket;
-	    this.rsa = new RSA(RSA_KEY_BIT_LENGTH);
-	} else {
-	    throw new IllegalArgumentException("Socket can not be null");
-	}
+        if (socket != null) {
+            logger.info("New connection " + socket);
+            this.socket = socket;
+            this.rsa = new RSA(RSA_KEY_BIT_LENGTH);
+        } else {
+            throw new IllegalArgumentException("Socket can not be null");
+        }
     }
 
     public synchronized void sendRequest(NodeRequest request) throws IOException {
-	logger.info("sendRequest " + request);
-	if (!(request.isRaceStyle() && requestMap.containsKey(request.getTaskId()))) {
-	    requestMap.put(request.getRequestId(), request);
-	    StreamUtil.sendObject(request, socket);
-	    logger.info(request + " was sent");
-	    userService.incrementTaskCount(authResult.getLogin());
-	} else {
-	    logger.info("Request  " + request + " was ignored due to race style");
-	    responseStorage.get(request.getTaskId()).add(NodeResponse.dummy(request.getTaskId()));
-	}
+        logger.info("sendRequest " + request);
+        if (!(request.isRaceStyle() && requestMap.containsKey(request.getTaskId()))) {
+            requestMap.put(request.getRequestId(), request);
+            StreamUtil.sendObject(request, socket);
+            logger.info(request + " was sent");
+            userService.incrementTaskCount(authResult.getLogin());
+        } else {
+            logger.info("Request  " + request + " was ignored due to race style");
+            responseStorage.get(request.getTaskId()).add(NodeResponse.dummy(request.getTaskId()));
+        }
     }
 
     private synchronized void setBadAndCancelAllTheRequests() {
-	if (!requestMap.isEmpty()) {
-	    NodeRequest request;
-	    for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
-		request = requestEntry.getValue();
-		responseStorage.addBadResponse(request.getTaskId());
-		try {
-		    distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(request.getTaskId()),
-			    NodeRequest.stop(request.getTaskId(), request.getTaskName()));
-		} catch (EmptyClusterException e) {
-		    logger.error(e);
-		}
-	    }
-	    requestMap.clear();
-	}
+        if (!requestMap.isEmpty()) {
+            NodeRequest request;
+            for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
+                request = requestEntry.getValue();
+                responseStorage.addBadResponse(request.getTaskId());
+                try {
+                    distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(request.getTaskId()),
+                            NodeRequest.stop(request.getTaskId(), request.getTaskName()));
+                } catch (EmptyClusterException e) {
+                    logger.error(e);
+                }
+            }
+            requestMap.clear();
+        }
     }
 
     private synchronized void setBadAllTheRequests() {
-	if (!requestMap.isEmpty()) {
-	    NodeRequest request;
-	    for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
-		request = requestEntry.getValue();
-		responseStorage.addBadResponse(request.getTaskId());
-	    }
-	    logger.info("Responses are clear");
-	    requestMap.clear();
-	}
+        if (!requestMap.isEmpty()) {
+            NodeRequest request;
+            for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
+                request = requestEntry.getValue();
+                responseStorage.addBadResponse(request.getTaskId());
+            }
+            logger.info("Responses are clear");
+            requestMap.clear();
+        }
     }
 
     public void sendHeartBeating() throws IOException {
-	StreamUtil.sendObject(NodeRequest.heartBeatRequest(), socket);
+        StreamUtil.sendObject(NodeRequest.heartBeatRequest(), socket);
     }
 
     public synchronized void sendStopRequest(NodeRequest stopRequest) throws IOException {
-	for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
-	    if (requestEntry.getValue().getTaskId().equals(stopRequest.getTaskId())) {
-		responseStorage.addStopResponse(stopRequest.getTaskId());
-		requestMap.remove(requestEntry.getValue().getRequestId());
-	    }
-	}
-	StreamUtil.sendObject(stopRequest, socket);
+        for (Map.Entry<UUID, NodeRequest> requestEntry : requestMap.entrySet()) {
+            if (requestEntry.getValue().getTaskId().equals(stopRequest.getTaskId())) {
+                responseStorage.addStopResponse(stopRequest.getTaskId());
+                requestMap.remove(requestEntry.getValue().getRequestId());
+            }
+        }
+        StreamUtil.sendObject(stopRequest, socket);
 
     }
 
     private boolean fit() throws IOException {
-	boolean fittable = slavesStorage.add(this);
-	StreamUtil.sendObject(fittable, this.getSocket());
-	return fittable;
+        boolean fittable = slavesStorage.add(this);
+        StreamUtil.sendObject(fittable, this.getSocket());
+        return fittable;
     }
 
     private AuthResult auth() throws SocketException {
-	socket.setSoTimeout(masterServerConfig.getAuthTimeOutMillis());
-	this.authResult = authService.getAuthResult(rsa, socket);
-	if (!authResult.isValid()) {
-	    slavesStorage.remove(this);
-	    logger.warning("Can not auth " + socket);
-	} else {
-	    logger.info(authResult.getLogin() + " from " + socket + " was logged");
-	}
-	return authResult;
+        socket.setSoTimeout(masterServerConfig.getAuthTimeOutMillis());
+        this.authResult = authService.getAuthResult(rsa, socket);
+        if (!authResult.isValid()) {
+            slavesStorage.remove(this);
+            logger.warning("Can not auth " + socket);
+        } else {
+            logger.info(authResult.getLogin() + " from " + socket + " was logged");
+        }
+        return authResult;
     }
 
     @Override
     public void run() {
-	try {
-	    if (fit() && auth().isValid()) {
-		while (!Thread.currentThread().isInterrupted()) {
-		    socket.setSoTimeout(masterServerConfig.getRequestTimeOutMillis());
-		    NodeResponse response = StreamUtil.receiveObject(socket);
-		    if (!response.isHeartBeatingResponse()) {
-			logger.info(response);
-			requestMap.remove(response.getResponseId());
-			logger.info("Remove response " + response.getResponseId());
-			if (responseStorage.exists(response.getTaskId())) {
-			    responseStorage.get(response.getTaskId()).add(response);
-			}
-		    }
-		}
-	    }
-	} catch (IOException e) {
-	    if (!Thread.currentThread().isInterrupted()) {
-		logger.error(e);
-	    }
-	    logger.warning("Connection is closed " + socket);
-	} catch (RuntimeException e) {
-	    logger.error(e);
-	} finally {
-	    logger.info("Removing connection " + socket);
-	    slavesStorage.remove(this);
-	    synchronized (Slave.class) {
-		if (!requestMap.isEmpty()) {
-		    logger.info("Slave has a requests to redistribute");
-		    try {
-			distributionService.redistribute(this);
-		    } catch (DistributionException e) {
-			logger.error(e);
-			setBadAndCancelAllTheRequests();
-		    } catch (EmptyClusterException e) {
-			logger.error(e);
-			setBadAllTheRequests();
-		    }
-		}
-	    }
-	    if (socket != null && !socket.isClosed()) {
-		try {
-		    socket.close();
-		} catch (IOException e) {
-		    logger.error(e);
-		}
-	    }
-	    if (authResult != null && authResult.getLogin() != null)
-		logger.info("User " + authResult.getLogin() + " was disconnected");
-	}
+        try {
+            if (fit() && auth().isValid()) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    socket.setSoTimeout(masterServerConfig.getRequestTimeOutMillis());
+                    NodeResponse response = StreamUtil.receiveObject(socket);
+                    if (!response.isHeartBeatingResponse()) {
+                        logger.info(response);
+                        requestMap.remove(response.getResponseId());
+                        logger.info("Remove response " + response.getResponseId());
+                        if (responseStorage.exists(response.getTaskId())) {
+                            responseStorage.get(response.getTaskId()).add(response);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            if (!Thread.currentThread().isInterrupted()) {
+                logger.error(e);
+            }
+            logger.warning("Connection is closed " + socket);
+        } catch (RuntimeException e) {
+            logger.error(e);
+        } finally {
+            logger.info("Removing connection " + socket);
+            slavesStorage.remove(this);
+            synchronized (Slave.class) {
+                if (!requestMap.isEmpty()) {
+                    logger.info("Slave has a requests to redistribute");
+                    try {
+                        distributionService.redistribute(this);
+                    } catch (DistributionException e) {
+                        logger.error(e);
+                        setBadAndCancelAllTheRequests();
+                    } catch (EmptyClusterException e) {
+                        logger.error(e);
+                        setBadAllTheRequests();
+                    }
+                }
+            }
+            if (socket != null && !socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    logger.error(e);
+                }
+            }
+            if (authResult != null && authResult.getLogin() != null)
+                logger.info("User " + authResult.getLogin() + " was disconnected");
+        }
     }
 
+
+
     public Map<String, LinkedList<NodeRequest>> getRequestsGroupedByTask() {
-	Map<String, LinkedList<NodeRequest>> requestsByTaskName = new HashMap<>();
-	for (Map.Entry<UUID, NodeRequest> requestEntry : this.getRequestMap().entrySet()) {
-	    if (requestsByTaskName.containsKey(requestEntry.getValue().getTaskName())) {
-		requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
-	    } else {
-		requestsByTaskName.put(requestEntry.getValue().getTaskName(), new LinkedList<NodeRequest>());
-		requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
-	    }
-	}
-	return requestsByTaskName;
+        Map<String, LinkedList<NodeRequest>> requestsByTaskName = new HashMap<>();
+        for (Map.Entry<UUID, NodeRequest> requestEntry : this.getRequestMap().entrySet()) {
+            if (requestsByTaskName.containsKey(requestEntry.getValue().getTaskName())) {
+                requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
+            } else {
+                requestsByTaskName.put(requestEntry.getValue().getTaskName(), new LinkedList<NodeRequest>());
+                requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
+            }
+        }
+        return requestsByTaskName;
     }
 
     @Override
     public String toString() {
-	return "requests " + getRequestCount();
+        return "requests " + getRequestCount();
     }
 
     @Override
     public void interrupt() {
-	super.interrupt();
-	try {
-	    socket.close();
-	} catch (IOException e) {
-	    logger.error(e);
-	}
+        super.interrupt();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            logger.error(e);
+        }
 
     }
 
     public int getRequestCount() {
-	return requestMap.size();
+        return requestMap.size();
     }
 
     public Set<String> getAvailableTasksSet() {
-	return authResult.getTaskSet();
+        return authResult.getTaskSet();
     }
 
     public String getLogin() {
-	return authResult.getLogin();
+        return authResult.getLogin();
     }
 
     public Socket getSocket() {
-	return socket;
+        return socket;
     }
 
     public Map<UUID, NodeRequest> getRequestMap() {
-	return requestMap;
+        return requestMap;
     }
 
 }

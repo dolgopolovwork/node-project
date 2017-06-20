@@ -3,6 +3,8 @@ package ru.babobka.nodemasterserver.webfilter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.FileNotFoundException;
 
@@ -34,12 +36,12 @@ public class CacheWebFilterITCase {
     }
 
     private HttpRequest createRequest(HttpMethod method, String body, String uri) {
-        HttpRequest request = new HttpRequest();
-        request.setBody(body);
+        HttpRequest request = mock(HttpRequest.class);
+        when(request.getBody()).thenReturn(body);
         if (uri != null) {
-            request.setUri(uri);
+            when(request.getUri()).thenReturn(uri);
         }
-        request.setMethod(method);
+        when(request.getMethod()).thenReturn(method);
         return request;
     }
 

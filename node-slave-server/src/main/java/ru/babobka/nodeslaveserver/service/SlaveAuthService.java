@@ -24,18 +24,18 @@ public class SlaveAuthService implements AuthService {
 
     @Override
     public boolean auth(Socket socket, String login, String password) throws IOException {
-	socket.setSoTimeout(slaveServerConfig.getAuthTimeoutMillis());
-	boolean fittable = StreamUtil.receiveObject(socket);
-	if (fittable) {
-	    PublicKey publicKey = StreamUtil.receiveObject(socket);
-	    NodeResponse response = AuthResponseBuilder.build(new RSA(null, publicKey), login, password);
-	    StreamUtil.sendObject(response, socket);
-	    return (Boolean) StreamUtil.receiveObject(socket);
-	} else {
-	    logger.warning("Can not connect to master server due to connection limit");
-	    throw new MasterServerIsFullException();
+        socket.setSoTimeout(slaveServerConfig.getAuthTimeoutMillis());
+        boolean fittable = StreamUtil.receiveObject(socket);
+        if (fittable) {
+            PublicKey publicKey = StreamUtil.receiveObject(socket);
+            NodeResponse response = AuthResponseBuilder.build(new RSA(null, publicKey), login, password);
+            StreamUtil.sendObject(response, socket);
+            return (Boolean) StreamUtil.receiveObject(socket);
+        } else {
+            logger.warning("Can not connect to master server due to connection limit");
+            throw new MasterServerIsFullException();
 
-	}
+        }
 
     }
 }

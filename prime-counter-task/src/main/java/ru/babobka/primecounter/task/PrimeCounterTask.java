@@ -76,7 +76,7 @@ public class PrimeCounterTask extends SubTask {
                 }
                 return new ExecutionResult(isStopped(), result);
             } else {
-                return new ExecutionResult(isStopped());
+                return ExecutionResult.stopped(isStopped());
             }
         } finally {
             if (threadPool != null)
@@ -97,7 +97,6 @@ public class PrimeCounterTask extends SubTask {
 
     @Override
     public ValidationResult validateRequest(NodeRequest request) {
-
         if (request == null) {
             return ValidationResult.fail("Request is empty");
         } else {
@@ -120,8 +119,8 @@ public class PrimeCounterTask extends SubTask {
         if (threadPool != null) {
             Range[] ranges = MathUtil.getRangeArray(rangeBegin, rangeEnd, threadPool.getMaximumPoolSize());
             List<Future<Integer>> futureList = new ArrayList<>(ranges.length);
-            for (int i = 0; i < ranges.length; i++) {
-                futureList.add(threadPool.submit(new PrimeCounterCallable(ranges[i])));
+            for (Range range : ranges) {
+                futureList.add(threadPool.submit(new PrimeCounterCallable(range)));
             }
             for (Future<Integer> future : futureList) {
                 result += future.get();
@@ -148,11 +147,7 @@ public class PrimeCounterTask extends SubTask {
     public boolean isRequestDataTooSmall(NodeRequest request) {
         long begin = Long.parseLong(request.getStringDataValue(BEGIN));
         long end = Long.parseLong(request.getStringDataValue(END));
-        if (end - begin > MIN_RANGE_TO_PARALLEL) {
-            return false;
-        }
-        return true;
-
+        return (end - begin) <= MIN_RANGE_TO_PARALLEL;
     }
 
     public SubTask newInstance() {

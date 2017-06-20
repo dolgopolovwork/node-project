@@ -28,13 +28,13 @@ public class EllipticCurveFactorService {
         try {
             if (!stopped) {
                 FactoringResult factoringResult;
-                if (number.bitLength() < 50) {
+                if (!numberIsBigEnough(number)) {
                     factoringResult = new FactoringResult(BigInteger.valueOf(MathUtil.dummyFactor(number.longValue())),
                             EllipticCurveProjective.dummyCurve());
                 } else {
                     synchronized (this) {
                         if (!stopped && threadPool == null) {
-                            threadPool = (ThreadPoolExecutor)Executors.newFixedThreadPool(cores);
+                            threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
                         }
                     }
                     factoringResult = ellipticFactorParallel(threadPool, number);
@@ -46,6 +46,10 @@ public class EllipticCurveFactorService {
             stopped = false;
         }
 
+    }
+
+    private boolean numberIsBigEnough(BigInteger number) {
+        return number.bitLength() > 50;
     }
 
     public synchronized void stop() {

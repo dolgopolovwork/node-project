@@ -12,39 +12,38 @@ public class ValidationResult {
 
     private final boolean valid;
 
-    private ValidationResult(boolean valid) {
-	this.message = null;
-	this.valid = valid;
+    private ValidationResult(String message, boolean valid) {
+        this.message = message;
+        this.valid = valid;
     }
 
-    private ValidationResult(String message, boolean valid) {
-	this.message = message;
-	this.valid = valid;
+    private ValidationResult(boolean valid) {
+       this(null,valid);
     }
 
     public static ValidationResult ok() {
-	return new ValidationResult(true);
+        return new ValidationResult(true);
     }
 
     public static ValidationResult fail(String message) {
-	return new ValidationResult(message, false);
+        return new ValidationResult(message, false);
     }
 
     public static ValidationResult fail(Exception e) {
-	return new ValidationResult(getStringFromException(e), false);
+        return new ValidationResult(getStringFromException(e), false);
     }
 
     public String getMessage() {
-	return message;
+        return message;
     }
 
     public boolean isValid() {
-	return valid;
+        return valid;
     }
 
     private static String getStringFromException(Exception ex) {
-	StringWriter errors = new StringWriter();
-	ex.printStackTrace(new PrintWriter(errors));
-	return errors.toString();
+        StringWriter errors = new StringWriter();
+        ex.printStackTrace(new PrintWriter(errors));
+        return errors.toString();
     }
 }

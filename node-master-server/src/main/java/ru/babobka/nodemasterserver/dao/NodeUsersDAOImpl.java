@@ -34,196 +34,191 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 
     private Integer getUserId(String login) {
 
-	try (Jedis jedis = datasource.getPool().getResource();) {
-	    String value = jedis.hget(USERS_KEY, login);
-	    if (value != null) {
-		return Integer.parseInt(value);
-	    }
-	}
-	return null;
+        try (Jedis jedis = datasource.getPool().getResource();) {
+            String value = jedis.hget(USERS_KEY, login);
+            if (value != null) {
+                return Integer.parseInt(value);
+            }
+        }
+        return null;
     }
 
     private User get(String login, int id) {
-	try (Jedis jedis = datasource.getPool().getResource();) {
-	    Map<byte[], byte[]> map = jedis.hgetAll((USER_KEY + id).getBytes(charset));
-	    String email = null;
-	    if (map.get(emailField) != null) {
-		email = new String(map.get(emailField), charset);
-	    }
-	    int taskCount = 0;
-	    if (map.get(taskCountField) != null) {
-		taskCount = Integer.parseInt(new String(map.get(taskCountField), charset));
-	    }
-	    byte[] hashedPassword = map.get(hashedPasswordField);
+        try (Jedis jedis = datasource.getPool().getResource();) {
+            Map<byte[], byte[]> map = jedis.hgetAll((USER_KEY + id).getBytes(charset));
+            String email = null;
+            if (map.get(emailField) != null) {
+                email = new String(map.get(emailField), charset);
+            }
+            int taskCount = 0;
+            if (map.get(taskCountField) != null) {
+                taskCount = Integer.parseInt(new String(map.get(taskCountField), charset));
+            }
+            byte[] hashedPassword = map.get(hashedPasswordField);
 
-	    return new User(login, hashedPassword, taskCount, email);
-	}
+            return new User(login, hashedPassword, taskCount, email);
+        }
     }
 
     @Override
     public User get(String login) {
-	Integer userId = getUserId(login);
-	if (userId != null) {
-	    return get(login, userId);
-	}
-	return null;
+        Integer userId = getUserId(login);
+        if (userId != null) {
+            return get(login, userId);
+        }
+        return null;
 
     }
 
     @Override
     public List<User> getList() {
-	List<User> users = new ArrayList<>();
-	try (Jedis jedis = datasource.getPool().getResource();) {
-	    Map<String, String> map = jedis.hgetAll(USERS_KEY);
-	    for (Map.Entry<String, String> entry : map.entrySet()) {
-		users.add(get(entry.getKey(), Integer.parseInt(entry.getValue())));
-	    }
-	}
-	return users;
+        List<User> users = new ArrayList<>();
+        try (Jedis jedis = datasource.getPool().getResource();) {
+            Map<String, String> map = jedis.hgetAll(USERS_KEY);
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                users.add(get(entry.getKey(), Integer.parseInt(entry.getValue())));
+            }
+        }
+        return users;
     }
 
     @Override
     public boolean add(User user) {
-	Transaction t = null;
-	Jedis jedis = null;
-	try {
-	    jedis = datasource.getPool().getResource();
-	    long usersCount = jedis.incr("users_count:");
-	    Map<byte[], byte[]> userMap = new HashMap<>();
-	    if (user.getEmail() != null) {
-		userMap.put(emailField, user.getEmail().getBytes(charset));
-	    }
-	    userMap.put(hashedPasswordField, user.getHashedPassword());
-	    if (user.getTaskCount() != null) {
-		userMap.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
-	    }
-	    Map<String, String> loginIdMap = new HashMap<>();
-	    loginIdMap.put(user.getName(), String.valueOf(usersCount));
-	    t = jedis.multi();
-	    t.hmset(USERS_KEY, loginIdMap);
-	    t.hmset((USER_KEY + usersCount).getBytes(charset), userMap);
-	    t.exec();
-	    return true;
-	} catch (Exception e) {
-	    logger.error(e);
-	    return false;
-	} finally {
-	    if (t != null) {
-		try {
-		    t.close();
-		} catch (IOException e) {
-		    logger.error(e);
-		}
-	    }
-	    if (jedis != null) {
-		jedis.close();
-	    }
-	}
+        Transaction t = null;
+        Jedis jedis = null;
+        try {
+            jedis = datasource.getPool().getResource();
+            long usersCount = jedis.incr("users_count:");
+            Map<byte[], byte[]> userMap = new HashMap<>();
+            if (user.getEmail() != null) {
+                userMap.put(emailField, user.getEmail().getBytes(charset));
+            }
+            userMap.put(hashedPasswordField, user.getHashedPassword());
+            if (user.getTaskCount() != null) {
+                userMap.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
+            }
+            Map<String, String> loginIdMap = new HashMap<>();
+            loginIdMap.put(user.getName(), String.valueOf(usersCount));
+            t = jedis.multi();
+            t.hmset(USERS_KEY, loginIdMap);
+            t.hmset((USER_KEY + usersCount).getBytes(charset), userMap);
+            t.exec();
+            return true;
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        } finally {
+            if (t != null) {
+                try {
+                    t.close();
+                } catch (IOException e) {
+                    logger.error(e);
+                }
+            }
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
 
     }
 
     @Override
     public boolean remove(String login) {
 
-	Transaction t = null;
-	Jedis jedis = null;
-	try {
-	    jedis = datasource.getPool().getResource();
-	    Integer userId = getUserId(login);
-	    if (userId != null) {
-		t = jedis.multi();
-		t.hdel(USERS_KEY, login);
-		t.del(USER_KEY + userId);
-		t.exec();
-		return true;
-	    }
-	    return false;
-	} catch (Exception e) {
-	    logger.error(e);
-	    return false;
-	} finally {
-	    if (t != null) {
-		try {
-		    t.close();
-		} catch (IOException e) {
-		    logger.error(e);
-		}
-	    }
-	    if (jedis != null) {
-		jedis.close();
-	    }
-	}
+        Transaction t = null;
+        Jedis jedis = null;
+        try {
+            jedis = datasource.getPool().getResource();
+            Integer userId = getUserId(login);
+            if (userId != null) {
+                t = jedis.multi();
+                t.hdel(USERS_KEY, login);
+                t.del(USER_KEY + userId);
+                t.exec();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error(e);
+            return false;
+        } finally {
+            if (t != null) {
+                try {
+                    t.close();
+                } catch (IOException e) {
+                    logger.error(e);
+                }
+            }
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
     }
 
     @Override
     public boolean update(String login, User user) {
-	Jedis jedis = null;
-	Transaction t = null;
-	try {
-	    jedis = datasource.getPool().getResource();
-	    Integer userId = getUserId(login);
-	    t = jedis.multi();
-	    if (userId != null) {
-		if (user.getName() != null && !user.getName().equals(login)) {
-		    t.hdel(USERS_KEY, login);
-		    t.hset(USERS_KEY, login, String.valueOf(userId));
-		}
-		Map<byte[], byte[]> map = new HashMap<>();
-		if (user.getEmail() != null) {
-		    map.put(emailField, user.getEmail().getBytes(charset));
-		}
-		if (user.getHashedPassword() != null) {
-		    map.put(hashedPasswordField, user.getHashedPassword());
-		}
-		if (user.getTaskCount() != null) {
-		    map.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
-		}
-		t.hmset((USER_KEY + userId).getBytes(charset), map);
-		t.exec();
-		return true;
-	    }
+        Jedis jedis = null;
+        Transaction t = null;
+        try {
+            jedis = datasource.getPool().getResource();
+            Integer userId = getUserId(login);
+            t = jedis.multi();
+            if (userId != null) {
+                if (user.getName() != null && !user.getName().equals(login)) {
+                    t.hdel(USERS_KEY, login);
+                    t.hset(USERS_KEY, login, String.valueOf(userId));
+                }
+                Map<byte[], byte[]> map = new HashMap<>();
+                if (user.getEmail() != null) {
+                    map.put(emailField, user.getEmail().getBytes(charset));
+                }
+                if (user.getHashedPassword() != null) {
+                    map.put(hashedPasswordField, user.getHashedPassword());
+                }
+                if (user.getTaskCount() != null) {
+                    map.put(taskCountField, String.valueOf(user.getTaskCount()).getBytes(charset));
+                }
+                t.hmset((USER_KEY + userId).getBytes(charset), map);
+                t.exec();
+                return true;
+            }
 
-	} catch (Exception e) {
-	    logger.error(e);
-	} finally {
-	    if (t != null) {
-		try {
-		    t.close();
-		} catch (IOException e) {
-		    logger.error(e);
-		}
-	    }
-	    if (jedis != null) {
-		jedis.close();
-	    }
-	}
-	return false;
+        } catch (Exception e) {
+            logger.error(e);
+        } finally {
+            if (t != null) {
+                try {
+                    t.close();
+                } catch (IOException e) {
+                    logger.error(e);
+                }
+            }
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return false;
 
     }
 
     @Override
     public boolean incrTaskCount(String login) {
-	try (Jedis jedis = datasource.getPool().getResource();) {
-	    Integer userId = getUserId(login);
-	    if (userId != null) {
-		jedis.hincrBy(USER_KEY + userId, new String(taskCountField, charset), 1L);
-		return true;
-	    }
-	}
-	return false;
+        try (Jedis jedis = datasource.getPool().getResource();) {
+            Integer userId = getUserId(login);
+            if (userId != null) {
+                jedis.hincrBy(USER_KEY + userId, new String(taskCountField, charset), 1L);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean exists(String login) {
-	if (login == null)
-	    return false;
-	try (Jedis jedis = datasource.getPool().getResource();) {
-	    Integer userId = getUserId(login);
-	    if (userId != null) {
-		return true;
-	    }
-	}
-	return false;
+        if (login == null)
+            return false;
+        return getUserId(login) != null;
+
     }
 
 }

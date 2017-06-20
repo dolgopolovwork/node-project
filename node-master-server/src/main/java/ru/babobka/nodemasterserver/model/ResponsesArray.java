@@ -129,7 +129,7 @@ public final class ResponsesArray {
 	}
     }
 
-    public void fill(NodeResponse response) {
+	void fill(NodeResponse response) {
 	synchronized (lock) {
 	    if (size.intValue() <= responseArray.length()) {
 		for (int i = 0; i < responseArray.length(); i++) {

@@ -10,7 +10,7 @@ public abstract class SubTask {
     private volatile boolean stopped;
 
     public final ExecutionResult execute(NodeRequest request) {
-	return execute(Runtime.getRuntime().availableProcessors(), request);
+        return execute(Runtime.getRuntime().availableProcessors(), request);
     }
 
     public abstract ExecutionResult execute(int threads, NodeRequest request);
@@ -18,8 +18,8 @@ public abstract class SubTask {
     protected abstract void stopCurrentTask();
 
     public final synchronized void stopProcess() {
-	stopped = true;
-	stopCurrentTask();
+        stopped = true;
+        stopCurrentTask();
     }
 
     public abstract ValidationResult validateRequest(NodeRequest request);
@@ -39,7 +39,7 @@ public abstract class SubTask {
     public abstract SubTask newInstance();
 
     public boolean isStopped() {
-	return stopped;
+        return stopped;
     }
 
 }

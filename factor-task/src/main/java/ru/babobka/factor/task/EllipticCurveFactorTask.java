@@ -26,7 +26,7 @@ public class EllipticCurveFactorTask extends SubTask {
 
     public static final String FACTOR = "factor";
 
-    private final EllipticFactorDistributor distributor;
+    private final EllipticFactorDistributor distributor = new EllipticFactorDistributor(NAME);
 
     private final EllipticFactorReducer reducer = new EllipticFactorReducer();
 
@@ -43,10 +43,6 @@ public class EllipticCurveFactorTask extends SubTask {
     private static final String NAME = "Elliptic curve factor";
 
     private static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
-
-    public EllipticCurveFactorTask() {
-        this.distributor = new EllipticFactorDistributor(NAME);
-    }
 
     @Override
     public ExecutionResult execute(int threads, NodeRequest request) {
@@ -65,7 +61,7 @@ public class EllipticCurveFactorTask extends SubTask {
                 result.put(B, factoringResult.getEllipticCurveProjective().getB());
                 return new ExecutionResult(isStopped(), result);
             }
-            return new ExecutionResult(isStopped());
+            return ExecutionResult.stopped(isStopped());
         } finally {
             factorService.stop();
         }
@@ -89,7 +85,7 @@ public class EllipticCurveFactorTask extends SubTask {
                 return ValidationResult.fail("number is not composite");
             }
 
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return ValidationResult.fail(e);
         }
 
