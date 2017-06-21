@@ -7,11 +7,7 @@ import ru.babobka.primecounter.model.PrimeCounterReducer;
 import ru.babobka.primecounter.model.Range;
 import ru.babobka.primecounter.util.MathUtil;
 
-import ru.babobka.subtask.model.ExecutionResult;
-import ru.babobka.subtask.model.Reducer;
-import ru.babobka.subtask.model.RequestDistributor;
-import ru.babobka.subtask.model.SubTask;
-import ru.babobka.subtask.model.ValidationResult;
+import ru.babobka.subtask.model.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,113 +21,21 @@ import java.util.concurrent.*;
  */
 public class PrimeCounterTask extends SubTask {
 
-    private volatile ThreadPoolExecutor threadPool;
-
-    private static final String BEGIN = "begin";
-
-    private static final String END = "end";
-
-    public static final String PRIME_COUNT = "primeCount";
 
     private static final Long MIN_RANGE_TO_PARALLEL = 5000L;
 
     private final PrimeCounterReducer reducer = new PrimeCounterReducer();
 
-    private final PrimeCounterDistributor distributor;
+    private final PrimeCounterDistributor distributor = new PrimeCounterDistributor(NAME);
+
+    private final PrimeCounterRequestValidator primeCounterRequestValidator = new PrimeCounterRequestValidator();
+
+    private final PrimeCounterTaskExecutor primeCounterTaskExecutor = new PrimeCounterTaskExecutor();
 
     private static final String NAME = "Dummy prime counter";
 
     private static final String DESCRIPTION = "Counts prime numbers in a given range";
 
-    public PrimeCounterTask() {
-        distributor = new PrimeCounterDistributor(NAME);
-    }
-
-    @Override
-    protected void stopCurrentTask() {
-        if (threadPool != null)
-            threadPool.shutdownNow();
-    }
-
-    @Override
-    public ExecutionResult execute(int threads, NodeRequest request) {
-        try {
-            if (!isStopped()) {
-                Map<String, Serializable> result = new HashMap<>();
-                long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-                long end = Long.parseLong(request.getStringDataValue(END));
-                int cores = Math.min(getCores(request), threads);
-                try {
-                    synchronized (this) {
-                        if (!isStopped()) {
-                            threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(cores);
-                        }
-                    }
-                    int primes = countPrimes(threadPool, begin, end);
-                    result.put(PRIME_COUNT, primes);
-                } catch (InterruptedException | ExecutionException e) {
-                    if (!isStopped()) {
-                        e.printStackTrace();
-                    }
-                }
-                return new ExecutionResult(isStopped(), result);
-            } else {
-                return ExecutionResult.stopped(isStopped());
-            }
-        } finally {
-            if (threadPool != null)
-                threadPool.shutdownNow();
-
-        }
-    }
-
-    private int getCores(NodeRequest request) {
-
-        if (isRequestDataTooSmall(request)) {
-            return 1;
-        } else {
-            return Runtime.getRuntime().availableProcessors();
-        }
-
-    }
-
-    @Override
-    public ValidationResult validateRequest(NodeRequest request) {
-        if (request == null) {
-            return ValidationResult.fail("Request is empty");
-        } else {
-            try {
-                long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-                long end = Long.parseLong(request.getStringDataValue(END));
-                if (begin < 0 || end < 0 || begin > end) {
-                    return ValidationResult.fail("begin is more than end");
-                }
-            } catch (NumberFormatException e) {
-                return ValidationResult.fail(e);
-            }
-        }
-        return ValidationResult.ok();
-    }
-
-    private int countPrimes(ThreadPoolExecutor threadPool, long rangeBegin, long rangeEnd)
-            throws InterruptedException, ExecutionException {
-        int result = 0;
-        if (threadPool != null) {
-            Range[] ranges = MathUtil.getRangeArray(rangeBegin, rangeEnd, threadPool.getMaximumPoolSize());
-            List<Future<Integer>> futureList = new ArrayList<>(ranges.length);
-            for (Range range : ranges) {
-                futureList.add(threadPool.submit(new PrimeCounterCallable(range)));
-            }
-            for (Future<Integer> future : futureList) {
-                result += future.get();
-            }
-            if (isStopped()) {
-                result = 0;
-            }
-        }
-        return result;
-
-    }
 
     @Override
     public RequestDistributor getDistributor() {
@@ -144,9 +48,19 @@ public class PrimeCounterTask extends SubTask {
     }
 
     @Override
+    public TaskExecutor getTaskExecutor() {
+        return primeCounterTaskExecutor;
+    }
+
+    @Override
+    public RequestValidator getRequestValidator() {
+        return primeCounterRequestValidator;
+    }
+
+    @Override
     public boolean isRequestDataTooSmall(NodeRequest request) {
-        long begin = Long.parseLong(request.getStringDataValue(BEGIN));
-        long end = Long.parseLong(request.getStringDataValue(END));
+        long begin = Long.parseLong(request.getStringDataValue(Params.BEGIN.getValue()));
+        long end = Long.parseLong(request.getStringDataValue(Params.END.getValue()));
         return (end - begin) <= MIN_RANGE_TO_PARALLEL;
     }
 

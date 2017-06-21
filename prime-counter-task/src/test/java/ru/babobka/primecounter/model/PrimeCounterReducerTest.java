@@ -3,6 +3,7 @@ package ru.babobka.primecounter.model;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.primecounter.task.Params;
 import ru.babobka.primecounter.task.PrimeCounterTask;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.ReducingResult;
@@ -39,7 +40,7 @@ public class PrimeCounterReducerTest {
     @Test
     public void testIsValidOk() {
         Map<String, Serializable> result = new HashMap<>();
-        result.put(PrimeCounterTask.PRIME_COUNT, 10);
+        result.put(Params.PRIME_COUNT.getValue(), 10);
         NodeResponse response = NodeResponse.normal(result, NodeRequest.heartBeatRequest(), 10);
         assertTrue(primeCounterReducer.validResponse(response));
     }
@@ -57,16 +58,14 @@ public class PrimeCounterReducerTest {
     }
 
 
-
-
     @Test
     public void testReduceValid() throws ReducingException {
         Map<String, Serializable> result = new HashMap<>();
-        result.put(PrimeCounterTask.PRIME_COUNT, 10);
+        result.put(Params.PRIME_COUNT.getValue(), 10);
         NodeResponse response = NodeResponse.normal(result, NodeRequest.heartBeatRequest(), 10);
         List<NodeResponse> responses = new LinkedList<>(Arrays.asList(response, response, response));
         ReducingResult reducingResult = primeCounterReducer.reduce(responses);
-        assertEquals(reducingResult.get(PrimeCounterTask.PRIME_COUNT), 30);
+        assertEquals(reducingResult.get(Params.PRIME_COUNT.getValue()), 30);
     }
 
 

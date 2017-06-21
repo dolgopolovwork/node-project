@@ -21,7 +21,7 @@ public class ExecutionResultTest {
 
     @Test
     public void testStopped() {
-        ExecutionResult executionResult = ExecutionResult.stopped(true);
+        ExecutionResult executionResult = ExecutionResult.stopped();
         assertTrue(executionResult.isStopped());
         assertTrue(executionResult.getResultMap().isEmpty());
     }

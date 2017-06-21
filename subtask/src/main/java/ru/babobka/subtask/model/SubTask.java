@@ -9,20 +9,13 @@ public abstract class SubTask {
 
     private volatile boolean stopped;
 
-    public final ExecutionResult execute(NodeRequest request) {
-        return execute(Runtime.getRuntime().availableProcessors(), request);
-    }
-
-    public abstract ExecutionResult execute(int threads, NodeRequest request);
-
-    protected abstract void stopCurrentTask();
+    public abstract TaskExecutor getTaskExecutor();
 
     public final synchronized void stopProcess() {
         stopped = true;
-        stopCurrentTask();
+        getTaskExecutor().stopCurrentTask();
     }
-
-    public abstract ValidationResult validateRequest(NodeRequest request);
+    public abstract RequestValidator getRequestValidator();
 
     public abstract boolean isRequestDataTooSmall(NodeRequest request);
 

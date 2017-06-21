@@ -22,7 +22,7 @@ public class TasksStorage {
 
     public synchronized void put(NodeRequest request, SubTask subTask) {
         if (!tasksMap.containsKey(request.getTaskId())) {
-            tasksMap.put(request.getTaskId(), new ConcurrentHashMap<UUID, SubTask>());
+            tasksMap.put(request.getTaskId(), new ConcurrentHashMap<>());
             tasksMap.get(request.getTaskId()).put(request.getRequestId(), subTask);
 
         } else {
@@ -40,7 +40,6 @@ public class TasksStorage {
         if (localTaskMap != null) {
             localTaskMap.remove(request.getRequestId());
             if (localTaskMap.isEmpty()) {
-
                 tasksMap.remove(request.getTaskId());
             }
         }

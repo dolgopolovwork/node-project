@@ -19,8 +19,8 @@ public class ExecutionResult {
             this.resultMap.putAll(resultMap);
     }
 
-    public static ExecutionResult stopped(boolean stopped) {
-        return new ExecutionResult(stopped,null);
+    public static ExecutionResult stopped() {
+        return new ExecutionResult(true,null);
     }
 
     public boolean isStopped() {

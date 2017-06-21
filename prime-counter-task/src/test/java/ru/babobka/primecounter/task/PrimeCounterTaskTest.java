@@ -52,7 +52,7 @@ public class PrimeCounterTaskTest {
 
     @Test
     public void testMillionPrimes() {
-        assertEquals(task.execute(millionPrimesRequest).getResultMap().get("primeCount"), 1_000_000);
+        assertEquals(task.getTaskExecutor().execute(millionPrimesRequest).getResultMap().get("primeCount"), 1_000_000);
     }
 
     @Test
@@ -70,28 +70,28 @@ public class PrimeCounterTaskTest {
 
             }
         }).start();
-        assertEquals(task.execute(millionPrimesRequest).getResultMap().get("primeCount"), 0);
+        assertEquals(task.getTaskExecutor().execute(millionPrimesRequest).getResultMap().get("primeCount"), 0);
         assertTrue(task.isStopped());
     }
 
     @Test
     public void testTenThousandPrimes() {
-        assertEquals(task.execute(tenThousandPrimesRequest).getResultMap().get("primeCount"), 10000);
+        assertEquals(task.getTaskExecutor().execute(tenThousandPrimesRequest).getResultMap().get("primeCount"), 10000);
     }
 
     @Test
     public void testTenPrimes() {
-        assertEquals(task.execute(tenPrimesRequest).getResultMap().get("primeCount"), 10);
+        assertEquals(task.getTaskExecutor().execute(tenPrimesRequest).getResultMap().get("primeCount"), 10);
     }
 
     @Test
     public void testThousandPrimes() {
-        assertEquals(task.execute(thousandPrimesRequest).getResultMap().get("primeCount"), 1000);
+        assertEquals(task.getTaskExecutor().execute(thousandPrimesRequest).getResultMap().get("primeCount"), 1000);
     }
 
     @Test
     public void testValidateRequestNull() {
-        ValidationResult validationResult = task.validateRequest(null);
+        ValidationResult validationResult = task.getRequestValidator().validateRequest(null);
         assertFalse(validationResult.isValid());
     }
 
@@ -101,7 +101,7 @@ public class PrimeCounterTaskTest {
         addition.put(BEGIN, 100000);
         addition.put(END, 0);
         NodeRequest nodeRequest = NodeRequest.regular(UUID.randomUUID(), "test", addition);
-        ValidationResult validationResult = task.validateRequest(nodeRequest);
+        ValidationResult validationResult = task.getRequestValidator().validateRequest(nodeRequest);
         assertFalse(validationResult.isValid());
     }
 
@@ -111,7 +111,7 @@ public class PrimeCounterTaskTest {
         addition.put(BEGIN, 0);
         addition.put(END, 100000);
         NodeRequest nodeRequest = NodeRequest.regular(UUID.randomUUID(), "test", addition);
-        ValidationResult validationResult = task.validateRequest(nodeRequest);
+        ValidationResult validationResult = task.getRequestValidator().validateRequest(nodeRequest);
         assertTrue(validationResult.isValid());
     }
 

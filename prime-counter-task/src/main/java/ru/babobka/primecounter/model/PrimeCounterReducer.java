@@ -1,6 +1,7 @@
 package ru.babobka.primecounter.model;
 
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.primecounter.task.Params;
 import ru.babobka.primecounter.task.PrimeCounterTask;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.Reducer;
@@ -19,7 +20,7 @@ public final class PrimeCounterReducer implements Reducer {
             int result = 0;
             for (NodeResponse response : responses) {
                 if (validResponse(response)) {
-                    Integer subResult = response.getDataValue(PrimeCounterTask.PRIME_COUNT);
+                    Integer subResult = response.getDataValue(Params.PRIME_COUNT.getValue());
                     if (subResult != null) {
                         result += subResult;
                     }
@@ -28,7 +29,7 @@ public final class PrimeCounterReducer implements Reducer {
                 }
             }
             ReducingResult reducingResult = new ReducingResult();
-            reducingResult.add(PrimeCounterTask.PRIME_COUNT, result);
+            reducingResult.add(Params.PRIME_COUNT.getValue(), result);
             return reducingResult;
         } catch (Exception e) {
             throw new ReducingException(e);
@@ -38,7 +39,7 @@ public final class PrimeCounterReducer implements Reducer {
     @Override
     public boolean validResponse(NodeResponse response) {
         return response != null && response.getStatus() == NodeResponse.Status.NORMAL
-                && response.getDataValue(PrimeCounterTask.PRIME_COUNT) != null;
+                && response.getDataValue(Params.PRIME_COUNT.getValue()) != null;
     }
 
 }

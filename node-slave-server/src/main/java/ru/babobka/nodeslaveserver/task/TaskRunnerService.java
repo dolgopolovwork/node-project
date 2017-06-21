@@ -18,10 +18,10 @@ public class TaskRunnerService {
 
     public NodeResponse runTask(TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
         try {
-            ValidationResult validationResult = subTask.validateRequest(request);
+            ValidationResult validationResult = subTask.getRequestValidator().validateRequest(request);
             if (validationResult.isValid()) {
                 Timer timer = new Timer();
-                ExecutionResult result = subTask.execute(config.getThreads(), request);
+                ExecutionResult result = subTask.getTaskExecutor().execute(config.getThreads(), request);
                 if (result.isStopped()) {
                     return NodeResponse.stopped(request);
                 } else {

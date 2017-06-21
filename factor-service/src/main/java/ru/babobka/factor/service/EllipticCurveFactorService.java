@@ -59,6 +59,10 @@ public class EllipticCurveFactorService {
         }
     }
 
+    public synchronized boolean isStopped() {
+        return stopped;
+    }
+
     private FactoringResult ellipticFactorParallel(ThreadPoolExecutor threadPool, BigInteger n) {
         if (threadPool != null) {
             List<Future<FactoringResult>> futures = new ArrayList<>();

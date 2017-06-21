@@ -43,7 +43,7 @@ public class EllipticCurveFactorTaskTest {
 
     @Test
     public void testValidateRequestNull() {
-        ValidationResult validationResult = TASK.validateRequest(null);
+        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(null);
         assertFalse(validationResult.isValid());
     }
 
@@ -52,7 +52,7 @@ public class EllipticCurveFactorTaskTest {
         Map<String, Serializable> data = new HashMap<>();
         data.put(NUMBER, BigInteger.probablePrime(32, new Random()));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.validateRequest(request);
+        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
         assertFalse(validationResult.isValid());
     }
 
@@ -62,7 +62,7 @@ public class EllipticCurveFactorTaskTest {
         Map<String, Serializable> data = new HashMap<>();
         data.put(NUMBER, BigInteger.valueOf(3));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.validateRequest(request);
+        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
         assertFalse(validationResult.isValid());
     }
 
@@ -71,7 +71,7 @@ public class EllipticCurveFactorTaskTest {
         Map<String, Serializable> data = new HashMap<>();
         data.put(NUMBER, BigInteger.valueOf(1024));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.validateRequest(request);
+        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
         assertTrue(validationResult.isValid());
     }
 
@@ -80,13 +80,13 @@ public class EllipticCurveFactorTaskTest {
     public void testValidation() {
         BigInteger number = BigInteger.probablePrime(8, new Random())
                 .multiply(BigInteger.probablePrime(8, new Random()));
-        assertTrue(TASK.validateRequest(getNumberRequest(number)).isValid());
+        assertTrue(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
         number = number.negate();
-        assertFalse(TASK.validateRequest(getNumberRequest(number)).isValid());
+        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
         number = BigInteger.valueOf(15485863L);
-        assertFalse(TASK.validateRequest(getNumberRequest(number)).isValid());
+        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
         number = BigInteger.probablePrime(64, new Random());
-        assertFalse(TASK.validateRequest(getNumberRequest(number)).isValid());
+        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class EllipticCurveFactorTaskTest {
 
             BigInteger number = getRandomHalfPrime(bits);
 
-            BigInteger factor = (BigInteger) TASK.newInstance().execute(getNumberRequest(number)).getResultMap()
+            BigInteger factor = (BigInteger) TASK.newInstance().getTaskExecutor().execute(getNumberRequest(number)).getResultMap()
                     .get("factor");
             assertEquals(number.mod(factor), BigInteger.ZERO);
 

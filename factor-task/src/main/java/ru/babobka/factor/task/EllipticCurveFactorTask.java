@@ -1,96 +1,29 @@
 package ru.babobka.factor.task;
 
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 import ru.babobka.factor.model.EllipticFactorDistributor;
 import ru.babobka.factor.model.EllipticFactorReducer;
-import ru.babobka.factor.model.FactoringResult;
-import ru.babobka.factor.service.EllipticCurveFactorService;
-import ru.babobka.factor.util.MathUtil;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.subtask.model.ExecutionResult;
-import ru.babobka.subtask.model.Reducer;
-import ru.babobka.subtask.model.RequestDistributor;
-import ru.babobka.subtask.model.SubTask;
-import ru.babobka.subtask.model.ValidationResult;
+import ru.babobka.subtask.model.*;
 
 /**
  * Created by dolgopolov.a on 08.12.15.
  */
 public class EllipticCurveFactorTask extends SubTask {
 
-    public static final String NUMBER = "number";
-
-    public static final String FACTOR = "factor";
-
     private final EllipticFactorDistributor distributor = new EllipticFactorDistributor(NAME);
 
     private final EllipticFactorReducer reducer = new EllipticFactorReducer();
 
-    private final EllipticCurveFactorService factorService = new EllipticCurveFactorService();
+    private final EllipticCurveFactorTaskExecutor taskExecutor = new EllipticCurveFactorTaskExecutor();
 
-    private static final String X = "x";
-
-    private static final String Y = "y";
-
-    private static final String A = "a";
-
-    private static final String B = "b";
+    private final EllipticCurveRequestValidator requestValidator = new EllipticCurveRequestValidator();
 
     private static final String NAME = "Elliptic curve factor";
 
     private static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
 
-    @Override
-    public ExecutionResult execute(int threads, NodeRequest request) {
-
-        try {
-            Map<String, Serializable> result = new HashMap<>();
-            BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-            FactoringResult factoringResult = factorService.factor(number,
-                    Math.min(threads, Runtime.getRuntime().availableProcessors()));
-            if (factoringResult != null) {
-                result.put(NUMBER, number);
-                result.put(FACTOR, factoringResult.getFactor());
-                result.put(X, factoringResult.getEllipticCurveProjective().getX());
-                result.put(Y, factoringResult.getEllipticCurveProjective().getY());
-                result.put(A, factoringResult.getEllipticCurveProjective().getA());
-                result.put(B, factoringResult.getEllipticCurveProjective().getB());
-                return new ExecutionResult(isStopped(), result);
-            }
-            return ExecutionResult.stopped(isStopped());
-        } finally {
-            factorService.stop();
-        }
-    }
-
-    @Override
-    protected void stopCurrentTask() {
-        factorService.stop();
-    }
-
-    @Override
-    public ValidationResult validateRequest(NodeRequest request) {
-        if (request == null) {
-            return ValidationResult.fail("Empty request");
-        }
-        try {
-            BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
-            if (number.compareTo(BigInteger.valueOf(3)) <= 0) {
-                return ValidationResult.fail("number must be greater than 3");
-            } else if (MathUtil.isPrime(number)) {
-                return ValidationResult.fail("number is not composite");
-            }
-
-        } catch (RuntimeException e) {
-            return ValidationResult.fail(e);
-        }
-
-        return ValidationResult.ok();
-    }
 
     @Override
     public RequestDistributor getDistributor() {
@@ -103,8 +36,18 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
+    public TaskExecutor getTaskExecutor() {
+        return taskExecutor;
+    }
+
+    @Override
+    public RequestValidator getRequestValidator() {
+        return requestValidator;
+    }
+
+    @Override
     public boolean isRequestDataTooSmall(NodeRequest request) {
-        BigInteger number = new BigInteger(request.getStringDataValue(NUMBER));
+        BigInteger number = new BigInteger(request.getStringDataValue(Params.NUMBER.getValue()));
         return number.bitLength() < 50;
     }
 

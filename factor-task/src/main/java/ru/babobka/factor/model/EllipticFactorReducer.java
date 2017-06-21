@@ -1,6 +1,7 @@
 package ru.babobka.factor.model;
 
 import ru.babobka.factor.task.EllipticCurveFactorTask;
+import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.Reducer;
@@ -33,8 +34,8 @@ public class EllipticFactorReducer implements Reducer {
     public boolean validResponse(NodeResponse response) {
         try {
             if (response != null && response.getStatus() == NodeResponse.Status.NORMAL) {
-                BigInteger factor = response.getDataValue(EllipticCurveFactorTask.FACTOR);
-                BigInteger n = response.getDataValue(EllipticCurveFactorTask.NUMBER);
+                BigInteger factor = response.getDataValue(Params.FACTOR.getValue());
+                BigInteger n = response.getDataValue(Params.NUMBER.getValue());
                 if (factor != null && n != null && !factor.equals(BigInteger.ONE.negate()) && n.mod(factor).equals(BigInteger.ZERO)) {
                     return true;
                 }

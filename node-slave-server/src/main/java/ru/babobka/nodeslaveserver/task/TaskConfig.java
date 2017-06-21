@@ -1,7 +1,5 @@
 package ru.babobka.nodeslaveserver.task;
 
-import org.json.JSONObject;
-
 import ru.babobka.subtask.model.SubTask;
 
 public class TaskConfig {

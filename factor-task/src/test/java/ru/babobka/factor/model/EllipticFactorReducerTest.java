@@ -2,6 +2,7 @@ package ru.babobka.factor.model;
 
 import org.junit.Test;
 import ru.babobka.factor.task.EllipticCurveFactorTask;
+import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.subtask.exception.ReducingException;
@@ -38,8 +39,8 @@ public class EllipticFactorReducerTest {
     @Test
     public void testValidResponseBadFactor() {
         Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(EllipticCurveFactorTask.FACTOR, BigInteger.valueOf(3));
-        dataMap.put(EllipticCurveFactorTask.NUMBER, BigInteger.valueOf(1024));
+        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(3));
+        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
         NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
         assertFalse(ellipticFactorReducer.validResponse(nodeResponse));
     }
@@ -47,8 +48,8 @@ public class EllipticFactorReducerTest {
     @Test
     public void testValidResponseOk() {
         Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(EllipticCurveFactorTask.FACTOR, BigInteger.valueOf(2));
-        dataMap.put(EllipticCurveFactorTask.NUMBER, BigInteger.valueOf(1024));
+        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
+        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
         NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
         assertTrue(ellipticFactorReducer.validResponse(nodeResponse));
     }
@@ -67,8 +68,8 @@ public class EllipticFactorReducerTest {
     @Test
     public void testReduceFailOk() throws ReducingException {
         Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(EllipticCurveFactorTask.FACTOR, BigInteger.valueOf(2));
-        dataMap.put(EllipticCurveFactorTask.NUMBER, BigInteger.valueOf(1024));
+        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
+        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
         NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
         List<NodeResponse> responses = new ArrayList<>(Arrays.asList(NodeResponse.failed(UUID.randomUUID()), nodeResponse));
         ReducingResult reducingResult = ellipticFactorReducer.reduce(responses);
@@ -91,8 +92,8 @@ public class EllipticFactorReducerTest {
     @Test
     public void testReduceOk() throws ReducingException {
         Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(EllipticCurveFactorTask.FACTOR, BigInteger.valueOf(2));
-        dataMap.put(EllipticCurveFactorTask.NUMBER, BigInteger.valueOf(1024));
+        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
+        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
         NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
         List<NodeResponse> responses = new ArrayList<>(Arrays.asList(nodeResponse, nodeResponse, nodeResponse));
         ReducingResult reducingResult = ellipticFactorReducer.reduce(responses);
