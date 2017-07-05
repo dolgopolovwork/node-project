@@ -16,6 +16,24 @@ public class SafePrime {
 
     private final BigInteger prime;
 
+
+    public SafePrime(BigInteger sophieNumber, BigInteger prime) {
+        if (prime == null) {
+            throw new IllegalArgumentException("prime is null");
+        } else if (sophieNumber == null) {
+            throw new IllegalArgumentException("sophieNumber is null");
+        } else if (!prime.isProbablePrime(CERTAINTY)) {
+            throw new IllegalArgumentException(prime + " is not prime");
+        } else if (!prime.subtract(BigInteger.ONE).mod(sophieNumber).equals(BigInteger.ZERO)) {
+            throw new IllegalArgumentException(sophieNumber + " doesn't form Sophie number for " + prime);
+        } else if (!prime.subtract(BigInteger.ONE).divide(sophieNumber).equals(TWO)) {
+            throw new IllegalArgumentException(prime + " is not safe");
+        }
+        this.sophieNumber = sophieNumber;
+        this.prime = prime;
+    }
+
+
     private SafePrime(int bits) {
         if (bits <= 2) {
             throw new IllegalArgumentException("Invalid bit length " + bits);
@@ -29,6 +47,7 @@ public class SafePrime {
         sophieNumber = p;
         prime = q;
     }
+
 
     private static BigInteger nextPrime(BigInteger prime) {
         if (prime.mod(TWO).equals(BigInteger.ZERO)) {
