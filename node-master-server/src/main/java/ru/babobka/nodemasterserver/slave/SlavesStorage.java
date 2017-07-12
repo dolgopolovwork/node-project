@@ -25,12 +25,11 @@ public class SlavesStorage {
 
     public synchronized List<SlaveUser> getCurrentClusterUserList() {
         List<SlaveUser> clusterUserList = new ArrayList<>();
-        Slave st;
+        Slave slave;
         for (int i = 0; i < threads.length(); i++) {
-            if ((st = threads.get(i)) != null) {
+            if ((slave = threads.get(i)) != null) {
                 clusterUserList
-                        .add(new SlaveUser(st.getLogin(), st.getSocket().getLocalPort(), st.getSocket().getPort(),
-                                st.getSocket().getInetAddress().getCanonicalHostName(), st.getRequestCount()));
+                        .add(new SlaveUser(slave));
             }
         }
 

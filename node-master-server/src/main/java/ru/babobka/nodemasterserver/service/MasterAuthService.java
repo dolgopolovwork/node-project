@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodemasterserver.model.AuthResult;
 import ru.babobka.nodeserials.NodeResponse;
@@ -23,10 +24,10 @@ public class MasterAuthService implements AuthService {
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
     @Override
-    public AuthResult getAuthResult(RSA rsa, Socket socket) {
+    public AuthResult getAuthResult(RSA rsa, NodeConnection connection) {
         try {
-            StreamUtil.sendObject(rsa.getPublicKey(), socket);
-            NodeResponse authResponse = StreamUtil.receiveObject(socket);
+            connection.send(rsa.getPublicKey());
+            NodeResponse authResponse = connection.receive();
             if (authResponse.isAuthResponse()) {
                 BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
                 String login = authResponse.getDataValue("login");
@@ -34,7 +35,7 @@ public class MasterAuthService implements AuthService {
                 if (tasksList != null && !tasksList.isEmpty()) {
                     Set<String> taskSet = new HashSet<>(tasksList);
                     boolean authSuccess = usersService.auth(login, integerHashedPassword);
-                    StreamUtil.sendObject(authSuccess, socket);
+                    connection.send(authSuccess);
                     if (authSuccess) {
                         return new AuthResult(true, login, taskSet);
                     }

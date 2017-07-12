@@ -14,6 +14,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.EmptyClusterException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodemasterserver.model.AuthResult;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
@@ -52,12 +53,12 @@ public class Slave extends Thread {
 
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
 
-    private final Socket socket;
+    private final NodeConnection connection;
 
-    public Slave(Socket socket) {
-        if (socket != null) {
-            logger.info("New connection " + socket);
-            this.socket = socket;
+    public Slave(NodeConnection connection) {
+        if (connection != null) {
+            logger.info("New connection " + connection);
+            this.connection = connection;
             this.rsa = new RSA(RSA_KEY_BIT_LENGTH);
         } else {
             throw new IllegalArgumentException("Socket can not be null");
@@ -68,7 +69,7 @@ public class Slave extends Thread {
         logger.info("sendRequest " + request);
         if (!(request.isRaceStyle() && requestMap.containsKey(request.getTaskId()))) {
             requestMap.put(request.getRequestId(), request);
-            StreamUtil.sendObject(request, socket);
+            connection.send(request);
             logger.info(request + " was sent");
             userService.incrementTaskCount(authResult.getLogin());
         } else {
@@ -107,7 +108,7 @@ public class Slave extends Thread {
     }
 
     public void sendHeartBeating() throws IOException {
-        StreamUtil.sendObject(NodeRequest.heartBeatRequest(), socket);
+        connection.send(NodeRequest.heartBeatRequest());
     }
 
     public synchronized void sendStopRequest(NodeRequest stopRequest) throws IOException {
@@ -117,24 +118,24 @@ public class Slave extends Thread {
                 requestMap.remove(requestEntry.getValue().getRequestId());
             }
         }
-        StreamUtil.sendObject(stopRequest, socket);
+        connection.send(stopRequest);
 
     }
 
     private boolean fit() throws IOException {
         boolean fittable = slavesStorage.add(this);
-        StreamUtil.sendObject(fittable, this.getSocket());
+        connection.send(fittable);
         return fittable;
     }
 
-    private AuthResult auth() throws SocketException {
-        socket.setSoTimeout(masterServerConfig.getAuthTimeOutMillis());
-        this.authResult = authService.getAuthResult(rsa, socket);
+    private AuthResult auth() throws IOException {
+        connection.setReadTimeOut(masterServerConfig.getAuthTimeOutMillis());
+        this.authResult = authService.getAuthResult(rsa, connection);
         if (!authResult.isValid()) {
             slavesStorage.remove(this);
-            logger.warning("Can not auth " + socket);
+            logger.warning("Can not auth " + connection);
         } else {
-            logger.info(authResult.getLogin() + " from " + socket + " was logged");
+            logger.info(authResult.getLogin() + " from " + connection + " was logged");
         }
         return authResult;
     }
@@ -144,8 +145,8 @@ public class Slave extends Thread {
         try {
             if (fit() && auth().isValid()) {
                 while (!Thread.currentThread().isInterrupted()) {
-                    socket.setSoTimeout(masterServerConfig.getRequestTimeOutMillis());
-                    NodeResponse response = StreamUtil.receiveObject(socket);
+                    connection.setReadTimeOut(masterServerConfig.getRequestTimeOutMillis());
+                    NodeResponse response = connection.receive();
                     if (!response.isHeartBeatingResponse()) {
                         logger.info(response);
                         requestMap.remove(response.getResponseId());
@@ -160,11 +161,11 @@ public class Slave extends Thread {
             if (!Thread.currentThread().isInterrupted()) {
                 logger.error(e);
             }
-            logger.warning("Connection is closed " + socket);
+            logger.warning("Connection is closed " + connection);
         } catch (RuntimeException e) {
             logger.error(e);
         } finally {
-            logger.info("Removing connection " + socket);
+            logger.info("Removing connection " + connection);
             slavesStorage.remove(this);
             synchronized (Slave.class) {
                 if (!requestMap.isEmpty()) {
@@ -180,18 +181,11 @@ public class Slave extends Thread {
                     }
                 }
             }
-            if (socket != null && !socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    logger.error(e);
-                }
-            }
+            connection.close();
             if (authResult != null && authResult.getLogin() != null)
                 logger.info("User " + authResult.getLogin() + " was disconnected");
         }
     }
-
 
 
     public Map<String, LinkedList<NodeRequest>> getRequestsGroupedByTask() {
@@ -215,11 +209,7 @@ public class Slave extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
-        try {
-            socket.close();
-        } catch (IOException e) {
-            logger.error(e);
-        }
+        connection.close();
 
     }
 
@@ -235,8 +225,8 @@ public class Slave extends Thread {
         return authResult.getLogin();
     }
 
-    public Socket getSocket() {
-        return socket;
+    public NodeConnection getConnection() {
+        return connection;
     }
 
     public Map<UUID, NodeRequest> getRequestMap() {

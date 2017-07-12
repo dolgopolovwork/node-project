@@ -5,14 +5,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+
 import ru.babobka.nodeslaveserver.controller.SocketController;
-import ru.babobka.nodeslaveserver.controller.SocketControllerImpl;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 public class SlaveServer extends Thread {
@@ -60,9 +61,9 @@ public class SlaveServer extends Thread {
     public void run() {
         if (glitchThread != null)
             glitchThread.start();
-        try (SocketController controller = new SocketControllerImpl(tasksStorage)) {
+        try (SocketController controller = new SocketController(tasksStorage)) {
             while (!Thread.currentThread().isInterrupted()) {
-                controller.control(socket);
+                controller.control(new NodeConnection(socket));
             }
         } catch (IOException e) {
             if (!socket.isClosed()) {

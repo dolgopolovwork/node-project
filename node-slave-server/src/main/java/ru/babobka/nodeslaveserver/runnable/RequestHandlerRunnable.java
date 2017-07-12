@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.runnable;
 
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
@@ -17,7 +18,7 @@ import java.net.Socket;
  */
 public class RequestHandlerRunnable implements Runnable {
 
-    private final Socket socket;
+    private final NodeConnection connection;
 
     private final NodeRequest request;
 
@@ -29,8 +30,8 @@ public class RequestHandlerRunnable implements Runnable {
 
     private final TasksStorage tasksStorage;
 
-    public RequestHandlerRunnable(Socket socket, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
-        this.socket = socket;
+    public RequestHandlerRunnable(NodeConnection connection, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
+        this.connection = connection;
         this.request = request;
         this.subTask = subTask;
         this.tasksStorage = tasksStorage;
@@ -41,14 +42,14 @@ public class RequestHandlerRunnable implements Runnable {
         try {
             NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
             if (!response.isStopped()) {
-                StreamUtil.sendObject(response, socket);
+                connection.send(response);
                 logger.info(response);
                 logger.info("Response was sent");
             }
         } catch (RuntimeException e) {
             logger.error(e);
             try {
-                StreamUtil.sendObject(NodeResponse.failed(request), socket);
+                connection.send(NodeResponse.failed(request));
             } catch (IOException e1) {
                 logger.error(e1);
             }
