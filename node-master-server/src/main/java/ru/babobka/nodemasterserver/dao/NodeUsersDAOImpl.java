@@ -34,7 +34,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 
     private Integer getUserId(String login) {
 
-        try (Jedis jedis = datasource.getPool().getResource();) {
+        try (Jedis jedis = datasource.getPool().getResource()) {
             String value = jedis.hget(USERS_KEY, login);
             if (value != null) {
                 return Integer.parseInt(value);
@@ -44,7 +44,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
     }
 
     private User get(String login, int id) {
-        try (Jedis jedis = datasource.getPool().getResource();) {
+        try (Jedis jedis = datasource.getPool().getResource()) {
             Map<byte[], byte[]> map = jedis.hgetAll((USER_KEY + id).getBytes(charset));
             String email = null;
             if (map.get(emailField) != null) {
@@ -73,7 +73,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
     @Override
     public List<User> getList() {
         List<User> users = new ArrayList<>();
-        try (Jedis jedis = datasource.getPool().getResource();) {
+        try (Jedis jedis = datasource.getPool().getResource()) {
             Map<String, String> map = jedis.hgetAll(USERS_KEY);
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 users.add(get(entry.getKey(), Integer.parseInt(entry.getValue())));
@@ -203,7 +203,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 
     @Override
     public boolean incrTaskCount(String login) {
-        try (Jedis jedis = datasource.getPool().getResource();) {
+        try (Jedis jedis = datasource.getPool().getResource()) {
             Integer userId = getUserId(login);
             if (userId != null) {
                 jedis.hincrBy(USER_KEY + userId, new String(taskCountField, charset), 1L);
@@ -215,9 +215,7 @@ public class NodeUsersDAOImpl implements NodeUsersDAO {
 
     @Override
     public boolean exists(String login) {
-        if (login == null)
-            return false;
-        return getUserId(login) != null;
+        return login != null && getUserId(login) != null;
 
     }
 

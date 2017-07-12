@@ -12,29 +12,28 @@ public class AuthResult {
     private final Set<String> taskSet = new HashSet<>();
 
     public AuthResult(boolean valid, String login, Set<String> taskSet) {
-	this.valid = valid;
-	this.login = login;
-	if (taskSet != null) {
-	    this.taskSet.addAll(taskSet);
-	}
+        this.valid = valid;
+        this.login = login;
+        if (taskSet != null) {
+            this.taskSet.addAll(taskSet);
+        }
 
     }
 
-    public AuthResult(boolean valid) {
-	this.valid = valid;
-	this.login = null;
+    public static AuthResult failed() {
+        return new AuthResult(false, null, null);
     }
 
     public String getLogin() {
-	return login;
+        return login;
     }
 
     public Set<String> getTaskSet() {
-	return taskSet;
+        return taskSet;
     }
 
     public boolean isValid() {
-	return valid;
+        return valid;
     }
 
 }

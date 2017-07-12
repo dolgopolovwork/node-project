@@ -27,12 +27,10 @@ public class GlitchRunnable implements Runnable {
             logger.info("Seconds to glitch " + timeToWaitSec);
             try {
                 Thread.sleep(timeToWaitSec * 1000L);
-                try {
-                    logger.info("Closing socket in GlitchRunnable");
-                    socket.close();
-                } catch (IOException e) {
-                    logger.info(e);
-                }
+                logger.info("Closing socket in GlitchRunnable");
+                socket.close();
+            } catch (IOException e) {
+                logger.info(e);
             } catch (InterruptedException e) {
                 logger.warning(e);
                 Thread.currentThread().interrupt();

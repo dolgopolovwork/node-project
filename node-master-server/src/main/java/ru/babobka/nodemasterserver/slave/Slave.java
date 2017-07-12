@@ -200,7 +200,7 @@ public class Slave extends Thread {
             if (requestsByTaskName.containsKey(requestEntry.getValue().getTaskName())) {
                 requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
             } else {
-                requestsByTaskName.put(requestEntry.getValue().getTaskName(), new LinkedList<NodeRequest>());
+                requestsByTaskName.put(requestEntry.getValue().getTaskName(), new LinkedList<>());
                 requestsByTaskName.get(requestEntry.getValue().getTaskName()).add(requestEntry.getValue());
             }
         }

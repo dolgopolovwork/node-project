@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -39,6 +38,7 @@ public class SocketControllerImpl implements SocketController {
     @Override
     public void control(Socket socket) throws IOException {
         socket.setSoTimeout(slaveServerConfig.getRequestTimeoutMillis());
+        //TODO создай класс для приема/отправки данных
         NodeRequest request = StreamUtil.receiveObject(socket);
         if (request.isHeartBeatingRequest()) {
             StreamUtil.sendObject(NodeResponse.heartBeat(), socket);

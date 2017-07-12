@@ -1,6 +1,5 @@
 package ru.babobka.nodeslaveserver.runnable;
 
-import ru.babobka.nodeslaveserver.builder.BadResponseBuilder;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
@@ -49,8 +48,7 @@ public class RequestHandlerRunnable implements Runnable {
         } catch (RuntimeException e) {
             logger.error(e);
             try {
-                StreamUtil.sendObject(BadResponseBuilder.getInstance(request.getTaskId(), request.getRequestId(),
-                        request.getTaskName()), socket);
+                StreamUtil.sendObject(NodeResponse.failed(request), socket);
             } catch (IOException e1) {
                 logger.error(e1);
             }

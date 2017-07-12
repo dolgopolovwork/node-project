@@ -78,7 +78,6 @@ public class EllipticCurveFactorService {
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
-                    continue;
                 }
 
             }

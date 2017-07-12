@@ -10,13 +10,13 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 public interface JSONFileServerConfigBuilder {
 
-	static MasterServerConfig build(InputStream is) {
+    static MasterServerConfig build(InputStream is) {
 
-	try {
-	    return new MasterServerConfig(new JSONObject(StreamUtil.readFile(is)));
-	} catch (Exception e) {
-	    throw new ServerConfigurationException("Can not build server configuration", e);
-	}
+        try {
+            return new MasterServerConfig(new JSONObject(StreamUtil.readFile(is)));
+        } catch (RuntimeException e) {
+            throw new ServerConfigurationException("Can not build server configuration", e);
+        }
     }
 
 }

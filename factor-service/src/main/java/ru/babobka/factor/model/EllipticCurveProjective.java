@@ -69,7 +69,7 @@ public class EllipticCurveProjective {
 
     public EllipticCurveProjective doublePoint() {
     /*
-	 * if (Y == 0) return POINT_AT_INFINITY
+     * if (Y == 0) return POINT_AT_INFINITY
 	 */
         if (y.equals(BigInteger.ZERO)) {
             return getInfinityPoint();
@@ -229,10 +229,7 @@ public class EllipticCurveProjective {
     }
 
     public boolean isInfinityPoint() {
-        if (x.equals(BigInteger.ZERO) && y.equals(BigInteger.ONE) && z.equals(BigInteger.ZERO)) {
-            return true;
-        }
-        return false;
+        return x.equals(BigInteger.ZERO) && y.equals(BigInteger.ONE) && z.equals(BigInteger.ZERO);
     }
 
     public EllipticCurveProjective multiply(long times) {

@@ -2,7 +2,6 @@ package ru.babobka.primecounter.model;
 
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.primecounter.task.Params;
-import ru.babobka.primecounter.task.PrimeCounterTask;
 import ru.babobka.subtask.exception.ReducingException;
 import ru.babobka.subtask.model.Reducer;
 import ru.babobka.subtask.model.ReducingResult;

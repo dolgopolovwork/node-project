@@ -31,7 +31,7 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         }
     }
 
-    private FactoringResult factor() throws InterruptedException {
+    private FactoringResult factor() {
 
         EllipticCurveProjective p = EllipticCurveProjective.generateRandomCurve(n);
         BigInteger g = p.getN().gcd(p.getX());
@@ -68,18 +68,13 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
 
     @Override
     public FactoringResult call() {
-
         FactoringResult result = null;
         for (int i = 0; i < n.bitLength() * 2; i++) {
-            try {
-                result = factor();
-                if (result != null) {
-                    break;
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            result = factor();
+            if (result != null) {
                 break;
             }
+
         }
         return result;
     }

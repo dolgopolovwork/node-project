@@ -24,31 +24,25 @@ public class MasterAuthService implements AuthService {
 
     @Override
     public AuthResult getAuthResult(RSA rsa, Socket socket) {
-	try {
-	    StreamUtil.sendObject(rsa.getPublicKey(), socket);
-	    NodeResponse authResponse = StreamUtil.receiveObject(socket);
-	    if (authResponse.isAuthResponse()) {
-		BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
-		String login = authResponse.getDataValue("login");
-		List<String> tasksList = authResponse.getDataValue("tasksList");
-		if (tasksList != null && !tasksList.isEmpty()) {
-		    Set<String> taskSet = new HashSet<>();
-		    taskSet.addAll(tasksList);
-		    boolean authSuccess = usersService.auth(login, integerHashedPassword);
-		    StreamUtil.sendObject(authSuccess, socket);
-		    if (authSuccess) {
-			return new AuthResult(true, login, taskSet);
-		    }
-		} else {
-		    return new AuthResult(false);
-		}
-		return new AuthResult(false);
-	    } else {
-		return new AuthResult(false);
-	    }
-	} catch (Exception e) {
-	    logger.error(e);
-	    return new AuthResult(false);
-	}
+        try {
+            StreamUtil.sendObject(rsa.getPublicKey(), socket);
+            NodeResponse authResponse = StreamUtil.receiveObject(socket);
+            if (authResponse.isAuthResponse()) {
+                BigInteger integerHashedPassword = rsa.decrypt(authResponse.getDataValue("password"));
+                String login = authResponse.getDataValue("login");
+                List<String> tasksList = authResponse.getDataValue("tasksList");
+                if (tasksList != null && !tasksList.isEmpty()) {
+                    Set<String> taskSet = new HashSet<>(tasksList);
+                    boolean authSuccess = usersService.auth(login, integerHashedPassword);
+                    StreamUtil.sendObject(authSuccess, socket);
+                    if (authSuccess) {
+                        return new AuthResult(true, login, taskSet);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return AuthResult.failed();
     }
 }

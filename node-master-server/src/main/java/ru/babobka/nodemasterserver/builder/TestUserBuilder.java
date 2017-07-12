@@ -9,6 +9,6 @@ public interface TestUserBuilder {
     String PASSWORD = "abc";
 
     static User build() {
-	return new User(LOGIN, PASSWORD, 0, "foo@bar.com");
+        return new User(LOGIN, PASSWORD, 0, "foo@bar.com");
     }
 }

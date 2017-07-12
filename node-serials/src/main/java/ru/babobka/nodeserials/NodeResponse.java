@@ -58,6 +58,10 @@ public final class NodeResponse implements Serializable {
         this(taskId, UUID.randomUUID(), 0, status, null, null, taskName);
     }
 
+    public static NodeResponse failed(NodeRequest request) {
+        return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.FAILED, null, null, request.getTaskName());
+    }
+
     public static NodeResponse failed(UUID taskId) {
         return new NodeResponse(taskId, NodeResponse.Status.FAILED);
     }
@@ -78,7 +82,7 @@ public final class NodeResponse implements Serializable {
 
     public static NodeResponse heartBeat() {
         return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, null,
-                Mappings.HEART_BEAT_TASK_NAME);
+                SystemTaskName.HEART_BEAT_TASK_NAME.getName());
     }
 
     public static NodeResponse stopped(UUID taskId) {
@@ -128,11 +132,11 @@ public final class NodeResponse implements Serializable {
     }
 
     public boolean isHeartBeatingResponse() {
-        return Mappings.HEART_BEAT_TASK_NAME.equals(taskName);
+        return SystemTaskName.HEART_BEAT_TASK_NAME.getName().equals(taskName);
     }
 
     public boolean isAuthResponse() {
-        return Mappings.AUTH_TASK_NAME.equals(taskName);
+        return SystemTaskName.AUTH_TASK_NAME.getName().equals(taskName);
     }
 
     public long getTimeStamp() {

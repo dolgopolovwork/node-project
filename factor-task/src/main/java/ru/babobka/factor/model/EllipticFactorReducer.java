@@ -1,6 +1,5 @@
 package ru.babobka.factor.model;
 
-import ru.babobka.factor.task.EllipticCurveFactorTask;
 import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.subtask.exception.ReducingException;

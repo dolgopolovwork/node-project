@@ -3,7 +3,6 @@ package ru.babobka.subtask.model;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class ReducingResult implements Serializable {
 

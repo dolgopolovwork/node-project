@@ -57,7 +57,7 @@ public final class NodeRequest implements Serializable {
     }
 
     public static NodeRequest heartBeatRequest() {
-        return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), Mappings.HEART_BEAT_TASK_NAME, null, false, false);
+        return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), SystemTaskName.HEART_BEAT_TASK_NAME.getName(), null, false, false);
     }
 
     public String getStringDataValue(String key) {
@@ -76,11 +76,11 @@ public final class NodeRequest implements Serializable {
     }
 
     public boolean isHeartBeatingRequest() {
-        return Mappings.HEART_BEAT_TASK_NAME.equals(taskName);
+        return SystemTaskName.HEART_BEAT_TASK_NAME.getName().equals(taskName);
     }
 
     public boolean isAuthRequest() {
-        return Mappings.AUTH_TASK_NAME.equals(taskName);
+        return SystemTaskName.AUTH_TASK_NAME.getName().equals(taskName);
     }
 
     public String getTaskName() {

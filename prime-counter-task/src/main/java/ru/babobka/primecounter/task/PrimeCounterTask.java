@@ -1,20 +1,12 @@
 package ru.babobka.primecounter.task;
 
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.primecounter.callable.PrimeCounterCallable;
 import ru.babobka.primecounter.model.PrimeCounterDistributor;
 import ru.babobka.primecounter.model.PrimeCounterReducer;
-import ru.babobka.primecounter.model.Range;
-import ru.babobka.primecounter.util.MathUtil;
+
 
 import ru.babobka.subtask.model.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.*;
 
 /**
  * Created by dolgopolov.a on 15.12.15.

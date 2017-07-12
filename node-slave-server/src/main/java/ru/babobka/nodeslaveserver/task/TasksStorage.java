@@ -64,10 +64,8 @@ public class TasksStorage {
 
     public synchronized boolean wasStopped(UUID taskId, long taskTimeStamp) {
         Long stoppedRequestTimeStamp = stoppedTasksMap.get(taskId);
-        if (stoppedRequestTimeStamp != null) {
-            return stoppedRequestTimeStamp > taskTimeStamp;
-        }
-        return false;
+        return stoppedRequestTimeStamp != null && stoppedRequestTimeStamp > taskTimeStamp;
+
     }
 
     public synchronized void clear() {

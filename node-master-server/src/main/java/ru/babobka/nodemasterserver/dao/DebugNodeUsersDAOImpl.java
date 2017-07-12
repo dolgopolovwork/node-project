@@ -35,10 +35,7 @@ public class DebugNodeUsersDAOImpl implements NodeUsersDAO {
 
     @Override
     public boolean exists(String login) {
-        if (login == null) {
-            return false;
-        }
-        return debugDataMap.containsKey(login);
+        return login != null && debugDataMap.containsKey(login);
     }
 
     @Override

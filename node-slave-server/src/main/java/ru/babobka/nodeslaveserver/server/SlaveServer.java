@@ -12,7 +12,6 @@ import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;
 import ru.babobka.nodeslaveserver.task.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 
@@ -51,7 +50,7 @@ public class SlaveServer extends Thread {
         }
     }
 
-    public static void initTestContainer() throws ContainerException, FileNotFoundException {
+    public static void initTestContainer() throws FileNotFoundException {
         new SlaveServerContainerStrategy(
                 StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
                 .contain(Container.getInstance());
@@ -61,7 +60,7 @@ public class SlaveServer extends Thread {
     public void run() {
         if (glitchThread != null)
             glitchThread.start();
-        try (SocketController controller = new SocketControllerImpl(tasksStorage);) {
+        try (SocketController controller = new SocketControllerImpl(tasksStorage)) {
             while (!Thread.currentThread().isInterrupted()) {
                 controller.control(socket);
             }

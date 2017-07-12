@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import ru.babobka.nodeserials.SystemTaskName;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeserials.Mappings;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.crypto.RSA;
 import ru.babobka.nodeslaveserver.task.TaskPool;
@@ -35,7 +35,7 @@ public class AuthResponseBuilder {
         tasksList.addAll(taskPool.getTasksMap().keySet());
         dataMap.put("tasksList", (Serializable) tasksList);
         return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, dataMap,
-                Mappings.AUTH_TASK_NAME);
+                SystemTaskName.AUTH_TASK_NAME.getName());
 
     }
 

@@ -47,7 +47,7 @@ final class JarResource {
      *            a resource name.
      */
     public byte[] getResource(String name) {
-	return (byte[]) htJarContents.get(name);
+	return htJarContents.get(name);
     }
 
     /**
@@ -69,7 +69,7 @@ final class JarResource {
 		htSizes.put(ze.getName(), (int) ze.getSize());
 	    }
 
-	    ZipEntry ze = null;
+	    ZipEntry ze;
 	    while ((ze = zis.getNextEntry()) != null) {
 		if (ze.isDirectory()) {
 		    continue;
@@ -78,12 +78,12 @@ final class JarResource {
 		int size = (int) ze.getSize();
 		// -1 means unknown size.
 		if (size == -1) {
-		    size = htSizes.get(ze.getName()).intValue();
+		    size = htSizes.get(ze.getName());
 		}
 
-		byte[] b = new byte[(int) size];
+		byte[] b = new byte[size];
 		int rb = 0;
-		int chunk = 0;
+		int chunk;
 		while ((size - rb) > 0) {
 		    chunk = zis.read(b, rb, size - rb);
 		    if (chunk == -1) {

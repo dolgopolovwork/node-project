@@ -17,23 +17,22 @@ public class SlaveServerContainerStrategy implements ContainerStrategy {
     private final SlaveServerConfig slaveServerConfig;
 
     public SlaveServerContainerStrategy(InputStream configFileInputStream) {
-	this.slaveServerConfig = JSONFileServerConfigBuilder.build(configFileInputStream);
+        this.slaveServerConfig = JSONFileServerConfigBuilder.build(configFileInputStream);
     }
 
     @Override
-    public void contain(Container container) throws ContainerException {
-	try {
-
-	    container.put(slaveServerConfig);
-	    container.put(new SimpleLogger("slave", slaveServerConfig.getLoggerFolder(), "slave"));
-	    container.put(new TaskPool());
-	    container.put(new SlaveAuthService());
-	    container.put(new TaskRunnerService());
-	    SimpleLogger logger = container.get(SimpleLogger.class);
-	    logger.info("Container was successfully initialized");
-	} catch (IOException | RuntimeException e) {
-	    throw new ContainerException(e);
-	}
+    public void contain(Container container) {
+        try {
+            container.put(slaveServerConfig);
+            container.put(new SimpleLogger("slave", slaveServerConfig.getLoggerFolder(), "slave"));
+            container.put(new TaskPool());
+            container.put(new SlaveAuthService());
+            container.put(new TaskRunnerService());
+            SimpleLogger logger = container.get(SimpleLogger.class);
+            logger.info("Container was successfully initialized");
+        } catch (IOException | RuntimeException e) {
+            throw new ContainerException(e);
+        }
     }
 
 }

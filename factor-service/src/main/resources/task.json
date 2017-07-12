@@ -1,6 +1,0 @@
-{
-	"name":"Elliptic curve factor",
-	"className":"ru.babobka.factor.task.EllipticCurveFactorTask",
-	"description":"Factorizes a given big composite number using Lenstra algorithm",
-	"raceStyle":true
-}
