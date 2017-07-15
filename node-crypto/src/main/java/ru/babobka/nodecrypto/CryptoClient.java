@@ -15,7 +15,7 @@ public final class CryptoClient {
 
     private static final HashService hashService = new SHA512HashService();
 
-    private static final HashService secureHashService = new SCryptHashService();
+    private static final SCryptHashService secureHashService = new SCryptHashService();
 
     private final CryptoParams cryptoParams;
 
@@ -149,7 +149,7 @@ public final class CryptoClient {
             BigInteger power = new BigInteger(hashPower);
             power = power.add(a);
             BigInteger generatedKey = expB.modPow(power, cryptoParams.getSafePrime().getPrime());
-            this.key = secureHashService.hash(generatedKey.toByteArray(), salt);
+            this.key = secureHashService.hash(generatedKey.toByteArray(),CryptoPolitics.KEY_BIT_LENGTH);
         }
 
         public synchronized CryptoClient build() {

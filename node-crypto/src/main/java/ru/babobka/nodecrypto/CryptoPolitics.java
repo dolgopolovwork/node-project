@@ -13,6 +13,8 @@ class CryptoPolitics {
 
     static final int MIN_SALT_BIT_LENGTH = 1024;
 
+    static final int KEY_BIT_LENGTH = 128;
+
     boolean isExponentValid(BigInteger exp) {
         return exp.bitLength() >= MIN_EXP_BIT_LENGTH;
     }
@@ -23,6 +25,10 @@ class CryptoPolitics {
 
     boolean isSaltIsValid(byte[] salt) {
         return salt.length >= MIN_SALT_BIT_LENGTH;
+    }
+
+    boolean isKeyValid(byte[] key) {
+        return key.length == KEY_BIT_LENGTH;
     }
 
 }

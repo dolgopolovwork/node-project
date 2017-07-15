@@ -7,5 +7,4 @@ public interface HashService {
 
     byte[] hash(byte[] bytes);
 
-    byte[] hash(byte[] bytes, byte[] salt);
 }

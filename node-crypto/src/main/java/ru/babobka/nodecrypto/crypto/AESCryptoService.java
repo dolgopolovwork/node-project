@@ -46,8 +46,12 @@ public class AESCryptoService implements CryptoService {
 
     @Override
     public byte[] encrypt(byte[] message) {
+        return encrypt(message, ArrayUtil.randomArray(IV_BYTE_LENGTH));
+
+    }
+
+    public byte[] encrypt(byte[] message, byte[] iv) {
         try {
-            byte[] iv = ArrayUtil.randomArray(IV_BYTE_LENGTH);
             Cipher cipher = Cipher.getInstance(AES_MODE, SUN_JCE);
             SecretKeySpec secretKeySpec = new SecretKeySpec(key, AES);
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, new IvParameterSpec(iv));
