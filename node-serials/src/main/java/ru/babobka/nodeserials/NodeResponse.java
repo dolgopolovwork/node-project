@@ -1,111 +1,75 @@
 package ru.babobka.nodeserials;
 
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
+
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class NodeResponse implements Serializable {
-
-    private static final long serialVersionUID = 9L;
-
-    public enum Status {
-        NORMAL, STOPPED, FAILED
-    }
+public class NodeResponse extends NodeData {
 
     private static final UUID DUMMY_UUID = new UUID(0, 0);
-
-    private final String taskName;
-
-    private final UUID taskId;
-
-    private final UUID responseId;
+    private static final long serialVersionUID = -1071154624719215439L;
 
     private final long timeTakes;
-
-    private final long timeStamp;
-
-    private final Status status;
-
+    private final ResponseStatus status;
     private final String message;
 
-    private final Map<String, Serializable> data = new HashMap<>();
-
-    public NodeResponse(UUID taskId, UUID responseId, long timeTakes, Status status, String message,
-                        Map<String, Serializable> dataMap, String taskName) {
-        this.taskId = taskId;
-        this.responseId = responseId;
+    public NodeResponse(UUID id, UUID taskId, long timeTakes, ResponseStatus status, String message,
+                        Map<String, Serializable> data, String taskName) {
+        super(id, taskId, taskName, System.currentTimeMillis(), data);
         this.timeTakes = timeTakes;
         this.status = status;
         this.message = message;
-        this.taskName = taskName;
-        if (dataMap != null) {
-            this.data.putAll(dataMap);
-        }
-        this.timeStamp = System.currentTimeMillis();
     }
 
-    public NodeResponse(UUID taskId, long timeTakes, Status status, String message, Map<String, Serializable> dataMap,
-                        String taskName) {
-        this(taskId, UUID.randomUUID(), timeTakes, status, message, dataMap, taskName);
+    public NodeResponse(UUID taskId, ResponseStatus status) {
+        this(UUID.randomUUID(), taskId, -1, status, null, null, null);
     }
 
-    public NodeResponse(UUID taskId, Status status) {
-        this(taskId, UUID.randomUUID(), -1, status, null, null, null);
-    }
-
-    public NodeResponse(UUID taskId, Status status, String taskName) {
-        this(taskId, UUID.randomUUID(), 0, status, null, null, taskName);
+    public NodeResponse(UUID taskId, ResponseStatus status, String taskName) {
+        this(UUID.randomUUID(), taskId, 0, status, null, null, taskName);
     }
 
     public static NodeResponse failed(NodeRequest request) {
-        return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.FAILED, null, null, request.getTaskName());
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, null, null, request.getTaskName());
     }
 
     public static NodeResponse failed(UUID taskId) {
-        return new NodeResponse(taskId, NodeResponse.Status.FAILED);
+        return new NodeResponse(taskId, ResponseStatus.FAILED);
     }
 
     public static NodeResponse failed(NodeRequest request, String message) {
-        return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.FAILED, message,
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, message,
                 null, request.getTaskName());
     }
 
     public static NodeResponse stopped(NodeRequest request) {
-        return new NodeResponse(request.getTaskId(), request.getRequestId(), -1, NodeResponse.Status.STOPPED, null,
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.STOPPED, null,
                 null, request.getTaskName());
     }
 
     public static NodeResponse dummy(UUID taskId) {
-        return new NodeResponse(taskId, NodeResponse.Status.NORMAL);
+        return new NodeResponse(taskId, ResponseStatus.NORMAL);
+    }
+
+    public static NodeResponse dummy(NodeRequest request) {
+        return dummy(request.getTaskId());
     }
 
     public static NodeResponse heartBeat() {
-        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, NodeResponse.Status.NORMAL, null, null,
-                SystemTaskName.HEART_BEAT_TASK_NAME.getName());
+        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, ResponseStatus.HEART_BEAT, null, null,
+                null);
     }
 
     public static NodeResponse stopped(UUID taskId) {
-        return new NodeResponse(taskId, NodeResponse.Status.STOPPED);
+        return new NodeResponse(taskId, ResponseStatus.STOPPED);
     }
 
     public static NodeResponse normal(Map<String, Serializable> result, NodeRequest request, long timePassed) {
-        return new NodeResponse(request.getTaskId(), request.getRequestId(), timePassed, NodeResponse.Status.NORMAL,
+        return new NodeResponse(request.getId(), request.getTaskId(), timePassed, ResponseStatus.NORMAL,
                 null, result, request.getTaskName());
     }
-
-    public <T> T getDataValue(String key) {
-        return getDataValue(key, null);
-    }
-
-    public <T> T getDataValue(String key, T defaultValue) {
-        Serializable value = data.get(key);
-        if (value == null) {
-            return defaultValue;
-        }
-        return (T) value;
-    }
-
 
     public long getTimeTakes() {
         return timeTakes;
@@ -115,48 +79,37 @@ public final class NodeResponse implements Serializable {
         return message;
     }
 
-    public UUID getTaskId() {
-        return taskId;
-    }
-
-    public UUID getResponseId() {
-        return responseId;
-    }
-
-    public Status getStatus() {
+    public ResponseStatus getStatus() {
         return status;
     }
 
-    public String getTaskName() {
-        return taskName;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        NodeResponse that = (NodeResponse) o;
+
+        if (timeTakes != that.timeTakes) return false;
+        return status == that.status && (message != null ? message.equals(that.message) : that.message == null);
     }
 
-    public boolean isHeartBeatingResponse() {
-        return SystemTaskName.HEART_BEAT_TASK_NAME.getName().equals(taskName);
-    }
-
-    public boolean isAuthResponse() {
-        return SystemTaskName.AUTH_TASK_NAME.getName().equals(taskName);
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public Map<String, Serializable> getData() {
-        return data;
-    }
-
-    public boolean isStopped() {
-        return this.status == Status.STOPPED;
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (int) (timeTakes ^ (timeTakes >>> 32));
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "NodeResponse [taskName=" + taskName + ", taskId=" + taskId + ", responseId=" + responseId
-                + ", timeTakes=" + timeTakes + ", timeStamp=" + timeStamp + ", status=" + status + ", message="
-                + message + ", data=" + data + "]";
+        return "NodeResponse{" +
+                "timeTakes=" + timeTakes +
+                ", status=" + status +
+                ", message='" + message + '\'' +
+                "} " + super.toString();
     }
-
-
 }

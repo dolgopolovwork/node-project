@@ -1,17 +1,19 @@
 package ru.babobka.nodemasterserver.service;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
+import ru.babobka.nodemasterserver.exception.TaskExecutionException;
+import ru.babobka.nodemasterserver.task.TaskExecutionResult;
+import ru.babobka.nodeserials.NodeRequest;
 
-import ru.babobka.nodemasterserver.task.TaskContext;
-import ru.babobka.nodemasterserver.task.TaskResult;
+import java.util.UUID;
 
 public interface TaskService {
 
-    TaskResult getResult(Map<String, String> requestArguments, TaskContext taskContext, int maxNodes)
-	    throws TimeoutException;
+    TaskExecutionResult executeTask(NodeRequest request, int maxNodes)
+            throws TaskExecutionException;
 
-    TaskResult cancelTask(UUID taskId);
+    TaskExecutionResult executeTask(NodeRequest request)
+            throws TaskExecutionException;
+
+    void cancelTask(UUID taskId) throws TaskExecutionException;
 
 }

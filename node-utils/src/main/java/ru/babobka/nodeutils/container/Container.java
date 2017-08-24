@@ -1,54 +1,85 @@
 package ru.babobka.nodeutils.container;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Container {
 
-    private final Map<Class<?>, Object> containerMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Object> containerMap = new HashMap<>();
+
+    private final Map<String, Object> namedContainerMap = new HashMap<>();
 
     private Container() {
-
-    }
-
-    private static class SingletonHolder {
-        public static final Container HOLDER_INSTANCE = new Container();
     }
 
     public static Container getInstance() {
         return SingletonHolder.HOLDER_INSTANCE;
     }
 
-    public void put(Object object) {
+    public synchronized void put(Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException("object to put in container is null");
+        }
         containerMap.put(object.getClass(), object);
+    }
 
+    public synchronized void put(ApplicationContainer applicationContainer) {
+        if (applicationContainer == null) {
+            throw new IllegalArgumentException("applicationContainer is null");
+        }
+        applicationContainer.contain(this);
+    }
+
+    public synchronized void put(String key, Object object) {
+        if (key == null) {
+            throw new IllegalArgumentException("key is null");
+        } else if (object == null) {
+            throw new IllegalArgumentException("object to put is null");
+        }
+        namedContainerMap.put(key, object);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(Class<?> clazz, T defaultValue, boolean safe) {
-
+    private <T> T getNoException(Class<?> clazz) {
         for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
             if (clazz.isAssignableFrom(entry.getKey())) {
                 return (T) entry.getValue();
             }
         }
-        if (!safe)
-            return defaultValue;
-        throw new ContainerException("Object inheriting " + clazz + " was not found");
-
+        return null;
     }
 
-    public <T> T get(Class<?> clazz, T defaultValue) {
-        return get(clazz, defaultValue, false);
+    @SuppressWarnings("unchecked")
+    public synchronized <T> T get(String key) {
+        T object = (T) namedContainerMap.get(key);
+        if (object == null) {
+            throw new ContainerException("Object named " + key + " was not found");
+        }
+        return object;
     }
 
-    public <T> T get(Class<?> clazz) {
-        return get(clazz, null, true);
+    public synchronized <T> T get(Class<?> clazz) {
+        T object = getNoException(clazz);
+        if (object == null) {
+            throw new ContainerException("Object inheriting " + clazz + " was not found");
+        }
+        return object;
     }
 
-
-    public void clear() {
+    public synchronized void clear() {
+        namedContainerMap.clear();
         containerMap.clear();
     }
 
+    @Override
+    public synchronized String toString() {
+        return "Container{" +
+                "containerMap=" + containerMap +
+                ", namedContainerMap=" + namedContainerMap +
+                '}';
+    }
+
+    private static class SingletonHolder {
+        static final Container HOLDER_INSTANCE = new Container();
+    }
 }

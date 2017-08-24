@@ -1,177 +1,134 @@
 package ru.babobka.nodemasterserver.server;
 
-import java.io.File;
+import java.io.Serializable;
 
-import org.json.JSONObject;
-import ru.babobka.nodemasterserver.exception.ServerConfigurationException;
+public class MasterServerConfig implements Serializable {
 
-public class MasterServerConfig {
+    private static final long serialVersionUID = 156081573106293600L;
+    private int authTimeOutMillis;
 
-    private final int maxSlaves;
+    private int slaveListenerPort;
 
-    private final int authTimeOutMillis;
+    private int clientListenerPort;
 
-    private final int mainServerPort;
+    private int requestTimeOutMillis;
 
-    private final int requestTimeOutMillis;
+    private int heartBeatTimeOutMillis;
 
-    private final int heartBeatTimeOutMillis;
+    private int webListenerPort;
 
-    private final int webPort;
+    private String restServiceLogin;
 
-    private final String restServiceLogin;
+    private String restServicePassword;
 
-    private final String restServicePassword;
+    private String loggerFolder;
 
-    private final String loggerFolder;
+    private String tasksFolder;
 
-    private final String tasksFolder;
-
-    private final boolean debugDataBase;
-
-    private final boolean productionDataBase;
-
-    private static final int PORT_MIN = 1024;
-
-    private static final int PORT_MAX = 65535;
-
-    public MasterServerConfig(int maxSlaves, int authTimeOutMillis, int mainServerPort, int requestTimeOutMillis,
-	    int heartBeatTimeOutMillis, int webPort, String restServiceLogin, String restServicePassword,
-	    String loggerFolder, String tasksFolder, boolean debugDataBase, boolean productionDataBase) {
-	if (maxSlaves <= 0) {
-	    throw new ServerConfigurationException("'maxSlaves' value must be positive");
-	}
-	this.maxSlaves = maxSlaves;
-	if (authTimeOutMillis <= 0) {
-	    throw new ServerConfigurationException("'authTimeOutMillis' value must be positive");
-	}
-	this.authTimeOutMillis = authTimeOutMillis;
-
-	if (mainServerPort <= 0) {
-	    throw new ServerConfigurationException("'mainServerPort' value must be positive");
-	} else if (mainServerPort < PORT_MIN || mainServerPort > PORT_MAX) {
-	    throw new ServerConfigurationException(
-		    "'mainServerPort' must be in range [" + PORT_MIN + ";" + PORT_MAX + "]");
-	}
-	this.mainServerPort = mainServerPort;
-	if (requestTimeOutMillis <= 0) {
-	    throw new ServerConfigurationException("'requestTimeOutMillis' value must be positive");
-	}
-	this.requestTimeOutMillis = requestTimeOutMillis;
-	if (heartBeatTimeOutMillis <= 0) {
-	    throw new ServerConfigurationException("'heartBeatTimeOutMillis' value must be positive");
-	} else if (heartBeatTimeOutMillis >= requestTimeOutMillis) {
-	    throw new ServerConfigurationException(
-		    "'heartBeatTimeOutMillis' value must lower than 'requestTimeOutMillis'");
-	}
-	this.heartBeatTimeOutMillis = heartBeatTimeOutMillis;
-	if (webPort <= 0) {
-	    throw new ServerConfigurationException("'webPort' value must be positive");
-	} else if (webPort < PORT_MIN || webPort > PORT_MAX) {
-	    throw new ServerConfigurationException("'webPort' must be in range [" + PORT_MIN + ";" + PORT_MAX + "]");
-	} else if (webPort == mainServerPort) {
-	    throw new ServerConfigurationException("'webPort' and 'mainServerPort' must not be equal");
-	}
-	this.webPort = webPort;
-
-	if (restServiceLogin == null) {
-	    throw new ServerConfigurationException("'restServiceLogin' must not be null");
-	}
-	this.restServiceLogin = restServiceLogin;
-	if (restServicePassword == null) {
-	    throw new ServerConfigurationException("'restServicePassword' must not be null");
-	}
-	this.restServicePassword = restServicePassword;
-
-	if (loggerFolder == null) {
-	    throw new ServerConfigurationException("'loggerFolder' must not be null");
-	} else {
-	    File loggerFolderFile = new File(loggerFolder);
-	    if (!loggerFolderFile.exists() && !loggerFolderFile.mkdirs()) {
-		throw new ServerConfigurationException("Can not create folder for " + loggerFolderFile);
-	    }
-	}
-
-	this.loggerFolder = loggerFolder;
-
-	if (tasksFolder == null) {
-	    throw new ServerConfigurationException("'tasksFolder' must not be null");
-	} else if (!new File(tasksFolder).exists()) {
-	    throw new ServerConfigurationException("'tasksFolder' " + tasksFolder + " doesn't exist");
-	}
-
-	this.tasksFolder = tasksFolder;
-	this.productionDataBase = productionDataBase;
-	this.debugDataBase = debugDataBase;
-
-    }
-
-    public MasterServerConfig(JSONObject jsonObject) {
-
-	this(jsonObject.getInt("maxSlaves"), jsonObject.getInt("authTimeOutMillis"),
-		jsonObject.getInt("mainServerPort"), jsonObject.getInt("requestTimeOutMillis"),
-		jsonObject.getInt("heartBeatTimeOutMillis"), jsonObject.getInt("webPort"),
-		jsonObject.getString("restServiceLogin"), jsonObject.getString("restServicePassword"),
-		jsonObject.getString("loggerFolder"), jsonObject.getString("tasksFolder"),
-		jsonObject.getBoolean("debugDataBase"), jsonObject.getBoolean("productionDataBase"));
-    }
+    private boolean debugMode;
 
     public int getAuthTimeOutMillis() {
-	return authTimeOutMillis;
+        return authTimeOutMillis;
     }
 
-    public int getMainServerPort() {
-	return mainServerPort;
+    public void setAuthTimeOutMillis(int authTimeOutMillis) {
+        this.authTimeOutMillis = authTimeOutMillis;
+    }
+
+    public int getSlaveListenerPort() {
+        return slaveListenerPort;
+    }
+
+    public void setSlaveListenerPort(int slaveListenerPort) {
+        this.slaveListenerPort = slaveListenerPort;
     }
 
     public int getRequestTimeOutMillis() {
-	return requestTimeOutMillis;
+        return requestTimeOutMillis;
+    }
+
+    public void setRequestTimeOutMillis(int requestTimeOutMillis) {
+        this.requestTimeOutMillis = requestTimeOutMillis;
     }
 
     public int getHeartBeatTimeOutMillis() {
-	return heartBeatTimeOutMillis;
+        return heartBeatTimeOutMillis;
     }
 
-    public int getWebPort() {
-	return webPort;
+    public void setHeartBeatTimeOutMillis(int heartBeatTimeOutMillis) {
+        this.heartBeatTimeOutMillis = heartBeatTimeOutMillis;
     }
 
-    public int getMaxSlaves() {
-	return maxSlaves;
+    public int getWebListenerPort() {
+        return webListenerPort;
+    }
+
+    public void setWebListenerPort(int webListenerPort) {
+        this.webListenerPort = webListenerPort;
     }
 
     public String getRestServiceLogin() {
-	return restServiceLogin;
+        return restServiceLogin;
+    }
+
+    public void setRestServiceLogin(String restServiceLogin) {
+        this.restServiceLogin = restServiceLogin;
     }
 
     public String getRestServicePassword() {
-	return restServicePassword;
+        return restServicePassword;
+    }
+
+    public void setRestServicePassword(String restServicePassword) {
+        this.restServicePassword = restServicePassword;
     }
 
     public String getLoggerFolder() {
-	return loggerFolder;
+        return loggerFolder;
+    }
+
+    public void setLoggerFolder(String loggerFolder) {
+        this.loggerFolder = loggerFolder;
     }
 
     public String getTasksFolder() {
-	return tasksFolder;
+        return tasksFolder;
     }
 
-    public boolean isDebugDataBase() {
-	return debugDataBase;
+    public void setTasksFolder(String tasksFolder) {
+        this.tasksFolder = tasksFolder;
     }
 
-    public boolean isProductionDataBase() {
-	return productionDataBase;
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+
+    public int getClientListenerPort() {
+        return clientListenerPort;
+    }
+
+    public void setClientListenerPort(int clientListenerPort) {
+        this.clientListenerPort = clientListenerPort;
     }
 
     @Override
     public String toString() {
-	return "MasterServerConfig [maxSlaves=" + maxSlaves + ", authTimeOutMillis=" + authTimeOutMillis
-		+ ", mainServerPort=" + mainServerPort + ", requestTimeOutMillis=" + requestTimeOutMillis
-		+ ", heartBeatTimeOutMillis=" + heartBeatTimeOutMillis + ", webPort=" + webPort + ", restServiceLogin="
-		+ restServiceLogin + ", restServicePassword=" + restServicePassword + ", loggerFolder=" + loggerFolder
-		+ ", tasksFolder=" + tasksFolder + ", debugDataBase=" + debugDataBase + ", productionDataBase="
-		+ productionDataBase + "]";
+        return "MasterServerConfig{" +
+                "authTimeOutMillis=" + authTimeOutMillis +
+                ", slaveListenerPort=" + slaveListenerPort +
+                ", clientListenerPort=" + clientListenerPort +
+                ", requestTimeOutMillis=" + requestTimeOutMillis +
+                ", heartBeatTimeOutMillis=" + heartBeatTimeOutMillis +
+                ", webListenerPort=" + webListenerPort +
+                ", restServiceLogin='" + restServiceLogin + '\'' +
+                ", restServicePassword='" + restServicePassword + '\'' +
+                ", loggerFolder='" + loggerFolder + '\'' +
+                ", tasksFolder='" + tasksFolder + '\'' +
+                ", debugMode=" + debugMode +
+                '}';
     }
-
 }

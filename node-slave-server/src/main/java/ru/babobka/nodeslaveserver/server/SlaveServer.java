@@ -1,77 +1,54 @@
 package ru.babobka.nodeslaveserver.server;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-
-
 import ru.babobka.nodeslaveserver.controller.SocketController;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
-import ru.babobka.nodeslaveserver.runnable.GlitchRunnable;
 import ru.babobka.nodeslaveserver.service.AuthService;
-import ru.babobka.nodeslaveserver.task.TasksStorage;
+import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
-import ru.babobka.nodeutils.util.StreamUtil;
+
+import java.io.IOException;
+import java.util.concurrent.Executors;
 
 public class SlaveServer extends Thread {
 
-    private static final String SLAVE_SERVER_TEST_CONFIG = "slave_config.json";
-
     private final AuthService authService = Container.getInstance().get(AuthService.class);
-
-    private final Thread glitchThread;
-
-    private final Socket socket;
-
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
+    private final TaskPool taskPool = Container.getInstance().get("slaveServerTaskPool");
+    private final NodeConnection connection;
     private final TasksStorage tasksStorage;
 
-    public SlaveServer(String serverHost, int port, String login, String password) throws IOException {
-        this(serverHost, port, login, password, false);
-    }
-
-    public SlaveServer(String serverHost, int port, String login, String password, boolean glitchy) throws IOException {
-        socket = new Socket(InetAddress.getByName(serverHost), port);
-        logger.info("Connection was successfully established");
-        if (!authService.auth(socket, login, password)) {
+    public SlaveServer(NodeConnection connection, String login, String password) throws IOException {
+        this.connection = connection;
+        if (!authService.auth(connection, login, password)) {
             logger.error("Auth fail");
             throw new SlaveAuthFailException();
         } else {
             logger.info("Auth success");
+            connection.send(taskPool.getTaskNames());
+            boolean haveCommonTasks = connection.receive();
+            if (!haveCommonTasks) {
+                logger.error("No common tasks with master server");
+                throw new SlaveAuthFailException();
+            }
         }
         tasksStorage = new TasksStorage();
-        if (glitchy) {
-            glitchThread = new Thread(new GlitchRunnable(socket));
-        } else {
-            glitchThread = null;
-        }
-    }
-
-    public static void initTestContainer() throws FileNotFoundException {
-        new SlaveServerContainerStrategy(
-                StreamUtil.getLocalResource(SlaveServer.class, SlaveServer.SLAVE_SERVER_TEST_CONFIG))
-                .contain(Container.getInstance());
     }
 
     @Override
     public void run() {
-        if (glitchThread != null)
-            glitchThread.start();
-        try (SocketController controller = new SocketController(tasksStorage)) {
-            while (!Thread.currentThread().isInterrupted()) {
-                controller.control(new NodeConnection(socket));
+        //TODO как бы тут затестить
+        try (SocketController controller = new SocketController(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()), tasksStorage)) {
+            while (!isInterrupted()) {
+                controller.control(connection);
             }
         } catch (IOException e) {
-            if (!socket.isClosed()) {
+            if (!isInterrupted()) {
                 logger.error(e);
-            } else {
-                logger.info("Slave server is done");
             }
-
+            logger.info("Exiting slave server");
         } finally {
             clear();
         }
@@ -79,21 +56,14 @@ public class SlaveServer extends Thread {
 
     @Override
     public void interrupt() {
-
         super.interrupt();
         clear();
     }
 
-    private void clear() {
-        if (glitchThread != null)
-            glitchThread.interrupt();
+    void clear() {
         tasksStorage.stopAllTheTasks();
-        if (socket != null) {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                logger.error(e);
-            }
+        if (connection != null) {
+            connection.close();
         }
     }
 

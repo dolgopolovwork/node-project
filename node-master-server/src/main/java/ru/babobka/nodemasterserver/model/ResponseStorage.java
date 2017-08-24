@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.model;
 
+import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 
 import java.util.HashMap;
@@ -11,18 +12,13 @@ import java.util.UUID;
  */
 public class ResponseStorage {
 
-    private final Map<UUID, ResponsesArray> responsesMap;
+    private final Map<UUID, Responses> responsesMap = new HashMap<>();
 
-    public ResponseStorage() {
-        responsesMap = new HashMap<>();
-    }
-
-    public synchronized void create(UUID taskId, ResponsesArray responses) {
+    public synchronized void create(UUID taskId, Responses responses) {
         responsesMap.put(taskId, responses);
     }
 
-    public synchronized ResponsesArray get(UUID taskId) {
-
+    public synchronized Responses get(UUID taskId) {
         return responsesMap.get(taskId);
     }
 
@@ -30,30 +26,29 @@ public class ResponseStorage {
         return responsesMap.containsKey(taskId);
     }
 
-    public synchronized void addBadResponse(UUID taskId) {
-        ResponsesArray responsesArray = responsesMap.get(taskId);
-        if (responsesArray != null) {
-            responsesArray.add(NodeResponse.failed(taskId));
-        }
+    public synchronized boolean addBadResponse(UUID taskId) {
+        Responses responses = responsesMap.get(taskId);
+        return responses != null
+                && responses.add(NodeResponse.failed(taskId));
     }
 
-    public synchronized void addStopResponse(UUID taskId) {
-        ResponsesArray responsesArray = responsesMap.get(taskId);
-        if (responsesArray != null) {
-            responsesArray.add(NodeResponse.stopped(taskId));
-        }
+    public synchronized void addBadResponse(NodeRequest request) {
+        addBadResponse(request.getTaskId());
     }
 
-    public synchronized void setStopAllResponses(UUID taskId) {
-        ResponsesArray responsesArray = responsesMap.get(taskId);
-        if (responsesArray != null) {
-            responsesArray.fill(NodeResponse.stopped(taskId));
-        }
+    public synchronized boolean addStopResponse(UUID taskId) {
+        Responses responses = responsesMap.get(taskId);
+        return responses != null && responses.add(NodeResponse.stopped(taskId));
     }
 
-    public synchronized Map<UUID, ResponsesArrayMeta> getRunningTasksMetaMap() {
-        Map<UUID, ResponsesArrayMeta> taskMap = new HashMap<>();
-        for (Map.Entry<UUID, ResponsesArray> entry : responsesMap.entrySet()) {
+    public synchronized boolean setStopAllResponses(UUID taskId) {
+        Responses responses = responsesMap.get(taskId);
+        return responses != null && responses.fill(NodeResponse.stopped(taskId));
+    }
+
+    public synchronized Map<UUID, ResponsesMeta> getRunningTasksMetaMap() {
+        Map<UUID, ResponsesMeta> taskMap = new HashMap<>();
+        for (Map.Entry<UUID, Responses> entry : responsesMap.entrySet()) {
             if (!entry.getValue().isComplete()) {
                 taskMap.put(entry.getKey(), entry.getValue().getMeta());
             }
@@ -61,10 +56,10 @@ public class ResponseStorage {
         return taskMap;
     }
 
-    public synchronized ResponsesArrayMeta getTaskMeta(UUID taskId) {
-        ResponsesArray responsesArray = responsesMap.get(taskId);
-        if (responsesArray != null) {
-            return responsesArray.getMeta();
+    public synchronized ResponsesMeta getTaskMeta(UUID taskId) {
+        Responses responses = get(taskId);
+        if (responses != null) {
+            return responses.getMeta();
         }
         return null;
     }
@@ -73,8 +68,11 @@ public class ResponseStorage {
         responsesMap.remove(taskId);
     }
 
-    public synchronized int size() {
-        return responsesMap.size();
-    }
 
+    @Override
+    public String toString() {
+        return "ResponseStorage{" +
+                "responsesMap=" + responsesMap +
+                '}';
+    }
 }

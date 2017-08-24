@@ -12,3 +12,4 @@
 *.zip
 .idea/*
 *.eclipse*
+/logs

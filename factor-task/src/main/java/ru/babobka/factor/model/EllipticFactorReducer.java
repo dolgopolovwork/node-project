@@ -1,25 +1,25 @@
 package ru.babobka.factor.model;
 
-import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.subtask.exception.ReducingException;
-import ru.babobka.subtask.model.Reducer;
-import ru.babobka.subtask.model.ReducingResult;
-
-import java.math.BigInteger;
+import ru.babobka.nodetask.exception.ReducingException;
+import ru.babobka.nodetask.model.Reducer;
+import ru.babobka.nodetask.model.ReducingResult;
+import ru.babobka.nodeutils.container.Container;
 
 import java.util.List;
 
 /**
  * Created by dolgopolov.a on 22.12.15.
  */
-public class EllipticFactorReducer implements Reducer {
+public class EllipticFactorReducer extends Reducer {
+
+    private EllipticFactorDataValidators ellipticFactorDataValidators = Container.getInstance().get(EllipticFactorDataValidators.class);
 
     @Override
-    public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException {
+    protected ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException {
         try {
             for (NodeResponse response : responses) {
-                if (validResponse(response)) {
+                if (ellipticFactorDataValidators.isValidResponse(response)) {
                     return new ReducingResult().add(response.getData());
                 }
             }
@@ -29,20 +29,5 @@ public class EllipticFactorReducer implements Reducer {
         throw new ReducingException();
     }
 
-    @Override
-    public boolean validResponse(NodeResponse response) {
-        try {
-            if (response != null && response.getStatus() == NodeResponse.Status.NORMAL) {
-                BigInteger factor = response.getDataValue(Params.FACTOR.getValue());
-                BigInteger n = response.getDataValue(Params.NUMBER.getValue());
-                if (factor != null && n != null && !factor.equals(BigInteger.ONE.negate()) && n.mod(factor).equals(BigInteger.ZERO)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
 }

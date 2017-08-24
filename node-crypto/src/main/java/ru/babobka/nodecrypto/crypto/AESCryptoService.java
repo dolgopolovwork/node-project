@@ -19,15 +19,11 @@ import java.util.Arrays;
  */
 public class AESCryptoService implements CryptoService {
 
-    private final byte[] key;
-
     private static final String AES_MODE = "AES/CBC/PKCS5Padding";
-
     private static final String AES = "AES";
-
     private static final String SUN_JCE = "SunJCE";
-
     private static final int IV_BYTE_LENGTH = 16;
+    private final byte[] key;
 
 
     public AESCryptoService(byte[] key) {

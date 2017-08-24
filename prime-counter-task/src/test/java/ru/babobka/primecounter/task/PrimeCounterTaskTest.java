@@ -1,119 +1,61 @@
 package ru.babobka.primecounter.task;
 
-import static org.junit.Assert.*;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.primecounter.task.PrimeCounterTask;
-import ru.babobka.subtask.model.SubTask;
-import ru.babobka.subtask.model.ValidationResult;
+import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.primecounter.model.PrimeCounterDataValidators;
+import ru.babobka.primecounter.model.PrimeCounterDistributor;
+import ru.babobka.primecounter.model.PrimeCounterReducer;
+import ru.babobka.primecounter.model.PrimeCounterTaskExecutor;
+import ru.babobka.primecounter.service.PrimeCounterServiceFactory;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Created by 123 on 25.10.2017.
+ */
 public class PrimeCounterTaskTest {
-
-    private SubTask task;
-
-    private NodeRequest tenPrimesRequest;
-
-    private NodeRequest thousandPrimesRequest;
-
-    private NodeRequest tenThousandPrimesRequest;
-
-    private NodeRequest millionPrimesRequest;
-
-    private static final UUID DUMMY_UUID = new UUID(0, 0);
-
-    private static final String BEGIN = "begin";
-
-    private static final String END = "end";
-
-    private NodeRequest createRequest(long begin, long end) {
-        Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put("begin", begin);
-        dataMap.put("end", end);
-        return NodeRequest.regular(DUMMY_UUID, "millerPrimeCounter", dataMap);
-
-    }
+    private PrimeCounterTask primeCounterTask;
 
     @Before
-    public void init() {
-        task = new PrimeCounterTask();
-        millionPrimesRequest = createRequest(0, 15_485_863);
-        thousandPrimesRequest = createRequest(0, 7919);
-        tenThousandPrimesRequest = createRequest(0, 104729);
-        tenPrimesRequest = createRequest(0, 29);
-    }
-
-    @Test
-    public void testMillionPrimes() {
-        assertEquals(task.getTaskExecutor().execute(millionPrimesRequest).getResultMap().get("primeCount"), 1_000_000);
-    }
-
-    @Test
-    public void testStop() {
-        new Thread(new Runnable() {
-
+    public void setUp() {
+        new ApplicationContainer() {
             @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                    task.stopProcess();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+            public void contain(Container container) {
+                container.put(mock(PrimeCounterReducer.class));
+                container.put(mock(PrimeCounterDistributor.class));
+                container.put(mock(PrimeCounterDataValidators.class));
+                container.put(mock(PrimeCounterTaskExecutor.class));
+                container.put(mock(PrimeCounterServiceFactory.class));
             }
-        }).start();
-        assertEquals(task.getTaskExecutor().execute(millionPrimesRequest).getResultMap().get("primeCount"), 0);
-        assertTrue(task.isStopped());
+        }.contain(Container.getInstance());
+        primeCounterTask = new PrimeCounterTask();
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test
-    public void testTenThousandPrimes() {
-        assertEquals(task.getTaskExecutor().execute(tenThousandPrimesRequest).getResultMap().get("primeCount"), 10000);
+    public void testIsRequestDataTooSmallBigRange() {
+        NodeRequest request = mock(NodeRequest.class);
+        when(request.getStringDataValue(Params.BEGIN.getValue())).thenReturn("0");
+        when(request.getStringDataValue(Params.END.getValue())).thenReturn("1000000");
+        assertFalse(primeCounterTask.isRequestDataTooSmall(request));
     }
 
     @Test
-    public void testTenPrimes() {
-        assertEquals(task.getTaskExecutor().execute(tenPrimesRequest).getResultMap().get("primeCount"), 10);
+    public void testIsRequestDataTooSmall() {
+        NodeRequest request = mock(NodeRequest.class);
+        when(request.getStringDataValue(Params.BEGIN.getValue())).thenReturn("0");
+        when(request.getStringDataValue(Params.END.getValue())).thenReturn("1000");
+        assertTrue(primeCounterTask.isRequestDataTooSmall(request));
     }
-
-    @Test
-    public void testThousandPrimes() {
-        assertEquals(task.getTaskExecutor().execute(thousandPrimesRequest).getResultMap().get("primeCount"), 1000);
-    }
-
-    @Test
-    public void testValidateRequestNull() {
-        ValidationResult validationResult = task.getRequestValidator().validateRequest(null);
-        assertFalse(validationResult.isValid());
-    }
-
-    @Test
-    public void testValidateRequestBadBegin() {
-        Map<String, Serializable> addition = new HashMap<>();
-        addition.put(BEGIN, 100000);
-        addition.put(END, 0);
-        NodeRequest nodeRequest = NodeRequest.regular(UUID.randomUUID(), "test", addition);
-        ValidationResult validationResult = task.getRequestValidator().validateRequest(nodeRequest);
-        assertFalse(validationResult.isValid());
-    }
-
-    @Test
-    public void testValidateRequestOk() {
-        Map<String, Serializable> addition = new HashMap<>();
-        addition.put(BEGIN, 0);
-        addition.put(END, 100000);
-        NodeRequest nodeRequest = NodeRequest.regular(UUID.randomUUID(), "test", addition);
-        ValidationResult validationResult = task.getRequestValidator().validateRequest(nodeRequest);
-        assertTrue(validationResult.isValid());
-    }
-
-
 }

@@ -1,39 +1,31 @@
 package ru.babobka.nodeslaveserver.task;
 
-import ru.babobka.nodeslaveserver.model.Timer;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.subtask.model.ExecutionResult;
-import ru.babobka.subtask.model.SubTask;
-import ru.babobka.subtask.model.ValidationResult;
+import ru.babobka.nodetask.TasksStorage;
+import ru.babobka.nodetask.model.ExecutionResult;
+import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodeutils.time.Timer;
 
 /**
  * Created by dolgopolov.a on 08.12.15.
  */
 public class TaskRunnerService {
 
-    private final SlaveServerConfig config = Container.getInstance().get(SlaveServerConfig.class);
-
     public NodeResponse runTask(TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
         try {
-            ValidationResult validationResult = subTask.getRequestValidator().validateRequest(request);
-            if (validationResult.isValid()) {
-                Timer timer = new Timer();
-                ExecutionResult result = subTask.getTaskExecutor().execute(config.getThreads(), request);
-                if (result.isStopped()) {
-                    return NodeResponse.stopped(request);
-                } else {
-                    return NodeResponse.normal(result.getResultMap(), request, timer.getTimePassed());
-                }
-            } else {
-                return NodeResponse.failed(request, validationResult.getMessage());
+            if (!subTask.getDataValidators().isValidRequest(request)) {
+                return NodeResponse.failed(request, "Failed validation");
             }
+            Timer timer = new Timer();
+            ExecutionResult result = subTask.getTaskExecutor().execute(request);
+            if (result.isStopped())
+                return NodeResponse.stopped(request);
+            else
+                return NodeResponse.normal(result.getResultMap(), request, timer.getTimePassed());
 
         } finally {
             tasksStorage.removeRequest(request);
         }
     }
-
 }

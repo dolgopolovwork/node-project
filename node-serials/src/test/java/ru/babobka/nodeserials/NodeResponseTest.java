@@ -1,6 +1,7 @@
 package ru.babobka.nodeserials;
 
 import org.junit.Test;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -8,7 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by 123 on 15.06.2017.
@@ -18,26 +18,26 @@ public class NodeResponseTest {
     @Test
     public void testFailed() {
         NodeResponse nodeResponse = NodeResponse.failed(UUID.randomUUID());
-        assertEquals(nodeResponse.getStatus(), NodeResponse.Status.FAILED);
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.FAILED);
     }
 
     @Test
     public void testStopped() {
         NodeResponse nodeResponse = NodeResponse.stopped(UUID.randomUUID());
-        assertTrue(nodeResponse.isStopped());
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.STOPPED);
     }
 
     @Test
     public void testDummy() {
         NodeResponse nodeResponse = NodeResponse.dummy(UUID.randomUUID());
-        assertEquals(nodeResponse.getStatus(), NodeResponse.Status.NORMAL);
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.NORMAL);
     }
 
 
     @Test
     public void testHeartBeat() {
         NodeResponse nodeResponse = NodeResponse.heartBeat();
-        assertTrue(nodeResponse.isHeartBeatingResponse());
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.HEART_BEAT);
     }
 
     @Test

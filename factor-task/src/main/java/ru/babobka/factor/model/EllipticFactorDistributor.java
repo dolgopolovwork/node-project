@@ -1,48 +1,31 @@
 package ru.babobka.factor.model;
 
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.subtask.model.RequestDistributor;
+import ru.babobka.nodetask.model.RequestDistributor;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dolgopolov.a on 22.12.15.
  */
-public class EllipticFactorDistributor implements RequestDistributor {
-
-    private final String taskName;
-
-    public EllipticFactorDistributor(String taskName) {
-        this.taskName = taskName;
-    }
+public class EllipticFactorDistributor extends RequestDistributor {
 
     @Override
-    public NodeRequest[] distribute(Map<String, String> dataMap, int nodes, UUID id) {
-        BigInteger n = new BigInteger(dataMap.get(Params.NUMBER.getValue()));
-        NodeRequest[] requests = new NodeRequest[nodes];
+    protected List<NodeRequest> distributeImpl(NodeRequest request, int nodes) {
+        BigInteger n = request.getDataValue(Params.NUMBER.getValue());
+        List<NodeRequest> requests = new ArrayList<>(nodes);
         Map<String, Serializable> innerDataMap = new HashMap<>();
         innerDataMap.put(Params.NUMBER.getValue(), n);
-        for (int i = 0; i < requests.length; i++) {
-            requests[i] = NodeRequest.race(id, taskName, innerDataMap);
+        for (int i = 0; i < nodes; i++) {
+            requests.add(NodeRequest.race(request.getTaskId(), request.getTaskName(), innerDataMap));
         }
         return requests;
     }
 
-    @Override
-    public boolean validArguments(Map<String, String> dataMap) {
-        try {
-            BigInteger n = new BigInteger(dataMap.getOrDefault(Params.NUMBER.getValue(), ""));
-            if (n.compareTo(BigInteger.ZERO) < 0) {
-                return false;
-            }
-        } catch (RuntimeException e) {
-            return false;
-        }
-        return true;
-    }
 }

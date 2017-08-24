@@ -1,33 +1,27 @@
 package ru.babobka.primecounter.task;
 
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodetask.model.*;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.primecounter.model.PrimeCounterDataValidators;
 import ru.babobka.primecounter.model.PrimeCounterDistributor;
 import ru.babobka.primecounter.model.PrimeCounterReducer;
-
-
-import ru.babobka.subtask.model.*;
+import ru.babobka.primecounter.model.PrimeCounterTaskExecutor;
 
 
 /**
  * Created by dolgopolov.a on 15.12.15.
  */
 public class PrimeCounterTask extends SubTask {
-
-
+    static final String DESCRIPTION = "Counts prime numbers in a given range";
     private static final Long MIN_RANGE_TO_PARALLEL = 5000L;
-
-    private final PrimeCounterReducer reducer = new PrimeCounterReducer();
-
-    private final PrimeCounterDistributor distributor = new PrimeCounterDistributor(NAME);
-
-    private final PrimeCounterRequestValidator primeCounterRequestValidator = new PrimeCounterRequestValidator();
-
+    private final PrimeCounterReducer reducer = Container.getInstance().get(PrimeCounterReducer.class);
+    private final PrimeCounterDistributor distributor = Container.getInstance().get(PrimeCounterDistributor.class);
+    private final PrimeCounterDataValidators primeCounterDataValidators = Container.getInstance().get(PrimeCounterDataValidators.class);
     private final PrimeCounterTaskExecutor primeCounterTaskExecutor = new PrimeCounterTaskExecutor();
 
-    private static final String NAME = "Dummy prime counter";
-
-    private static final String DESCRIPTION = "Counts prime numbers in a given range";
-
+    PrimeCounterTask() {
+    }
 
     @Override
     public RequestDistributor getDistributor() {
@@ -45,8 +39,8 @@ public class PrimeCounterTask extends SubTask {
     }
 
     @Override
-    public RequestValidator getRequestValidator() {
-        return primeCounterRequestValidator;
+    public DataValidators getDataValidators() {
+        return primeCounterDataValidators;
     }
 
     @Override
@@ -56,18 +50,9 @@ public class PrimeCounterTask extends SubTask {
         return (end - begin) <= MIN_RANGE_TO_PARALLEL;
     }
 
-    public SubTask newInstance() {
-        return new PrimeCounterTask();
-    }
-
     @Override
     public String getDescription() {
         return DESCRIPTION;
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
     }
 
     @Override

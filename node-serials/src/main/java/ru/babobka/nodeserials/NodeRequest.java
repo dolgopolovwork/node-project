@@ -1,7 +1,8 @@
 package ru.babobka.nodeserials;
 
+import ru.babobka.nodeserials.enumerations.RequestStatus;
+
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -9,105 +10,58 @@ import java.util.UUID;
  * Created by dolgopolov.a on 08.07.15.
  */
 
-public final class NodeRequest implements Serializable {
+public class NodeRequest extends NodeData {
 
-    private static final long serialVersionUID = 8L;
+    private static final long serialVersionUID = -7966050005036288334L;
+    private final RequestStatus requestStatus;
 
-    private final UUID taskId;
-
-    private final UUID requestId;
-
-    private final boolean stoppingRequest;
-
-    private final boolean raceStyle;
-
-    private final String taskName;
-
-    private final long timeStamp;
-
-    private final Map<String, Serializable> data = new HashMap<>();
-
-    private NodeRequest(UUID taskId, UUID requestId, String taskName, Map<String, Serializable> data,
-                        boolean stoppingRequest, boolean raceStyle) {
-        this.taskId = taskId;
-        this.requestId = requestId;
-        this.taskName = taskName;
-        if (data != null) {
-            this.data.putAll(data);
-        }
-        this.stoppingRequest = stoppingRequest;
-        this.raceStyle = raceStyle;
-        this.timeStamp = System.currentTimeMillis();
-    }
-
-    private NodeRequest(UUID taskId, boolean stoppingRequest, String taskName) {
-        this(taskId, UUID.randomUUID(), taskName, null, stoppingRequest, false);
+    private NodeRequest(UUID taskId, String taskName, Map<String, Serializable> data, RequestStatus requestStatus) {
+        super(UUID.randomUUID(), taskId, taskName, System.currentTimeMillis(), data);
+        this.requestStatus = requestStatus;
     }
 
     public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data) {
-        return new NodeRequest(taskId, UUID.randomUUID(), taskName, data, false, false);
+        return new NodeRequest(taskId, taskName, data, RequestStatus.NORMAL);
     }
 
     public static NodeRequest race(UUID taskId, String taskName, Map<String, Serializable> data) {
-        return new NodeRequest(taskId, UUID.randomUUID(), taskName, data, false, true);
+        return new NodeRequest(taskId, taskName, data, RequestStatus.RACE);
     }
 
-    public static NodeRequest stop(UUID taskId, String taskName) {
-        return new NodeRequest(taskId, true, taskName);
+    public static NodeRequest stop(UUID taskId) {
+        return new NodeRequest(taskId, null, null, RequestStatus.STOP);
     }
 
     public static NodeRequest heartBeatRequest() {
-        return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), SystemTaskName.HEART_BEAT_TASK_NAME.getName(), null, false, false);
+        return new NodeRequest(UUID.randomUUID(), null, null, RequestStatus.HEART_BEAT);
     }
 
-    public String getStringDataValue(String key) {
-        Serializable value = data.get(key);
-        if (value != null)
-            return value.toString();
-        return "";
+    public RequestStatus getRequestStatus() {
+        return requestStatus;
     }
 
-    public UUID getTaskId() {
-        return taskId;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        NodeRequest request = (NodeRequest) o;
+
+        return requestStatus == request.requestStatus;
     }
 
-    public UUID getRequestId() {
-        return requestId;
-    }
-
-    public boolean isHeartBeatingRequest() {
-        return SystemTaskName.HEART_BEAT_TASK_NAME.getName().equals(taskName);
-    }
-
-    public boolean isAuthRequest() {
-        return SystemTaskName.AUTH_TASK_NAME.getName().equals(taskName);
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public boolean isRaceStyle() {
-        return raceStyle;
-    }
-
-    public boolean isStoppingRequest() {
-        return stoppingRequest;
-    }
-
-    public long getTimeStamp() {
-        return timeStamp;
-    }
-
-    public Map<String, Serializable> getData() {
-        return data;
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (requestStatus != null ? requestStatus.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "NodeRequest [taskId=" + taskId + ", requestId=" + requestId + ", stoppingRequest=" + stoppingRequest
-                + ", raceStyle=" + raceStyle + ", taskName=" + taskName + ", timeStamp=" + timeStamp + ", data=" + data
-                + "]";
+        return "NodeRequest{" +
+                "requestStatus=" + requestStatus +
+                "} " + super.toString();
     }
-
 }

@@ -1,6 +1,18 @@
 package ru.babobka.factor.task;
 
-import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import ru.babobka.factor.model.EllipticFactorDataValidators;
+import ru.babobka.factor.model.EllipticFactorDistributor;
+import ru.babobka.factor.model.EllipticFactorReducer;
+import ru.babobka.factor.service.EllipticCurveFactorService;
+import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
+import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -9,131 +21,48 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.Test;
-
-import ru.babobka.nodeserials.NodeRequest;
-
-import ru.babobka.subtask.model.SubTask;
-import ru.babobka.subtask.model.ValidationResult;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class EllipticCurveFactorTaskTest {
 
-    private static final String NUMBER = "number";
+    private SubTask task;
 
-    private static final SubTask TASK = new EllipticCurveFactorTask();
+    @Before
+    public void setUp() {
+        new ApplicationContainer() {
+            @Override
+            public void contain(Container container) {
+                container.put(mock(SimpleLogger.class));
+                container.put(mock(EllipticCurveFactorServiceFactory.class));
+                container.put(mock(EllipticFactorDistributor.class));
+                container.put(mock(EllipticFactorReducer.class));
+                container.put(mock(EllipticFactorDataValidators.class));
+            }
+        }.contain(Container.getInstance());
+        task = new EllipticCurveFactorTask();
+    }
 
-    private static final UUID DUMMY_UUID = new UUID(0, 0);
-
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
+    }
 
     @Test
     public void testIsRequestDataTooSmallLittleNumber() {
         Map<String, Serializable> data = new HashMap<>();
-        data.put(NUMBER, "123");
+        data.put(Params.NUMBER.getValue(), "123");
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        assertTrue(TASK.isRequestDataTooSmall(request));
+        assertTrue(task.isRequestDataTooSmall(request));
     }
 
     @Test
     public void testIsRequestDataTooSmallBigNumber() {
         Map<String, Serializable> data = new HashMap<>();
-        data.put(NUMBER, BigInteger.probablePrime(100, new Random()));
+        data.put(Params.NUMBER.getValue(), BigInteger.probablePrime(100, new Random()));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        assertFalse(TASK.isRequestDataTooSmall(request));
+        assertFalse(task.isRequestDataTooSmall(request));
     }
 
-    @Test
-    public void testValidateRequestNull() {
-        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(null);
-        assertFalse(validationResult.isValid());
-    }
-
-    @Test
-    public void testValidateRequestPrime() {
-        Map<String, Serializable> data = new HashMap<>();
-        data.put(NUMBER, BigInteger.probablePrime(32, new Random()));
-        NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
-        assertFalse(validationResult.isValid());
-    }
-
-
-    @Test
-    public void testValidateRequestThree() {
-        Map<String, Serializable> data = new HashMap<>();
-        data.put(NUMBER, BigInteger.valueOf(3));
-        NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
-        assertFalse(validationResult.isValid());
-    }
-
-    @Test
-    public void testValidateRequestOk() {
-        Map<String, Serializable> data = new HashMap<>();
-        data.put(NUMBER, BigInteger.valueOf(1024));
-        NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        ValidationResult validationResult = TASK.getRequestValidator().validateRequest(request);
-        assertTrue(validationResult.isValid());
-    }
-
-
-    @Test
-    public void testValidation() {
-        BigInteger number = BigInteger.probablePrime(8, new Random())
-                .multiply(BigInteger.probablePrime(8, new Random()));
-        assertTrue(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
-        number = number.negate();
-        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
-        number = BigInteger.valueOf(15485863L);
-        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
-        number = BigInteger.probablePrime(64, new Random());
-        assertFalse(TASK.getRequestValidator().validateRequest(getNumberRequest(number)).isValid());
-    }
-
-    @Test
-    public void testLittleNumber() {
-
-        generateTest(8, 1000);
-    }
-
-    @Test
-    public void testMediumNumber() {
-        generateTest(16, 500);
-    }
-
-    @Test
-    public void testBigNumber() {
-        generateTest(32, 25);
-    }
-
-    @Test
-    public void testVeryBigNumber() {
-        generateTest(40, 10);
-    }
-
-    @Test
-    public void testExtraBigNumber() {
-        generateTest(45, 5);
-    }
-
-    private void generateTest(int bits, int tests) {
-        for (int i = 0; i < tests; i++) {
-
-            BigInteger number = getRandomHalfPrime(bits);
-
-            BigInteger factor = (BigInteger) TASK.newInstance().getTaskExecutor().execute(getNumberRequest(number)).getResultMap()
-                    .get("factor");
-            assertEquals(number.mod(factor), BigInteger.ZERO);
-
-        }
-    }
-
-    private NodeRequest getNumberRequest(BigInteger number) {
-        Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put("number", number);
-        return NodeRequest.race(DUMMY_UUID, "ellipticFactor", dataMap);
-    }
-
-    private BigInteger getRandomHalfPrime(int bits) {
-        return BigInteger.probablePrime(bits, new Random()).multiply(BigInteger.probablePrime(bits, new Random()));
-    }
 }

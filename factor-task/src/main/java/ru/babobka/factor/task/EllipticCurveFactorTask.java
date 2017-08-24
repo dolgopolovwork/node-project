@@ -1,29 +1,27 @@
 package ru.babobka.factor.task;
 
-import java.math.BigInteger;
-
+import ru.babobka.factor.model.EllipticFactorDataValidators;
 import ru.babobka.factor.model.EllipticFactorDistributor;
 import ru.babobka.factor.model.EllipticFactorReducer;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.subtask.model.*;
+import ru.babobka.nodetask.model.*;
+import ru.babobka.nodeutils.container.Container;
+
+import java.math.BigInteger;
 
 /**
  * Created by dolgopolov.a on 08.12.15.
  */
 public class EllipticCurveFactorTask extends SubTask {
 
-    private final EllipticFactorDistributor distributor = new EllipticFactorDistributor(NAME);
-
-    private final EllipticFactorReducer reducer = new EllipticFactorReducer();
-
+    static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
+    private final EllipticFactorDistributor distributor = Container.getInstance().get(EllipticFactorDistributor.class);
+    private final EllipticFactorReducer reducer = Container.getInstance().get(EllipticFactorReducer.class);
     private final EllipticCurveFactorTaskExecutor taskExecutor = new EllipticCurveFactorTaskExecutor();
+    private final EllipticFactorDataValidators ellipticFactorDataValidators = Container.getInstance().get(EllipticFactorDataValidators.class);
 
-    private final EllipticCurveRequestValidator requestValidator = new EllipticCurveRequestValidator();
-
-    private static final String NAME = "Elliptic curve factor";
-
-    private static final String DESCRIPTION = "Factorizes a given big composite number using Lenstra algorithm";
-
+    EllipticCurveFactorTask() {
+    }
 
     @Override
     public RequestDistributor getDistributor() {
@@ -41,8 +39,8 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
-    public RequestValidator getRequestValidator() {
-        return requestValidator;
+    public DataValidators getDataValidators() {
+        return ellipticFactorDataValidators;
     }
 
     @Override
@@ -52,19 +50,10 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
-    public SubTask newInstance() {
-        return new EllipticCurveFactorTask();
-    }
-
-    @Override
     public String getDescription() {
         return DESCRIPTION;
     }
 
-    @Override
-    public String getName() {
-        return NAME;
-    }
 
     @Override
     public boolean isRaceStyle() {

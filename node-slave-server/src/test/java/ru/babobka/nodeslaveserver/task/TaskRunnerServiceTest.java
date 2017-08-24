@@ -1,71 +1,69 @@
 package ru.babobka.nodeslaveserver.task;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.subtask.model.*;
-
-import java.io.FileNotFoundException;
-import java.util.HashMap;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodetask.TasksStorage;
+import ru.babobka.nodetask.model.DataValidators;
+import ru.babobka.nodetask.model.ExecutionResult;
+import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodetask.model.TaskExecutor;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
- * Created by 123 on 20.06.2017.
+ * Created by 123 on 27.10.2017.
  */
 public class TaskRunnerServiceTest {
 
+    private TasksStorage tasksStorage;
+    private SubTask subTask;
+    private NodeRequest request;
+    private DataValidators dataValidators;
     private TaskRunnerService taskRunnerService = new TaskRunnerService();
+    private TaskExecutor taskExecutor;
 
-    @BeforeClass
-    public static void setUp() throws FileNotFoundException {
-        SlaveServer.initTestContainer();
+    @Before
+    public void setUp() {
+        tasksStorage = mock(TasksStorage.class);
+        subTask = mock(SubTask.class);
+        request = mock(NodeRequest.class);
+        dataValidators = mock(DataValidators.class);
+        taskExecutor = mock(TaskExecutor.class);
+        when(subTask.getDataValidators()).thenReturn(dataValidators);
+        when(subTask.getTaskExecutor()).thenReturn(taskExecutor);
+    }
+
+    @Test
+    public void testRunTaskBadValidation() {
+        when(dataValidators.isValidRequest(any(NodeRequest.class))).thenReturn(false);
+        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
+        assertEquals(response.getStatus(), ResponseStatus.FAILED);
+        verify(tasksStorage).removeRequest(request);
     }
 
     @Test
     public void testRunTaskStopped() {
-        SubTask subTask = mock(SubTask.class);
-        ValidationResult validationResult = ValidationResult.ok();
-        RequestValidator requestValidator = mock(RequestValidator.class);
-        when(requestValidator.validateRequest(any(NodeRequest.class))).thenReturn(validationResult);
-        when(subTask.getRequestValidator()).thenReturn(requestValidator);
-        ExecutionResult executionResult = ExecutionResult.stopped();
-        TaskExecutor taskExecutor = mock(TaskExecutor.class);
-        when(taskExecutor.execute(any(Integer.class), any(NodeRequest.class))).thenReturn(executionResult);
-        when(subTask.getTaskExecutor()).thenReturn(taskExecutor);
-        NodeResponse response = taskRunnerService.runTask(mock(TasksStorage.class), NodeRequest.heartBeatRequest(), subTask);
-        assertEquals(response.getStatus(), NodeResponse.Status.STOPPED);
+        when(dataValidators.isValidRequest(any(NodeRequest.class))).thenReturn(true);
+        ExecutionResult result = mock(ExecutionResult.class);
+        when(result.isStopped()).thenReturn(true);
+        when(taskExecutor.execute(request)).thenReturn(result);
+        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
+        assertEquals(response.getStatus(), ResponseStatus.STOPPED);
+        verify(tasksStorage).removeRequest(request);
     }
 
     @Test
-    public void testRunTaskOk() {
-        SubTask subTask = mock(SubTask.class);
-        ValidationResult validationResult = ValidationResult.ok();
-        RequestValidator requestValidator = mock(RequestValidator.class);
-        when(requestValidator.validateRequest(any(NodeRequest.class))).thenReturn(validationResult);
-        when(subTask.getRequestValidator()).thenReturn(requestValidator);
-        ExecutionResult executionResult = new ExecutionResult(false, new HashMap<>());
-        TaskExecutor taskExecutor = mock(TaskExecutor.class);
-        when(taskExecutor.execute(any(Integer.class), any(NodeRequest.class))).thenReturn(executionResult);
-        when(subTask.getTaskExecutor()).thenReturn(taskExecutor);
-        NodeResponse response = taskRunnerService.runTask(mock(TasksStorage.class), NodeRequest.heartBeatRequest(), subTask);
-        assertEquals(response.getStatus(), NodeResponse.Status.NORMAL);
+    public void testRunTask() {
+        when(dataValidators.isValidRequest(any(NodeRequest.class))).thenReturn(true);
+        ExecutionResult result = mock(ExecutionResult.class);
+        when(result.isStopped()).thenReturn(false);
+        when(taskExecutor.execute(request)).thenReturn(result);
+        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
+        assertEquals(response.getStatus(), ResponseStatus.NORMAL);
+        verify(tasksStorage).removeRequest(request);
     }
-
-    @Test
-    public void testRunTaskFailed() {
-        SubTask subTask = mock(SubTask.class);
-        ValidationResult validationResult = ValidationResult.fail("test");
-        RequestValidator requestValidator = mock(RequestValidator.class);
-        when(requestValidator.validateRequest(any(NodeRequest.class))).thenReturn(validationResult);
-        when(subTask.getRequestValidator()).thenReturn(requestValidator);
-        NodeResponse response = taskRunnerService.runTask(mock(TasksStorage.class), NodeRequest.heartBeatRequest(), subTask);
-        assertEquals(response.getStatus(), NodeResponse.Status.FAILED);
-    }
-
 }

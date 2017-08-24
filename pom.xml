@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.babobka.node</groupId>
-    <artifactId>node</artifactId>
+    <artifactId>node-project</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>node-project</name>
@@ -16,9 +16,14 @@
         <module>node-serials</module>
         <module>node-slave-server</module>
         <module>node-utils</module>
-        <module>node-crypto</module>
+        <!--<module>node-crypto</module>-->
         <module>prime-counter-task</module>
-        <module>subtask</module>
+        <module>node-task</module>
+        <module>node-business</module>
+        <module>node-web</module>
+        <!--<module>node-ift</module>-->
+        <module>prime-counter-service</module>
+        <module>node-client</module>
     </modules>
 
     <build>
@@ -32,7 +37,6 @@
                         <target>1.8</target>
                     </configuration>
                 </plugin>
-
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

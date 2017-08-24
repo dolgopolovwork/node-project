@@ -1,160 +1,143 @@
 package ru.babobka.nodemasterserver.slave;
 
-import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.NodeData;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReferenceArray;
+
 
 /**
  * Created by dolgopolov.a on 28.07.15.
  */
 public class SlavesStorage {
 
-    private final AtomicReferenceArray<Slave> threads;
-
-    private final AtomicInteger size = new AtomicInteger(0);
-
-    public SlavesStorage(int maxSize) {
-        this.threads = new AtomicReferenceArray<>(maxSize);
-    }
+    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final List<Slave> slaves = new ArrayList<>();
 
     public synchronized List<SlaveUser> getCurrentClusterUserList() {
         List<SlaveUser> clusterUserList = new ArrayList<>();
-        Slave slave;
-        for (int i = 0; i < threads.length(); i++) {
-            if ((slave = threads.get(i)) != null) {
-                clusterUserList
-                        .add(new SlaveUser(slave));
-            }
+        for (Slave slave : slaves) {
+            clusterUserList.add(new SlaveUser(slave));
         }
-
         return clusterUserList;
     }
 
-    synchronized boolean remove(Slave slave) {
-        if (slave != null) {
-            for (int i = 0; i < threads.length(); i++) {
-                if (threads.get(i) == slave) {
-                    threads.set(i, null);
-                    size.decrementAndGet();
-                    return true;
-
-                }
-
-            }
-        }
-        return false;
+    synchronized void remove(Slave slave) {
+        logger.info("Remove slave " + slave);
+        slaves.remove(slave);
     }
 
-    synchronized boolean add(Slave slave) {
-        if (slave != null && size.intValue() != threads.length()) {
-            for (int i = 0; i < threads.length(); i++) {
-                if (threads.get(i) == null) {
-                    threads.set(i, slave);
-                    size.incrementAndGet();
-                    return true;
-
-                }
-
-            }
+    public synchronized void removeTask(UUID taskId) {
+        if (taskId == null) {
+            throw new IllegalArgumentException("can not remove task with null taskId");
         }
-        return false;
+        for (Slave slave : slaves) {
+            slave.removeTask(taskId);
+        }
+    }
+
+    synchronized void add(Slave slave) {
+        logger.info("Add new slave " + slave);
+        slaves.add(slave);
     }
 
     public synchronized List<Slave> getFullList() {
-        ArrayList<Slave> slaveThreadList = new ArrayList<>();
-        for (int i = 0; i < threads.length(); i++) {
-            Slave st = threads.get(i);
-            if (st != null) {
-                slaveThreadList.add(st);
-            }
-        }
-        Collections.shuffle(slaveThreadList);
-        return slaveThreadList;
+        List<Slave> fullSlaveList = new ArrayList<>(this.slaves);
+        Collections.shuffle(fullSlaveList);
+        return fullSlaveList;
     }
 
     public synchronized List<Slave> getList(String taskName) {
-        return getList(taskName, -1);
+        return getList(taskName, slaves.size());
     }
 
-    public synchronized List<Slave> getList(String taskName, int maxThreads) {
-        List<Slave> slaveThreadList = new ArrayList<>();
-        Slave st;
-        for (int i = 0; i < threads.length(); i++) {
-            st = threads.get(i);
-            if (st != null && st.getAvailableTasksSet() != null && st.getAvailableTasksSet().contains(taskName)) {
-                slaveThreadList.add(st);
+    public synchronized List<Slave> getList(String taskName, int maxSlaves) {
+        if (maxSlaves < 1) {
+            return new ArrayList<>();
+        }
+        List<Slave> groupedSlaves = new ArrayList<>();
+        for (Slave slave : slaves) {
+            if (slave.taskIsAvailable(taskName)) {
+                groupedSlaves.add(slave);
+                if (groupedSlaves.size() == maxSlaves) {
+                    break;
+                }
             }
         }
-        Collections.shuffle(slaveThreadList);
-        if (maxThreads != -1 && maxThreads < slaveThreadList.size()) {
-            return slaveThreadList.subList(0, maxThreads);
+        return groupedSlaves;
+    }
+
+    public synchronized List<Slave> getListByTaskId(NodeData nodeData) {
+        if (nodeData == null) {
+            throw new IllegalArgumentException("nodeData is null");
         }
-        return slaveThreadList;
+        return getListByTaskId(nodeData.getTaskId());
     }
 
     public synchronized List<Slave> getListByTaskId(UUID taskId) {
-        List<Slave> slaveThreadList = new ArrayList<>();
-        Slave st;
-        for (int i = 0; i < threads.length(); i++) {
-            st = threads.get(i);
-            if (st != null && !st.getRequestMap().isEmpty()) {
-                for (Map.Entry<UUID, NodeRequest> requestEntry : st.getRequestMap().entrySet()) {
-                    if (requestEntry.getValue().getTaskId().equals(taskId)) {
-                        slaveThreadList.add(st);
-                        break;
-                    }
-                }
-            }
-
+        if (taskId == null) {
+            throw new IllegalArgumentException("taskId is null");
         }
-        Collections.shuffle(slaveThreadList);
-        return slaveThreadList;
+        List<Slave> groupedSlaves = new ArrayList<>();
+        for (Slave slave : slaves) {
+            if (slave.hasTask(taskId)) {
+                groupedSlaves.add(slave);
+            }
+        }
+        Collections.shuffle(groupedSlaves);
+        return groupedSlaves;
     }
 
-    public int getClusterSize() {
-        return size.intValue();
+    public synchronized void heartBeatAllSlaves() {
+        for (Slave slave : getFullList()) {
+            if (!Thread.currentThread().isInterrupted()) {
+                sendHeartBeat(slave);
+            }
+        }
+    }
+
+    void sendHeartBeat(Slave slave) {
+        try {
+            slave.sendHeartBeating();
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
+
+    public synchronized int getClusterSize() {
+        return slaves.size();
     }
 
     public synchronized int getClusterSize(String taskName) {
         int counter = 0;
-        Slave st;
-        for (int i = 0; i < threads.length(); i++) {
-            st = threads.get(i);
-            if (st != null && st.getAvailableTasksSet().contains(taskName)) {
+        for (Slave slave : slaves) {
+            if (slave.taskIsAvailable(taskName)) {
                 counter++;
             }
         }
         return counter;
     }
 
-    private synchronized void interruptAll() {
-
-        List<Slave> clientThreadsList = getFullList();
-        for (Slave st : clientThreadsList) {
-            st.interrupt();
+    synchronized void interruptAll() {
+        for (Slave slave : slaves) {
+            slave.interrupt();
         }
     }
 
     public synchronized void clear() {
-
         if (!isEmpty()) {
             interruptAll();
-            for (int i = 0; i < threads.length(); i++) {
-                threads.set(i, null);
-            }
-            size.set(0);
+            slaves.clear();
         }
-
     }
 
-    public boolean isEmpty() {
-        return size.intValue() == 0;
+    public synchronized boolean isEmpty() {
+        return slaves.isEmpty();
     }
 
 }

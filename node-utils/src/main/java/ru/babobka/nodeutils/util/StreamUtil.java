@@ -1,35 +1,21 @@
 package ru.babobka.nodeutils.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
-import ru.babobka.subtask.model.SubTask;
 
 /**
  * Created by dolgopolov.a on 08.07.15.
  */
 
-public interface StreamUtil {
+public class StreamUtil {
 
-    static InputStream getLocalResource(Class<?> clazz, String resourceName) throws FileNotFoundException {
-
+    public InputStream getLocalResource(Class<?> clazz, String resourceName) throws FileNotFoundException {
         InputStream is = clazz.getClassLoader().getResourceAsStream(resourceName);
         if (is == null) {
             throw new FileNotFoundException();
@@ -37,7 +23,7 @@ public interface StreamUtil {
         return is;
     }
 
-    static String readFile(InputStream is) {
+    public String readFile(InputStream is) {
 
         try (Scanner scanner = new Scanner(is, TextUtil.CHARSET.name())) {
             scanner.useDelimiter("\\A");
@@ -53,7 +39,7 @@ public interface StreamUtil {
         }
     }
 
-    static String readFile(File file) throws IOException {
+    public String readFile(File file) throws IOException {
 
         StringBuilder content = new StringBuilder();
         String lineBreak = "";
@@ -70,11 +56,11 @@ public interface StreamUtil {
 
     }
 
-    static String readFile(String filePath) throws IOException {
+    public String readFile(String filePath) throws IOException {
         return readFile(new File(filePath));
     }
 
-    static List<String> getJarFileListFromFolder(String folderPath) {
+    public List<String> getJarFileListFromFolder(String folderPath) {
         File folder = new File(folderPath);
         File[] listOfFiles = folder.listFiles();
         LinkedList<String> files = new LinkedList<>();
@@ -88,7 +74,7 @@ public interface StreamUtil {
         return files;
     }
 
-    static String getRunningFolder() throws URISyntaxException {
+    public String getRunningFolder() throws URISyntaxException {
         String folder = new File(StreamUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
                 .toString();
         if (folder.endsWith(".jar")) {
@@ -97,47 +83,20 @@ public interface StreamUtil {
         return folder;
     }
 
-    static String readTextFileFromJar(String jarFilePath, String fileName) throws IOException {
+    public String readTextFileFromJar(String jarFilePath, String fileName) throws IOException {
         URL url = new URL("jar:file:" + jarFilePath + "!/" + fileName);
         InputStream is = url.openStream();
         return readFile(is);
     }
 
-    static List<SubTask> getSubtasks(String jarFilePath) throws IOException {
-        List<SubTask> subTasks = new LinkedList<>();
-        try (JarFile jarFile = new JarFile(jarFilePath);
-             URLClassLoader cl = URLClassLoader
-                     .newInstance(new URL[]{new URL("jar:file:" + jarFilePath + "!/")})) {
-            Enumeration<JarEntry> e = jarFile.entries();
-            while (e.hasMoreElements()) {
-                JarEntry je = e.nextElement();
-                if (je.isDirectory() || !je.getName().endsWith(".class")) {
-                    continue;
-                }
-                // -6 because of .class
-                String className = je.getName().substring(0, je.getName().length() - 6);
-                className = className.replace('/', '.');
-                Class<?> c = cl.loadClass(className);
-                if (SubTask.class.isAssignableFrom(c) && !SubTask.class.equals(c)) {
-                    subTasks.add((SubTask) c.newInstance());
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new IOException(e);
-        }
-        return subTasks;
-    }
-
-    static void sendObject(Object object, Socket socket) throws IOException {
-
+    public void sendObject(Object object, Socket socket) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
         oos.writeObject(object);
         oos.flush();
-
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T receiveObject(Socket socket) throws IOException {
+    public <T> T receiveObject(Socket socket) throws IOException {
         try {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             Object o = ois.readObject();

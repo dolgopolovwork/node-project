@@ -1,15 +1,75 @@
 package ru.babobka.nodeslaveserver.server;
 
-import java.io.FileNotFoundException;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodeslaveserver.service.AuthService;
+import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 
-import ru.babobka.nodeutils.container.ContainerException;
+import java.io.IOException;
+import java.util.HashSet;
 
+import static org.mockito.Mockito.*;
+
+/**
+ * Created by 123 on 05.09.2017.
+ */
 public class SlaveServerTest {
+    private AuthService authService;
+    private SimpleLogger simpleLogger;
+    private TaskPool taskPool;
+
+    @Before
+    public void setUp() {
+        authService = mock(AuthService.class);
+        simpleLogger = mock(SimpleLogger.class);
+        taskPool = mock(TaskPool.class);
+        new ApplicationContainer() {
+            @Override
+            public void contain(Container container) {
+                container.put(authService);
+                container.put(simpleLogger);
+                container.put("slaveServerTaskPool", taskPool);
+            }
+        }.contain(Container.getInstance());
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
+    }
+
+    @Test(expected = SlaveAuthFailException.class)
+    public void testAuthFail() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(false);
+        new SlaveServer(connection, "abc", "xyz");
+    }
 
     @Test
-    public void initContainerTest() throws ContainerException, FileNotFoundException {
-	SlaveServer.initTestContainer();
+    public void testAuthSuccess() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(true);
+        when(connection.receive()).thenReturn(true);
+        new SlaveServer(connection, "abc", "xyz");
+        verify(simpleLogger).info("Auth success");
+        verify(connection).send(anySet());
+    }
+
+    @Test
+    public void testClear() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(true);
+        when(connection.receive()).thenReturn(true);
+        SlaveServer slaveServer = new SlaveServer(connection, "abc", "xyz");
+        slaveServer.clear();
+        verify(connection).close();
     }
 }

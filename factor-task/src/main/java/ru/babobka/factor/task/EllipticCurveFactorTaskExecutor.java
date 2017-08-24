@@ -2,9 +2,11 @@ package ru.babobka.factor.task;
 
 import ru.babobka.factor.model.FactoringResult;
 import ru.babobka.factor.service.EllipticCurveFactorService;
+import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.subtask.model.ExecutionResult;
-import ru.babobka.subtask.model.TaskExecutor;
+import ru.babobka.nodetask.model.ExecutionResult;
+import ru.babobka.nodetask.model.TaskExecutor;
+import ru.babobka.nodeutils.container.Container;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -15,24 +17,21 @@ import java.util.Map;
  * Created by 123 on 20.06.2017.
  */
 public class EllipticCurveFactorTaskExecutor extends TaskExecutor {
-
-    private final EllipticCurveFactorService factorService = new EllipticCurveFactorService();
+    private final EllipticCurveFactorServiceFactory ellipticCurveFactorServiceFactory = Container.getInstance().get(EllipticCurveFactorServiceFactory.class);
+    private final EllipticCurveFactorService factorService = ellipticCurveFactorServiceFactory.get();
 
     @Override
-    public ExecutionResult execute(int threads, NodeRequest request) {
-
+    protected ExecutionResult executeImpl(NodeRequest request) {
         try {
             Map<String, Serializable> result = new HashMap<>();
             BigInteger number = new BigInteger(request.getStringDataValue(Params.NUMBER.getValue()));
-            FactoringResult factoringResult = factorService.factor(number,
-                    Math.min(threads, Runtime.getRuntime().availableProcessors()));
+            FactoringResult factoringResult = factorService.execute(number);
             if (factoringResult != null) {
                 result.put(Params.NUMBER.getValue(), number);
                 result.put(Params.FACTOR.getValue(), factoringResult.getFactor());
-                result.put(Params.X.getValue(), factoringResult.getEllipticCurveProjective().getX());
-                result.put(Params.Y.getValue(), factoringResult.getEllipticCurveProjective().getY());
-                result.put(Params.A.getValue(), factoringResult.getEllipticCurveProjective().getA());
-                result.put(Params.B.getValue(), factoringResult.getEllipticCurveProjective().getB());
+                result.put(Params.X.getValue(), factoringResult.getEllipticCurvePoint().getX());
+                result.put(Params.Y.getValue(), factoringResult.getEllipticCurvePoint().getY());
+                result.put(Params.CURVE.getValue(), factoringResult.getEllipticCurvePoint().getCurve());
                 return new ExecutionResult(factorService.isStopped(), result);
             }
             return ExecutionResult.stopped();

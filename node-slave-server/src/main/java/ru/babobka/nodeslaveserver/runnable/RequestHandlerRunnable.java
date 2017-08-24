@@ -1,17 +1,16 @@
 package ru.babobka.nodeslaveserver.runnable;
 
-import ru.babobka.nodeutils.logger.SimpleLogger;
-import ru.babobka.nodeutils.network.NodeConnection;
-import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeslaveserver.task.TaskRunnerService;
-import ru.babobka.nodeslaveserver.task.TasksStorage;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.subtask.model.SubTask;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodeslaveserver.task.TaskRunnerService;
+import ru.babobka.nodetask.TasksStorage;
+import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
-import java.net.Socket;
 
 /**
  * Created by dolgopolov.a on 27.07.15.
@@ -30,6 +29,8 @@ public class RequestHandlerRunnable implements Runnable {
 
     private final TasksStorage tasksStorage;
 
+    private NodeResponse lastResponse;
+
     public RequestHandlerRunnable(NodeConnection connection, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
         this.connection = connection;
         this.request = request;
@@ -37,14 +38,15 @@ public class RequestHandlerRunnable implements Runnable {
         this.tasksStorage = tasksStorage;
     }
 
+    //TODO написать тест
     @Override
     public void run() {
         try {
             NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-            if (!response.isStopped()) {
+            lastResponse = response;
+            if (response.getStatus() != ResponseStatus.STOPPED) {
                 connection.send(response);
-                logger.info(response);
-                logger.info("Response was sent");
+                logger.info("Response was sent " + response);
             }
         } catch (RuntimeException e) {
             logger.error(e);
@@ -55,7 +57,8 @@ public class RequestHandlerRunnable implements Runnable {
             }
 
         } catch (IOException e) {
-            logger.error("Response wasn't sent", e);
+            //TODO какого хуя оно все равно отправляется, даже если мы отменили эту поеботу?
+            logger.error("Response wasn't sent " + lastResponse, e);
         }
     }
 }

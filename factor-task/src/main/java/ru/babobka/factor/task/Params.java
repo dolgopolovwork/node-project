@@ -9,8 +9,7 @@ public enum Params {
     FACTOR("factor"),
     X("x"),
     Y("y"),
-    A("a"),
-    B("b");
+    CURVE("curve");
 
     private final String value;
 

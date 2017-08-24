@@ -1,16 +1,15 @@
 package ru.babobka.nodeutils.logger;
 
 import java.io.IOException;
-
-/**
- * Created by dolgopolov.a on 12.01.16.
- */
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
+
+/**
+ * Created by dolgopolov.a on 12.01.16.
+ */
 
 final class LogFormatter extends Formatter {
 
