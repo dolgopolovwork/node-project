@@ -14,13 +14,13 @@ import static org.junit.Assert.*;
  */
 public class DebugCacheDAOImplTest {
 
-    private CacheDAO cacheDAO;
+    private CacheDAO<String> cacheDAO;
 
     @Before
     public void setUp() {
         Map<String, Serializable> map = new ConcurrentHashMap<>();
         map.put("abc", 123);
-        cacheDAO = new DebugCacheDAOImpl(map);
+        cacheDAO = new DebugCacheDAOImpl<>(map);
     }
 
     @Test

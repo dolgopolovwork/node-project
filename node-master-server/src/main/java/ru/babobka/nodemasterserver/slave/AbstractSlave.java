@@ -22,13 +22,9 @@ import java.util.UUID;
 public abstract class AbstractSlave extends Thread {
 
     private final UUID slaveId;
-
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
     private final Map<UUID, NodeRequest> tasks = new HashMap<>();
-
     private final NodeConnection connection;
 
     AbstractSlave(NodeConnection connection) {
@@ -65,10 +61,11 @@ public abstract class AbstractSlave extends Thread {
         }
     }
 
-
     void applyToTasks(Applyer<NodeRequest> applyer) {
-        for (Map.Entry<UUID, NodeRequest> requestEntry : tasks.entrySet()) {
-            applyer.apply(requestEntry.getValue());
+        synchronized (tasks) {
+            for (Map.Entry<UUID, NodeRequest> requestEntry : tasks.entrySet()) {
+                applyer.apply(requestEntry.getValue());
+            }
         }
     }
 
@@ -88,60 +85,86 @@ public abstract class AbstractSlave extends Thread {
         return slaveId.equals(that.slaveId);
     }
 
-    public synchronized boolean isNoTasks() {
-        return tasks.isEmpty();
+    public boolean isNoTasks() {
+        synchronized (tasks) {
+            return tasks.isEmpty();
+        }
     }
 
-    public synchronized Map<UUID, NodeRequest> getTasks() {
-        return new HashMap<>(tasks);
+    public Map<UUID, NodeRequest> getTasks() {
+        synchronized (tasks) {
+            return new HashMap<>(tasks);
+        }
     }
 
-    synchronized void clearTasks() {
-        tasks.clear();
+    void clearTasks() {
+        synchronized (tasks) {
+            tasks.clear();
+        }
     }
 
-    public synchronized void removeTask(NodeData nodeData) {
+    public void removeTask(NodeData nodeData) {
         if (nodeData == null) {
             throw new IllegalArgumentException("nodeData is null");
         }
         removeTask(nodeData.getId());
     }
 
-    public synchronized void removeTask(UUID taskId) {
-        if (taskId == null) {
-            throw new IllegalArgumentException("taskId is null");
+    public void removeTask(UUID requestId) {
+        if (requestId == null) {
+            throw new IllegalArgumentException("requestId is null");
         }
-        tasks.remove(taskId);
+        synchronized (tasks) {
+            tasks.remove(requestId);
+        }
     }
 
-    synchronized void addTask(NodeRequest request) {
+    void addTask(NodeRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("request is null");
         }
-        tasks.put(request.getId(), request);
+        synchronized (tasks) {
+            tasks.put(request.getId(), request);
+        }
     }
 
-    synchronized void addTasks(List<NodeRequest> requests) {
+    void addTasks(List<NodeRequest> requests) {
         if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }
-        for (NodeRequest request : requests) {
-            addTask(request);
+        synchronized (tasks) {
+            for (NodeRequest request : requests) {
+                addTask(request);
+            }
         }
     }
 
-    synchronized boolean hasTask(UUID taskId) {
-        for (Map.Entry<UUID, NodeRequest> requestEntry : tasks.entrySet()) {
-            if (requestEntry.getValue().getTaskId().equals(taskId)) {
-                return true;
+    boolean hasTask(UUID taskId) {
+        synchronized (tasks) {
+            for (Map.Entry<UUID, NodeRequest> requestEntry : tasks.entrySet()) {
+                if (requestEntry.getValue().getTaskId().equals(taskId)) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
+
+    boolean hasRequest(NodeRequest request) {
+        synchronized (tasks) {
+            return tasks.containsKey(request.getId());
+        }
+    }
+
 
     @Override
     public int hashCode() {
         return slaveId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return slaveId.toString();
     }
 
     public UUID getSlaveId() {

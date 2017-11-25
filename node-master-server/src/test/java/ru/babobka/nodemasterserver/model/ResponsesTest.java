@@ -13,6 +13,8 @@ import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -124,21 +126,23 @@ public class ResponsesTest {
 
     @Test
     public void testGetResponseList() throws TimeoutException {
-        NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        int maxSize = 2;
-        Responses responses = new Responses(maxSize, task, null);
-        for (int i = 0; i < maxSize; i++) {
-            responses.add(response);
+        NodeResponse response1 = NodeResponse.dummy(UUID.randomUUID());
+        NodeResponse response2 = NodeResponse.dummy(UUID.randomUUID());
+        List<NodeResponse> nodeResponses = Arrays.asList(response1, response2);
+        Responses responses = new Responses(nodeResponses.size(), task, null);
+        for (NodeResponse nodeResponse : nodeResponses) {
+            responses.add(nodeResponse);
         }
-        assertEquals(responses.getResponseList(1).size(), maxSize);
+        assertEquals(responses.getResponseList(1).size(), nodeResponses.size());
     }
 
     @Test
     public void testGetResponseListWait() throws TimeoutException {
         long waitMillis = 5000L;
-        NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        final int maxSize = 2;
-        final Responses responses = new Responses(maxSize, task, null);
+        NodeResponse response1 = NodeResponse.dummy(UUID.randomUUID());
+        NodeResponse response2 = NodeResponse.dummy(UUID.randomUUID());
+        List<NodeResponse> nodeResponses = Arrays.asList(response1, response2);
+        final Responses responses = new Responses(nodeResponses.size(), task, null);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -147,12 +151,12 @@ public class ResponsesTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                for (int i = 0; i < maxSize; i++) {
-                    responses.add(response);
+                for (NodeResponse nodeResponse : nodeResponses) {
+                    responses.add(nodeResponse);
                 }
             }
         }).start();
-        assertEquals(responses.getResponseList(waitMillis).size(), maxSize);
+        assertEquals(responses.getResponseList(waitMillis).size(), nodeResponses.size());
     }
 
     @Test(expected = TimeoutException.class)

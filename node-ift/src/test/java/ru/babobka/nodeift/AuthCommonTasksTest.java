@@ -11,6 +11,7 @@ import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static ru.babobka.nodeift.master.MasterServerRunner.LOG_FOLDER;
 
 /**
  * Created by 123 on 07.11.2017.
@@ -26,6 +28,28 @@ public class AuthCommonTasksTest {
     private static MasterServer masterServer;
 
     private TaskPool taskPool;
+
+    @BeforeClass
+    public static void setUp() {
+        new ApplicationContainer() {
+            @Override
+            public void contain(Container container) {
+                try {
+                    container.put(new SimpleLogger("AuthCommonTasksTest", LOG_FOLDER, "AuthCommonTasksTest"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.contain(Container.getInstance());
+        MasterServerRunner.init();
+        SlaveServerRunner.init();
+        masterServer = MasterServerRunner.runMasterServer();
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        masterServer.interrupt();
+    }
 
     @Before
     public void setUpMocks() {
@@ -37,18 +61,6 @@ public class AuthCommonTasksTest {
             }
         }.contain(Container.getInstance());
 
-    }
-
-    @BeforeClass
-    public static void setUp() {
-        MasterServerRunner.init();
-        SlaveServerRunner.init();
-        masterServer = MasterServerRunner.runMasterServer();
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        masterServer.interrupt();
     }
 
     @Test(expected = SlaveAuthFailException.class)

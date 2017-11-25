@@ -32,11 +32,14 @@ public class Slave extends AbstractNetworkSlave {
         this.availableTasks.addAll(availableTasks);
     }
 
+    //TODO здесь дедлок
     @Override
     protected synchronized void onReceive(NodeResponse response) {
-        logger.info("Received " + response);
+        logger.info("Received " + response + " by slave " + getSlaveId());
         if (responseStorage.exists(response.getTaskId())) {
             responseStorage.get(response.getTaskId()).add(response);
+        } else {
+            logger.warning("Response was not created " + response + " for slave " + getSlaveId());
         }
         removeTask(response);
     }
@@ -45,8 +48,7 @@ public class Slave extends AbstractNetworkSlave {
     protected synchronized void onExit() {
         slavesStorage.remove(this);
         if (!isNoTasks()) {
-            //TODO почему-то остаются иногда
-            logger.info("Slave has a requests to redistribute " + getTasks());
+            logger.warning("Slave " + getSlaveId() + " has a requests to redistribute " + getTasks());
             try {
                 redistributeTasks();
             } catch (IOException e) {
@@ -60,6 +62,7 @@ public class Slave extends AbstractNetworkSlave {
             }
         }
         getConnection().close();
+        logger.info("Slave " + getSlaveId() + " closed connection");
     }
 
 

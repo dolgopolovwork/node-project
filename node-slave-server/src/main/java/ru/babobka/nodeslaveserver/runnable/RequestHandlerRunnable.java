@@ -38,7 +38,6 @@ public class RequestHandlerRunnable implements Runnable {
         this.tasksStorage = tasksStorage;
     }
 
-    //TODO написать тест
     @Override
     public void run() {
         try {
@@ -47,6 +46,8 @@ public class RequestHandlerRunnable implements Runnable {
             if (response.getStatus() != ResponseStatus.STOPPED) {
                 connection.send(response);
                 logger.info("Response was sent " + response);
+            } else {
+                logger.warning("Response was stopped " + response);
             }
         } catch (RuntimeException e) {
             logger.error(e);
@@ -57,7 +58,6 @@ public class RequestHandlerRunnable implements Runnable {
             }
 
         } catch (IOException e) {
-            //TODO какого хуя оно все равно отправляется, даже если мы отменили эту поеботу?
             logger.error("Response wasn't sent " + lastResponse, e);
         }
     }

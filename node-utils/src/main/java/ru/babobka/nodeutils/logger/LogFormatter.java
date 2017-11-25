@@ -18,7 +18,7 @@ final class LogFormatter extends Formatter {
     @Override
     public String format(LogRecord record) {
         StringBuilder sb = new StringBuilder();
-        sb.append(new Date(record.getMillis())).append(" ").append(record.getLevel().getLocalizedName()).append(": ")
+        sb.append(new Date(record.getMillis())).append(" ").append(record.getLevel().getLocalizedName()).append(" thread ").append(Thread.currentThread().getId()).append(" : ")
                 .append(formatMessage(record)).append(LINE_SEPARATOR);
 
         if (record.getThrown() != null) {

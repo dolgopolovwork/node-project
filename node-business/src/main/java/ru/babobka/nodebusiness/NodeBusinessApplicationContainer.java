@@ -17,7 +17,7 @@ public class NodeBusinessApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         container.put(new UserDTOMapper());
         container.put(new DebugNodeUsersDAOImpl(new HashMap<>()));
-        container.put(new DebugCacheDAOImpl(new HashMap<>()));
+        container.put(new DebugCacheDAOImpl<Integer>(new HashMap<>()));
         container.put(new NodeUsersServiceImpl());
     }
 }

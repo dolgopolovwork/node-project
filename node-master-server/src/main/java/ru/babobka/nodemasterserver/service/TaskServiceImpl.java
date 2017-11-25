@@ -35,19 +35,20 @@ public class TaskServiceImpl implements TaskService {
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
 
     @Override
-    public void cancelTask(UUID taskId) throws TaskExecutionException {
+    public boolean cancelTask(UUID taskId) throws TaskExecutionException {
         if (taskId == null)
             throw new IllegalArgumentException("taskId is null");
         try {
             logger.info("Trying to cancel task " + taskId);
             Responses responses = responseStorage.get(taskId);
             if (responses == null)
-                throw new TaskExecutionException("No task was found for given task id " + taskId);
+                return false;
             responseStorage.setStopAllResponses(taskId);
             distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (DistributionException | RuntimeException e) {
             throw new TaskExecutionException("Can not cancel task", e);
         }
+        return true;
     }
 
     @Override
@@ -70,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
                 return TaskExecutionResult.stopped();
             }
             Map<String, Serializable> resultMap = task.getReducer().reduce(responseList).map();
-            logger.info("Got response " + responses);
+            logger.info("Got responses " + responses);
             return TaskExecutionResult.normal(timer, resultMap);
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
             throw new TaskExecutionException(e);
@@ -101,8 +102,10 @@ public class TaskServiceImpl implements TaskService {
         if (clusterSize <= 0) {
             throw new DistributionException("cluster size is " + clusterSize);
         }
+        logger.info("Cluster size is " + clusterSize);
         responseStorage.create(taskId, new Responses(clusterSize, task, request.getData()));
         List<NodeRequest> requests = task.getDistributor().distribute(request, clusterSize);
+        logger.info("Requests to distribute " + requests);
         distributionService.broadcastRequests(request.getTaskName(), requests);
     }
 

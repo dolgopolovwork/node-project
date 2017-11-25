@@ -11,7 +11,6 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 
 /**
  * Created by 123 on 05.11.2017.
@@ -34,8 +33,6 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             ConfigValidator configValidator = new ConfigValidator(new ServerPortValidationRule(), new AuthTimeoutMillisValidationRule(), new LoggerFolderValidationRule(), new RequestTimeoutMillisValidationRule(), new TasksFolderValidationRule());
             configValidator.validate(config);
             container.put(config);
-            SimpleLogger logger = new SimpleLogger("common logger", config.getLoggerFolder(), "common");
-            container.put(logger);
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());
             container.put("slaveServerTaskPool", new TaskPool(config.getTasksFolder()));

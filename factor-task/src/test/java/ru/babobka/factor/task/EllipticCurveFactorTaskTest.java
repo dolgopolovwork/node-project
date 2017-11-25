@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.factor.model.EllipticFactorDataValidators;
 import ru.babobka.factor.model.EllipticFactorDistributor;
 import ru.babobka.factor.model.EllipticFactorReducer;
-import ru.babobka.factor.service.EllipticCurveFactorService;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.SubTask;

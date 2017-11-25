@@ -16,7 +16,7 @@ import java.util.UUID;
 //TODO напиши на это тест
 public class DistributionService {
 
-    private static final int MAX_RETRY = 5;
+    private static final int MAX_RETRY = 10;
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
@@ -45,30 +45,44 @@ public class DistributionService {
         broadcastRequests(taskFactoryName, requests, 0, MAX_RETRY);
     }
 
-    void broadcastRequests(String taskFactoryName, List<NodeRequest> requests, int retry, int maxRetry)
+    void broadcastRequests(String taskName, List<NodeRequest> requests, int retry, int maxRetry)
             throws DistributionException {
         if (maxRetry < 0) {
             throw new IllegalArgumentException("maxRetry can not be negative");
         } else if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }
-        List<Slave> slaves = slavesStorage.getList(taskFactoryName);
-        if (slaves.isEmpty()) {
-            throw new DistributionException("cluster is empty");
-        }
-        int lastRequestId = 0;
+        logger.info("Requests to broadcast " + requests);
+        int lastRequestId = -1;
         try {
+            List<Slave> slaves = slavesStorage.getList(taskName);
+            if (slaves.isEmpty()) {
+                throw new IOException("cluster is empty");
+            }
+            logger.info("Slaves to broadcast " + slaves);
             for (NodeRequest request : requests) {
+                //TODO вот тут че-то ваще. тест напиши и выдели в отдельный метод
                 lastRequestId++;
                 slaves.get(lastRequestId % slaves.size()).executeTask(request);
             }
         } catch (IOException e) {
             if (retry < maxRetry) {
+                waitForGoodTimes();
                 logger.info("Broadcast retry " + retry);
-                broadcastRequests(taskFactoryName, requests.subList(lastRequestId, requests.size()), retry + 1, maxRetry);
+                logger.error(e);
+                broadcastRequests(taskName, requests.subList(Math.max(lastRequestId, 0), requests.size()), retry + 1, maxRetry);
             } else {
                 throw new DistributionException(e);
             }
+        }
+    }
+
+    private void waitForGoodTimes() {
+        try {
+            Thread.sleep(200L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error(e);
         }
     }
 

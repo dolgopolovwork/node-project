@@ -7,17 +7,17 @@ import ru.babobka.nodeutils.container.Container;
 import java.io.Serializable;
 
 
-public class CacheServiceImpl implements CacheService {
+public class CacheServiceImpl<K extends Serializable> implements CacheService<K> {
 
-    private final CacheDAO cacheDAO = Container.getInstance().get(CacheDAO.class);
+    private final CacheDAO<K> cacheDAO = Container.getInstance().get(CacheDAO.class);
 
     @Override
-    public void put(String key, Serializable content) {
+    public void put(K key, Serializable content) {
         cacheDAO.put(key, content);
     }
 
     @Override
-    public <T extends Serializable> T get(String key) {
+    public <T extends Serializable> T get(K key) {
         return cacheDAO.get(key);
     }
 

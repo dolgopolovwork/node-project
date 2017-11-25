@@ -3,7 +3,6 @@ package ru.babobka.nodeutils.logger;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SimpleLogger {
@@ -36,10 +35,6 @@ public class SimpleLogger {
 
     public void warning(String message, Exception e) {
         logger.warning(message + "\t" + TextUtil.getStringFromException(e));
-    }
-
-    public void debug(String message) {
-        logger.log(Level.CONFIG, message);
     }
 
     public void error(String message) {

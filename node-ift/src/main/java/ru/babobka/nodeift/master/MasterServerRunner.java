@@ -8,6 +8,8 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class MasterServerRunner {
 
+    public static final String LOG_FOLDER = "C:\\Users\\123\\Documents\\node-project\\logs";
+
     public static void init() {
         Container.getInstance().put(new MasterServerApplicationContainer());
     }

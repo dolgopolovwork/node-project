@@ -16,9 +16,7 @@ import java.util.List;
 public class OnRaceStyleTaskIsReady implements OnResponseListener {
 
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
-
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
     @Override

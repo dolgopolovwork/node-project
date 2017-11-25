@@ -17,9 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class ThreadPoolService<I extends Serializable, O extends Serializable> {
     private final int cores;
     private final Lock executionLock = new ReentrantLock();
+    private final UUID serviceId = UUID.randomUUID();
     private ExecutorService threadPool;
     private boolean stopped;
-    private final UUID serviceId = UUID.randomUUID();
 
     public ThreadPoolService(int cores) {
         if (cores < 1) {
@@ -98,7 +98,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
     }
 
     public synchronized boolean isStopped() {
-        return stopped;
+        return stopped || Thread.currentThread().isInterrupted();
     }
 
     protected int getCores() {

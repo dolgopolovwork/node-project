@@ -29,9 +29,6 @@ public class EllipticCurveFactorTaskExecutor extends TaskExecutor {
             if (factoringResult != null) {
                 result.put(Params.NUMBER.getValue(), number);
                 result.put(Params.FACTOR.getValue(), factoringResult.getFactor());
-                result.put(Params.X.getValue(), factoringResult.getEllipticCurvePoint().getX());
-                result.put(Params.Y.getValue(), factoringResult.getEllipticCurvePoint().getY());
-                result.put(Params.CURVE.getValue(), factoringResult.getEllipticCurvePoint().getCurve());
                 return new ExecutionResult(factorService.isStopped(), result);
             }
             return ExecutionResult.stopped();

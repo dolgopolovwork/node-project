@@ -6,8 +6,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TaskExecutionResult {
+public class TaskExecutionResult implements Serializable {
 
+    private static final long serialVersionUID = -1759840716137209250L;
     private final long timeTakes;
     private final Map<String, Serializable> result = new HashMap<>();
     private final boolean wasStopped;

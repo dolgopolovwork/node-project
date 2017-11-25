@@ -45,7 +45,7 @@ public class SocketControllerTest {
         new ApplicationContainer() {
             @Override
             public void contain(Container container) {
-                container.put("slaveServerTaskPool",taskPool);
+                container.put("slaveServerTaskPool", taskPool);
                 container.put(slaveServerConfig);
                 container.put(simpleLogger);
                 container.put(taskRunnerService);

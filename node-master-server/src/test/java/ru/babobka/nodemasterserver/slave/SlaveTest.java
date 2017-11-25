@@ -114,7 +114,7 @@ public class SlaveTest {
     }
 
     @Test
-    public void testExecuteTaskRaceAlreadyHasTask() throws IOException {
+    public void testExecuteTaskRaceAlreadyHasRequest() throws IOException {
         Responses responses = mock(Responses.class);
         NodeConnection connection = mock(NodeConnection.class);
         UUID taskId = UUID.randomUUID();
@@ -125,7 +125,7 @@ public class SlaveTest {
         slave.addTask(request);
         slave.executeTask(request);
         verify(connection, never()).send(any(NodeRequest.class));
-        verify(responses).add(any(NodeResponse.class));
+        verify(responses, never()).add(any(NodeResponse.class));
     }
 
     @Test

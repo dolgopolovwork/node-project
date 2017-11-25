@@ -14,6 +14,6 @@ public interface TaskService {
     TaskExecutionResult executeTask(NodeRequest request)
             throws TaskExecutionException;
 
-    void cancelTask(UUID taskId) throws TaskExecutionException;
+    boolean cancelTask(UUID taskId) throws TaskExecutionException;
 
 }

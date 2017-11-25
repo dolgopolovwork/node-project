@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -69,10 +71,9 @@ public class TaskServiceImplTest {
         taskService.cancelTask(null);
     }
 
-    @Test(expected = TaskExecutionException.class)
+    @Test
     public void testCancelTaskNullResponses() throws TaskExecutionException {
-        taskService.cancelTask(UUID.randomUUID());
-        verify(logger).error(anyString());
+        assertFalse(taskService.cancelTask(UUID.randomUUID()));
     }
 
     @Test
@@ -83,7 +84,7 @@ public class TaskServiceImplTest {
         when(slavesStorage.getListByTaskId(taskId)).thenReturn(slaves);
         Responses responses = mock(Responses.class);
         when(responseStorage.get(taskId)).thenReturn(responses);
-        taskService.cancelTask(taskId);
+        assertTrue(taskService.cancelTask(taskId));
         verify(responseStorage).setStopAllResponses(taskId);
         verify(distributionService).broadcastStopRequests(slaves, taskId);
     }

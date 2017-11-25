@@ -12,13 +12,9 @@ public class NodeData implements Serializable {
     private static final long serialVersionUID = 8L;
 
     private final UUID id;
-
     private final UUID taskId;
-
     private final String taskName;
-
     private final long timeStamp;
-
     private final Map<String, Serializable> data = new HashMap<>();
 
     NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Map<String, Serializable> data) {

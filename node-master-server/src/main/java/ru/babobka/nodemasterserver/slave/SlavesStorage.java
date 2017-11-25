@@ -22,7 +22,8 @@ public class SlavesStorage {
     public synchronized List<SlaveUser> getCurrentClusterUserList() {
         List<SlaveUser> clusterUserList = new ArrayList<>();
         for (Slave slave : slaves) {
-            clusterUserList.add(new SlaveUser(slave));
+            if (!slave.isInterrupted())
+                clusterUserList.add(new SlaveUser(slave));
         }
         return clusterUserList;
     }
@@ -32,22 +33,17 @@ public class SlavesStorage {
         slaves.remove(slave);
     }
 
-    public synchronized void removeTask(UUID taskId) {
-        if (taskId == null) {
-            throw new IllegalArgumentException("can not remove task with null taskId");
-        }
-        for (Slave slave : slaves) {
-            slave.removeTask(taskId);
-        }
-    }
-
     synchronized void add(Slave slave) {
         logger.info("Add new slave " + slave);
         slaves.add(slave);
     }
 
     public synchronized List<Slave> getFullList() {
-        List<Slave> fullSlaveList = new ArrayList<>(this.slaves);
+        List<Slave> fullSlaveList = new ArrayList<>(this.slaves.size());
+        for (Slave slave : slaves) {
+            if (!slave.isInterrupted())
+                fullSlaveList.add(slave);
+        }
         Collections.shuffle(fullSlaveList);
         return fullSlaveList;
     }
@@ -61,8 +57,8 @@ public class SlavesStorage {
             return new ArrayList<>();
         }
         List<Slave> groupedSlaves = new ArrayList<>();
-        for (Slave slave : slaves) {
-            if (slave.taskIsAvailable(taskName)) {
+        for (Slave slave : getFullList()) {
+            if (!slave.isInterrupted() && slave.taskIsAvailable(taskName)) {
                 groupedSlaves.add(slave);
                 if (groupedSlaves.size() == maxSlaves) {
                     break;
@@ -84,18 +80,17 @@ public class SlavesStorage {
             throw new IllegalArgumentException("taskId is null");
         }
         List<Slave> groupedSlaves = new ArrayList<>();
-        for (Slave slave : slaves) {
-            if (slave.hasTask(taskId)) {
+        for (Slave slave : getFullList()) {
+            if (!slave.isInterrupted() && slave.hasTask(taskId)) {
                 groupedSlaves.add(slave);
             }
         }
-        Collections.shuffle(groupedSlaves);
         return groupedSlaves;
     }
 
     public synchronized void heartBeatAllSlaves() {
         for (Slave slave : getFullList()) {
-            if (!Thread.currentThread().isInterrupted()) {
+            if (!slave.isInterrupted() && !Thread.currentThread().isInterrupted()) {
                 sendHeartBeat(slave);
             }
         }
@@ -116,7 +111,7 @@ public class SlavesStorage {
     public synchronized int getClusterSize(String taskName) {
         int counter = 0;
         for (Slave slave : slaves) {
-            if (slave.taskIsAvailable(taskName)) {
+            if (!slave.isInterrupted() && slave.taskIsAvailable(taskName)) {
                 counter++;
             }
         }

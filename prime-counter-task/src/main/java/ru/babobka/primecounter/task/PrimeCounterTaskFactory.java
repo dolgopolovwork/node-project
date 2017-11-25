@@ -7,7 +7,6 @@ import ru.babobka.primecounter.PrimeCounterServiceApplicationContainer;
 import ru.babobka.primecounter.model.PrimeCounterDataValidators;
 import ru.babobka.primecounter.model.PrimeCounterDistributor;
 import ru.babobka.primecounter.model.PrimeCounterReducer;
-import ru.babobka.primecounter.model.PrimeCounterTaskExecutor;
 import ru.babobka.primecounter.service.PrimeCounterServiceFactory;
 
 /**

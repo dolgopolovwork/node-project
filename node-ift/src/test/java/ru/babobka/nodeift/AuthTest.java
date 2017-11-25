@@ -8,6 +8,9 @@ import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
+import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static ru.babobka.nodeift.master.MasterServerRunner.LOG_FOLDER;
 
 /**
  * Created by 123 on 06.11.2017.
@@ -26,6 +30,16 @@ public class AuthTest {
 
     @BeforeClass
     public static void setUp() {
+        new ApplicationContainer() {
+            @Override
+            public void contain(Container container) {
+                try {
+                    container.put(new SimpleLogger("AuthTest", LOG_FOLDER, "AuthTest"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.contain(Container.getInstance());
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();

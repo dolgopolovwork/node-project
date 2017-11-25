@@ -1,7 +1,10 @@
 package ru.babobka.nodeutils.util;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * Created by 123 on 19.08.2017.
@@ -19,5 +22,18 @@ public interface HashUtil {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    static int hashMap(Map<?, ?> map) {
+        if (map == null) {
+            throw new IllegalArgumentException("Can not hash null map");
+        }
+        HashCodeBuilder hashBuilder = new HashCodeBuilder(17, 31);
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (entry.getValue() != null) {
+                hashBuilder.append(entry.getValue().hashCode());
+            }
+        }
+        return hashBuilder.hashCode();
     }
 }

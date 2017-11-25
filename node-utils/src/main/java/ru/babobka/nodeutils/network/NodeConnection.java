@@ -45,17 +45,18 @@ public class NodeConnection implements Closeable {
         }
     }
 
-
     public void close() {
         synchronized (socket) {
-            if (!socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if (socket.isClosed()) {
+                return;
+            }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
     }
 
     public boolean isClosed() {

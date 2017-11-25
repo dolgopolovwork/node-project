@@ -51,7 +51,7 @@ public class Responses {
 
     public synchronized boolean add(NodeResponse response) {
         logger.info("Add new response " + response);
-        if (isComplete()) {
+        if (isComplete() || alreadyHasResponse(response)) {
             return false;
         }
         responsesList.add(response);
@@ -64,6 +64,15 @@ public class Responses {
         }
         return true;
 
+    }
+
+    synchronized boolean alreadyHasResponse(NodeResponse response) {
+        for (NodeResponse addedResponse : responsesList) {
+            if (addedResponse.getId().equals(response.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     synchronized boolean fill(NodeResponse response) {
@@ -121,7 +130,7 @@ public class Responses {
 
     @Override
     public String toString() {
-        return meta.getTaskName();
+        return responsesList.toString();
     }
 
 }

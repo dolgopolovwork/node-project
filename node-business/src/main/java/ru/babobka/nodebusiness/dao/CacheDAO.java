@@ -2,10 +2,10 @@ package ru.babobka.nodebusiness.dao;
 
 import java.io.Serializable;
 
-public interface CacheDAO {
+public interface CacheDAO<K extends Serializable> {
 
-    <T extends Serializable> T get(String key);
+    <T extends Serializable> T get(K key);
 
-    void put(String key, Serializable value);
+    void put(K key, Serializable value);
 
 }

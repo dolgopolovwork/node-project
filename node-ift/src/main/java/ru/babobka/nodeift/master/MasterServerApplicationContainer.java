@@ -26,7 +26,6 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.HashUtil;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
@@ -65,8 +64,6 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             MasterServerConfigValidator configValidator = new MasterServerConfigValidator(new AuthTimeoutMillisValidationRule(), new HeartBeatTimeoutMillisValidationRule(), new LoggerFolderValidationRule(), new MainServerPortValidationRule(), new RequestTimeoutMillisValidationRule(), new RestServiceLoginValidationRule(), new RestServicePasswordValidationRule(), new TaskFolderValidationRule(), new WebPortValidationRule());
             configValidator.validate(config);
             container.put(config);
-            SimpleLogger logger = new SimpleLogger("common logger", config.getLoggerFolder(), "common");
-            container.put(logger);
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
             container.put(new NodeWebApplicationContainer());
