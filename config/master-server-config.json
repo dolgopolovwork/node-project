@@ -1,0 +1,13 @@
+{
+   "debugMode":true,
+   "authTimeOutMillis":2000,
+   "slaveListenerPort":9090,
+   "clientListenerPort":9999,
+   "requestTimeOutMillis":5000,
+   "heartBeatTimeOutMillis":2000,
+   "webListenerPort":8080,
+   "restServiceLogin":"abc",
+   "loggerFolder":"C:\\Users\\123\\Documents\\node-project\\logs",
+   "tasksFolder":"C:\\Users\\123\\Documents\\node-project\\tasks",
+   "restServiceHashedPassword":"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+}

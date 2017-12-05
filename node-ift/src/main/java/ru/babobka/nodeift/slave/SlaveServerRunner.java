@@ -22,7 +22,7 @@ public class SlaveServerRunner {
         return slaveServer;
     }
 
-    public static SlaveServer getSlaveServer(String login, String password) throws IOException {
+    static SlaveServer getSlaveServer(String login, String password) throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         NodeConnection connection = new NodeConnection(new Socket(slaveServerConfig.getServerHost(), slaveServerConfig.getServerPort()));
         return new SlaveServer(connection, login, password);

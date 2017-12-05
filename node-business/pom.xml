@@ -3,11 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>ru.babobka.node</groupId>
-        <artifactId>node</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
     <groupId>ru.babobka.nodebusiness</groupId>
     <artifactId>node-business</artifactId>
     <version>1.0-SNAPSHOT</version>

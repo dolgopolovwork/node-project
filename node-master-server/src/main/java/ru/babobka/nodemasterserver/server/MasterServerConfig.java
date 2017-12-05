@@ -19,7 +19,7 @@ public class MasterServerConfig implements Serializable {
 
     private String restServiceLogin;
 
-    private String restServicePassword;
+    private String restServiceHashedPassword;
 
     private String loggerFolder;
 
@@ -75,12 +75,14 @@ public class MasterServerConfig implements Serializable {
         this.restServiceLogin = restServiceLogin;
     }
 
-    public String getRestServicePassword() {
-        return restServicePassword;
+    public String getRestServiceHashedPassword() {
+        return restServiceHashedPassword;
     }
 
-    public void setRestServicePassword(String restServicePassword) {
-        this.restServicePassword = restServicePassword;
+    public void setRestServiceHashedPassword(String restServiceHashedPassword) {
+        if (restServiceHashedPassword != null) {
+            this.restServiceHashedPassword = restServiceHashedPassword;
+        }
     }
 
     public String getLoggerFolder() {
@@ -125,7 +127,7 @@ public class MasterServerConfig implements Serializable {
                 ", heartBeatTimeOutMillis=" + heartBeatTimeOutMillis +
                 ", webListenerPort=" + webListenerPort +
                 ", restServiceLogin='" + restServiceLogin + '\'' +
-                ", restServicePassword='" + restServicePassword + '\'' +
+                ", restServiceHashedPassword='" + restServiceHashedPassword + '\'' +
                 ", loggerFolder='" + loggerFolder + '\'' +
                 ", tasksFolder='" + tasksFolder + '\'' +
                 ", debugMode=" + debugMode +

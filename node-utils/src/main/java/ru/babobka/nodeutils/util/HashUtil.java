@@ -36,4 +36,17 @@ public interface HashUtil {
         }
         return hashBuilder.hashCode();
     }
+
+    static String hexSha2(String message) {
+        byte[] hash = sha2(message);
+        StringBuilder hexString = new StringBuilder();
+        for (int i = 0; i < hash.length; i++) {
+            if ((0xff & hash[i]) < 0x10) {
+                hexString.append("0").append(Integer.toHexString((0xFF & hash[i])));
+            } else {
+                hexString.append(Integer.toHexString(0xFF & hash[i]));
+            }
+        }
+        return hexString.toString();
+    }
 }

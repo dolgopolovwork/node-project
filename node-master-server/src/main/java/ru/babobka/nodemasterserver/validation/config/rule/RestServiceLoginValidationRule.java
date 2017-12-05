@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.validation.config.rule;
 
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodeutils.validation.ValidationRule;
 
 /**
@@ -9,7 +10,7 @@ import ru.babobka.nodeutils.validation.ValidationRule;
 public class RestServiceLoginValidationRule implements ValidationRule<MasterServerConfig> {
     @Override
     public void validate(MasterServerConfig data) {
-        if (data.getRestServiceLogin() == null) {
+        if (TextUtil.isEmpty(data.getRestServiceLogin())) {
             throw new IllegalArgumentException("'restServiceLogin' must not be null");
         }
     }

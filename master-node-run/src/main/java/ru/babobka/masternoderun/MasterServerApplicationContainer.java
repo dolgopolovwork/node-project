@@ -1,6 +1,5 @@
-package ru.babobka.nodeift.master;
+package ru.babobka.masternoderun;
 
-import com.google.gson.Gson;
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodebusiness.service.MasterAuthService;
 import ru.babobka.nodemasterserver.client.ClientStorage;
@@ -15,7 +14,6 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
-import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodemasterserver.webcontroller.AvailableTasksWebController;
 import ru.babobka.nodemasterserver.webcontroller.ClusterInfoWebController;
 import ru.babobka.nodemasterserver.webcontroller.TasksInfoWebController;
@@ -26,8 +24,8 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
-import ru.babobka.nodeutils.util.HashUtil;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.nodeweb.webfilter.AuthWebFilter;
@@ -40,17 +38,13 @@ import java.util.concurrent.Executors;
  * Created by 123 on 05.11.2017.
  */
 public class MasterServerApplicationContainer implements ApplicationContainer {
-    private static final String TASKS_FOLDER = "C:\\Users\\123\\Documents\\node-project\\tasks";
-    private static final String LOGGER_FOLDER = "C:\\Users\\123\\Documents\\node-project\\logs";
-    private static final String REST_HASHED_PASSWORD = HashUtil.hexSha2("123");
-    private static final String REST_LOGIN = "abc";
+
     @Override
     public void contain(Container container) {
         try {
+            MasterServerConfig config = container.get(MasterServerConfig.class);
+            container.put(new SimpleLogger("master-server", config.getLoggerFolder(), "master"));
             container.put(new NodeUtilsApplicationContainer());
-            MasterServerConfig config = createTestConfig();
-            new MasterServerConfigValidator().validate(config);
-            container.put(config);
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
             container.put(new NodeWebApplicationContainer());
@@ -80,26 +74,5 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         } catch (Exception e) {
             throw new ContainerException(e);
         }
-    }
-
-    private static MasterServerConfig createTestConfig() {
-        MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolder(TASKS_FOLDER);
-        config.setLoggerFolder(LOGGER_FOLDER);
-        config.setAuthTimeOutMillis(2000);
-        config.setClientListenerPort(9999);
-        config.setDebugMode(true);
-        config.setHeartBeatTimeOutMillis(2000);
-        config.setRequestTimeOutMillis(5000);
-        config.setSlaveListenerPort(9090);
-        config.setWebListenerPort(8080);
-        config.setRestServiceLogin(REST_LOGIN);
-        config.setRestServiceHashedPassword(REST_HASHED_PASSWORD);
-        return config;
-    }
-
-    public static void main(String[] args) {
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(createTestConfig()));
     }
 }

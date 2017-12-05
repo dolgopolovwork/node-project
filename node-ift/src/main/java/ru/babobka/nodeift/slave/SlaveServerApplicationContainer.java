@@ -4,7 +4,6 @@ import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.validator.config.ConfigValidator;
-import ru.babobka.nodeslaveserver.validator.config.rule.*;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
@@ -30,8 +29,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             config.setServerHost("localhost");
             config.setServerPort(9090);
             config.setTasksFolder(TASKS_FOLDER);
-            ConfigValidator configValidator = new ConfigValidator(new ServerPortValidationRule(), new AuthTimeoutMillisValidationRule(), new LoggerFolderValidationRule(), new RequestTimeoutMillisValidationRule(), new TasksFolderValidationRule());
-            configValidator.validate(config);
+            new ConfigValidator().validate(config);
             container.put(config);
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());

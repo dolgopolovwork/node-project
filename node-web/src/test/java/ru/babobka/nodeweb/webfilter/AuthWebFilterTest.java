@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 public class AuthWebFilterTest {
 
     private String login = "abc";
-    private String password = "123";
+    private String password = HashUtil.hexSha2("123");
 
-    private WebFilter authWebFilter = new AuthWebFilter(login, HashUtil.sha2(password));
+    private WebFilter authWebFilter = new AuthWebFilter(login, password);
 
     @Test
     public void testOnFilter() {
