@@ -10,7 +10,7 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 3340802658169837956L;
     private String name;
-    private String password;
+    private String hashedPassword;
     private Integer taskCount;
     private String email;
 
@@ -22,12 +22,12 @@ public class UserDTO implements Serializable {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     public Integer getTaskCount() {

@@ -31,6 +31,7 @@ import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.nodeweb.webfilter.AuthWebFilter;
 import ru.babobka.vsjws.webserver.WebServer;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.Executors;
 
@@ -71,7 +72,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             webServer.addController("clusterInfo", new ClusterInfoWebController()).addWebFilter(authWebFilter);
             webServer.addController("taskInfo", new TasksInfoWebController()).addWebFilter(authWebFilter);
             container.put(webServer);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             throw new ContainerException(e);
         }
     }

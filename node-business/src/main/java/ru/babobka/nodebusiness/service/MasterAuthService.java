@@ -21,7 +21,7 @@ public class MasterAuthService implements AuthService {
     public boolean auth(NodeConnection connection) {
         try {
             NodeAuthRequest authRequest = connection.receive();
-            byte[] hashedPassword = authRequest.getHashedPassword();
+            String hashedPassword = authRequest.getHashedPassword();
             String login = authRequest.getLogin();
             boolean authSuccess = usersService.auth(login, hashedPassword);
             connection.send(authSuccess);

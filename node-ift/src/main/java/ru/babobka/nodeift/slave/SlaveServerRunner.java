@@ -4,6 +4,7 @@ import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -17,7 +18,7 @@ public class SlaveServerRunner {
     }
 
     public static SlaveServer runSlaveServer(String login, String password) throws IOException {
-        SlaveServer slaveServer = getSlaveServer(login, password);
+        SlaveServer slaveServer = getSlaveServer(login, HashUtil.hexSha2(password));
         slaveServer.start();
         return slaveServer;
     }

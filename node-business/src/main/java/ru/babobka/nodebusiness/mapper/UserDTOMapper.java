@@ -3,7 +3,6 @@ package ru.babobka.nodebusiness.mapper;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodeutils.func.Mapper;
-import ru.babobka.nodeutils.util.HashUtil;
 
 import java.util.UUID;
 
@@ -21,8 +20,8 @@ public class UserDTOMapper extends Mapper<UserDTO, User> {
             user.setName(userDTO.getName());
         if (userDTO.getTaskCount() != null)
             user.setTaskCount(userDTO.getTaskCount());
-        if (userDTO.getPassword() != null)
-            user.setHashedPassword(HashUtil.sha2(userDTO.getPassword()));
+        if (userDTO.getHashedPassword() != null)
+            user.setHashedPassword(userDTO.getHashedPassword());
         if (userDTO.getEmail() != null)
             user.setEmail(userDTO.getEmail());
         user.setId(UUID.randomUUID());

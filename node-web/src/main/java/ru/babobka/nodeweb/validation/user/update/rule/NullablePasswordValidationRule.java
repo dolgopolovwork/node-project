@@ -13,7 +13,7 @@ public class NullablePasswordValidationRule implements ValidationRule<UserDTO> {
 
     @Override
     public void validate(UserDTO data) {
-        if (data.getPassword() != null) {
+        if (data.getHashedPassword() != null) {
             passwordValidationRule.validate(data);
         }
     }

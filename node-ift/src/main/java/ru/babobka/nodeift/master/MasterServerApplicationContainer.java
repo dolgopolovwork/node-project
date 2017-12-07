@@ -1,6 +1,5 @@
 package ru.babobka.nodeift.master;
 
-import com.google.gson.Gson;
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodebusiness.service.MasterAuthService;
 import ru.babobka.nodemasterserver.client.ClientStorage;
@@ -44,6 +43,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     private static final String LOGGER_FOLDER = "C:\\Users\\123\\Documents\\node-project\\logs";
     private static final String REST_HASHED_PASSWORD = HashUtil.hexSha2("123");
     private static final String REST_LOGIN = "abc";
+
     @Override
     public void contain(Container container) {
         try {
@@ -82,7 +82,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         }
     }
 
-    private static MasterServerConfig createTestConfig() {
+    private MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
         config.setTasksFolder(TASKS_FOLDER);
         config.setLoggerFolder(LOGGER_FOLDER);
@@ -96,10 +96,5 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setRestServiceLogin(REST_LOGIN);
         config.setRestServiceHashedPassword(REST_HASHED_PASSWORD);
         return config;
-    }
-
-    public static void main(String[] args) {
-        Gson gson = new Gson();
-        System.out.println(gson.toJson(createTestConfig()));
     }
 }

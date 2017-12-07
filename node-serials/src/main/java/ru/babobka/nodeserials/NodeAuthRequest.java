@@ -1,7 +1,5 @@
 package ru.babobka.nodeserials;
 
-import ru.babobka.nodeutils.util.HashUtil;
-
 import java.io.Serializable;
 
 /**
@@ -10,23 +8,23 @@ import java.io.Serializable;
 public class NodeAuthRequest implements Serializable {
     private static final long serialVersionUID = -8625209279110892295L;
     private final String login;
-    private final byte[] hashedPassword;
+    private final String hashedPassword;
 
-    public NodeAuthRequest(String login, String password) {
+    public NodeAuthRequest(String login, String hashedPassword) {
         if (login == null) {
             throw new IllegalArgumentException("login is null");
-        } else if (password == null) {
-            throw new IllegalArgumentException("password is null");
+        } else if (hashedPassword == null) {
+            throw new IllegalArgumentException("hashedPassword is null");
         }
         this.login = login;
-        this.hashedPassword = HashUtil.sha2(password);
+        this.hashedPassword = hashedPassword;
     }
 
     public String getLogin() {
         return login;
     }
 
-    public byte[] getHashedPassword() {
-        return hashedPassword.clone();
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 }

@@ -13,21 +13,21 @@ public class PasswordValidationRuleTest {
     @Test
     public void testValidPassword() {
         UserDTO userDTO = new UserDTO();
-        userDTO.setPassword("12345678");
+        userDTO.setHashedPassword("12345678");
         passwordValidationRule.validate(userDTO);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLittlePassword() {
         UserDTO userDTO = new UserDTO();
-        userDTO.setPassword("123");
+        userDTO.setHashedPassword("123");
         passwordValidationRule.validate(userDTO);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyPassword() {
         UserDTO userDTO = new UserDTO();
-        userDTO.setPassword("");
+        userDTO.setHashedPassword("");
         passwordValidationRule.validate(userDTO);
     }
 

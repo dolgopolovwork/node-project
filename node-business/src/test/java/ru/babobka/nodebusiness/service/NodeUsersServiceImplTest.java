@@ -8,6 +8,7 @@ import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.HashUtil;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
@@ -90,7 +91,7 @@ public class NodeUsersServiceImplTest {
 
     @Test
     public void testAuth() {
-        byte[] hashedPassword = {1, 2, 3};
+        String hashedPassword = HashUtil.hexSha2("123");
         String login = "test user";
         User user = new User();
         user.setHashedPassword(hashedPassword);
@@ -100,7 +101,7 @@ public class NodeUsersServiceImplTest {
 
     @Test
     public void testAuthNotFoundUser() {
-        byte[] hashedPassword = {1, 2, 3};
+        String hashedPassword = HashUtil.hexSha2("123");
         String login = "test user";
         when(nodeUsersDAO.get(login)).thenReturn(null);
         assertFalse(nodeUsersService.auth(login, hashedPassword));
@@ -108,10 +109,10 @@ public class NodeUsersServiceImplTest {
 
     @Test
     public void testAuthBadPassword() {
-        byte[] hashedPassword = {1, 2, 3};
+        String hashedPassword = HashUtil.hexSha2("123");
         String login = "test user";
         User user = new User();
-        user.setHashedPassword(new byte[]{4, 5, 6});
+        user.setHashedPassword(HashUtil.hexSha2("456"));
         when(nodeUsersDAO.get(login)).thenReturn(null);
         assertFalse(nodeUsersService.auth(login, hashedPassword));
     }

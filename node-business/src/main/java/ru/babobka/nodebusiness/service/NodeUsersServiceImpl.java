@@ -8,7 +8,6 @@ import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.HashUtil;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,9 +43,9 @@ public class NodeUsersServiceImpl implements NodeUsersService {
     }
 
     @Override
-    public boolean auth(String login, byte[] hashedPassword) {
+    public boolean auth(String login, String hashedPassword) {
         User user = userDAO.get(login);
-        return user != null && Arrays.equals(user.getHashedPassword(), hashedPassword);
+        return user != null && user.getHashedPassword().equals(hashedPassword);
     }
 
     @Override
@@ -55,7 +54,7 @@ public class NodeUsersServiceImpl implements NodeUsersService {
         user.setName("test_user");
         user.setEmail("test@email.com");
         user.setId(UUID.randomUUID());
-        user.setHashedPassword(HashUtil.sha2("test_password"));
+        user.setHashedPassword(HashUtil.hexSha2("test_password"));
         userDAO.add(user);
     }
 }

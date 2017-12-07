@@ -14,9 +14,9 @@ public class PasswordValidationRule implements ValidationRule<UserDTO> {
 
     @Override
     public void validate(UserDTO data) {
-        if (TextUtil.isEmpty(data.getPassword())) {
+        if (TextUtil.isEmpty(data.getHashedPassword())) {
             throw new IllegalArgumentException("password must be set");
-        } else if (data.getPassword().length() < MIN_PASSWORD_LENGTH) {
+        } else if (data.getHashedPassword().length() < MIN_PASSWORD_LENGTH) {
             throw new IllegalArgumentException("min password length is " + MIN_PASSWORD_LENGTH);
         }
     }

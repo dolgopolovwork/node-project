@@ -4,6 +4,8 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 
@@ -12,12 +14,12 @@ import java.io.IOException;
  */
 public class MasterServerRunner {
 
-    private final ConfigFactory configFactory = Container.getInstance().get(ConfigFactory.class);
+    private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
     private final MasterServerConfigValidator configValidator = Container.getInstance().get(MasterServerConfigValidator.class);
 
     public void run(String configPath) throws IOException {
         Container container = Container.getInstance();
-        MasterServerConfig config = configFactory.create(configPath);
+        MasterServerConfig config = TextUtil.readJsonFile(streamUtil, configPath, MasterServerConfig.class);
         configValidator.validate(config);
         container.put(config);
         container.put(createMasterServerContainer());

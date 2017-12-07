@@ -9,8 +9,8 @@ import java.util.Arrays;
 /**
  * Created by 123 on 05.11.2017.
  */
-public class ConfigValidator extends Validator<SlaveServerConfig> {
-    public ConfigValidator() {
+public class SlaveServerConfigValidator extends Validator<SlaveServerConfig> {
+    public SlaveServerConfigValidator() {
         super(Arrays.asList(
                 new ServerPortValidationRule(),
                 new AuthTimeoutMillisValidationRule(),

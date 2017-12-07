@@ -1,6 +1,6 @@
-package ru.babobka.masternoderun;
+package ru.babobka.slavenoderun;
 
-import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
+import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -17,20 +17,22 @@ public class MainApplication {
             @Override
             public void contain(Container container) {
                 container.put(new StreamUtil());
-                container.put(new MasterServerConfigValidator());
+                container.put(new SlaveServerConfigValidator());
             }
         }.contain(Container.getInstance());
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length < 1) {
-            printErr("Path to config was not set");
+        if (args.length < 3) {
+            printErr("Invalid command. You must specify 3 arguments: login, sha2 hashed password and path to config");
             return;
         }
-        String pathToConfig = args[0];
+        String login = args[0];
+        String hashedPassword = args[1];
+        String pathToConfig = args[2];
         try {
-            MasterServerRunner masterServerRunner = new MasterServerRunner();
-            masterServerRunner.run(pathToConfig);
+            SlaveServerRunner slaveServerRunner = new SlaveServerRunner();
+            slaveServerRunner.run(pathToConfig, login, hashedPassword);
         } catch (Exception e) {
             printErr("Error occurred while startup");
             e.printStackTrace();

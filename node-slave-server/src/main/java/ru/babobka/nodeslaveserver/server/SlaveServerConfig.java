@@ -1,7 +1,10 @@
 package ru.babobka.nodeslaveserver.server;
 
-public class SlaveServerConfig {
+import java.io.Serializable;
 
+public class SlaveServerConfig implements Serializable {
+
+    private static final long serialVersionUID = 9130829367317179440L;
     private int serverPort;
     private String serverHost;
     private int requestTimeoutMillis;

@@ -19,7 +19,7 @@ public interface NodeUsersService {
 
     boolean update(UUID id, UserDTO user);
 
-    boolean auth(String login, byte[] hashedPassword);
+    boolean auth(String login, String hashedPassword);
 
     void createDebugUser();
 }

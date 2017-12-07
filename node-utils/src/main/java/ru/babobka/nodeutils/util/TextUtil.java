@@ -1,6 +1,10 @@
 package ru.babobka.nodeutils.util;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +18,8 @@ public interface TextUtil {
 
     String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    Gson GSON = new Gson();
 
     static boolean isValidEmail(String email) {
         return email != null && email.matches(EMAIL_PATTERN);
@@ -64,6 +70,22 @@ public interface TextUtil {
 
     static String beautifyServerName(String serverName, int port) {
         return "'" + serverName + "':" + port;
+    }
+
+    static <T extends Serializable> T readJsonFile(StreamUtil streamUtil, String pathToJson, Class<T> clazz) throws IOException {
+        if (streamUtil == null) {
+            throw new IllegalArgumentException("streamUtil is null");
+        } else if (TextUtil.isEmpty(pathToJson)) {
+            throw new IllegalArgumentException("pathToJson is null");
+        } else if (clazz == null) {
+            throw new IllegalArgumentException("class was not specified");
+        }
+        String fileContent = streamUtil.readFile(pathToJson);
+        try {
+            return GSON.fromJson(fileContent, clazz);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
 }

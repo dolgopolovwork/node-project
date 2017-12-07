@@ -1,0 +1,8 @@
+{
+  "serverPort": 9090,
+  "serverHost": "localhost",
+  "requestTimeoutMillis": 5000,
+  "authTimeoutMillis": 2000,
+  "loggerFolder": "C:\\Users\\123\\Documents\\node-project\\logs",
+  "tasksFolder": "C:\\Users\\123\\Documents\\node-project\\tasks"
+}

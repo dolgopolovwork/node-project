@@ -1,7 +1,6 @@
 package ru.babobka.nodebusiness.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -14,7 +13,7 @@ public final class User implements Serializable {
 
     private String name;
 
-    private byte[] hashedPassword;
+    private String hashedPassword;
 
     private Integer taskCount;
 
@@ -30,13 +29,12 @@ public final class User implements Serializable {
         this.email = email;
     }
 
-    public byte[] getHashedPassword() {
-        return hashedPassword == null ? null : hashedPassword.clone();
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setHashedPassword(byte[] hashedPassword) {
-        if (hashedPassword != null)
-            this.hashedPassword = hashedPassword.clone();
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
     public String getName() {
@@ -71,15 +69,17 @@ public final class User implements Serializable {
         User user = (User) o;
 
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (!Arrays.equals(hashedPassword, user.hashedPassword)) return false;
+        if (hashedPassword != null ? !hashedPassword.equals(user.hashedPassword) : user.hashedPassword != null)
+            return false;
         if (taskCount != null ? !taskCount.equals(user.taskCount) : user.taskCount != null) return false;
-        return (email != null ? email.equals(user.email) : user.email == null) && (id != null ? id.equals(user.id) : user.id == null);
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        return id != null ? id.equals(user.id) : user.id == null;
     }
 
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + Arrays.hashCode(hashedPassword);
+        result = 31 * result + (hashedPassword != null ? hashedPassword.hashCode() : 0);
         result = 31 * result + (taskCount != null ? taskCount.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (id != null ? id.hashCode() : 0);

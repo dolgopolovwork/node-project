@@ -10,6 +10,7 @@ import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.concurrent.Executors;
 
 public class SlaveServer extends Thread {
@@ -20,9 +21,9 @@ public class SlaveServer extends Thread {
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
 
-    public SlaveServer(NodeConnection connection, String login, String password) throws IOException {
+    public SlaveServer(NodeConnection connection, String login, String hashedPassword) throws IOException {
         this.connection = connection;
-        if (!authService.auth(connection, login, password)) {
+        if (!authService.auth(connection, login, hashedPassword)) {
             logger.error("Auth fail");
             throw new SlaveAuthFailException();
         } else {
@@ -35,6 +36,10 @@ public class SlaveServer extends Thread {
             }
         }
         tasksStorage = new TasksStorage();
+    }
+
+    public SlaveServer(String host, int port, String login, String password) throws IOException {
+        this(new NodeConnection(new Socket(host, port)), login, password);
     }
 
     @Override

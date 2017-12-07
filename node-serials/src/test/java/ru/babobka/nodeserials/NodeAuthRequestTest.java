@@ -3,7 +3,7 @@ package ru.babobka.nodeserials;
 import org.junit.Test;
 import ru.babobka.nodeutils.util.HashUtil;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by 123 on 01.09.2017.
@@ -22,8 +22,8 @@ public class NodeAuthRequestTest {
 
     @Test
     public void testHashedPassword() {
-        String password = "abc";
-        NodeAuthRequest nodeAuthRequest = new NodeAuthRequest("login", password);
-        assertArrayEquals(nodeAuthRequest.getHashedPassword(), HashUtil.sha2(password));
+        String hashedPassword = HashUtil.hexSha2("abc");
+        NodeAuthRequest nodeAuthRequest = new NodeAuthRequest("login", hashedPassword);
+        assertEquals(nodeAuthRequest.getHashedPassword(), hashedPassword);
     }
 }

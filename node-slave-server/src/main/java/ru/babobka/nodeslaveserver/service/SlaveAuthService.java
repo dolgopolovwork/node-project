@@ -15,9 +15,9 @@ public class SlaveAuthService implements AuthService {
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
 
     @Override
-    public boolean auth(NodeConnection connection, String login, String password) throws IOException {
+    public boolean auth(NodeConnection connection, String login, String hashedPassword) throws IOException {
         connection.setReadTimeOut(slaveServerConfig.getAuthTimeoutMillis());
-        connection.send(new NodeAuthRequest(login, password));
+        connection.send(new NodeAuthRequest(login, hashedPassword));
         return connection.receive();
     }
 }
