@@ -21,7 +21,7 @@ public class HeartBeatingThread extends CyclicThread {
 
     @Override
     public void onAwake() {
-        logger.info("Heart beating time");
+        logger.debug("Heart beating time");
         clientStorage.heartBeatAllClients();
         slavesStorage.heartBeatAllSlaves();
     }

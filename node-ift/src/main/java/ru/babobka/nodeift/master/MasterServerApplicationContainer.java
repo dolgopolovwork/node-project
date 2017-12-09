@@ -39,8 +39,6 @@ import java.util.concurrent.Executors;
  * Created by 123 on 05.11.2017.
  */
 public class MasterServerApplicationContainer implements ApplicationContainer {
-    private static final String TASKS_FOLDER = "C:\\Users\\123\\Documents\\node-project\\tasks";
-    private static final String LOGGER_FOLDER = "C:\\Users\\123\\Documents\\node-project\\logs";
     private static final String REST_HASHED_PASSWORD = HashUtil.hexSha2("123");
     private static final String REST_LOGIN = "abc";
 
@@ -84,8 +82,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
 
     private MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolder(TASKS_FOLDER);
-        config.setLoggerFolder(LOGGER_FOLDER);
+        config.setTasksFolder(System.getenv("NODE_IFT_TASKS"));
+        config.setLoggerFolder(System.getenv("NODE_IFT_LOGS"));
         config.setAuthTimeOutMillis(2000);
         config.setClientListenerPort(9999);
         config.setDebugMode(true);

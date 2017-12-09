@@ -15,9 +15,6 @@ import ru.babobka.nodeutils.container.ContainerException;
  * Created by 123 on 05.11.2017.
  */
 public class SlaveServerApplicationContainer implements ApplicationContainer {
-    private static final String TASKS_FOLDER = "C:\\Users\\123\\Documents\\node-project\\tasks";
-    private static final String LOGGER_FOLDER = "C:\\Users\\123\\Documents\\node-project\\logs";
-
     @Override
     public void contain(Container container) {
         try {
@@ -36,12 +33,12 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
 
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setLoggerFolder(LOGGER_FOLDER);
+        config.setTasksFolder(System.getenv("NODE_IFT_TASKS"));
+        config.setLoggerFolder(System.getenv("NODE_IFT_LOGS"));
         config.setAuthTimeoutMillis(2000);
         config.setRequestTimeoutMillis(5000);
         config.setServerHost("localhost");
         config.setServerPort(9090);
-        config.setTasksFolder(TASKS_FOLDER);
         return config;
     }
 }

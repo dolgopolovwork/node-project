@@ -19,14 +19,12 @@ import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static ru.babobka.nodeift.master.MasterServerRunner.LOG_FOLDER;
 
 /**
  * Created by 123 on 07.11.2017.
  */
 public class AuthCommonTasksTest {
     private static MasterServer masterServer;
-
     private TaskPool taskPool;
 
     @BeforeClass
@@ -35,7 +33,7 @@ public class AuthCommonTasksTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("AuthCommonTasksTest", LOG_FOLDER, "AuthCommonTasksTest"));
+                    container.put(new SimpleLogger("AuthCommonTasksTest", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksTest", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

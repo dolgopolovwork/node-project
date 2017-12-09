@@ -15,7 +15,6 @@ class SlaveUser implements Serializable {
         this.address = address;
     }
 
-    //TODO переделать на маппер
     public SlaveUser(Slave slave) {
         this(slave.getConnection().getLocalPort(), slave.getConnection().getServerPort(),
                 slave.getConnection().getHostName());

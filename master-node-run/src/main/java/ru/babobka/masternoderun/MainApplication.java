@@ -12,6 +12,8 @@ import java.io.IOException;
  */
 public class MainApplication {
 
+    private static final String ENV_VAR_CONFIG = "NODE_MASTER_CONFIG";
+
     static {
         new ApplicationContainer() {
             @Override
@@ -23,11 +25,10 @@ public class MainApplication {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length < 1) {
-            printErr("Path to config was not set");
+        String pathToConfig = getPathToConfig(args);
+        if (pathToConfig == null) {
             return;
         }
-        String pathToConfig = args[0];
         try {
             MasterServerRunner masterServerRunner = new MasterServerRunner();
             masterServerRunner.run(pathToConfig);
@@ -39,6 +40,23 @@ public class MainApplication {
 
     private static void printErr(String msg) {
         System.err.println(msg);
+    }
+
+    private static void print(String msg) {
+        System.out.println(msg);
+    }
+
+    private static String getPathToConfig(String[] args) {
+        if (args.length < 1) {
+            String pathToConfig = System.getenv(ENV_VAR_CONFIG);
+            if (pathToConfig != null) {
+                print("Path to config was taken from environment variable " + ENV_VAR_CONFIG);
+                return pathToConfig;
+            }
+            printErr("Path to config was not set");
+            return null;
+        }
+        return args[0];
     }
 
 }

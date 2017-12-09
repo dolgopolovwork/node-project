@@ -11,7 +11,6 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -25,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
-import static ru.babobka.nodeift.master.MasterServerRunner.LOG_FOLDER;
 
 /**
  * Created by 123 on 08.11.2017.
@@ -48,7 +46,7 @@ public class PrimeCounterTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("PrimeCounterTest", LOG_FOLDER, "PrimeCounterTest"));
+                    container.put(new SimpleLogger("PrimeCounterTest", System.getenv("NODE_IFT_LOGS"), "PrimeCounterTest", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -252,7 +250,6 @@ public class PrimeCounterTest {
         }
     }
 
-    //TODO вот тут иногда выдает неправильный ответ
     @Test
     public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
         SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
@@ -312,27 +309,21 @@ public class PrimeCounterTest {
 
     @Test
     public void testCountPrimesMediumRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(LOGIN, PASSWORD);
-        try {
-            Thread.sleep(1000L);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
+            slaveServerCluster.start();
             NodeRequest request = getMediumRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
             assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_MEDIUM_RANGE_ANSWER);
-        } finally {
-            slaveServer.interrupt();
         }
     }
 
     @Test
     public void testCountPrimeLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(LOGIN, PASSWORD);
-        try {
-            Thread.sleep(1000L);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
+            slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
             assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
-        } finally {
-            slaveServer.interrupt();
         }
     }
 

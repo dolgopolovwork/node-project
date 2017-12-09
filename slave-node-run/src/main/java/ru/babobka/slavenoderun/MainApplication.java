@@ -12,6 +12,8 @@ import java.io.IOException;
  */
 public class MainApplication {
 
+    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
+
     static {
         new ApplicationContainer() {
             @Override
@@ -23,13 +25,13 @@ public class MainApplication {
     }
 
     public static void main(String[] args) throws IOException {
-        if (args.length < 3) {
-            printErr("Invalid command. You must specify 3 arguments: login, sha2 hashed password and path to config");
+        if (args.length < 2) {
+            printErr("Invalid command. You must specify at least 2 arguments: login and sha2 hashed password (also a path to config must be set, if it was not set as an environment variable " + ENV_VAR_CONFIG + ")");
             return;
         }
         String login = args[0];
         String hashedPassword = args[1];
-        String pathToConfig = args[2];
+        String pathToConfig = getPathToConfig(args);
         try {
             SlaveServerRunner slaveServerRunner = new SlaveServerRunner();
             slaveServerRunner.run(pathToConfig, login, hashedPassword);
@@ -39,8 +41,27 @@ public class MainApplication {
         }
     }
 
+
     private static void printErr(String msg) {
         System.err.println(msg);
     }
+
+    private static void print(String msg) {
+        System.out.println(msg);
+    }
+
+    private static String getPathToConfig(String[] args) {
+        if (args.length < 3) {
+            String pathToConfig = System.getenv(ENV_VAR_CONFIG);
+            if (pathToConfig != null) {
+                print("Path to config was taken from environment variable " + ENV_VAR_CONFIG);
+                return pathToConfig;
+            }
+            printErr("Path to config was not set");
+            return null;
+        }
+        return args[2];
+    }
+
 
 }

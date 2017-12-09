@@ -32,7 +32,6 @@ public class Slave extends AbstractNetworkSlave {
         this.availableTasks.addAll(availableTasks);
     }
 
-    //TODO здесь дедлок
     @Override
     protected synchronized void onReceive(NodeResponse response) {
         logger.info("Received " + response + " by slave " + getSlaveId());
@@ -48,7 +47,7 @@ public class Slave extends AbstractNetworkSlave {
     protected synchronized void onExit() {
         slavesStorage.remove(this);
         if (!isNoTasks()) {
-            logger.warning("Slave " + getSlaveId() + " has a requests to redistribute " + getTasks());
+            logger.debug("Slave " + getSlaveId() + " has a requests to redistribute " + getTasks());
             try {
                 redistributeTasks();
             } catch (IOException e) {

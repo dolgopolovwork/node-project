@@ -18,7 +18,7 @@ public class SlaveServerRunner {
     }
 
     public static SlaveServer runSlaveServer(String login, String password) throws IOException {
-        SlaveServer slaveServer = getSlaveServer(login, HashUtil.hexSha2(password));
+        SlaveServer slaveServer = getSlaveServer(login, password);
         slaveServer.start();
         return slaveServer;
     }
@@ -26,7 +26,7 @@ public class SlaveServerRunner {
     static SlaveServer getSlaveServer(String login, String password) throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         NodeConnection connection = new NodeConnection(new Socket(slaveServerConfig.getServerHost(), slaveServerConfig.getServerPort()));
-        return new SlaveServer(connection, login, password);
+        return new SlaveServer(connection, login, HashUtil.hexSha2(password));
     }
 
 }

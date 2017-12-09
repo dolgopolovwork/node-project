@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static ru.babobka.nodeift.master.MasterServerRunner.LOG_FOLDER;
 
 /**
  * Created by 123 on 06.11.2017.
@@ -34,7 +33,7 @@ public class AuthTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("AuthTest", LOG_FOLDER, "AuthTest"));
+                    container.put(new SimpleLogger("AuthTest", System.getenv("NODE_IFT_LOGS"), "AuthTest", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

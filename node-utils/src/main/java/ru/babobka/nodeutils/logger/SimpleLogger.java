@@ -9,12 +9,20 @@ public class SimpleLogger {
 
     private final Logger logger;
 
+    private final boolean debugMode;
+
     SimpleLogger(Logger logger) {
         this.logger = logger;
+        this.debugMode = false;
     }
 
     public SimpleLogger(String loggerName, String runningFolder, String prefix) throws IOException {
+        this(loggerName, runningFolder, prefix, false);
+    }
+
+    public SimpleLogger(String loggerName, String runningFolder, String prefix, boolean debugMode) throws IOException {
         logger = LogBuilder.build(loggerName, runningFolder, prefix);
+        this.debugMode = debugMode;
     }
 
     public void info(Object o) {
@@ -35,6 +43,12 @@ public class SimpleLogger {
 
     public void warning(String message, Exception e) {
         logger.warning(message + "\t" + TextUtil.getStringFromException(e));
+    }
+
+    public void debug(String message) {
+        if (debugMode) {
+            info(message);
+        }
     }
 
     public void error(String message) {

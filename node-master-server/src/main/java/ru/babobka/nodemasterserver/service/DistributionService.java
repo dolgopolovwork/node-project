@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-//TODO напиши на это тест
 public class DistributionService {
 
     private static final int MAX_RETRY = 10;
@@ -28,13 +27,13 @@ public class DistributionService {
         } else if (slave.isNoTasks()) {
             return;
         }
-        logger.info("Redistribution");
+        logger.debug("Redistribution");
         Map<String, List<NodeRequest>> groupedTasks = slave.getRequestsGroupedByTasks();
         for (Map.Entry<String, List<NodeRequest>> requestByUriEntry : groupedTasks.entrySet()) {
             try {
                 broadcastRequests(requestByUriEntry.getKey(), requestByUriEntry.getValue());
             } catch (Exception e) {
-                logger.error("Redistribution failed");
+                logger.debug("Redistribution failed");
                 throw new DistributionException(e);
             }
         }
@@ -52,23 +51,22 @@ public class DistributionService {
         } else if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }
-        logger.info("Requests to broadcast " + requests);
+        logger.debug("Requests to broadcast " + requests);
         int lastRequestId = -1;
         try {
             List<Slave> slaves = slavesStorage.getList(taskName);
             if (slaves.isEmpty()) {
                 throw new IOException("cluster is empty");
             }
-            logger.info("Slaves to broadcast " + slaves);
+            logger.debug("Slaves to broadcast " + slaves);
             for (NodeRequest request : requests) {
-                //TODO вот тут че-то ваще. тест напиши и выдели в отдельный метод
                 lastRequestId++;
                 slaves.get(lastRequestId % slaves.size()).executeTask(request);
             }
         } catch (IOException e) {
             if (retry < maxRetry) {
                 waitForGoodTimes();
-                logger.info("Broadcast retry " + retry);
+                logger.debug("Broadcast retry " + retry);
                 logger.error(e);
                 broadcastRequests(taskName, requests.subList(Math.max(lastRequestId, 0), requests.size()), retry + 1, maxRetry);
             } else {
