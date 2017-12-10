@@ -65,6 +65,7 @@ public class SlaveServer extends Thread {
         clear();
     }
 
+
     void clear() {
         tasksStorage.stopAllTheTasks();
         if (connection != null) {

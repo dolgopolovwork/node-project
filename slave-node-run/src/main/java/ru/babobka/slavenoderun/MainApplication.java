@@ -12,42 +12,29 @@ import java.io.IOException;
  */
 public class MainApplication {
 
-    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
-
     static {
         new ApplicationContainer() {
             @Override
             public void contain(Container container) {
                 container.put(new StreamUtil());
                 container.put(new SlaveServerConfigValidator());
+                container.put(new SlaveServerFactory());
             }
         }.contain(Container.getInstance());
     }
 
+    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
+    private static final String COMMAND_LINE_WARNING = "You must specify at least 2 arguments: login and sha2 hashed password";
+
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {
-            printErr("Invalid command. You must specify at least 2 arguments: login and sha2 hashed password (also a path to config must be set, if it was not set as an environment variable " + ENV_VAR_CONFIG + ")");
+            printErr(COMMAND_LINE_WARNING);
             return;
         }
         String login = args[0];
         String hashedPassword = args[1];
         String pathToConfig = getPathToConfig(args);
-        try {
-            SlaveServerRunner slaveServerRunner = new SlaveServerRunner();
-            slaveServerRunner.run(pathToConfig, login, hashedPassword);
-        } catch (Exception e) {
-            printErr("Error occurred while startup");
-            e.printStackTrace();
-        }
-    }
-
-
-    private static void printErr(String msg) {
-        System.err.println(msg);
-    }
-
-    private static void print(String msg) {
-        System.out.println(msg);
+        new ConnectionSafeSlaveRunner().run(pathToConfig, login, hashedPassword);
     }
 
     private static String getPathToConfig(String[] args) {
@@ -61,6 +48,15 @@ public class MainApplication {
             return null;
         }
         return args[2];
+    }
+
+
+    private static void printErr(String msg) {
+        System.err.println(msg);
+    }
+
+    private static void print(String msg) {
+        System.out.println(msg);
     }
 
 

@@ -12,25 +12,25 @@ import java.io.IOException;
 /**
  * Created by 123 on 05.12.2017.
  */
-public class SlaveServerRunner {
+public class SlaveServerFactory {
 
     private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
     private final SlaveServerConfigValidator configValidator = Container.getInstance().get(SlaveServerConfigValidator.class);
 
-    public void run(String configPath, String login, String hashedPassword) throws IOException {
+    public SlaveServer create(String configPath, String login, String hashedPassword) throws IOException {
         Container container = Container.getInstance();
         SlaveServerConfig config = TextUtil.readJsonFile(streamUtil, configPath, SlaveServerConfig.class);
         configValidator.validate(config);
         container.put(config);
         container.put(createSlaveServerContainer());
-        createSlaveServer(config.getServerHost(), config.getServerPort(), login, hashedPassword).start();
+        return createSlaveServer(config.getServerHost(), config.getServerPort(), login, hashedPassword);
     }
 
-    SlaveServer createSlaveServer(String host, int port, String login, String password) throws IOException {
+    private SlaveServer createSlaveServer(String host, int port, String login, String password) throws IOException {
         return new SlaveServer(host, port, login, password);
     }
 
-    SlaveServerApplicationContainer createSlaveServerContainer() {
+    private SlaveServerApplicationContainer createSlaveServerContainer() {
         return new SlaveServerApplicationContainer();
     }
 

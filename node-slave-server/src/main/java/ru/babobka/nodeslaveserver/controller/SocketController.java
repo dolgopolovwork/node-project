@@ -34,7 +34,6 @@ public class SocketController implements Controller<NodeConnection>, Closeable {
     public void control(NodeConnection connection) throws IOException {
         connection.setReadTimeOut(slaveServerConfig.getRequestTimeoutMillis());
         NodeRequest request = connection.receive();
-        logger.info("New request " + request);
         if (request.getRequestStatus() == RequestStatus.HEART_BEAT) {
             connection.send(NodeResponse.heartBeat());
         } else if (request.getRequestStatus() == RequestStatus.STOP) {
@@ -43,6 +42,7 @@ public class SocketController implements Controller<NodeConnection>, Closeable {
         } else if (request.getRequestStatus() == RequestStatus.RACE && tasksStorage.exists(request.getTaskId())) {
             logger.warning(request.getTaskName() + " is race style task. Repeated request was not handled.");
         } else if (!tasksStorage.wasStopped(request)) {
+            logger.info("New request " + request);
             SubTask subTask = taskPool.get(request.getTaskName());
             tasksStorage.put(request, subTask);
             try {
