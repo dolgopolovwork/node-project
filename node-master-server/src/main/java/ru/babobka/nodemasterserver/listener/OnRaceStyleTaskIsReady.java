@@ -1,6 +1,5 @@
 package ru.babobka.nodemasterserver.listener;
 
-import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
@@ -22,14 +21,10 @@ public class OnRaceStyleTaskIsReady implements OnResponseListener {
     @Override
     public void onResponse(NodeResponse response) {
         List<Slave> slaves = slavesStorage.getListByTaskId(response);
-        try {
-            if (!slaves.isEmpty()) {
-                logger.info("Cancel all requests for task id " + response.getTaskId());
-                distributionService.broadcastStopRequests(slaves,
-                        response.getTaskId());
-            }
-        } catch (DistributionException e) {
-            logger.error(e);
+        if (!slaves.isEmpty()) {
+            logger.info("Cancel all requests for task id " + response.getTaskId());
+            distributionService.broadcastStopRequests(slaves,
+                    response.getTaskId());
         }
     }
 }

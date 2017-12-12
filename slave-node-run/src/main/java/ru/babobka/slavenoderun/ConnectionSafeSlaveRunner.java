@@ -14,6 +14,14 @@ public class ConnectionSafeSlaveRunner {
     private static final long RECONNECTION_TIMEOUT_MILLIS = 1500;
     private final SlaveServerFactory slaveServerFactory = Container.getInstance().get(SlaveServerFactory.class);
 
+    private static void waitReconnection() {
+        try {
+            Thread.sleep(RECONNECTION_TIMEOUT_MILLIS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void run(String pathToConfig, String login, String hashedPassword) {
         while (!Thread.currentThread().isInterrupted()) {
             SlaveServer slaveServer = createSlaveWhileNotConnected(pathToConfig, login, hashedPassword);
@@ -42,13 +50,5 @@ public class ConnectionSafeSlaveRunner {
             }
         }
         return null;
-    }
-
-    private static void waitReconnection() {
-        try {
-            Thread.sleep(RECONNECTION_TIMEOUT_MILLIS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }

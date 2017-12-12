@@ -44,11 +44,10 @@ public class TaskServiceImpl implements TaskService {
             if (responses == null)
                 return false;
             responseStorage.setStopAllResponses(taskId);
-            distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
-        } catch (DistributionException | RuntimeException e) {
+            return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
+        } catch (RuntimeException e) {
             throw new TaskExecutionException("Can not cancel task", e);
         }
-        return true;
     }
 
     @Override
@@ -123,12 +122,8 @@ public class TaskServiceImpl implements TaskService {
             return TaskStartResult.ok(taskId);
         } catch (DistributionException e) {
             logger.error(e);
-            try {
-                List<Slave> slaves = slavesStorage.getListByTaskId(taskId);
-                distributionService.broadcastStopRequests(slaves, taskId);
-            } catch (DistributionException e1) {
-                logger.error(e1);
-            }
+            List<Slave> slaves = slavesStorage.getListByTaskId(taskId);
+            distributionService.broadcastStopRequests(slaves, taskId);
             return TaskStartResult.systemError(taskId, "Can not distribute task data");
         }
     }

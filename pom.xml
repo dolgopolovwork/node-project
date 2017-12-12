@@ -18,11 +18,13 @@
         <module>node-utils</module>
         <module>prime-counter-task</module>
         <module>node-task</module>
+        <!--<module>node-ift</module>-->
         <module>node-business</module>
         <module>node-web</module>
         <module>prime-counter-service</module>
         <module>master-node-run</module>
         <module>slave-node-run</module>
+        <module>node-client</module>
     </modules>
 
     <build>

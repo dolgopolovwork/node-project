@@ -30,13 +30,13 @@ import static org.junit.Assert.*;
  */
 public class PrimeCounterTest {
 
+    static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
+    static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
+    static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
+    static final int PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER = 283146;
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private static final String TASK_NAME = "ru.babobka.primecounter.task.PrimeCounterTask";
-    private static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
-    private static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
-    private static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
-    private static final int PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER = 283146;
     private static MasterServer masterServer;
     private static TaskService taskService;
 
@@ -70,23 +70,23 @@ public class PrimeCounterTest {
         return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, data);
     }
 
-    private static NodeRequest getLittleRangeRequest() {
+    static NodeRequest getLittleRangeRequest() {
         return createPrimeCounterRequest(0L, 100L);
     }
 
-    private static NodeRequest getMediumRangeRequest() {
+    static NodeRequest getMediumRangeRequest() {
         return createPrimeCounterRequest(0L, 10_000L);
     }
 
-    private static NodeRequest getLargeRangeRequest() {
+    static NodeRequest getLargeRangeRequest() {
         return createPrimeCounterRequest(0L, 250_000L);
     }
 
-    private static NodeRequest getExtraLargeRangeRequest() {
+    static NodeRequest getExtraLargeRangeRequest() {
         return createPrimeCounterRequest(0L, 4_000_000L);
     }
 
-    private static NodeRequest getEnormousRangeRequest() {
+    static NodeRequest getEnormousRangeRequest() {
         return createPrimeCounterRequest(0L, 15_000_000L);
     }
 

@@ -12,6 +12,9 @@ import java.io.IOException;
  */
 public class MainApplication {
 
+    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
+    private static final String COMMAND_LINE_WARNING = "You must specify at least 2 arguments: login and sha2 hashed password";
+
     static {
         new ApplicationContainer() {
             @Override
@@ -22,9 +25,6 @@ public class MainApplication {
             }
         }.contain(Container.getInstance());
     }
-
-    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
-    private static final String COMMAND_LINE_WARNING = "You must specify at least 2 arguments: login and sha2 hashed password";
 
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {

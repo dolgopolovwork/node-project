@@ -59,10 +59,23 @@ public class EllipticCurveTest {
         masterServer.interrupt();
     }
 
+    private static void createFactorTest(int primeBitLength, TaskService taskService) throws TaskExecutionException {
+        BigInteger p = BigInteger.probablePrime(primeBitLength, new Random());
+        BigInteger q = BigInteger.probablePrime(primeBitLength, new Random());
+        NodeRequest request = createFactorRequest(p.multiply(q));
+        TaskExecutionResult result = taskService.executeTask(request);
+        BigInteger factor = (BigInteger) result.getResult().get("factor");
+        assertTrue(factor.equals(p) || factor.equals(q));
+    }
+
     private static NodeRequest createFactorRequest(BigInteger number) {
         Map<String, Serializable> data = new HashMap<>();
         data.put("number", number);
         return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, data);
+    }
+
+    static NodeRequest createFactorTest(BigInteger p, BigInteger q) {
+        return createFactorRequest(p.multiply(q));
     }
 
     @Test
@@ -184,14 +197,5 @@ public class EllipticCurveTest {
                 createFactorTest(bits, taskService);
             }
         }
-    }
-
-    private void createFactorTest(int primeBitLength, TaskService taskService) throws TaskExecutionException {
-        BigInteger p = BigInteger.probablePrime(primeBitLength, new Random());
-        BigInteger q = BigInteger.probablePrime(primeBitLength, new Random());
-        NodeRequest request = createFactorRequest(p.multiply(q));
-        TaskExecutionResult result = taskService.executeTask(request);
-        BigInteger factor = (BigInteger) result.getResult().get("factor");
-        assertTrue(factor.equals(p) || factor.equals(q));
     }
 }

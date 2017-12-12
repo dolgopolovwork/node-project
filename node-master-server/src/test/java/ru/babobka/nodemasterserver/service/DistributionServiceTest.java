@@ -15,6 +15,7 @@ import ru.babobka.nodeutils.logger.SimpleLogger;
 import java.io.IOException;
 import java.util.*;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,14 +45,14 @@ public class DistributionServiceTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = DistributionException.class)
+    @Test
     public void testBroadcastStopRequestsNullSlaves() throws DistributionException {
-        distributionService.broadcastStopRequests(null, UUID.randomUUID());
+        assertFalse(distributionService.broadcastStopRequests(null, UUID.randomUUID()));
     }
 
-    @Test(expected = DistributionException.class)
+    @Test
     public void testBroadcastStopRequestsEmptySlaves() throws DistributionException {
-        distributionService.broadcastStopRequests(new ArrayList<>(), UUID.randomUUID());
+        assertFalse(distributionService.broadcastStopRequests(new ArrayList<>(), UUID.randomUUID()));
     }
 
     @Test

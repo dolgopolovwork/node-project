@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.server;
 
 import ru.babobka.nodebusiness.service.NodeUsersService;
+import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -15,7 +16,7 @@ import ru.babobka.vsjws.webserver.WebServer;
 public class MasterServer extends Thread {
 
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
-    private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientsThread.class);
+    private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread listenerThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
     private final WebServer webServer = Container.getInstance().get(WebServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);

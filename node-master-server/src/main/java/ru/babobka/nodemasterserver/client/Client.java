@@ -6,7 +6,6 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodetask.model.StoppedTasks;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -18,16 +17,14 @@ import java.io.IOException;
  */
 public class Client extends AbstractClient {
 
-    private final StoppedTasks stoppedTasks;
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
     private volatile boolean done;
 
-    public Client(NodeConnection connection, NodeRequest request, StoppedTasks stoppedTasks) {
-        super(connection, request, stoppedTasks);
-        this.stoppedTasks = stoppedTasks;
+    Client(NodeConnection connection, NodeRequest request) {
+        super(connection, request);
     }
 
     @Override
@@ -35,13 +32,14 @@ public class Client extends AbstractClient {
         clientStorage.add(this);
         try {
             new Thread(new ExecutionRunnable()).start();
-            processHeartBeating();
+            processConnection();
         } finally {
             clientStorage.remove(this);
+            close();
         }
     }
 
-    void processHeartBeating() {
+    void processConnection() {
         try {
             while (!isDone()) {
                 connection.receive();
@@ -55,33 +53,46 @@ public class Client extends AbstractClient {
         }
     }
 
-    public void close() {
+    void close() {
         connection.close();
     }
 
     void cancelTask() {
-        if (stoppedTasks.wasStopped(request)) {
-            return;
-        }
         try {
             taskService.cancelTask(request.getTaskId());
         } catch (TaskExecutionException e) {
             logger.error(e);
         }
+        setDone();
     }
 
     void executeTask() throws IOException {
         try {
             TaskExecutionResult result = taskService.executeTask(request);
-            NodeResponse response = NodeResponse.normal(result.getResult(), request, result.getTimeTakes());
-            connection.send(response);
+            if (result.isWasStopped()) {
+                sendStopped();
+            } else {
+                sendNormal(result);
+            }
+            setDone();
         } catch (TaskExecutionException e) {
             logger.error(e);
-            connection.send(NodeResponse.failed(request));
+            sendFailed();
         } finally {
-            setDone();
-            connection.close();
+            close();
         }
+    }
+
+    void sendFailed() throws IOException {
+        connection.send(NodeResponse.failed(request));
+    }
+
+    void sendNormal(TaskExecutionResult result) throws IOException {
+        connection.send(NodeResponse.normal(result.getResult(), request, result.getTimeTakes()));
+    }
+
+    void sendStopped() throws IOException {
+        connection.send(NodeResponse.stopped(request));
     }
 
     boolean isDone() {

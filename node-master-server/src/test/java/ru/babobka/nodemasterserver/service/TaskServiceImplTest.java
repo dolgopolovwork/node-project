@@ -77,29 +77,29 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void testCancelTask() throws TaskExecutionException, DistributionException {
+    public void testCancelTask() throws TaskExecutionException {
         UUID taskId = UUID.randomUUID();
         Slave slave = mock(Slave.class);
         List<Slave> slaves = Arrays.asList(slave, slave, slave);
         when(slavesStorage.getListByTaskId(taskId)).thenReturn(slaves);
         Responses responses = mock(Responses.class);
+        when(distributionService.broadcastStopRequests(slaves, taskId)).thenReturn(true);
         when(responseStorage.get(taskId)).thenReturn(responses);
         assertTrue(taskService.cancelTask(taskId));
         verify(responseStorage).setStopAllResponses(taskId);
         verify(distributionService).broadcastStopRequests(slaves, taskId);
     }
 
-    @Test(expected = TaskExecutionException.class)
-    public void testCancelTaskEmptyCluster() throws DistributionException, TaskExecutionException {
+    @Test
+    public void testCancelTaskEmptyCluster() throws TaskExecutionException {
         UUID taskId = UUID.randomUUID();
         Slave slave = mock(Slave.class);
         List<Slave> slaves = Arrays.asList(slave, slave, slave);
         when(slavesStorage.getListByTaskId(taskId)).thenReturn(slaves);
         Responses responses = mock(Responses.class);
         when(responseStorage.get(taskId)).thenReturn(responses);
-        doThrow(new DistributionException()).when(distributionService).broadcastStopRequests(slaves, taskId);
-        taskService.cancelTask(taskId);
-        verify(logger).error(any(Exception.class));
+        doReturn(false).when(distributionService).broadcastStopRequests(slaves, taskId);
+        assertFalse(taskService.cancelTask(taskId));
     }
 
     @Test(expected = IllegalArgumentException.class)

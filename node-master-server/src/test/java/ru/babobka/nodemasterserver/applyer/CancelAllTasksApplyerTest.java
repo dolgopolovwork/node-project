@@ -50,12 +50,4 @@ public class CancelAllTasksApplyerTest {
         cancelAllTasksApplyer.apply(request);
         verify(distributionService).broadcastStopRequests(anyList(), eq(request.getTaskId()));
     }
-
-    @Test
-    public void testApplyEmptyClusterException() throws DistributionException {
-        NodeRequest request = NodeRequest.heartBeatRequest();
-        doThrow(new DistributionException()).when(distributionService).broadcastStopRequests(anyList(), eq(request.getTaskId()));
-        cancelAllTasksApplyer.apply(request);
-    }
-
 }

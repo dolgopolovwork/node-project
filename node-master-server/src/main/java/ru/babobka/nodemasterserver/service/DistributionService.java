@@ -84,9 +84,9 @@ public class DistributionService {
         }
     }
 
-    public void broadcastStopRequests(List<Slave> slaves, UUID taskId) throws DistributionException {
+    public boolean broadcastStopRequests(List<Slave> slaves, UUID taskId) {
         if (slaves == null || slaves.isEmpty()) {
-            throw new DistributionException("cluster is empty");
+            return false;
         }
         for (Slave slave : slaves) {
             try {
@@ -95,5 +95,6 @@ public class DistributionService {
                 logger.error(e);
             }
         }
+        return true;
     }
 }

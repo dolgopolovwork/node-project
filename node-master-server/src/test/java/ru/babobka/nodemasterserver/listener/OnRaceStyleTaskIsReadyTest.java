@@ -60,15 +60,4 @@ public class OnRaceStyleTaskIsReadyTest {
         verify(distributionService).broadcastStopRequests(slaves, response.getTaskId());
     }
 
-    @Test
-    public void testOnResponseException() throws DistributionException {
-        Slave slave = mock(Slave.class);
-        List<Slave> slaves = Arrays.asList(slave, slave, slave);
-        UUID taskId = UUID.randomUUID();
-        NodeResponse response = NodeResponse.dummy(taskId);
-        when(slavesStorage.getListByTaskId(response)).thenReturn(slaves);
-        doThrow(new DistributionException()).when(distributionService).broadcastStopRequests(slaves, taskId);
-        onRaceStyleTaskIsReady.onResponse(response);
-        verify(logger).error(any(Exception.class));
-    }
 }

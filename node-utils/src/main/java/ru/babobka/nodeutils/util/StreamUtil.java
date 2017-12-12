@@ -101,7 +101,7 @@ public class StreamUtil {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             Object o = ois.readObject();
             return (T) o;
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
     }

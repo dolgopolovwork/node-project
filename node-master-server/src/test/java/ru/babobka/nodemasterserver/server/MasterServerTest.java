@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.service.NodeUsersService;
+import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -36,7 +37,7 @@ public class MasterServerTest {
         heartBeatingThread = mock(HeartBeatingThread.class);
         listenerThread = mock(IncomingSlaveListenerThread.class);
         webServer = mock(WebServer.class);
-        incomingClientsThread = mock(IncomingClientsThread.class);
+        incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
         logger = mock(SimpleLogger.class);
         new ApplicationContainer() {
