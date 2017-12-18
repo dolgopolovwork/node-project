@@ -33,8 +33,8 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
 
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setTasksFolder(System.getenv("NODE_IFT_TASKS"));
-        config.setLoggerFolder(System.getenv("NODE_IFT_LOGS"));
+        config.setTasksFolderEnv("NODE_IFT_TASKS");
+        config.setLoggerFolderEnv("NODE_IFT_LOGS");
         config.setAuthTimeoutMillis(2000);
         config.setRequestTimeoutMillis(5000);
         config.setServerHost("localhost");

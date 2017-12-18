@@ -35,7 +35,6 @@ import static ru.babobka.nodeift.PrimeCounterTest.getLargeRangeRequest;
 public class ClientTest {
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
-    private static final String TASK_NAME = "ru.babobka.factor.task.EllipticCurveFactorTask";
     private static MasterServer masterServer;
 
     @BeforeClass

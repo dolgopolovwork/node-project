@@ -1,5 +1,7 @@
 package ru.babobka.nodeslaveserver.server;
 
+import ru.babobka.nodeutils.util.TextUtil;
+
 import java.io.Serializable;
 
 public class SlaveServerConfig implements Serializable {
@@ -11,6 +13,8 @@ public class SlaveServerConfig implements Serializable {
     private int authTimeoutMillis;
     private String loggerFolder;
     private String tasksFolder;
+    private String loggerFolderEnv;
+    private String tasksFolderEnv;
 
     public int getRequestTimeoutMillis() {
         return requestTimeoutMillis;
@@ -29,7 +33,7 @@ public class SlaveServerConfig implements Serializable {
     }
 
     public String getLoggerFolder() {
-        return loggerFolder;
+        return TextUtil.getFirstNonNull(loggerFolder, TextUtil.getEnv(loggerFolderEnv));
     }
 
     public void setLoggerFolder(String loggerFolder) {
@@ -37,7 +41,7 @@ public class SlaveServerConfig implements Serializable {
     }
 
     public String getTasksFolder() {
-        return tasksFolder;
+        return TextUtil.getFirstNonNull(tasksFolder, TextUtil.getEnv(tasksFolderEnv));
     }
 
     public void setTasksFolder(String tasksFolder) {
@@ -60,6 +64,22 @@ public class SlaveServerConfig implements Serializable {
         this.serverHost = serverHost;
     }
 
+    public String getLoggerFolderEnv() {
+        return loggerFolderEnv;
+    }
+
+    public void setLoggerFolderEnv(String loggerFolderEnv) {
+        this.loggerFolderEnv = loggerFolderEnv;
+    }
+
+    public String getTasksFolderEnv() {
+        return tasksFolderEnv;
+    }
+
+    public void setTasksFolderEnv(String tasksFolderEnv) {
+        this.tasksFolderEnv = tasksFolderEnv;
+    }
+
     @Override
     public String toString() {
         return "SlaveServerConfig{" +
@@ -69,6 +89,8 @@ public class SlaveServerConfig implements Serializable {
                 ", authTimeoutMillis=" + authTimeoutMillis +
                 ", loggerFolder='" + loggerFolder + '\'' +
                 ", tasksFolder='" + tasksFolder + '\'' +
+                ", loggerFolderEnv='" + loggerFolderEnv + '\'' +
+                ", tasksFolderEnv='" + tasksFolderEnv + '\'' +
                 '}';
     }
 }

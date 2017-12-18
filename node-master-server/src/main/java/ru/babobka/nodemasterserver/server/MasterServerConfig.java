@@ -1,5 +1,7 @@
 package ru.babobka.nodemasterserver.server;
 
+import ru.babobka.nodeutils.util.TextUtil;
+
 import java.io.Serializable;
 
 public class MasterServerConfig implements Serializable {
@@ -23,9 +25,15 @@ public class MasterServerConfig implements Serializable {
 
     private String loggerFolder;
 
+    private String loggerFolderEnv;
+
     private String tasksFolder;
 
+    private String tasksFolderEnv;
+
     private boolean debugMode;
+
+    private boolean localOnly;
 
     public int getAuthTimeOutMillis() {
         return authTimeOutMillis;
@@ -86,7 +94,7 @@ public class MasterServerConfig implements Serializable {
     }
 
     public String getLoggerFolder() {
-        return loggerFolder;
+        return TextUtil.getFirstNonNull(loggerFolder, TextUtil.getEnv(loggerFolderEnv));
     }
 
     public void setLoggerFolder(String loggerFolder) {
@@ -94,7 +102,7 @@ public class MasterServerConfig implements Serializable {
     }
 
     public String getTasksFolder() {
-        return tasksFolder;
+        return TextUtil.getFirstNonNull(tasksFolder, TextUtil.getEnv(tasksFolderEnv));
     }
 
     public void setTasksFolder(String tasksFolder) {
@@ -117,6 +125,31 @@ public class MasterServerConfig implements Serializable {
         this.clientListenerPort = clientListenerPort;
     }
 
+    public String getLoggerFolderEnv() {
+        return loggerFolderEnv;
+    }
+
+    public void setLoggerFolderEnv(String loggerFolderEnv) {
+        this.loggerFolderEnv = loggerFolderEnv;
+    }
+
+    public String getTasksFolderEnv() {
+        return tasksFolderEnv;
+    }
+
+    public void setTasksFolderEnv(String tasksFolderEnv) {
+        this.tasksFolderEnv = tasksFolderEnv;
+    }
+
+    public boolean isLocalOnly() {
+        return localOnly;
+    }
+
+    public void setLocalOnly(boolean localOnly) {
+        this.localOnly = localOnly;
+    }
+
+
     @Override
     public String toString() {
         return "MasterServerConfig{" +
@@ -129,8 +162,11 @@ public class MasterServerConfig implements Serializable {
                 ", restServiceLogin='" + restServiceLogin + '\'' +
                 ", restServiceHashedPassword='" + restServiceHashedPassword + '\'' +
                 ", loggerFolder='" + loggerFolder + '\'' +
+                ", loggerFolderEnv='" + loggerFolderEnv + '\'' +
                 ", tasksFolder='" + tasksFolder + '\'' +
+                ", tasksFolderEnv='" + tasksFolderEnv + '\'' +
                 ", debugMode=" + debugMode +
+                ", localOnly=" + localOnly +
                 '}';
     }
 }

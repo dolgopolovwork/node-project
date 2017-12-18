@@ -11,10 +11,11 @@ import java.io.File;
 public class TasksFolderValidationRule implements ValidationRule<SlaveServerConfig> {
     @Override
     public void validate(SlaveServerConfig data) {
-        if (data.getTasksFolder() == null) {
-            throw new IllegalArgumentException("'tasksFolder' is null");
-        } else if (!new File(data.getTasksFolder()).exists()) {
-            throw new IllegalArgumentException("'tasksFolder' " + data.getTasksFolder() + " doesn't exist");
+        String taskFolder = data.getTasksFolder();
+        if (taskFolder == null) {
+            throw new IllegalArgumentException("Path to tasks folder was not specified. You can hard code 'tasksFolder' in the config or use 'tasksFolderEnv' as an environment variable for getting path to tasks folder.");
+        } else if (!new File(taskFolder).exists()) {
+            throw new IllegalArgumentException("Folder " + taskFolder + " doesn't exist");
         }
     }
 }

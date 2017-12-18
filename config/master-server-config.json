@@ -7,7 +7,8 @@
   "heartBeatTimeOutMillis": 2000,
   "webListenerPort": 8080,
   "restServiceLogin": "abc",
-  "loggerFolder": "C:\\Users\\123\\Documents\\node-project\\logs",
-  "tasksFolder": "C:\\Users\\123\\Documents\\node-project\\tasks",
-  "restServiceHashedPassword": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+  "loggerFolderEnv": "NODE_IFT_LOGS",
+  "tasksFolderEnv": "NODE_IFT_TASKS",
+  "restServiceHashedPassword": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+  "localOnly": true
 }

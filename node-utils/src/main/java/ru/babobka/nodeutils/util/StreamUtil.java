@@ -1,9 +1,7 @@
 package ru.babobka.nodeutils.util;
 
 import java.io.*;
-import java.net.Socket;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +12,15 @@ import java.util.Scanner;
  */
 
 public class StreamUtil {
+
+    private static final int DEFAULT_LOOP_BACK = 50;
+
+    public ServerSocket createServerSocket(int port, boolean local) throws IOException {
+        if (local) {
+            return new ServerSocket(port, DEFAULT_LOOP_BACK, InetAddress.getByName(null));
+        }
+        return new ServerSocket(port, DEFAULT_LOOP_BACK);
+    }
 
     public InputStream getLocalResource(Class<?> clazz, String resourceName) throws FileNotFoundException {
         InputStream is = clazz.getClassLoader().getResourceAsStream(resourceName);

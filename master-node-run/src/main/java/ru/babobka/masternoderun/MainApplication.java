@@ -25,16 +25,12 @@ public class MainApplication {
     }
 
     public static void main(String[] args) throws IOException {
-        String pathToConfig = getPathToConfig(args);
-        if (pathToConfig == null) {
-            return;
-        }
         try {
+            String pathToConfig = getPathToConfig(args);
             MasterServerRunner masterServerRunner = new MasterServerRunner();
             masterServerRunner.run(pathToConfig);
         } catch (Exception e) {
-            printErr("Error occurred while startup");
-            e.printStackTrace();
+            printErr("Error occurred while startup. " + e.getMessage());
         }
     }
 
@@ -53,8 +49,7 @@ public class MainApplication {
                 print("Path to config was taken from environment variable " + ENV_VAR_CONFIG);
                 return pathToConfig;
             }
-            printErr("Path to config was not set");
-            return null;
+            throw new IllegalArgumentException("Path to config was not set");
         }
         return args[0];
     }

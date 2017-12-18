@@ -22,9 +22,9 @@ public class ConnectionSafeSlaveRunner {
         }
     }
 
-    public void run(String pathToConfig, String login, String hashedPassword) {
+    public void run(String pathToConfig, String login, String password) {
         while (!Thread.currentThread().isInterrupted()) {
-            SlaveServer slaveServer = createSlaveWhileNotConnected(pathToConfig, login, hashedPassword);
+            SlaveServer slaveServer = createSlaveWhileNotConnected(pathToConfig, login, password);
             if (slaveServer == null) {
                 return;
             }
@@ -38,10 +38,10 @@ public class ConnectionSafeSlaveRunner {
         }
     }
 
-    private SlaveServer createSlaveWhileNotConnected(String pathToConfig, String login, String hashedPassword) {
+    private SlaveServer createSlaveWhileNotConnected(String pathToConfig, String login, String password) {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                return slaveServerFactory.create(pathToConfig, login, hashedPassword);
+                return slaveServerFactory.create(pathToConfig, login, password);
             } catch (SlaveAuthFailException e) {
                 return null;
             } catch (IOException e) {

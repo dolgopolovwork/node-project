@@ -8,6 +8,7 @@ import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -21,9 +22,9 @@ public class SlaveServer extends Thread {
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
 
-    public SlaveServer(NodeConnection connection, String login, String hashedPassword) throws IOException {
+    public SlaveServer(NodeConnection connection, String login, String password) throws IOException {
         this.connection = connection;
-        if (!authService.auth(connection, login, hashedPassword)) {
+        if (!authService.auth(connection, login, HashUtil.hexSha2(password))) {
             logger.error("Auth fail");
             throw new SlaveAuthFailException();
         } else {

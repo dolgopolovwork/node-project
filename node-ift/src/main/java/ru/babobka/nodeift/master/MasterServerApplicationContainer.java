@@ -27,12 +27,12 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.HashUtil;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.nodeweb.webfilter.AuthWebFilter;
 import ru.babobka.vsjws.webserver.WebServer;
 
-import java.net.ServerSocket;
 import java.util.concurrent.Executors;
 
 /**
@@ -46,6 +46,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         try {
             container.put(new NodeUtilsApplicationContainer());
+            StreamUtil streamUtil = container.get(StreamUtil.class);
             MasterServerConfig config = createTestConfig();
             new MasterServerConfigValidator().validate(config);
             container.put(config);
@@ -61,11 +62,11 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.put(new StoppedTasks());
             container.put(new SlaveFactory());
             container.put("clientsThreadPool", Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
-            container.put(new IncomingClientListenerThread(new ServerSocket(config.getClientListenerPort())));
+            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(config.getClientListenerPort(), config.isLocalOnly())));
             container.put(new HeartBeatingThread());
             container.put(new MasterAuthService());
             container.put(new NodeConnectionFactory());
-            container.put(new IncomingSlaveListenerThread(new ServerSocket(config.getSlaveListenerPort())));
+            container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(config.getSlaveListenerPort(), config.isLocalOnly())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
             WebServer webServer = new WebServer("node web server", config.getWebListenerPort(), config.getLoggerFolder());
@@ -82,8 +83,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
 
     private MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolder(System.getenv("NODE_IFT_TASKS"));
-        config.setLoggerFolder(System.getenv("NODE_IFT_LOGS"));
+        config.setTasksFolderEnv("NODE_IFT_TASKS");
+        config.setLoggerFolderEnv("NODE_IFT_LOGS");
         config.setAuthTimeOutMillis(2000);
         config.setClientListenerPort(9999);
         config.setDebugMode(true);

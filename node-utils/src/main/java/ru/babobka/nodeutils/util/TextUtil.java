@@ -48,12 +48,35 @@ public interface TextUtil {
         }
     }
 
+    static boolean isValidPort(int port) {
+        return port > 0 && port <= 65535;
+    }
+
     static int tryParseInt(String s, int defaultValue) {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
             return defaultValue;
         }
+    }
+
+    static String getFirstNonNull(String... strings) {
+        if (strings == null) {
+            return null;
+        }
+        for (String string : strings) {
+            if (string != null) {
+                return string;
+            }
+        }
+        return null;
+    }
+
+    static String getEnv(String name) {
+        if (name == null) {
+            return null;
+        }
+        return System.getenv(name);
     }
 
     static String toURL(String text) {

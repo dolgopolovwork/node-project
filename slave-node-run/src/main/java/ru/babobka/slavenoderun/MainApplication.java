@@ -31,10 +31,14 @@ public class MainApplication {
             printErr(COMMAND_LINE_WARNING);
             return;
         }
-        String login = args[0];
-        String hashedPassword = args[1];
-        String pathToConfig = getPathToConfig(args);
-        new ConnectionSafeSlaveRunner().run(pathToConfig, login, hashedPassword);
+        try {
+            String login = args[0];
+            String password = args[1];
+            String pathToConfig = getPathToConfig(args);
+            new ConnectionSafeSlaveRunner().run(pathToConfig, login, password);
+        } catch (Exception e) {
+            printErr(e.getMessage());
+        }
     }
 
     private static String getPathToConfig(String[] args) {
@@ -44,8 +48,7 @@ public class MainApplication {
                 print("Path to config was taken from environment variable " + ENV_VAR_CONFIG);
                 return pathToConfig;
             }
-            printErr("Path to config was not set");
-            return null;
+            throw new IllegalArgumentException("Path to config was not set");
         }
         return args[2];
     }
