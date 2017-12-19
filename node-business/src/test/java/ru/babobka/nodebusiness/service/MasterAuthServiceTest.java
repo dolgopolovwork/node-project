@@ -19,9 +19,9 @@ import static org.mockito.Mockito.*;
  */
 public class MasterAuthServiceTest {
 
-    private static SimpleLogger simpleLogger = mock(SimpleLogger.class);
+    private static final SimpleLogger simpleLogger = mock(SimpleLogger.class);
 
-    private static NodeUsersService nodeUsersService = mock(NodeUsersService.class);
+    private static final NodeUsersService nodeUsersService = mock(NodeUsersService.class);
 
     private static AuthService authService;
 

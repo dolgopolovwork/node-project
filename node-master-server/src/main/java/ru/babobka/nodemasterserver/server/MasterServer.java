@@ -22,7 +22,7 @@ public class MasterServer extends Thread {
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-    private NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
+    private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     @Override
     public void run() {

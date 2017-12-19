@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class EllipticFactorReducer extends Reducer {
 
-    private EllipticFactorDataValidators ellipticFactorDataValidators = Container.getInstance().get(EllipticFactorDataValidators.class);
+    private final EllipticFactorDataValidators ellipticFactorDataValidators = Container.getInstance().get(EllipticFactorDataValidators.class);
 
     @Override
     protected ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException {

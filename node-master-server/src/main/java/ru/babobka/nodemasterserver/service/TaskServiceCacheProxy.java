@@ -13,8 +13,8 @@ import java.util.UUID;
  */
 public class TaskServiceCacheProxy implements TaskService {
 
-    private TaskService taskService = Container.getInstance().get(TaskService.class);
-    private CacheRequestListener cacheRequestListener = Container.getInstance().get(CacheRequestListener.class);
+    private final TaskService taskService = Container.getInstance().get(TaskService.class);
+    private final CacheRequestListener cacheRequestListener = Container.getInstance().get(CacheRequestListener.class);
 
     @Override
     public TaskExecutionResult executeTask(NodeRequest request, int maxNodes) throws TaskExecutionException {

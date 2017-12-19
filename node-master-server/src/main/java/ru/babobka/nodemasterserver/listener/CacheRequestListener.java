@@ -13,7 +13,7 @@ import ru.babobka.nodeutils.util.HashUtil;
  */
 public class CacheRequestListener implements AfterRequestListener<TaskExecutionResult>, OnRequestListener<TaskExecutionResult> {
 
-    private CacheService<Integer> cacheService = Container.getInstance().get(CacheServiceImpl.class);
+    private final CacheService<Integer> cacheService = Container.getInstance().get(CacheServiceImpl.class);
 
     @Override
     public TaskExecutionResult onRequest(NodeRequest request) {

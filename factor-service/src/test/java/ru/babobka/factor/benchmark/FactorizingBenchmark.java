@@ -30,7 +30,7 @@ public class FactorizingBenchmark {
         }
     }
 
-    public static void displayStatistics(int factorBits, int tests, int cores) throws InterruptedException {
+    public static void displayStatistics(int factorBits, int tests, int cores) {
         EllipticCurveFactorService ellipticCurveFactorService = new EllipticCurveFactorServiceFactory().get(cores);
         long sumTime = 0;
         long timeTakes;

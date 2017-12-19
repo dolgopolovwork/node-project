@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
  */
 public class CacheServiceImplTest {
 
-    private static CacheDAO cacheDAO = mock(CacheDAO.class);
+    private static final CacheDAO cacheDAO = mock(CacheDAO.class);
     private static CacheService cacheService;
 
     @BeforeClass

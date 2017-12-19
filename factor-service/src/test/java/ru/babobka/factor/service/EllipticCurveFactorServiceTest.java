@@ -41,7 +41,7 @@ public class EllipticCurveFactorServiceTest {
         generateTests(tests, factorBits);
     }
 
-    private void generateTests(int tests, int factorBits) throws InterruptedException {
+    private void generateTests(int tests, int factorBits) {
         for (int i = 0; i < tests; i++) {
             BigInteger number = BigInteger.probablePrime(factorBits, new Random())
                     .multiply(BigInteger.probablePrime(factorBits, new Random()));

@@ -8,7 +8,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
  */
 public class EmailValidationRuleTest {
 
-    private EmailValidationRule emailValidationRule = new EmailValidationRule();
+    private final EmailValidationRule emailValidationRule = new EmailValidationRule();
 
     @Test
     public void testValidEmail() {

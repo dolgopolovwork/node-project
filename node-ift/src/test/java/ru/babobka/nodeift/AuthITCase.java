@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by 123 on 06.11.2017.
  */
-public class AuthTest {
+public class AuthITCase {
 
     private static MasterServer masterServer;
 
@@ -33,7 +33,7 @@ public class AuthTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("AuthTest", System.getenv("NODE_IFT_LOGS"), "AuthTest", true));
+                    container.put(new SimpleLogger("AuthITCase", System.getenv("NODE_IFT_LOGS"), "AuthITCase", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

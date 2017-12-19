@@ -13,9 +13,9 @@ import static org.mockito.Mockito.verify;
  */
 public class SimpleLoggerTest {
 
-    private Logger logger = mock(Logger.class);
+    private final Logger logger = mock(Logger.class);
 
-    private SimpleLogger simpleLogger = new SimpleLogger(logger);
+    private final SimpleLogger simpleLogger = new SimpleLogger(logger);
 
     @Test
     public void testInfo() {

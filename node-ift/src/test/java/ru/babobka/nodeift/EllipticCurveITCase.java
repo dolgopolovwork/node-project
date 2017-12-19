@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by 123 on 23.11.2017.
  */
-public class EllipticCurveTest {
+public class EllipticCurveITCase {
 
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
@@ -42,7 +42,7 @@ public class EllipticCurveTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("EllipticCurveTest", System.getenv("NODE_IFT_LOGS"), "EllipticCurveTest", true));
+                    container.put(new SimpleLogger("EllipticCurveITCase", System.getenv("NODE_IFT_LOGS"), "EllipticCurveITCase", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

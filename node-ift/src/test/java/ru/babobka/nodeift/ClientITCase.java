@@ -25,14 +25,14 @@ import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static ru.babobka.nodeift.EllipticCurveTest.createFactorTest;
-import static ru.babobka.nodeift.PrimeCounterTest.PRIME_COUNTER_LARGE_RANGE_ANSWER;
-import static ru.babobka.nodeift.PrimeCounterTest.getLargeRangeRequest;
+import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
+import static ru.babobka.nodeift.PrimeCounterITCase.PRIME_COUNTER_LARGE_RANGE_ANSWER;
+import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
 /**
  * Created by 123 on 12.12.2017.
  */
-public class ClientTest {
+public class ClientITCase {
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private static MasterServer masterServer;
@@ -43,7 +43,7 @@ public class ClientTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("ClientTest", System.getenv("NODE_IFT_LOGS"), "clientTest", true));
+                    container.put(new SimpleLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

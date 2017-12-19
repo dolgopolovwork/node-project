@@ -24,13 +24,13 @@ import static org.mockito.Mockito.*;
  */
 public class NodeUsersServiceImplTest {
 
-    private static NodeUsersDAO nodeUsersDAO = mock(NodeUsersDAO.class);
+    private static final NodeUsersDAO nodeUsersDAO = mock(NodeUsersDAO.class);
 
-    private static UserDTOMapper userDTOMapper = mock(UserDTOMapper.class);
+    private static final UserDTOMapper userDTOMapper = mock(UserDTOMapper.class);
 
     private static NodeUsersService nodeUsersService;
 
-    private PodamFactory podamFactory = new PodamFactoryImpl();
+    private final PodamFactory podamFactory = new PodamFactoryImpl();
 
     @BeforeClass
     public static void setUp() {

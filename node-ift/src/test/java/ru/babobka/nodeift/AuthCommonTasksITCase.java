@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by 123 on 07.11.2017.
  */
-public class AuthCommonTasksTest {
+public class AuthCommonTasksITCase {
     private static MasterServer masterServer;
     private TaskPool taskPool;
 
@@ -33,7 +33,7 @@ public class AuthCommonTasksTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("AuthCommonTasksTest", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksTest", true));
+                    container.put(new SimpleLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

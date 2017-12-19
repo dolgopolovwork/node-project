@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 /**
  * Created by 123 on 08.11.2017.
  */
-public class PrimeCounterTest {
+public class PrimeCounterITCase {
 
     static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
     static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
@@ -46,7 +46,7 @@ public class PrimeCounterTest {
             @Override
             public void contain(Container container) {
                 try {
-                    container.put(new SimpleLogger("PrimeCounterTest", System.getenv("NODE_IFT_LOGS"), "PrimeCounterTest", true));
+                    container.put(new SimpleLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase", true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

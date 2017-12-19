@@ -10,7 +10,7 @@ import ru.babobka.nodeweb.validation.user.add.rule.NameValidationRule;
  */
 public class NullableNameValidationRule implements ValidationRule<UserDTO> {
 
-    private NameValidationRule nameValidationRule = new NameValidationRule();
+    private final NameValidationRule nameValidationRule = new NameValidationRule();
 
     @Override
     public void validate(UserDTO data) {

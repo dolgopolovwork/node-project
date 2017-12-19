@@ -16,7 +16,6 @@ import ru.babobka.nodeutils.network.NodeConnection;
 import java.io.IOException;
 import java.util.UUID;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 /**

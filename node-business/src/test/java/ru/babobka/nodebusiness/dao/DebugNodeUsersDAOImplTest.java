@@ -17,13 +17,10 @@ import static org.junit.Assert.*;
  */
 public class DebugNodeUsersDAOImplTest {
 
+    private final UUID testUUID = UUID.randomUUID();
+    private final String testLogin = "login";
+    private final PodamFactory podamFactory = new PodamFactoryImpl();
     private NodeUsersDAO nodeUsersDAO;
-
-    private UUID testUUID = UUID.randomUUID();
-
-    private String testLogin = "login";
-
-    private PodamFactory podamFactory = new PodamFactoryImpl();
 
     @Before
     public void setUp() {

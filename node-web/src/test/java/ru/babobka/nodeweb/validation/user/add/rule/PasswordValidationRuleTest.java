@@ -8,7 +8,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
  */
 public class PasswordValidationRuleTest {
 
-    private PasswordValidationRule passwordValidationRule = new PasswordValidationRule();
+    private final PasswordValidationRule passwordValidationRule = new PasswordValidationRule();
 
     @Test
     public void testValidPassword() {

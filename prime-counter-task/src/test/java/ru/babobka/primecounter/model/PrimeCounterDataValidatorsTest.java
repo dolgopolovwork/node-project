@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
  */
 public class PrimeCounterDataValidatorsTest {
 
-    private PrimeCounterDataValidators primeCounterDataValidators = new PrimeCounterDataValidators();
+    private final PrimeCounterDataValidators primeCounterDataValidators = new PrimeCounterDataValidators();
 
     @Test
     public void testValidResponseBadStatus() {

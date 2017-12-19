@@ -9,7 +9,7 @@ import ru.babobka.nodeweb.validation.user.add.rule.EmailValidationRule;
  */
 public class NullableEmailValidationRule implements ValidationRule<UserDTO> {
 
-    private EmailValidationRule emailValidationRule = new EmailValidationRule();
+    private final EmailValidationRule emailValidationRule = new EmailValidationRule();
 
     @Override
     public void validate(UserDTO data) {

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
  */
 public class EllipticFactorDistributorTest {
 
-    private EllipticFactorDistributor ellipticFactorDistributor = new EllipticFactorDistributor();
+    private final EllipticFactorDistributor ellipticFactorDistributor = new EllipticFactorDistributor();
 
     @Test
     public void testDistribute() {

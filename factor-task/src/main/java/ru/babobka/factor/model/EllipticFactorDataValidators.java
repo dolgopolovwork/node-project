@@ -37,7 +37,7 @@ public class EllipticFactorDataValidators extends DataValidators {
     protected boolean isValidRequestImpl(NodeRequest request) {
         try {
             BigInteger n = request.getDataValue(Params.NUMBER.getValue());
-            if (n.compareTo(BigInteger.ZERO) < 0) {
+            if (n.compareTo(BigInteger.ZERO) <= 0) {
                 return false;
             }
         } catch (RuntimeException e) {

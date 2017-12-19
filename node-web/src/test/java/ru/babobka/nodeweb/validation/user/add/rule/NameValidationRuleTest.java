@@ -8,7 +8,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
  */
 public class NameValidationRuleTest {
 
-    private NameValidationRule nameValidationRule = new NameValidationRule();
+    private final NameValidationRule nameValidationRule = new NameValidationRule();
 
     @Test
     public void testValidName() {

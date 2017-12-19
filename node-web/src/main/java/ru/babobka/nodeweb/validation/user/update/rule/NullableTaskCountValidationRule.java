@@ -10,7 +10,7 @@ import ru.babobka.nodeweb.validation.user.add.rule.TaskCountValidationRule;
  */
 public class NullableTaskCountValidationRule implements ValidationRule<UserDTO> {
 
-    private TaskCountValidationRule taskCountValidationRule = new TaskCountValidationRule();
+    private final TaskCountValidationRule taskCountValidationRule = new TaskCountValidationRule();
 
     @Override
     public void validate(UserDTO data) {

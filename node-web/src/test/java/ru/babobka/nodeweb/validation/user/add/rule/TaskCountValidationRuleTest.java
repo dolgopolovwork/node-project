@@ -8,7 +8,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
  */
 public class TaskCountValidationRuleTest {
 
-    private TaskCountValidationRule taskCountValidationRule = new TaskCountValidationRule();
+    private final TaskCountValidationRule taskCountValidationRule = new TaskCountValidationRule();
 
     @Test
     public void testValidTaskCount() {

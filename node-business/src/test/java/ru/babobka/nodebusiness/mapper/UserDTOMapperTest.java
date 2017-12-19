@@ -13,9 +13,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class UserDTOMapperTest {
 
-    private UserDTOMapper userDTOMapper = new UserDTOMapper();
+    private final UserDTOMapper userDTOMapper = new UserDTOMapper();
 
-    private PodamFactory podamFactory = new PodamFactoryImpl();
+    private final PodamFactory podamFactory = new PodamFactoryImpl();
 
     @Test(expected = IllegalArgumentException.class)
     public void testMapNull() {

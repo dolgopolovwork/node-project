@@ -11,9 +11,9 @@ import java.util.UUID;
  */
 public abstract class AbstractClient implements Runnable {
 
-    private final UUID id = UUID.randomUUID();
     protected final NodeConnection connection;
     protected final NodeRequest request;
+    private final UUID id = UUID.randomUUID();
 
 
     AbstractClient(NodeConnection connection, NodeRequest request) {

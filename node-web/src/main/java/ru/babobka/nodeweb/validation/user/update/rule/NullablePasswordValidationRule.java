@@ -9,7 +9,7 @@ import ru.babobka.nodeweb.validation.user.add.rule.PasswordValidationRule;
  */
 public class NullablePasswordValidationRule implements ValidationRule<UserDTO> {
 
-    private PasswordValidationRule passwordValidationRule = new PasswordValidationRule();
+    private final PasswordValidationRule passwordValidationRule = new PasswordValidationRule();
 
     @Override
     public void validate(UserDTO data) {

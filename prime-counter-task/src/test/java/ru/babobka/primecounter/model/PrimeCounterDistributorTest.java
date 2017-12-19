@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
  */
 public class PrimeCounterDistributorTest {
 
-    private PrimeCounterDistributor primeCounterDistributor = new PrimeCounterDistributor();
+    private final PrimeCounterDistributor primeCounterDistributor = new PrimeCounterDistributor();
 
     @Test
     public void testDistribute() {

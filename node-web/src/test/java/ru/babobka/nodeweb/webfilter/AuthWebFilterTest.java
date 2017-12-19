@@ -16,10 +16,10 @@ import static org.mockito.Mockito.when;
  */
 public class AuthWebFilterTest {
 
-    private String login = "abc";
-    private String password = HashUtil.hexSha2("123");
+    private final String login = "abc";
+    private final String password = HashUtil.hexSha2("123");
 
-    private WebFilter authWebFilter = new AuthWebFilter(login, password);
+    private final WebFilter authWebFilter = new AuthWebFilter(login, password);
 
     @Test
     public void testOnFilter() {

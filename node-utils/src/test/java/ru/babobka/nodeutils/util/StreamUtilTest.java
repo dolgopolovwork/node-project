@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class StreamUtilTest {
 
     private final static String ACTUAL_TEXT = "First line\nSecond line";
-    private StreamUtil streamUtil = new StreamUtil();
+    private final StreamUtil streamUtil = new StreamUtil();
 
     @Test
     public void readFileTest() throws IOException {

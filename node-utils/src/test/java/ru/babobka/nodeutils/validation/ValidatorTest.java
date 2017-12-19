@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
  */
 public class ValidatorTest {
 
-    private ValidationRule<Object> validationRule = mock(ValidationRule.class);
+    private final ValidationRule<Object> validationRule = mock(ValidationRule.class);
 
     @Test
     public void testValidate() {

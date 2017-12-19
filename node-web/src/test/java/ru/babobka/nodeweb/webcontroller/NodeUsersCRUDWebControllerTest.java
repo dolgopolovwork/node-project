@@ -27,11 +27,11 @@ import static org.mockito.Mockito.*;
  */
 public class NodeUsersCRUDWebControllerTest {
 
-    private static NodeUsersService nodeUsersService = mock(NodeUsersService.class);
+    private static final NodeUsersService nodeUsersService = mock(NodeUsersService.class);
+    private static final AddUserValidator addUserValidator = mock(AddUserValidator.class);
+    private static final UpdateUserValidator updateUserValidator = mock(UpdateUserValidator.class);
     private static NodeUsersCRUDWebController nodeUsersCRUDWebController;
-    private static AddUserValidator addUserValidator = mock(AddUserValidator.class);
-    private static UpdateUserValidator updateUserValidator = mock(UpdateUserValidator.class);
-    private PodamFactory podamFactory = new PodamFactoryImpl();
+    private final PodamFactory podamFactory = new PodamFactoryImpl();
 
     @BeforeClass
     public static void setUp() {

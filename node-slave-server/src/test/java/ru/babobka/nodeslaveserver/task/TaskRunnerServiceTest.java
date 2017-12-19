@@ -19,11 +19,11 @@ import static org.mockito.Mockito.*;
  */
 public class TaskRunnerServiceTest {
 
+    private final TaskRunnerService taskRunnerService = new TaskRunnerService();
     private TasksStorage tasksStorage;
     private SubTask subTask;
     private NodeRequest request;
     private DataValidators dataValidators;
-    private TaskRunnerService taskRunnerService = new TaskRunnerService();
     private TaskExecutor taskExecutor;
 
     @Before
