@@ -22,7 +22,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         try {
             SlaveServerConfig config = container.get(SlaveServerConfig.class);
-            container.put(new SimpleLogger("slave-server", config.getLoggerFolder(), "slave"));
+            container.putIfNotExists(new SimpleLogger("slave-server", config.getLoggerFolder(), "slave"));
             container.put(new NodeUtilsApplicationContainer());
             container.put(config);
             container.put(new NodeTaskApplicationContainer());

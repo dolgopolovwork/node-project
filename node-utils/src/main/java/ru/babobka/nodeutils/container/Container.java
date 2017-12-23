@@ -23,6 +23,17 @@ public class Container {
         containerMap.put(object.getClass(), object);
     }
 
+    public synchronized boolean putIfNotExists(Object object) {
+        if (object == null) {
+            throw new IllegalArgumentException("object to put in container is null");
+        }
+        if (getNoException(object.getClass()) == null) {
+            put(object);
+            return true;
+        }
+        return false;
+    }
+
     public synchronized void put(ApplicationContainer applicationContainer) {
         if (applicationContainer == null) {
             throw new IllegalArgumentException("applicationContainer is null");
@@ -39,8 +50,9 @@ public class Container {
         namedContainerMap.put(key, object);
     }
 
+
     @SuppressWarnings("unchecked")
-    private <T> T getNoException(Class<?> clazz) {
+    private <T> T getNoException(Class<T> clazz) {
         for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
             if (clazz.isAssignableFrom(entry.getKey())) {
                 return (T) entry.getValue();
@@ -58,7 +70,7 @@ public class Container {
         return object;
     }
 
-    public synchronized <T> T get(Class<?> clazz) {
+    public synchronized <T> T get(Class<T> clazz) {
         T object = getNoException(clazz);
         if (object == null) {
             throw new ContainerException("Object inheriting " + clazz + " was not found");

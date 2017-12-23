@@ -110,7 +110,6 @@ public class ClientTest {
         client.executeTask();
         verify(client).sendNormal(taskExecutionResult);
         verify(client).setDone();
-        verify(client).close();
     }
 
     @Test
@@ -124,7 +123,6 @@ public class ClientTest {
         client.executeTask();
         verify(client).sendStopped();
         verify(client).setDone();
-        verify(client).close();
     }
 
     @Test
@@ -136,7 +134,6 @@ public class ClientTest {
         client.executeTask();
         verify(client).sendFailed();
         verify(client, never()).setDone();
-        verify(client).close();
     }
 
 }

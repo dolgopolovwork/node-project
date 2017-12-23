@@ -30,9 +30,10 @@ public class Client implements Closeable {
         this.port = port;
     }
 
-    public Future<NodeResponse> executeTask(NodeRequest request) throws IOException {
-        NodeConnection nodeConnection = new NodeConnection(new Socket(host, port));
-        return executorService.submit(new TaskExecutorCallable(request, nodeConnection));
+    public NodeFuture<NodeResponse> executeTask(NodeRequest request) throws IOException {
+        NodeConnection connection = new NodeConnection(new Socket(host, port));
+        Future<NodeResponse> future = executorService.submit(new TaskExecutorCallable(request, connection));
+        return new NodeFuture<>(connection, future);
     }
 
     @Override

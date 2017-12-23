@@ -48,9 +48,18 @@ public class TaskExecutorCallable implements Callable<NodeResponse> {
             if (nodeData instanceof NodeResponse) {
                 return (NodeResponse) nodeData;
             }
-            connection.send(NodeResponse.heartBeat());
-            connection.setReadTimeOut(READ_TIMEOUT_MILLIS);
+            sendHeartBeat();
         }
         return null;
+    }
+
+    private void sendHeartBeat() {
+        try {
+            connection.setReadTimeOut(READ_TIMEOUT_MILLIS);
+            connection.send(NodeResponse.heartBeat());
+        } catch (IOException e) {
+            //That's ok
+            e.printStackTrace();
+        }
     }
 }

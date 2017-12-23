@@ -66,23 +66,6 @@ public class Client extends AbstractClient {
         setDone();
     }
 
-    void executeTask() throws IOException {
-        try {
-            TaskExecutionResult result = taskService.executeTask(request);
-            if (result.isWasStopped()) {
-                sendStopped();
-            } else {
-                sendNormal(result);
-            }
-            setDone();
-        } catch (TaskExecutionException e) {
-            logger.error(e);
-            sendFailed();
-        } finally {
-            close();
-        }
-    }
-
     void sendFailed() throws IOException {
         connection.send(NodeResponse.failed(request));
     }
@@ -95,12 +78,27 @@ public class Client extends AbstractClient {
         connection.send(NodeResponse.stopped(request));
     }
 
-    boolean isDone() {
+    private boolean isDone() {
         return done;
     }
 
     void setDone() {
         this.done = true;
+    }
+
+    void executeTask() throws IOException {
+        try {
+            TaskExecutionResult result = taskService.executeTask(request);
+            if (result.isWasStopped()) {
+                sendStopped();
+            } else {
+                sendNormal(result);
+            }
+            setDone();
+        } catch (TaskExecutionException e) {
+            logger.error(e);
+            sendFailed();
+        }
     }
 
     private class ExecutionRunnable implements Runnable {

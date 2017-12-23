@@ -7,12 +7,12 @@ import java.math.BigInteger;
 /**
  * Created by 123 on 16.12.2017.
  */
-public class FactorData {
+class FactorData {
     private final String host;
     private final int port;
     private final BigInteger number;
 
-    public FactorData(String[] args) {
+    FactorData(String[] args) {
         if (args == null || args.length < 3) {
             throw new IllegalArgumentException("You must specify 3 arguments: host, port and a number to factor");
         }
@@ -34,15 +34,15 @@ public class FactorData {
         this.number = number;
     }
 
-    public String getHost() {
+    String getHost() {
         return host;
     }
 
-    public int getPort() {
+    int getPort() {
         return port;
     }
 
-    public BigInteger getNumber() {
+    BigInteger getNumber() {
         return number;
     }
 }
