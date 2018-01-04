@@ -3,8 +3,9 @@ package ru.babobka.nodeweb.webfilter;
 import ru.babobka.nodeutils.util.ArrayUtil;
 import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.model.FilterResponse;
-import ru.babobka.vsjws.model.HttpRequest;
-import ru.babobka.vsjws.model.HttpResponse;
+import ru.babobka.vsjws.model.http.HttpRequest;
+import ru.babobka.vsjws.model.http.HttpResponse;
+import ru.babobka.vsjws.model.http.ResponseFactory;
 import ru.babobka.vsjws.webcontroller.WebFilter;
 
 public class AuthWebFilter implements WebFilter {
@@ -32,7 +33,8 @@ public class AuthWebFilter implements WebFilter {
         String hashedPasswordHeader = request.getHeader("X-Password");
         if (!loginHeader.equals(login) || !hashedPassword.equals(hashedPasswordHeader)) {
             return FilterResponse
-                    .response(HttpResponse.text("Bad login/password combination", ResponseCode.UNAUTHORIZED));
+                    .response(ResponseFactory.text("Bad login/password combination")
+                            .setResponseCode(ResponseCode.UNAUTHORIZED));
         } else {
             return FilterResponse.proceed();
         }

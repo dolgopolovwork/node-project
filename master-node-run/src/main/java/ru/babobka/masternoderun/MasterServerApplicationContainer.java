@@ -30,6 +30,7 @@ import ru.babobka.nodeweb.NodeWebApplicationContainer;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.nodeweb.webfilter.AuthWebFilter;
 import ru.babobka.vsjws.webserver.WebServer;
+import ru.babobka.vsjws.webserver.WebServerConfig;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -65,15 +66,24 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.put(new IncomingSlaveListenerThread(new ServerSocket(config.getSlaveListenerPort())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
-            WebServer webServer = new WebServer("node web server", config.getWebListenerPort(), config.getLoggerFolder());
-            AuthWebFilter authWebFilter = new AuthWebFilter(config.getRestServiceLogin(), config.getRestServiceHashedPassword());
-            webServer.addController("users", new NodeUsersCRUDWebController()).addWebFilter(authWebFilter);
-            webServer.addController("availableTasks", new AvailableTasksWebController()).addWebFilter(authWebFilter);
-            webServer.addController("clusterInfo", new ClusterInfoWebController()).addWebFilter(authWebFilter);
-            webServer.addController("taskInfo", new TasksInfoWebController()).addWebFilter(authWebFilter);
-            container.put(webServer);
+            container.put(createWebServer(config));
         } catch (IOException | RuntimeException e) {
             throw new ContainerException(e);
         }
+    }
+
+    private WebServer createWebServer(MasterServerConfig config) throws IOException {
+        WebServerConfig webServerConfig = new WebServerConfig();
+        webServerConfig.setServerName("node web server");
+        webServerConfig.setPort(config.getWebListenerPort());
+        webServerConfig.setLogFolder(config.getLoggerFolder());
+        webServerConfig.setSessionTimeoutSeconds(15 * 60);
+        WebServer webServer = new WebServer(webServerConfig);
+        AuthWebFilter authWebFilter = new AuthWebFilter(config.getRestServiceLogin(), config.getRestServiceHashedPassword());
+        webServer.addController("users", new NodeUsersCRUDWebController()).addWebFilter(authWebFilter);
+        webServer.addController("availableTasks", new AvailableTasksWebController()).addWebFilter(authWebFilter);
+        webServer.addController("clusterInfo", new ClusterInfoWebController()).addWebFilter(authWebFilter);
+        webServer.addController("taskInfo", new TasksInfoWebController()).addWebFilter(authWebFilter);
+        return webServer;
     }
 }

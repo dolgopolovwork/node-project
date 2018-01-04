@@ -2,10 +2,9 @@ package ru.babobka.nodebusiness.dao;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.nodebusiness.cache.SoftCache;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 
@@ -18,9 +17,9 @@ public class DebugCacheDAOImplTest {
 
     @Before
     public void setUp() {
-        Map<String, Serializable> map = new ConcurrentHashMap<>();
-        map.put("abc", 123);
-        cacheDAO = new DebugCacheDAOImpl<>(map);
+        SoftCache<String, Serializable> softCache = new SoftCache<>();
+        softCache.put("abc", 123);
+        cacheDAO = new DebugCacheDAOImpl<>(softCache);
     }
 
     @Test
@@ -39,5 +38,4 @@ public class DebugCacheDAOImplTest {
         cacheDAO.put(key, 456);
         assertNotNull(cacheDAO.get(key));
     }
-
 }

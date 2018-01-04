@@ -3,7 +3,7 @@ package ru.babobka.nodeweb.webfilter;
 import org.junit.Test;
 import ru.babobka.nodeutils.util.HashUtil;
 import ru.babobka.vsjws.model.FilterResponse;
-import ru.babobka.vsjws.model.HttpRequest;
+import ru.babobka.vsjws.model.http.HttpRequest;
 import ru.babobka.vsjws.webcontroller.WebFilter;
 
 import static org.junit.Assert.assertFalse;

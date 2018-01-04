@@ -6,8 +6,8 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.vsjws.enumerations.ResponseCode;
-import ru.babobka.vsjws.model.JSONRequest;
-import ru.babobka.vsjws.model.JSONResponse;
+import ru.babobka.vsjws.model.http.HttpResponse;
+import ru.babobka.vsjws.model.json.JSONRequest;
 
 import java.util.HashSet;
 
@@ -38,7 +38,7 @@ public class AvailableTasksWebControllerTest {
     public void testGet() {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
         JSONRequest request = mock(JSONRequest.class);
-        JSONResponse response = availableTasksWebController.onGet(request);
+        HttpResponse response = availableTasksWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
         verify(taskPool).getTaskNames();
     }

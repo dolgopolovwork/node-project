@@ -7,11 +7,11 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
 import ru.babobka.vsjws.enumerations.ResponseCode;
-import ru.babobka.vsjws.model.JSONRequest;
-import ru.babobka.vsjws.model.JSONResponse;
+import ru.babobka.vsjws.model.http.HttpResponse;
+import ru.babobka.vsjws.model.http.ResponseFactory;
+import ru.babobka.vsjws.model.json.JSONRequest;
 import ru.babobka.vsjws.webcontroller.JSONWebController;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 public class NodeUsersCRUDWebController extends JSONWebController {
@@ -23,64 +23,67 @@ public class NodeUsersCRUDWebController extends JSONWebController {
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     @Override
-    public JSONResponse onGet(JSONRequest request) {
+    public HttpResponse onGet(JSONRequest request) {
         String uidParam = request.getUrlParam("id");
         if (!uidParam.isEmpty()) {
             UUID id = UUID.fromString(uidParam);
             User user = nodeUsersService.get(id);
             if (user == null) {
-                return JSONResponse.code(ResponseCode.NOT_FOUND);
+                return ResponseFactory.code(ResponseCode.NOT_FOUND);
             } else {
-                return JSONResponse.ok(user);
+                return ResponseFactory.json(user);
             }
         } else {
-            return JSONResponse.ok((Serializable) nodeUsersService.getList());
+            return ResponseFactory.json(nodeUsersService.getList());
         }
     }
 
     @Override
-    public JSONResponse onDelete(JSONRequest request) {
+    public HttpResponse onDelete(JSONRequest request) {
         String uidParam = request.getUrlParam("id");
         if (uidParam.isEmpty()) {
-            return JSONResponse.badRequest("Parameter 'id' was not set");
+            return ResponseFactory.text("Parameter 'id' was not set")
+                    .setResponseCode(ResponseCode.BAD_REQUEST);
         } else {
             UUID id = UUID.fromString(uidParam);
             if (nodeUsersService.remove(id)) {
-                return JSONResponse.ok();
+                return ResponseFactory.ok();
             } else {
-                return JSONResponse.code(ResponseCode.NOT_FOUND);
+                return ResponseFactory.code(ResponseCode.NOT_FOUND);
             }
         }
     }
 
     @Override
-    public JSONResponse onPut(JSONRequest request) {
+    public HttpResponse onPut(JSONRequest request) {
         try {
             UserDTO user = request.getBody(UserDTO.class);
             addUserValidator.validate(user);
             nodeUsersService.add(user);
-            return JSONResponse.ok();
+            return ResponseFactory.ok();
         } catch (IllegalArgumentException e) {
-            return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
+            return ResponseFactory.exception(e).setResponseCode(ResponseCode.BAD_REQUEST);
         }
     }
 
     @Override
-    public JSONResponse onPost(JSONRequest request) {
+    public HttpResponse onPost(JSONRequest request) {
         try {
             String uidParam = request.getUrlParam("id");
             if (uidParam.isEmpty())
-                return JSONResponse.badRequest("Parameter 'id' was not set");
+                return ResponseFactory.text("Parameter 'id' was not set")
+                        .setResponseCode(ResponseCode.BAD_REQUEST);
             UUID id = UUID.fromString(uidParam);
             UserDTO user = request.getBody(UserDTO.class);
             updateUserValidator.validate(user);
             if (nodeUsersService.update(id, user)) {
-                return JSONResponse.ok();
+                return ResponseFactory.ok();
             } else {
-                return JSONResponse.badRequest("No user with id " + id + " was found");
+                return ResponseFactory.text("No user with id " + id + " was found")
+                        .setResponseCode(ResponseCode.BAD_REQUEST);
             }
         } catch (IllegalArgumentException e) {
-            return JSONResponse.exception(e, ResponseCode.BAD_REQUEST);
+            return ResponseFactory.exception(e).setResponseCode(ResponseCode.BAD_REQUEST);
         }
     }
 }

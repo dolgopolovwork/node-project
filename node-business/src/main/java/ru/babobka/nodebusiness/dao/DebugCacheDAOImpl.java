@@ -1,24 +1,27 @@
 package ru.babobka.nodebusiness.dao;
 
+import ru.babobka.nodebusiness.cache.SoftCache;
+
 import java.io.Serializable;
-import java.util.Map;
 
 public class DebugCacheDAOImpl<K extends Serializable> implements CacheDAO<K> {
 
-    private final Map<K, Serializable> debugDataMap;
+    private final SoftCache<K, Serializable> cache;
 
-    public DebugCacheDAOImpl(Map<K, Serializable> debugDataMap) {
-        this.debugDataMap = debugDataMap;
+    public DebugCacheDAOImpl(SoftCache<K, Serializable> cache) {
+        if (cache == null) {
+            throw new IllegalArgumentException("cache is null");
+        }
+        this.cache = cache;
     }
 
     @Override
     public <T extends Serializable> T get(K key) {
-        return (T) debugDataMap.get(key);
+        return (T) cache.get(key);
     }
 
     @Override
     public void put(K key, Serializable value) {
-        debugDataMap.put(key, value);
+        cache.put(key, value);
     }
-
 }
