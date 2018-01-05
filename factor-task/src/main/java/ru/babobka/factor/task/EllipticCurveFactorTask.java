@@ -54,7 +54,6 @@ public class EllipticCurveFactorTask extends SubTask {
         return DESCRIPTION;
     }
 
-
     @Override
     public boolean isRaceStyle() {
         return true;

@@ -13,7 +13,7 @@ import ru.babobka.primecounter.model.PrimeCounterTaskExecutor;
  * Created by dolgopolov.a on 15.12.15.
  */
 public class PrimeCounterTask extends SubTask {
-    static final String DESCRIPTION = "Counts prime numbers in a given range";
+    private static final String DESCRIPTION = "Counts prime numbers in a given range";
     private static final Long MIN_RANGE_TO_PARALLEL = 5000L;
     private final PrimeCounterReducer reducer = Container.getInstance().get(PrimeCounterReducer.class);
     private final PrimeCounterDistributor distributor = Container.getInstance().get(PrimeCounterDistributor.class);

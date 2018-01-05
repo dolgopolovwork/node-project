@@ -25,6 +25,4 @@ public interface NodeUsersDAO {
 
     boolean update(UUID id, User user);
 
-    boolean incrTaskCount(UUID id);
-
 }

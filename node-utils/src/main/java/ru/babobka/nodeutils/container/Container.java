@@ -1,13 +1,13 @@
 package ru.babobka.nodeutils.container;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Container {
 
-    private final Map<Class<?>, Object> containerMap = new HashMap<>();
+    private final Map<Class<?>, Object> containerMap = new LinkedHashMap<>();
 
-    private final Map<String, Object> namedContainerMap = new HashMap<>();
+    private final Map<String, Object> namedContainerMap = new LinkedHashMap<>();
 
     private Container() {
     }

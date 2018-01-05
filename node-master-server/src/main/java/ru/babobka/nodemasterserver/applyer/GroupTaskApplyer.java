@@ -11,7 +11,6 @@ import java.util.Map;
 /**
  * Created by 123 on 11.09.2017.
  */
-//TODO написать тесты
 public class GroupTaskApplyer extends Applyer<NodeRequest> {
 
     private final Map<String, List<NodeRequest>> groupedTasks = new HashMap<>();

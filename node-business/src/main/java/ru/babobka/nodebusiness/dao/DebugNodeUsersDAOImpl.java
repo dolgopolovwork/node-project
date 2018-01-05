@@ -62,27 +62,18 @@ public class DebugNodeUsersDAOImpl implements NodeUsersDAO {
     @Override
     public synchronized boolean update(UUID id, User user) {
         User foundUser = get(id);
-        if (foundUser != null) {
-            if (user.getEmail() != null)
-                foundUser.setEmail(user.getEmail());
-            if (user.getName() != null)
-                foundUser.setName(user.getName());
-            if (user.getTaskCount() != null)
-                foundUser.setTaskCount(user.getTaskCount());
-            if (user.getHashedPassword() != null)
-                foundUser.setHashedPassword(user.getHashedPassword());
-            return true;
+        if (foundUser == null) {
+            return false;
         }
-        return false;
-    }
+        if (user.getEmail() != null)
+            foundUser.setEmail(user.getEmail());
+        if (user.getName() != null)
+            foundUser.setName(user.getName());
+        if (user.getTaskCount() != null)
+            foundUser.setTaskCount(user.getTaskCount());
+        if (user.getHashedPassword() != null)
+            foundUser.setHashedPassword(user.getHashedPassword());
 
-    @Override
-    public synchronized boolean incrTaskCount(UUID id) {
-        User user = get(id);
-        if (user != null) {
-            user.setTaskCount(user.getTaskCount() + 1);
-            return true;
-        }
-        return false;
+        return true;
     }
 }

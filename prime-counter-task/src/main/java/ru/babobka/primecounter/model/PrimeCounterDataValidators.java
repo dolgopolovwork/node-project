@@ -20,15 +20,8 @@ public class PrimeCounterDataValidators extends DataValidators {
 
     @Override
     protected boolean isValidRequestImpl(NodeRequest request) {
-        try {
-            long begin = request.getDataValue(Params.BEGIN.getValue());
-            long end = request.getDataValue(Params.END.getValue());
-            if (begin < 0 || begin >= end) {
-                return false;
-            }
-        } catch (RuntimeException e) {
-            return false;
-        }
-        return true;
+        long begin = request.getDataValue(Params.BEGIN.getValue());
+        long end = request.getDataValue(Params.END.getValue());
+        return begin >= 0 && begin < end;
     }
 }

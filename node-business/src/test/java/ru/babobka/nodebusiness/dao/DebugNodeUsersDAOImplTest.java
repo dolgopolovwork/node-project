@@ -78,19 +78,6 @@ public class DebugNodeUsersDAOImplTest {
         nodeUsersDAO.remove(UUID.randomUUID());
         assertEquals(nodeUsersDAO.getList().size(), oldSize);
     }
-
-    @Test
-    public void testIncrTaskCount() {
-        int oldTaskCount = nodeUsersDAO.get(testUUID).getTaskCount();
-        assertTrue(nodeUsersDAO.incrTaskCount(testUUID));
-        assertEquals((int) nodeUsersDAO.get(testUUID).getTaskCount(), oldTaskCount + 1);
-    }
-
-    @Test
-    public void testIncrTaskCountUnexsitingUser() {
-        assertFalse(nodeUsersDAO.incrTaskCount(UUID.randomUUID()));
-    }
-
     @Test
     public void testUpdateEmail() {
         User user = new User();

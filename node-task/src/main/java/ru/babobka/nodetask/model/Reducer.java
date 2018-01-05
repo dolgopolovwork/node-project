@@ -14,7 +14,11 @@ public abstract class Reducer {
         if (responses == null) {
             throw new IllegalArgumentException("can not reduce null responses");
         }
-        return reduceImpl(responses);
+        try {
+            return reduceImpl(responses);
+        } catch (RuntimeException e) {
+            throw new ReducingException(e);
+        }
     }
 
     protected abstract ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException;

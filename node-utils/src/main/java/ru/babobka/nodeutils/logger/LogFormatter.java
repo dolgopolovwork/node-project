@@ -22,9 +22,7 @@ final class LogFormatter extends Formatter {
                 .append(formatMessage(record)).append(LINE_SEPARATOR);
 
         if (record.getThrown() != null) {
-
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-
                 record.getThrown().printStackTrace(pw);
                 pw.close();
                 sb.append(sw.toString());
@@ -32,7 +30,6 @@ final class LogFormatter extends Formatter {
                 throw new IllegalStateException("Can not init logger " + e);
             }
         }
-
         return sb.toString();
     }
 }

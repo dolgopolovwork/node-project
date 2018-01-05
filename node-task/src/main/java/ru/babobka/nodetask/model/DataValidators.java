@@ -8,11 +8,27 @@ import ru.babobka.nodeserials.NodeResponse;
  */
 public abstract class DataValidators {
     public boolean isValidResponse(NodeResponse response) {
-        return response != null && isValidResponseImpl(response);
+        if (response == null) {
+            return false;
+        }
+        try {
+            return isValidResponseImpl(response);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public boolean isValidRequest(NodeRequest request) {
-        return request != null && isValidRequestImpl(request);
+        if (request == null) {
+            return false;
+        }
+        try {
+            return isValidRequestImpl(request);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     protected abstract boolean isValidResponseImpl(NodeResponse response);

@@ -15,7 +15,6 @@ public abstract class AbstractClient implements Runnable {
     protected final NodeRequest request;
     private final UUID id = UUID.randomUUID();
 
-
     AbstractClient(NodeConnection connection, NodeRequest request) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");

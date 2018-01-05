@@ -136,4 +136,57 @@ public class ClientTest {
         verify(client, never()).setDone();
     }
 
+    @Test
+    public void testProcessConnection() throws IOException {
+        NodeRequest request = mock(NodeRequest.class);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(config.getRequestTimeOutMillis()).thenReturn(1000);
+        Client client = spy(new Client(connection, request));
+        doReturn(false).doReturn(true).when(client).isDone();
+        client.processConnection();
+        verify(connection).receive();
+        verify(connection).setReadTimeOut(config.getRequestTimeOutMillis());
+    }
+
+    @Test
+    public void testProcessConnectionException() throws IOException {
+        NodeRequest request = mock(NodeRequest.class);
+        NodeConnection connection = mock(NodeConnection.class);
+        Client client = spy(new Client(connection, request));
+        doReturn(false).when(client).isDone();
+        doThrow(new IOException()).when(connection).receive();
+        doNothing().when(client).cancelTask();
+        client.processConnection();
+        verify(client).cancelTask();
+    }
+
+    @Test
+    public void testProcessConnectionExceptionIsDone() throws IOException {
+        NodeRequest request = mock(NodeRequest.class);
+        NodeConnection connection = mock(NodeConnection.class);
+        Client client = spy(new Client(connection, request));
+        doReturn(false).doReturn(true).when(client).isDone();
+        doThrow(new IOException()).when(connection).receive();
+        doNothing().when(client).cancelTask();
+        client.processConnection();
+        verify(client, never()).cancelTask();
+    }
+
+    @Test
+    public void testRun() {
+        NodeRequest request = mock(NodeRequest.class);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(config.getRequestTimeOutMillis()).thenReturn(1000);
+        Client client = spy(new Client(connection, request));
+        doNothing().when(client).runExecution();
+        doNothing().when(client).processConnection();
+        doNothing().when(client).close();
+        client.run();
+        verify(clientStorage).add(client);
+        verify(client).runExecution();
+        verify(client).processConnection();
+        verify(clientStorage).remove(client);
+        verify(client).close();
+    }
+
 }

@@ -42,12 +42,10 @@ public class StreamUtil {
                 lineBreak = "\n";
             }
             return sb.toString();
-
         }
     }
 
     public String readFile(File file) throws IOException {
-
         StringBuilder content = new StringBuilder();
         String lineBreak = "";
         try (FileInputStream fis = new FileInputStream(file);
@@ -60,7 +58,6 @@ public class StreamUtil {
             }
         }
         return content.toString();
-
     }
 
     public String readFile(String filePath) throws IOException {

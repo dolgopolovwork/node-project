@@ -48,25 +48,33 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         return callables;
     }
 
-    private static synchronized void initPrimes(long border) {
-        if (border > lastMaxBorder) {
-            for (long i = lastMaxBorder; i <= border; i++) {
-                if (MathUtil.isPrime(i)) {
-                    primes.add(i);
-                }
-            }
-            lastMaxBorder = border;
+    static synchronized void initPrimes(long border) {
+        if (border <= lastMaxBorder) {
+            return;
         }
+        for (long i = lastMaxBorder; i <= border; i++) {
+            if (MathUtil.isPrime(i)) {
+                primes.add(i);
+            }
+        }
+        lastMaxBorder = border;
     }
 
-    private FactoringResult factor() {
+    static synchronized List<Long> getPrimes() {
+        return primes;
+    }
+
+    FactoringResult factor() {
         EllipticCurvePoint p = EllipticCurvePoint.generateRandomPoint(n);
         BigInteger g = p.getCurve().getN().gcd(p.getX().getNumber());
         if (g.compareTo(BigInteger.ONE) >= 1 && g.compareTo(p.getCurve().getN()) < 0) {
             return new FactoringResult(g, p);
         }
         EllipticCurvePoint beginCurve = p.copy();
-        for (Long prime : primes) {
+        for (Long prime : getPrimes()) {
+            if (prime > border) {
+                break;
+            }
             long r = MathUtil.log(prime, border);
             for (long j = 0; j < r; j++) {
                 if (done.get()) {

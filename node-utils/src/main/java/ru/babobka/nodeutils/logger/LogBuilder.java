@@ -30,6 +30,5 @@ interface LogBuilder {
         logger.addHandler(fh);
         logger.setUseParentHandlers(false);
         return logger;
-
     }
 }

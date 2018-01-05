@@ -165,7 +165,6 @@ public class EllipticCurvePoint implements Serializable {
         if (!y.divide(z).equals(point.getY().divide(point.getZ()))) {
             return false;
         }
-
         return curve.equals(point.curve);
     }
 

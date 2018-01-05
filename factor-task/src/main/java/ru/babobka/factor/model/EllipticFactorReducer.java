@@ -17,17 +17,12 @@ public class EllipticFactorReducer extends Reducer {
 
     @Override
     protected ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException {
-        try {
-            for (NodeResponse response : responses) {
-                if (ellipticFactorDataValidators.isValidResponse(response)) {
-                    return new ReducingResult().add(response.getData());
-                }
+        for (NodeResponse response : responses) {
+            if (ellipticFactorDataValidators.isValidResponse(response)) {
+                return new ReducingResult().add(response.getData());
             }
-        } catch (Exception e) {
-            throw new ReducingException(e);
         }
         throw new ReducingException();
     }
-
 
 }

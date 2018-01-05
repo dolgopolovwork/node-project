@@ -28,7 +28,7 @@ public class FastMultiplicationProvider extends MultiplicationProvider {
     }
 
 
-    EllipticCurvePoint addPoints(List<EllipticCurvePoint> points) {
+    private EllipticCurvePoint addPoints(List<EllipticCurvePoint> points) {
         EllipticCurvePoint result = points.get(0);
         for (int i = 1; i < points.size(); i++) {
             result = result.add(points.get(i));

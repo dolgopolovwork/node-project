@@ -7,6 +7,7 @@ import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnResponseListener;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.DataValidators;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.ApplicationContainer;
@@ -163,5 +164,89 @@ public class ResponsesTest {
     public void testGetResponseListTimeout() throws TimeoutException {
         Responses responses = new Responses(1, task, null);
         responses.getResponseList(100L);
+    }
+
+    @Test
+    public void testAlreadyHasResponseEmpty() {
+        Responses responses = new Responses(1, task, null);
+        assertFalse(responses.alreadyHasResponse(mock(NodeResponse.class)));
+    }
+
+    @Test
+    public void testAlreadyHasResponseNoDuplicate() {
+        Responses responses = new Responses(2, task, null);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        NodeResponse response1 = mock(NodeResponse.class);
+        when(response1.getId()).thenReturn(id1);
+        NodeResponse response2 = mock(NodeResponse.class);
+        when(response2.getId()).thenReturn(id2);
+        responses.add(response1);
+        assertFalse(responses.alreadyHasResponse(response2));
+    }
+
+    @Test
+    public void testAlreadyHasResponse() {
+        Responses responses = new Responses(2, task, null);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        NodeResponse response1 = mock(NodeResponse.class);
+        when(response1.getId()).thenReturn(id1);
+        NodeResponse response2 = mock(NodeResponse.class);
+        when(response2.getId()).thenReturn(id2);
+        responses.add(response1);
+        responses.add(response2);
+        assertTrue(responses.alreadyHasResponse(response2));
+    }
+
+    @Test
+    public void testIsStoppedEmpty() {
+        Responses responses = new Responses(2, task, null);
+        assertFalse(responses.isStopped());
+    }
+
+    @Test
+    public void testIsStoppedNoStopped() {
+        Responses responses = new Responses(2, task, null);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        NodeResponse response1 = mock(NodeResponse.class);
+        when(response1.getId()).thenReturn(id1);
+        NodeResponse response2 = mock(NodeResponse.class);
+        when(response2.getId()).thenReturn(id2);
+        responses.add(response1);
+        responses.add(response2);
+        assertFalse(responses.isStopped());
+    }
+
+    @Test
+    public void testIsStoppedNotAll() {
+        Responses responses = new Responses(2, task, null);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        NodeResponse response1 = mock(NodeResponse.class);
+        when(response1.getStatus()).thenReturn(ResponseStatus.STOPPED);
+        when(response1.getId()).thenReturn(id1);
+        NodeResponse response2 = mock(NodeResponse.class);
+        when(response2.getId()).thenReturn(id2);
+        responses.add(response1);
+        responses.add(response2);
+        assertFalse(responses.isStopped());
+    }
+
+    @Test
+    public void testIsStopped() {
+        Responses responses = new Responses(2, task, null);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        NodeResponse response1 = mock(NodeResponse.class);
+        when(response1.getStatus()).thenReturn(ResponseStatus.STOPPED);
+        when(response1.getId()).thenReturn(id1);
+        NodeResponse response2 = mock(NodeResponse.class);
+        when(response2.getId()).thenReturn(id2);
+        when(response2.getStatus()).thenReturn(ResponseStatus.STOPPED);
+        responses.add(response1);
+        responses.add(response2);
+        assertTrue(responses.isStopped());
     }
 }

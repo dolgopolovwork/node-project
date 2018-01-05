@@ -18,19 +18,15 @@ public class PrimeCounterReducer extends Reducer {
 
     @Override
     protected ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException {
-        try {
-            int result = 0;
-            for (NodeResponse response : responses) {
-                if (!primeCounterDataValidators.isValidResponse(response)) {
-                    throw new ReducingException("Not valid response " + response);
-                }
-                Integer subResult = response.getDataValue(Params.PRIME_COUNT.getValue());
-                result += subResult;
+        int result = 0;
+        for (NodeResponse response : responses) {
+            if (!primeCounterDataValidators.isValidResponse(response)) {
+                throw new ReducingException("Not valid response " + response);
             }
-            return new ReducingResult().add(Params.PRIME_COUNT.getValue(), result);
-        } catch (RuntimeException e) {
-            throw new ReducingException(e);
+            Integer subResult = response.getDataValue(Params.PRIME_COUNT.getValue());
+            result += subResult;
         }
+        return new ReducingResult().add(Params.PRIME_COUNT.getValue(), result);
     }
 
 }

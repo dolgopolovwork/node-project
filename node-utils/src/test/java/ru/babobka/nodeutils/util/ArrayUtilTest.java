@@ -11,6 +11,11 @@ import static org.junit.Assert.assertTrue;
 public class ArrayUtilTest {
 
     @Test
+    public void testIsNullOneNull() {
+        assertTrue(ArrayUtil.isNull(null));
+    }
+
+    @Test
     public void testIsNull() {
         assertTrue(ArrayUtil.isNull(null, null));
     }

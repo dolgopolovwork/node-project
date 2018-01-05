@@ -36,4 +36,7 @@ public abstract class SubTask {
         return stopped;
     }
 
+    public int getMaxNodes() {
+        return Integer.MAX_VALUE;
+    }
 }

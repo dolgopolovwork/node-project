@@ -5,10 +5,12 @@ import ru.babobka.nodemasterserver.applyer.GroupTaskApplyer;
 import ru.babobka.nodemasterserver.applyer.StopTaskApplyer;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
+import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -23,13 +25,54 @@ import java.util.UUID;
  * Created by 123 on 24.08.2017.
  */
 public abstract class AbstractNetworkSlave extends AbstractSlave {
-
+    private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeConnection connection;
 
     AbstractNetworkSlave(NodeConnection connection) {
-        super(connection);
+        if (connection == null) {
+            throw new IllegalArgumentException("Connection is null");
+        } else if (connection.isClosed()) {
+            throw new IllegalArgumentException("Connection is closed");
+        }
+        this.connection = connection;
+        logger.info("New connection " + connection + " slaveId: " + getSlaveId());
+    }
+
+
+    @Override
+    public void run() {
+        try {
+            while (!isInterrupted()) {
+                connection.setReadTimeOut(masterServerConfig.getRequestTimeOutMillis());
+                NodeResponse response = connection.receive();
+                if (response.getStatus() != ResponseStatus.HEART_BEAT) {
+                    onReceive(response);
+                }
+            }
+        } catch (IOException | RuntimeException e) {
+            if (!isInterrupted() && !connection.isClosed()) {
+                logger.error(e);
+            }
+        } finally {
+            logger.info("Removing connection " + connection);
+            synchronized (AbstractSlave.class) {
+                onExit();
+            }
+            logger.info("Slave " + getSlaveId() + " was disconnected");
+        }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        connection.close();
+    }
+
+    NodeConnection getConnection() {
+        return connection;
     }
 
     void sendHeartBeating() throws IOException {

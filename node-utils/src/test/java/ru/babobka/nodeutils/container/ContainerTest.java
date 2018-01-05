@@ -54,7 +54,6 @@ public class ContainerTest {
         Container.getInstance().put("abc", null);
     }
 
-
     @Test
     public void testGetBySuperclass() {
         assertEquals(Integer.valueOf(123), Container.getInstance().get(Number.class));
@@ -68,6 +67,27 @@ public class ContainerTest {
     @Test(expected = ContainerException.class)
     public void testNonExisting() {
         Container.getInstance().get(Thread.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testPutIfNotExistsNull() {
+        Container.getInstance().putIfNotExists(null);
+    }
+
+    @Test
+    public void testPutIfNotExists() {
+        Double number = 3.14;
+        Container.getInstance().putIfNotExists(number);
+        assertEquals(Container.getInstance().get(Double.class), number);
+    }
+
+    @Test
+    public void testPutIfNotExistsTwice() {
+        Double number = 3.14;
+        Double secondNumber = 2.7;
+        Container.getInstance().putIfNotExists(number);
+        Container.getInstance().putIfNotExists(secondNumber);
+        assertEquals(Container.getInstance().get(Double.class), number);
     }
 
     interface A {

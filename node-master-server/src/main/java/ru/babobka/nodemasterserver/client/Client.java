@@ -31,12 +31,16 @@ public class Client extends AbstractClient {
     public void run() {
         clientStorage.add(this);
         try {
-            new Thread(new ExecutionRunnable()).start();
+            runExecution();
             processConnection();
         } finally {
             clientStorage.remove(this);
             close();
         }
+    }
+
+    void runExecution() {
+        new Thread(new ExecutionRunnable()).start();
     }
 
     void processConnection() {
@@ -78,7 +82,7 @@ public class Client extends AbstractClient {
         connection.send(NodeResponse.stopped(request));
     }
 
-    private boolean isDone() {
+    boolean isDone() {
         return done;
     }
 
