@@ -90,7 +90,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
         return futures;
     }
 
-    protected synchronized ExecutorService getThreadPool() {
+    private synchronized ExecutorService getThreadPool() {
         if (threadPool == null || threadPool.isShutdown()) {
             threadPool = Executors.newFixedThreadPool(cores);
         }

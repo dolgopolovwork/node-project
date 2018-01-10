@@ -2,6 +2,7 @@ package ru.babobka.nodeutils.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Random;
 
 /**
  * Created by dolgopolov.a on 23.11.15.
@@ -9,6 +10,7 @@ import java.math.BigInteger;
 public class MathUtil {
 
     private static final BigDecimal THREE_D = BigDecimal.valueOf(3);
+    private static final BigInteger TWO_BIG = BigInteger.valueOf(2L);
     private static final int UP = BigDecimal.ROUND_HALF_UP;
 
     private MathUtil() {
@@ -71,6 +73,21 @@ public class MathUtil {
         }
     }
 
+    public static SafePrime getSafePrime(int bits) {
+        return new SafePrime(bits);
+    }
+
+    public static BigInteger getGenerator(SafePrime safePrime) {
+        BigInteger gen = BigInteger.ONE;
+        while (!isGenerator(safePrime, gen)) {
+            gen = gen.add(BigInteger.ONE);
+        }
+        return gen;
+    }
+
+    private static boolean isGenerator(SafePrime safePrime, BigInteger gen) {
+        return !gen.modPow(TWO_BIG, safePrime.getPrime()).equals(BigInteger.ONE) && !gen.modPow(safePrime.getSophieNumber(), safePrime.getPrime()).equals(BigInteger.ONE);
+    }
 
     public static long dummyFactor(long n) {
         if (n < 0) {
@@ -88,6 +105,32 @@ public class MathUtil {
             }
         }
         return 1;
+    }
+
+    public static class SafePrime {
+        private BigInteger sophieNumber;
+        private BigInteger prime;
+        private static final BigInteger TWO = BigInteger.valueOf(2L);
+
+        private SafePrime(int bits) {
+            if (bits < 2) {
+                throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
+            }
+            Random random = new Random();
+            prime = BigInteger.ONE;
+            while (!MathUtil.isPrime(prime)) {
+                sophieNumber = BigInteger.probablePrime(bits, random);
+                prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
+            }
+        }
+
+        public BigInteger getSophieNumber() {
+            return sophieNumber;
+        }
+
+        public BigInteger getPrime() {
+            return prime;
+        }
     }
 
 
