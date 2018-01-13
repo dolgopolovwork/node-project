@@ -78,6 +78,7 @@ public class DebugNodeUsersDAOImplTest {
         nodeUsersDAO.remove(UUID.randomUUID());
         assertEquals(nodeUsersDAO.getList().size(), oldSize);
     }
+
     @Test
     public void testUpdateEmail() {
         User user = new User();

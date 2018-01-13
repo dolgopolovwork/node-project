@@ -85,6 +85,27 @@ public class MathUtil {
         return gen;
     }
 
+    public static BigIntEuclidean eea(BigInteger a, BigInteger b) {
+        BigInteger x = BigInteger.ZERO;
+        BigInteger lastX = BigInteger.ONE;
+        BigInteger y = BigInteger.ONE;
+        BigInteger lastY = BigInteger.ZERO;
+        while (!b.equals(BigInteger.ZERO)) {
+            BigInteger[] quotientAndRemainder = a.divideAndRemainder(b);
+            BigInteger quotient = quotientAndRemainder[0];
+            BigInteger temp;
+            a = b;
+            b = quotientAndRemainder[1];
+            temp = x;
+            x = lastX.subtract(quotient.multiply(x));
+            lastX = temp;
+            temp = y;
+            y = lastY.subtract(quotient.multiply(y));
+            lastY = temp;
+        }
+        return new BigIntEuclidean(lastX, lastY, a);
+    }
+
     private static boolean isGenerator(SafePrime safePrime, BigInteger gen) {
         return !gen.modPow(TWO_BIG, safePrime.getPrime()).equals(BigInteger.ONE) && !gen.modPow(safePrime.getSophieNumber(), safePrime.getPrime()).equals(BigInteger.ONE);
     }
@@ -108,9 +129,9 @@ public class MathUtil {
     }
 
     public static class SafePrime {
+        private static final BigInteger TWO = BigInteger.valueOf(2L);
         private BigInteger sophieNumber;
         private BigInteger prime;
-        private static final BigInteger TWO = BigInteger.valueOf(2L);
 
         private SafePrime(int bits) {
             if (bits < 2) {
@@ -130,6 +151,39 @@ public class MathUtil {
 
         public BigInteger getPrime() {
             return prime;
+        }
+    }
+
+    public static class BigIntEuclidean {
+        private final BigInteger x;
+        private final BigInteger y;
+        private final BigInteger gcd;
+
+        public BigIntEuclidean(BigInteger x, BigInteger y, BigInteger gcd) {
+            this.x = x;
+            this.y = y;
+            this.gcd = gcd;
+        }
+
+        public BigInteger getX() {
+            return x;
+        }
+
+        public BigInteger getY() {
+            return y;
+        }
+
+        public BigInteger getGcd() {
+            return gcd;
+        }
+
+        @Override
+        public String toString() {
+            return "BigIntEuclidean{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    ", gcd=" + gcd +
+                    '}';
         }
     }
 

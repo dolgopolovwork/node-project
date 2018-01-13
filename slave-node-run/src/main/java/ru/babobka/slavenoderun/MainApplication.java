@@ -16,14 +16,9 @@ public class MainApplication {
     private static final String COMMAND_LINE_WARNING = "You must specify at least 2 arguments: login and sha2 hashed password";
 
     static {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(new StreamUtil());
-                container.put(new SlaveServerConfigValidator());
-                container.put(new SlaveServerFactory());
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(new StreamUtil());
+        Container.getInstance().put(new SlaveServerConfigValidator());
+        Container.getInstance().put(new SlaveServerFactory());
     }
 
     public static void main(String[] args) throws IOException {

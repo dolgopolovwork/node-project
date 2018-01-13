@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.mem;
+package ru.babobka.dlp.collision;
 
 import ru.babobka.dlp.DlpService;
 import ru.babobka.dlp.DlpTask;

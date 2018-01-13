@@ -121,6 +121,14 @@ public class Fp implements Serializable {
         return pow(THREE);
     }
 
+    public Fp dec() {
+        return this.add(Fp.multNeutral(mod).negate());
+    }
+
+    public Fp inc() {
+        return this.add(Fp.multNeutral(mod));
+    }
+
     public boolean isAddNeutral() {
         return this.getNumber().equals(BigInteger.ZERO);
     }

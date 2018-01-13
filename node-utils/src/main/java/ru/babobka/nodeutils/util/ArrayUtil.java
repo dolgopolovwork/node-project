@@ -15,4 +15,10 @@ public interface ArrayUtil {
         }
         return false;
     }
+
+    static void validateNonNull(Object... objects) {
+        if (isNull(objects)) {
+            throw new IllegalArgumentException("All the values must be set");
+        }
+    }
 }

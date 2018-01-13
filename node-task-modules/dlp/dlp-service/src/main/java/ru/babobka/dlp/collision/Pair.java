@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.mem;
+package ru.babobka.dlp.collision;
 
 /**
  * Created by 123 on 06.01.2018.

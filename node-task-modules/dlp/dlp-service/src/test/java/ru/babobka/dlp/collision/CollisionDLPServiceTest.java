@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.mem;
+package ru.babobka.dlp.collision;
 
 import org.junit.Test;
 import ru.babobka.dlp.DlpService;

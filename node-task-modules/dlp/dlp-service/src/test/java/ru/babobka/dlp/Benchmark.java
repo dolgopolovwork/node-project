@@ -1,6 +1,9 @@
 package ru.babobka.dlp;
 
-import ru.babobka.dlp.collision.mem.CollisionDLPService;
+import ru.babobka.dlp.collision.CollisionDLPService;
+import ru.babobka.dlp.collision.pollard.ClassicPollardDLPService;
+import ru.babobka.dlp.collision.pollard.PollardCollisionService;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -15,6 +18,11 @@ public class Benchmark {
     private static final int LITTLE_GEN = 2;
     private static final int TESTS = 1000;
     private static final CollisionDLPService collisionDLPService = new CollisionDLPService();
+    private static final ClassicPollardDLPService pollardDLPService = new ClassicPollardDLPService();
+
+    static {
+        Container.getInstance().put(new PollardCollisionService());
+    }
 
     public static void main(String[] args) {
         warmUp();
@@ -26,12 +34,14 @@ public class Benchmark {
             int intPrime = safePrime.getPrime().intValue();
             System.out.println(safePrime.getPrime().bitLength() + " bits");
             printBenchMark(intGen, intPrime, collisionDLPService);
+            printBenchMark(intGen, intPrime, pollardDLPService);
         }
     }
 
     private static void warmUp() {
         for (int i = 0; i < 10; i++) {
             someExecution(LITTLE_GEN, LITTLE_MOD, collisionDLPService);
+            someExecution(LITTLE_GEN, LITTLE_MOD, pollardDLPService);
         }
     }
 

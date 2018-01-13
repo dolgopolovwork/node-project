@@ -2,6 +2,8 @@ package ru.babobka.nodeutils.util;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.*;
 
 /**
@@ -59,5 +61,20 @@ public class MathUtilTest {
         }
     }
 
+    @Test
+    public void testEea() {
+        int max = 500;
+        for (int i = 1; i <= max; i++) {
+            for (int j = 1; j <= max; j++) {
+                BigInteger a = BigInteger.valueOf(i);
+                BigInteger b = BigInteger.valueOf(j);
+                MathUtil.BigIntEuclidean euclidean = MathUtil.eea(a, b);
+                assertEquals(euclidean.getX().multiply(a).add(euclidean.getY().multiply(b)), euclidean.getGcd());
+                if (!a.equals(euclidean.getGcd()) && !b.equals(euclidean.getGcd())) {
+                    assertEquals(a.multiply(euclidean.getX()).mod(b), euclidean.getGcd());
+                }
+            }
+        }
+    }
 
 }

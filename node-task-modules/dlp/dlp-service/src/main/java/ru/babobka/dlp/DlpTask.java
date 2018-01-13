@@ -34,4 +34,12 @@ public class DlpTask implements Serializable {
     public Fp getY() {
         return y;
     }
+
+    @Override
+    public String toString() {
+        return "DlpTask{" +
+                "gen=" + gen +
+                ", y=" + y +
+                '}';
+    }
 }

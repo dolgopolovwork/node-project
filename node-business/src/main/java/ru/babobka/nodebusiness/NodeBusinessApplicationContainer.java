@@ -8,7 +8,6 @@ import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 /**

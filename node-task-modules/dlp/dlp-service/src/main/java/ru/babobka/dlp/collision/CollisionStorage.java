@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.mem;
+package ru.babobka.dlp.collision;
 
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.ArrayUtil;
@@ -14,11 +14,11 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class CollisionStorage {
 
+    private static final BigInteger TWO = BigInteger.valueOf(2L);
     private final Fp gen;
     private final Fp y;
     private final Map<Fp, Long> firstList = new HashMap<>();
     private final Map<Fp, Long> secondList = new HashMap<>();
-    private static final BigInteger TWO = BigInteger.valueOf(2L);
 
 
     public CollisionStorage(Fp gen, Fp y) {
