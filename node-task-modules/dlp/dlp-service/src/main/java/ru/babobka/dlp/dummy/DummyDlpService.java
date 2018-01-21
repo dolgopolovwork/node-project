@@ -12,6 +12,9 @@ import java.math.BigInteger;
 public class DummyDlpService implements DlpService {
     @Override
     public BigInteger dlp(DlpTask task) {
+        if (task.getY().isMultNeutral()) {
+            return BigInteger.ZERO;
+        }
         long mod = task.getGen().getMod().longValue();
         for (long exp = 1; exp < mod; exp++) {
             Fp guess = task.getGen().pow(exp);

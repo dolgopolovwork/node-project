@@ -20,7 +20,7 @@ public class ClassicPollardFunction extends PollardFunction {
     }
 
     @Override
-    PollardEntity mixImpl(PollardEntity input) {
+    protected PollardEntity mixImpl(PollardEntity input) {
         Fp x = input.getX();
         if (x.getNumber().compareTo(thirdOfP) < 0) {
             return new PollardEntity(x.mult(input.getG()), input.getA(), input.getG(), input.getValExp(), input.incGenExp());

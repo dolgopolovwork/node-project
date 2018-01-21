@@ -46,17 +46,19 @@ public class MathUtil {
     }
 
     public static boolean isPrime(long a) {
+        if (a < 0) {
+            return isPrime(-a);
+        }
         if (a < 2 || (a > 2 && a % 2 == 0)) {
             return false;
-        } else {
-            long sqr = (long) Math.sqrt(a);
-            for (int i = 3; i <= sqr; i += 2) {
-                if (a % i == 0) {
-                    return false;
-                }
-            }
-            return true;
         }
+        int sqr = (int) Math.sqrt(a);
+        for (int i = 3; i <= sqr; i += 2) {
+            if (a % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static BigInteger sqrtBig(BigInteger x) {

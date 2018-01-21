@@ -13,7 +13,7 @@ public class PollardCollisionService {
         PollardEntity startPoint = PollardEntity.initRandom(a, gen);
         PollardEntity singleResult = pollardFunction.mix(startPoint);
         PollardEntity doubleResult = pollardFunction.doubleMix(startPoint);
-        while (!isCollision(singleResult, doubleResult)) {
+        while (!singleResult.isCollision(doubleResult)) {
             singleResult = pollardFunction.mix(singleResult);
             doubleResult = pollardFunction.doubleMix(doubleResult);
             if (singleResult.equals(doubleResult)) {
@@ -23,9 +23,5 @@ public class PollardCollisionService {
             }
         }
         return new Pair<>(singleResult, doubleResult);
-    }
-
-    private boolean isCollision(PollardEntity singleResult, PollardEntity doubleResult) {
-        return singleResult.getX().equals(doubleResult.getX()) && !singleResult.equals(doubleResult);
     }
 }

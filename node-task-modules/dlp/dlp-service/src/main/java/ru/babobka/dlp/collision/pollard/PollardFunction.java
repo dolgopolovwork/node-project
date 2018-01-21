@@ -5,12 +5,12 @@ package ru.babobka.dlp.collision.pollard;
  */
 public abstract class PollardFunction {
 
-    PollardEntity mix(PollardEntity pollardEntity) {
+   public PollardEntity mix(PollardEntity pollardEntity) {
         if (pollardEntity == null) {
             throw new IllegalArgumentException("pollardEntity is null");
         }
         return mixImpl(pollardEntity);
     }
 
-    abstract PollardEntity mixImpl(PollardEntity pollardEntity);
+    protected abstract PollardEntity mixImpl(PollardEntity pollardEntity);
 }

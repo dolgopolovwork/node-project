@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.pollard;
+package ru.babobka.dlp.collision.pollard.parallel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,17 +12,16 @@ import java.math.BigInteger;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by 123 on 13.01.2018.
+ * Created by 123 on 20.01.2018.
  */
-public class ClassicPollardDLPServiceTest {
-    private PollardCollisionService collisionService;
-    private ClassicPollardDLPService dlpService;
+public class ParallelPollardDLPServiceTest {
+
+    private ParallelPollardDLPService dlpService;
 
     @Before
     public void setUp() {
-        collisionService = new PollardCollisionService();
-        Container.getInstance().put(collisionService);
-        dlpService = new ClassicPollardDLPService();
+        Container.getInstance().put(new PrimeDistinguishable());
+        dlpService = new ParallelPollardDLPService(Runtime.getRuntime().availableProcessors());
     }
 
     @After
@@ -39,6 +38,8 @@ public class ClassicPollardDLPServiceTest {
             Fp y = new Fp(BigInteger.valueOf(i), mod);
             DlpTask dlpTask = new DlpTask(gen, y);
             assertEquals(y, gen.pow(dlpService.dlp(dlpTask)));
+            dlpService.resetDone();
         }
+        dlpService.stop();
     }
 }

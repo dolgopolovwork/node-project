@@ -7,8 +7,6 @@ import java.math.BigInteger;
  */
 public interface DlpService {
 
-    //gen^x=y
-    //returns x
-    BigInteger dlp(DlpTask dlpTask);
+    BigInteger dlp(DlpTask task);
 
 }

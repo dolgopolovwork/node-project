@@ -39,9 +39,16 @@ public class PollardEntity {
     public static PollardEntity initRandom(Fp a, Fp g) {
         Random random = new Random();
         BigInteger orderMod = g.getMod().subtract(BigInteger.ONE);
-        Fp valueExp = new Fp(BigInteger.valueOf(random.nextInt(32)), orderMod);
-        Fp genExp = new Fp(BigInteger.valueOf(random.nextInt(32)), orderMod);
+        Fp valueExp = new Fp(new BigInteger(random.nextInt(orderMod.bitLength()), random), orderMod);
+        Fp genExp = new Fp(new BigInteger(random.nextInt(orderMod.bitLength()), random), orderMod);
         return new PollardEntity(a.pow(valueExp.getNumber()).mult(g.pow(genExp.getNumber())), a, g, valueExp, genExp);
+    }
+
+    public boolean isCollision(PollardEntity doubleResult) {
+        if (doubleResult == null) {
+            return false;
+        }
+        return this.getX().equals(doubleResult.getX()) && !this.equals(doubleResult);
     }
 
     public Fp incValExp() {

@@ -133,7 +133,7 @@ public class Fp implements Serializable {
         return this.getNumber().equals(BigInteger.ZERO);
     }
 
-    boolean isMultNeutral() {
+    public boolean isMultNeutral() {
         return this.getNumber().equals(BigInteger.ONE);
     }
 

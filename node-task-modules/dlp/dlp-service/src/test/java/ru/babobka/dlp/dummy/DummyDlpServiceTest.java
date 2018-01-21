@@ -1,7 +1,8 @@
-package ru.babobka.dlp;
+package ru.babobka.dlp.dummy;
 
 import org.junit.Test;
-import ru.babobka.dlp.dummy.DummyDlpService;
+import ru.babobka.dlp.DlpService;
+import ru.babobka.dlp.DlpTask;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

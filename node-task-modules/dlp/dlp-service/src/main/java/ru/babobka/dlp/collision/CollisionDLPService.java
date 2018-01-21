@@ -13,6 +13,9 @@ public class CollisionDLPService implements DlpService {
 
     @Override
     public BigInteger dlp(DlpTask task) {
+        if (task.getY().isMultNeutral()) {
+            return BigInteger.ZERO;
+        }
         for (int attempt = 0; attempt < 5; attempt++) {
             BigInteger dlp = dlpComputation(task.getGen(), task.getY());
             if (dlp != null) {
