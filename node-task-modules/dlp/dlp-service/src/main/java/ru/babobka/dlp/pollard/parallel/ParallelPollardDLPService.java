@@ -1,10 +1,9 @@
-package ru.babobka.dlp.collision.pollard.parallel;
+package ru.babobka.dlp.pollard.parallel;
 
-import ru.babobka.dlp.DlpService;
-import ru.babobka.dlp.DlpTask;
-import ru.babobka.dlp.collision.Pair;
-import ru.babobka.dlp.collision.pollard.PollardEntity;
-import ru.babobka.dlp.collision.pollard.PollardEqualitySolver;
+import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.model.Pair;
+import ru.babobka.dlp.model.PollardEntity;
+import ru.babobka.dlp.pollard.PollardEqualitySolver;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
@@ -19,19 +18,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by 123 on 16.01.2018.
  */
-public class ParallelPollardDLPService extends ThreadPoolService<DlpTask, BigInteger> implements DlpService {
+public class ParallelPollardDLPService extends ThreadPoolService<DlpTask, BigInteger> {
 
     private final AtomicBoolean done = new AtomicBoolean();
 
     public ParallelPollardDLPService(int cores) {
         super(cores);
-    }
-
-    //For testing purposes only. Don't forget to call stop().
-    @Deprecated
-    @Override
-    public BigInteger dlp(DlpTask dlpTask) {
-        return executeImpl(dlpTask);
     }
 
     @Override
@@ -40,12 +32,14 @@ public class ParallelPollardDLPService extends ThreadPoolService<DlpTask, BigInt
     }
 
     @Override
-    protected BigInteger executeImpl(DlpTask dlpTask) {
-        if (dlpTask.getY().isMultNeutral()) {
+    protected BigInteger executeImpl(DlpTask task) {
+        if (task.getY().isMultNeutral()) {
             return BigInteger.ZERO;
+        } else if (task.getY().equals(task.getGen())) {
+            return BigInteger.ONE;
         }
         ParallelCollisionService collisionService = createCollisionService(new ConcurrentHashMap<>());
-        List<PollardWalk> calls = PollardWalk.createCalls(collisionService, dlpTask, getCores());
+        List<PollardWalk> calls = PollardWalk.createCalls(collisionService, task, getCores());
         List<Future<Pair<PollardEntity>>> futures = submit(calls);
         Pair<PollardEntity> pollardCollision = null;
         for (Future<Pair<PollardEntity>> future : futures) {
@@ -62,7 +56,7 @@ public class ParallelPollardDLPService extends ThreadPoolService<DlpTask, BigInt
         if (pollardCollision == null) {
             return null;
         }
-        return PollardEqualitySolver.solve(dlpTask, pollardCollision);
+        return PollardEqualitySolver.solve(task, pollardCollision);
     }
 
     private ParallelCollisionService createCollisionService(Map<Fp, PollardEntity> collisions) {
@@ -82,10 +76,8 @@ public class ParallelPollardDLPService extends ThreadPoolService<DlpTask, BigInt
         };
     }
 
-    //For testing purposes only
-    @Deprecated
-    public void resetDone() {
-        done.set(false);
+    protected void setDone(boolean done) {
+        this.done.set(done);
     }
 
 }

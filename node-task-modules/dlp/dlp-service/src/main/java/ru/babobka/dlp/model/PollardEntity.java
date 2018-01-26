@@ -1,4 +1,4 @@
-package ru.babobka.dlp.collision.pollard;
+package ru.babobka.dlp.model;
 
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.ArrayUtil;
@@ -23,17 +23,14 @@ public class PollardEntity {
             throw new IllegalArgumentException("exponents must be from the same field");
         } else if (!g.getMod().equals(a.getMod())) {
             throw new IllegalArgumentException("both generator and searched value must be from the same field");
+        } else if (!x.getMod().equals(g.getMod())) {
+            throw new IllegalArgumentException("both x and generator must be from the same field");
         }
         this.x = x;
         this.g = g;
         this.a = a;
         this.valExp = valExp;
         this.genExp = genExp;
-    }
-
-    public static PollardEntity init(Fp a, Fp g) {
-        Fp zero = Fp.addNeutral(g.getMod().subtract(BigInteger.ONE));
-        return new PollardEntity(Fp.multNeutral(g.getMod()), a, g, zero, zero);
     }
 
     public static PollardEntity initRandom(Fp a, Fp g) {
@@ -45,7 +42,7 @@ public class PollardEntity {
     }
 
     public boolean isCollision(PollardEntity doubleResult) {
-        if (doubleResult == null) {
+        if (doubleResult == null || doubleResult == this) {
             return false;
         }
         return this.getX().equals(doubleResult.getX()) && !this.equals(doubleResult);

@@ -1,6 +1,7 @@
-package ru.babobka.dlp.collision.pollard;
+package ru.babobka.dlp.pollard;
 
-import ru.babobka.dlp.collision.Pair;
+import ru.babobka.dlp.model.Pair;
+import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.math.Fp;
 
 /**

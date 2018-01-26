@@ -1,8 +1,8 @@
-package ru.babobka.dlp.collision.pollard.parallel;
+package ru.babobka.dlp.pollard.parallel;
 
-import ru.babobka.dlp.DlpTask;
-import ru.babobka.dlp.collision.Pair;
-import ru.babobka.dlp.collision.pollard.PollardEntity;
+import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.model.Pair;
+import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class PollardWalk implements Callable<Pair<PollardEntity>> {
 
     private final DlpTask dlpTask;
 
-    public static List<PollardWalk> createCalls(ParallelCollisionService collisionService, DlpTask dlpTask, int calls) {
+    static List<PollardWalk> createCalls(ParallelCollisionService collisionService, DlpTask dlpTask, int calls) {
         if (calls < 1) {
             throw new IllegalArgumentException("there must be at least one call");
         }
@@ -29,7 +29,7 @@ public class PollardWalk implements Callable<Pair<PollardEntity>> {
         return walks;
     }
 
-    public PollardWalk(ParallelCollisionService collisionService, DlpTask dlpTask) {
+    PollardWalk(ParallelCollisionService collisionService, DlpTask dlpTask) {
         ArrayUtil.validateNonNull(dlpTask, collisionService);
         this.collisionService = collisionService;
         this.dlpTask = dlpTask;

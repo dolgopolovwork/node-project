@@ -1,4 +1,6 @@
-package ru.babobka.dlp.collision.pollard;
+package ru.babobka.dlp.pollard;
+
+import ru.babobka.dlp.model.PollardEntity;
 
 /**
  * Created by 123 on 11.01.2018.

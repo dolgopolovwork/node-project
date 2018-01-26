@@ -1,7 +1,8 @@
-package ru.babobka.dlp.collision.pollard;
+package ru.babobka.dlp.pollard;
 
-import ru.babobka.dlp.DlpTask;
-import ru.babobka.dlp.collision.Pair;
+import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.model.Pair;
+import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -17,6 +18,10 @@ public class PollardEqualitySolver {
             throw new IllegalArgumentException("collision was not set");
         } else if (dlpTask == null) {
             throw new IllegalArgumentException("dlp task was not set");
+        } else if (!pollardCollision.getFirst().isCollision(pollardCollision.getSecond())) {
+            throw new IllegalArgumentException("not a real collision " + pollardCollision);
+        } else if (!dlpTask.getGen().getMod().equals(pollardCollision.getFirst().getG().getMod())) {
+            throw new IllegalArgumentException("DlpTask and pollardCollision operate with different fields");
         }
         Fp firstGenExp = pollardCollision.getFirst().getGenExp();
         Fp firstValueExp = pollardCollision.getFirst().getValExp();
@@ -27,8 +32,6 @@ public class PollardEqualitySolver {
         Fp d = new Fp(v.getNumber().gcd(v.getMod()), v.getMod());
         if (d.getNumber().equals(BigInteger.ONE)) {
             return u.divide(v).getNumber();
-        } else if (d.getNumber().equals(BigInteger.ZERO)) {
-            System.out.println("Aw shit");
         }
         Fp w = new Fp(v.getMod().divide(d.getNumber()), v.getMod());
         Fp s = new Fp(MathUtil.eea(v.getNumber(), v.getMod()).getX(), v.getMod());

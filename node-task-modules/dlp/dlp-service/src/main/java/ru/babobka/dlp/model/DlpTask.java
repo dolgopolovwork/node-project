@@ -1,7 +1,6 @@
-package ru.babobka.dlp;
+package ru.babobka.dlp.model;
 
 import ru.babobka.nodeutils.math.Fp;
-import ru.babobka.nodeutils.util.MathUtil;
 
 import java.io.Serializable;
 
@@ -18,8 +17,6 @@ public class DlpTask implements Serializable {
             throw new IllegalArgumentException("Both generator and y must be non null");
         } else if (!gen.getMod().equals(y.getMod())) {
             throw new IllegalArgumentException("Generator and y are from different groups");
-        } else if (!MathUtil.isPrime(gen.getMod())) {
-            throw new IllegalArgumentException("Seems like mod is not prime");
         } else if (y.equals(Fp.addNeutral(y.getMod()))) {
             throw new IllegalArgumentException("Can not get dlp for zero");
         }

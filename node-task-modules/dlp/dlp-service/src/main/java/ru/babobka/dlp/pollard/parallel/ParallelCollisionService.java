@@ -1,8 +1,8 @@
-package ru.babobka.dlp.collision.pollard.parallel;
+package ru.babobka.dlp.pollard.parallel;
 
-import ru.babobka.dlp.collision.Pair;
-import ru.babobka.dlp.collision.pollard.ClassicPollardFunction;
-import ru.babobka.dlp.collision.pollard.PollardEntity;
+import ru.babobka.dlp.model.Pair;
+import ru.babobka.dlp.pollard.ClassicPollardFunction;
+import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.ArrayUtil;
@@ -13,7 +13,6 @@ import java.util.Map;
  * Created by 123 on 16.01.2018.
  */
 public abstract class ParallelCollisionService {
-    private static final int MAX_ATTEMPTS = 1_000_000;
     private final Distinguishable distinguishable = Container.getInstance().get(Distinguishable.class);
     private final Map<Fp, PollardEntity> collisions;
 
@@ -40,16 +39,16 @@ public abstract class ParallelCollisionService {
     }
 
     private PollardEntity produceCollision(Fp gen, Fp a) {
-        int maxAttempts = MAX_ATTEMPTS;
-        if (a.getMod().bitLength() < 32) {
-            maxAttempts = Math.abs(a.getMod().intValue());
+        long maxAttempts = Integer.MAX_VALUE;
+        if (gen.getMod().bitLength() < 32) {
+            maxAttempts = gen.getMod().intValue();
         }
         ClassicPollardFunction pollardFunction = new ClassicPollardFunction(gen.getMod());
-        PollardEntity singleResult = pollardFunction.mix(PollardEntity.initRandom(a, gen));
-        for (int attempt = 0; attempt < maxAttempts && !isDone(); attempt++) {
-            singleResult = pollardFunction.mix(singleResult);
-            if (distinguishable.isDistinguishable(singleResult.getX())) {
-                return singleResult;
+        PollardEntity result = pollardFunction.mix(PollardEntity.initRandom(a, gen));
+        for (long attempt = 0; attempt < maxAttempts && !isDone(); attempt++) {
+            result = pollardFunction.mix(result);
+            if (distinguishable.isDistinguishable(result.getX())) {
+                return result;
             }
         }
         return null;
