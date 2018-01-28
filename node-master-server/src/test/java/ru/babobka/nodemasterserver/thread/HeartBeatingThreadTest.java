@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -32,15 +31,10 @@ public class HeartBeatingThreadTest {
         masterServerConfig = mock(MasterServerConfig.class);
         logger = mock(SimpleLogger.class);
         clientStorage = mock(ClientStorage.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(slavesStorage);
-                container.put(masterServerConfig);
-                container.put(logger);
-                container.put(clientStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(slavesStorage);
+        Container.getInstance().put(masterServerConfig);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(clientStorage);
         heartBeatingThread = new HeartBeatingThread();
     }
 

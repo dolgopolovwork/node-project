@@ -8,7 +8,6 @@ import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -32,14 +31,9 @@ public class OnRaceStyleTaskIsReadyTest {
         distributionService = mock(DistributionService.class);
         logger = mock(SimpleLogger.class);
         slavesStorage = mock(SlavesStorage.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(distributionService);
-                container.put(logger);
-                container.put(slavesStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(distributionService);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(slavesStorage);
         onRaceStyleTaskIsReady = new OnRaceStyleTaskIsReady();
     }
 

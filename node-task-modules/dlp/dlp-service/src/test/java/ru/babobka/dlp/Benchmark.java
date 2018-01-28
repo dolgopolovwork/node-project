@@ -1,10 +1,11 @@
 package ru.babobka.dlp;
 
 import ru.babobka.dlp.model.DlpTask;
-import ru.babobka.dlp.pollard.ClassicPollardDLPService;
-import ru.babobka.dlp.pollard.PollardCollisionService;
-import ru.babobka.dlp.pollard.parallel.ParallelPollardDLPServiceTestable;
-import ru.babobka.dlp.pollard.parallel.PrimeDistinguishable;
+import ru.babobka.dlp.service.DlpService;
+import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
+import ru.babobka.dlp.service.pollard.PollardCollisionService;
+import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable;
+import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.MathUtil;
@@ -23,22 +24,22 @@ public class Benchmark {
     static {
         Container.getInstance().put(new PollardCollisionService());
         Container.getInstance().put(new PrimeDistinguishable());
+        Container.getInstance().put(new ClassicPollardDlpService());
     }
 
-    private static final ClassicPollardDLPService pollardDLPService = new ClassicPollardDLPService();
+    private static final ClassicPollardDlpService pollardDLPService = Container.getInstance().get(ClassicPollardDlpService.class);
     private static final ParallelPollardDLPServiceTestable parallelPollardDLPService = new ParallelPollardDLPServiceTestable();
 
     public static void main(String[] args) {
         warmUp();
         System.out.println("Done warm up");
-        for (int i = 20; i <= 64; i++) {
+        for (int i = 32; i <= 64; i++) {
             MathUtil.SafePrime safePrime = MathUtil.getSafePrime(i);
             BigInteger gen = MathUtil.getGenerator(safePrime);
-            long intGen = gen.longValue();
-            long intPrime = safePrime.getPrime().longValue();
-            System.out.println(safePrime.getPrime().bitLength() + " bits");
-            printBenchMark(intGen, intPrime, pollardDLPService);
-            printBenchMark(intGen, intPrime, parallelPollardDLPService);
+            long longGen = gen.longValue();
+            long longPrime = safePrime.getPrime().longValue();
+            printBenchMark(longGen, longPrime, pollardDLPService);
+            printBenchMark(longGen, longPrime, parallelPollardDLPService);
         }
         parallelPollardDLPService.stop();
     }
@@ -76,25 +77,25 @@ public class Benchmark {
     /*
 Last benchmark
 32 bits
-ClassicPollardDLPService	167.69mls
-ParallelPollardDLPService	47.57mls
+ClassicPollardDlpService	167.69mls
+ParallelPollardDlpService	47.57mls
 33 bits
-ClassicPollardDLPService	279.69mls
-ParallelPollardDLPService	101.68mls
+ClassicPollardDlpService	279.69mls
+ParallelPollardDlpService	101.68mls
 34 bits
-ClassicPollardDLPService	359.87mls
-ParallelPollardDLPService	122.74mls
+ClassicPollardDlpService	359.87mls
+ParallelPollardDlpService	122.74mls
 35 bits
-ClassicPollardDLPService	495.23mls
-ParallelPollardDLPService	254.34mls
+ClassicPollardDlpService	495.23mls
+ParallelPollardDlpService	254.34mls
 36 bits
-ClassicPollardDLPService	861.38mls
-ParallelPollardDLPService	431.17mls
+ClassicPollardDlpService	861.38mls
+ParallelPollardDlpService	431.17mls
 37 bits
-ClassicPollardDLPService	958.89mls
-ParallelPollardDLPService	472.49mls
+ClassicPollardDlpService	958.89mls
+ParallelPollardDlpService	472.49mls
 38 bits
-ClassicPollardDLPService	2023.48mls
-ParallelPollardDLPService	1098.59mls
+ClassicPollardDlpService	2023.48mls
+ParallelPollardDlpService	1098.59mls
 */
 }

@@ -3,7 +3,6 @@ package ru.babobka.nodebusiness.service;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeAuthRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -27,13 +26,8 @@ public class MasterAuthServiceTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(simpleLogger);
-                container.put(nodeUsersService);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(simpleLogger);
+        Container.getInstance().put(nodeUsersService);
         authService = new MasterAuthService();
     }
 

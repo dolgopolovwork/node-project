@@ -31,13 +31,8 @@ public class TaskPoolTest {
     public void setUp() {
         streamUtil = mock(StreamUtil.class);
         tasksUtil = mock(TasksUtil.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(streamUtil);
-                container.put(tasksUtil);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(streamUtil);
+        Container.getInstance().put(tasksUtil);
     }
 
     @After

@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.ExecutionResult;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.service.PrimeCounterServiceFactory;
 import ru.babobka.primecounter.service.PrimeCounterTaskService;
@@ -28,12 +27,7 @@ public class PrimeCounterTaskExecutorTest {
         primeCounterTaskService = mock(PrimeCounterTaskService.class);
         primeCounterServiceFactory = mock(PrimeCounterServiceFactory.class);
         when(primeCounterServiceFactory.get()).thenReturn(primeCounterTaskService);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(primeCounterServiceFactory);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(primeCounterServiceFactory);
         primeCounterTaskExecutor = new PrimeCounterTaskExecutor();
     }
 

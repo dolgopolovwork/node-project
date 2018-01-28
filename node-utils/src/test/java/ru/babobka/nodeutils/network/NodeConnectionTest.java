@@ -3,7 +3,6 @@ package ru.babobka.nodeutils.network;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
 
@@ -25,12 +24,7 @@ public class NodeConnectionTest {
     public void setUp() {
         socket = mock(Socket.class);
         streamUtil = mock(StreamUtil.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(streamUtil);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(streamUtil);
         connection = new NodeConnection(socket);
     }
 

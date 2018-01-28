@@ -90,12 +90,7 @@ public class ThreadPoolServiceTest {
                 return null;
             }
         };
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                threadPoolService.execute(input);
-            }
-        }).start();
+        new Thread(() -> threadPoolService.execute(input)).start();
         Thread.sleep(200L);
         threadPoolService.execute(input);
     }

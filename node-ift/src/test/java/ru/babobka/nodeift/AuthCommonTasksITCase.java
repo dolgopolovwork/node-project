@@ -9,7 +9,6 @@ import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodetask.TaskPool;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -29,16 +28,11 @@ public class AuthCommonTasksITCase {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                try {
-                    container.put(new SimpleLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase", true));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.contain(Container.getInstance());
+        try {
+            Container.getInstance().put(new SimpleLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -52,12 +46,7 @@ public class AuthCommonTasksITCase {
     @Before
     public void setUpMocks() {
         taskPool = mock(TaskPool.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put("slaveServerTaskPool", taskPool);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put("slaveServerTaskPool", taskPool);
 
     }
 

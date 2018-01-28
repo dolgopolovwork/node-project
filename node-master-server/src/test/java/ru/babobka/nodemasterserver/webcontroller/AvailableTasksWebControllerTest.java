@@ -3,7 +3,6 @@ package ru.babobka.nodemasterserver.webcontroller;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodetask.TaskPool;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.model.http.HttpResponse;
@@ -25,12 +24,7 @@ public class AvailableTasksWebControllerTest {
     @Before
     public void setUp() {
         taskPool = mock(TaskPool.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put("masterServerTaskPool", taskPool);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put("masterServerTaskPool", taskPool);
         availableTasksWebController = new AvailableTasksWebController();
     }
 

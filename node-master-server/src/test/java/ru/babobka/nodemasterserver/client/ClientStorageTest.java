@@ -3,7 +3,6 @@ package ru.babobka.nodemasterserver.client;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -25,12 +24,7 @@ public class ClientStorageTest {
     @Before
     public void setUp() {
         logger = mock(SimpleLogger.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(logger);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(logger);
         clientStorage = new ClientStorage();
     }
 

@@ -7,7 +7,6 @@ import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -28,14 +27,9 @@ public class CancelAllTasksApplyerTest {
         logger = mock(SimpleLogger.class);
         distributionService = mock(DistributionService.class);
         slavesStorage = mock(SlavesStorage.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(logger);
-                container.put(distributionService);
-                container.put(slavesStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(logger);
+        Container.getInstance().put(distributionService);
+        Container.getInstance().put(slavesStorage);
         cancelAllTasksApplyer = new CancelAllTasksApplyer();
     }
 

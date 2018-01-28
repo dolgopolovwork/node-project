@@ -11,7 +11,6 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -38,16 +37,11 @@ public class EllipticCurveITCase {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                try {
-                    container.put(new SimpleLogger("EllipticCurveITCase", System.getenv("NODE_IFT_LOGS"), "EllipticCurveITCase", true));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.contain(Container.getInstance());
+        try {
+            Container.getInstance().put(new SimpleLogger("EllipticCurveITCase", System.getenv("NODE_IFT_LOGS"), "EllipticCurveITCase", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -98,7 +92,6 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorMediumNumberTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
-        SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2)) {
             slaveServerCluster.start();
             int bits = 32;

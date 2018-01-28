@@ -13,7 +13,6 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -39,16 +38,11 @@ public class ClientITCase {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                try {
-                    container.put(new SimpleLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest", true));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.contain(Container.getInstance());
+        try {
+            Container.getInstance().put(new SimpleLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();

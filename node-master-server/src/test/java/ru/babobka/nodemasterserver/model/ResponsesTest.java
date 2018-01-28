@@ -10,7 +10,6 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.DataValidators;
 import ru.babobka.nodetask.model.SubTask;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -38,14 +37,9 @@ public class ResponsesTest {
         logger = mock(SimpleLogger.class);
         raceStyleTaskIsReadyListener = mock(OnRaceStyleTaskIsReady.class);
         taskIsReadyListener = mock(OnTaskIsReady.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(logger);
-                container.put(taskIsReadyListener);
-                container.put(raceStyleTaskIsReadyListener);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(logger);
+        Container.getInstance().put(taskIsReadyListener);
+        Container.getInstance().put(raceStyleTaskIsReadyListener);
     }
 
     @After
@@ -144,17 +138,14 @@ public class ResponsesTest {
         NodeResponse response2 = NodeResponse.dummy(UUID.randomUUID());
         List<NodeResponse> nodeResponses = Arrays.asList(response1, response2);
         final Responses responses = new Responses(nodeResponses.size(), task, null);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                for (NodeResponse nodeResponse : nodeResponses) {
-                    responses.add(nodeResponse);
-                }
+        new Thread(() -> {
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for (NodeResponse nodeResponse : nodeResponses) {
+                responses.add(nodeResponse);
             }
         }).start();
         assertEquals(responses.getResponseList(waitMillis).size(), nodeResponses.size());

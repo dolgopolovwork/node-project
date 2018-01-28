@@ -9,7 +9,6 @@ import ru.babobka.factor.model.EllipticFactorReducer;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.SubTask;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -30,16 +29,11 @@ public class EllipticCurveFactorTaskTest {
 
     @Before
     public void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(SimpleLogger.class));
-                container.put(mock(EllipticCurveFactorServiceFactory.class));
-                container.put(mock(EllipticFactorDistributor.class));
-                container.put(mock(EllipticFactorReducer.class));
-                container.put(mock(EllipticFactorDataValidators.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(EllipticCurveFactorServiceFactory.class));
+        Container.getInstance().put(mock(EllipticFactorDistributor.class));
+        Container.getInstance().put(mock(EllipticFactorReducer.class));
+        Container.getInstance().put(mock(EllipticFactorDataValidators.class));
         task = new EllipticCurveFactorTask();
     }
 

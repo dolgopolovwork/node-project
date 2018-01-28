@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.ReducingResult;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.task.Params;
 
@@ -28,12 +27,7 @@ public class PrimeCounterReducerTest {
     @Before
     public void setUp() {
         primeCounterDataValidators = mock(PrimeCounterDataValidators.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(primeCounterDataValidators);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(primeCounterDataValidators);
         primeCounterReducer = new PrimeCounterReducer();
     }
 

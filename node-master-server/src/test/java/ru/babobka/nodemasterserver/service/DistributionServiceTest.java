@@ -8,7 +8,6 @@ import ru.babobka.nodemasterserver.slave.AbstractNetworkSlave;
 import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -30,13 +29,8 @@ public class DistributionServiceTest {
     public void setUp() {
         simpleLogger = mock(SimpleLogger.class);
         slavesStorage = mock(SlavesStorage.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(simpleLogger);
-                container.put(slavesStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(simpleLogger);
+        Container.getInstance().put(slavesStorage);
         distributionService = spy(DistributionService.class);
     }
 

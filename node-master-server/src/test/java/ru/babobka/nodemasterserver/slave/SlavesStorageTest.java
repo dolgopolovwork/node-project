@@ -3,7 +3,6 @@ package ru.babobka.nodemasterserver.slave;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeData;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -25,12 +24,7 @@ public class SlavesStorageTest {
 
     @Before
     public void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(SimpleLogger.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(SimpleLogger.class));
         slavesStorage = new SlavesStorage();
     }
 

@@ -2,6 +2,7 @@ package ru.babobka.dlp;
 
 import org.junit.Test;
 import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.service.DlpService;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

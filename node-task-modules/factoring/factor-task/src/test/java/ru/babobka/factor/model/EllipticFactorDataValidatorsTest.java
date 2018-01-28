@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -29,12 +28,7 @@ public class EllipticFactorDataValidatorsTest {
 
     @Before
     public void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(SimpleLogger.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(SimpleLogger.class));
         ellipticFactorDataValidators = new EllipticFactorDataValidators();
     }
 

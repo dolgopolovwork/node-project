@@ -84,8 +84,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setAuthTimeOutMillis(2000);
         config.setClientListenerPort(9999);
         config.setDebugMode(true);
-        config.setHeartBeatTimeOutMillis(2000);
-        config.setRequestTimeOutMillis(5000);
+        config.setHeartBeatTimeOutMillis(5000);
+        config.setRequestTimeOutMillis(15000);
         config.setSlaveListenerPort(9090);
         config.setWebListenerPort(8080);
         config.setRestServiceLogin(REST_LOGIN);

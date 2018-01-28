@@ -7,7 +7,6 @@ import ru.babobka.nodebusiness.service.AuthService;
 import ru.babobka.nodebusiness.service.MasterAuthService;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodetask.TaskPool;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -46,18 +45,13 @@ public class IncomingSlaveListenerThreadTest {
         authService = mock(MasterAuthService.class);
         serverSocket = mock(ServerSocket.class);
         taskPool = mock(TaskPool.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(nodeConnectionFactory);
-                container.put(slaveFactory);
-                container.put(masterServerConfig);
-                container.put(logger);
-                container.put(slavesStorage);
-                container.put(authService);
-                container.put("masterServerTaskPool", taskPool);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(nodeConnectionFactory);
+        Container.getInstance().put(slaveFactory);
+        Container.getInstance().put(masterServerConfig);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(slavesStorage);
+        Container.getInstance().put(authService);
+        Container.getInstance().put("masterServerTaskPool", taskPool);
         incomingSlaveListenerThread = new IncomingSlaveListenerThread(serverSocket);
     }
 

@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.model.PrimeCounterDataValidators;
 import ru.babobka.primecounter.model.PrimeCounterDistributor;
@@ -25,16 +24,11 @@ public class PrimeCounterTaskTest {
 
     @Before
     public void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(PrimeCounterReducer.class));
-                container.put(mock(PrimeCounterDistributor.class));
-                container.put(mock(PrimeCounterDataValidators.class));
-                container.put(mock(PrimeCounterTaskExecutor.class));
-                container.put(mock(PrimeCounterServiceFactory.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(PrimeCounterReducer.class));
+        Container.getInstance().put(mock(PrimeCounterDistributor.class));
+        Container.getInstance().put(mock(PrimeCounterDataValidators.class));
+        Container.getInstance().put(mock(PrimeCounterTaskExecutor.class));
+        Container.getInstance().put(mock(PrimeCounterServiceFactory.class));
         primeCounterTask = new PrimeCounterTask();
     }
 

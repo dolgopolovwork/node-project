@@ -3,7 +3,6 @@ package ru.babobka.factor.model.ec;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.factor.model.ec.multprovider.FastMultiplicationProvider;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.math.BigInteger;
@@ -19,12 +18,7 @@ public class EllipticCurvePointTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(new FastMultiplicationProvider());
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(new FastMultiplicationProvider());
     }
 
     @Test

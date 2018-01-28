@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.factor.model.FactoringResult;
 import ru.babobka.factor.model.ec.multprovider.FastMultiplicationProvider;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -18,13 +17,8 @@ public class EllipticCurveFactorServiceTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(SimpleLogger.class));
-                container.put(new FastMultiplicationProvider());
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(new FastMultiplicationProvider());
     }
 
     @Test

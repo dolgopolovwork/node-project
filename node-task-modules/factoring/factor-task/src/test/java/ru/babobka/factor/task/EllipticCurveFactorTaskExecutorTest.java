@@ -10,7 +10,6 @@ import ru.babobka.factor.service.EllipticCurveFactorService;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.ExecutionResult;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.math.BigInteger;
@@ -32,13 +31,8 @@ public class EllipticCurveFactorTaskExecutorTest {
         service = mock(EllipticCurveFactorService.class);
         factory = mock(EllipticCurveFactorServiceFactory.class);
         when(factory.get()).thenReturn(service);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(factory);
-                container.put(mock(MultiplicationProvider.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(factory);
+        Container.getInstance().put(mock(MultiplicationProvider.class));
         executor = new EllipticCurveFactorTaskExecutor();
     }
 

@@ -11,7 +11,6 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -42,16 +41,11 @@ public class PrimeCounterITCase {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                try {
-                    container.put(new SimpleLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase", true));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.contain(Container.getInstance());
+        try {
+            Container.getInstance().put(new SimpleLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase", true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -181,25 +175,22 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
             for (int i = 0; i < threads.length; i++) {
-                threads[i] = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 30; i++) {
-                            try {
-                                NodeRequest request = getLargeRangeRequest();
-                                logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                                TaskExecutionResult result = taskService.executeTask(request);
-                                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                                if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
-                                    logger.warning("Tested request task id [" + request.getTaskId() + "] was failed");
-                                    failedTest.incrementAndGet();
-                                    break;
-                                }
-                            } catch (TaskExecutionException e) {
+                threads[i] = new Thread(() -> {
+                    for (int i1 = 0; i1 < 30; i1++) {
+                        try {
+                            NodeRequest request = getLargeRangeRequest();
+                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
+                            TaskExecutionResult result = taskService.executeTask(request);
+                            logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
+                                logger.warning("Tested request task id [" + request.getTaskId() + "] was failed");
                                 failedTest.incrementAndGet();
-                                e.printStackTrace();
                                 break;
                             }
+                        } catch (TaskExecutionException e) {
+                            failedTest.incrementAndGet();
+                            e.printStackTrace();
+                            break;
                         }
                     }
                 });
@@ -220,24 +211,21 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             Thread[] threads = new Thread[5];
             for (int i = 0; i < threads.length; i++) {
-                threads[i] = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 5; i++) {
-                            try {
-                                NodeRequest request = getExtraLargeRangeRequest();
-                                logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                                TaskExecutionResult result = taskService.executeTask(request);
-                                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                                if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
-                                    failedTest.incrementAndGet();
-                                    break;
-                                }
-                            } catch (TaskExecutionException e) {
+                threads[i] = new Thread(() -> {
+                    for (int i1 = 0; i1 < 5; i1++) {
+                        try {
+                            NodeRequest request = getExtraLargeRangeRequest();
+                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
+                            TaskExecutionResult result = taskService.executeTask(request);
+                            logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
                                 failedTest.incrementAndGet();
-                                e.printStackTrace();
                                 break;
                             }
+                        } catch (TaskExecutionException e) {
+                            failedTest.incrementAndGet();
+                            e.printStackTrace();
+                            break;
                         }
                     }
                 });
@@ -351,18 +339,15 @@ public class PrimeCounterITCase {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
-            Thread taskServiceThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        TaskExecutionResult result = taskService.executeTask(request);
-                        if (!result.isWasStopped()) {
-                            taskFail.set(true);
-                        }
-                    } catch (TaskExecutionException e) {
+            Thread taskServiceThread = new Thread(() -> {
+                try {
+                    TaskExecutionResult result = taskService.executeTask(request);
+                    if (!result.isWasStopped()) {
                         taskFail.set(true);
-                        e.printStackTrace();
                     }
+                } catch (TaskExecutionException e) {
+                    taskFail.set(true);
+                    e.printStackTrace();
                 }
             });
             taskServiceThread.start();
@@ -379,18 +364,15 @@ public class PrimeCounterITCase {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
-            Thread taskServiceThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        TaskExecutionResult result = taskService.executeTask(request);
-                        if (!result.isWasStopped()) {
-                            taskFail.set(true);
-                        }
-                    } catch (TaskExecutionException e) {
+            Thread taskServiceThread = new Thread(() -> {
+                try {
+                    TaskExecutionResult result = taskService.executeTask(request);
+                    if (!result.isWasStopped()) {
                         taskFail.set(true);
-                        e.printStackTrace();
                     }
+                } catch (TaskExecutionException e) {
+                    taskFail.set(true);
+                    e.printStackTrace();
                 }
             });
             taskServiceThread.start();
@@ -408,18 +390,15 @@ public class PrimeCounterITCase {
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
                 NodeRequest request = getEnormousRangeRequest();
-                Thread taskServiceThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            TaskExecutionResult result = taskService.executeTask(request);
-                            if (!result.isWasStopped()) {
-                                taskFail.set(true);
-                            }
-                        } catch (TaskExecutionException e) {
+                Thread taskServiceThread = new Thread(() -> {
+                    try {
+                        TaskExecutionResult result = taskService.executeTask(request);
+                        if (!result.isWasStopped()) {
                             taskFail.set(true);
-                            e.printStackTrace();
                         }
+                    } catch (TaskExecutionException e) {
+                        taskFail.set(true);
+                        e.printStackTrace();
                     }
                 });
                 taskServiceThread.start();
@@ -439,18 +418,15 @@ public class PrimeCounterITCase {
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
                 NodeRequest request = getEnormousRangeRequest();
-                Thread taskServiceThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            TaskExecutionResult result = taskService.executeTask(request);
-                            if (!result.isWasStopped()) {
-                                taskFail.set(true);
-                            }
-                        } catch (TaskExecutionException e) {
+                Thread taskServiceThread = new Thread(() -> {
+                    try {
+                        TaskExecutionResult result = taskService.executeTask(request);
+                        if (!result.isWasStopped()) {
                             taskFail.set(true);
-                            e.printStackTrace();
                         }
+                    } catch (TaskExecutionException e) {
+                        taskFail.set(true);
+                        e.printStackTrace();
                     }
                 });
                 taskServiceThread.start();
@@ -469,21 +445,18 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
             for (int i = 0; i < threads.length; i++) {
-                threads[i] = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < 5; i++) {
-                                NodeRequest request = getLargeRangeRequest();
-                                TaskExecutionResult result = taskService.executeTask(request);
-                                if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
-                                    failedTests.incrementAndGet();
-                                }
+                threads[i] = new Thread(() -> {
+                    try {
+                        for (int i1 = 0; i1 < 5; i1++) {
+                            NodeRequest request = getLargeRangeRequest();
+                            TaskExecutionResult result = taskService.executeTask(request);
+                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
+                                failedTests.incrementAndGet();
                             }
-                        } catch (TaskExecutionException e) {
-                            failedTests.incrementAndGet();
-                            e.printStackTrace();
                         }
+                    } catch (TaskExecutionException e) {
+                        failedTests.incrementAndGet();
+                        e.printStackTrace();
                     }
                 });
                 threads[i].start();

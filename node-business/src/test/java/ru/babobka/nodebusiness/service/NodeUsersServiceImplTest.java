@@ -6,7 +6,6 @@ import ru.babobka.nodebusiness.dao.NodeUsersDAO;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.HashUtil;
 import uk.co.jemos.podam.api.PodamFactory;
@@ -34,13 +33,8 @@ public class NodeUsersServiceImplTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(nodeUsersDAO);
-                container.put(userDTOMapper);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(nodeUsersDAO);
+        Container.getInstance().put(userDTOMapper);
         nodeUsersService = new NodeUsersServiceImpl();
     }
 

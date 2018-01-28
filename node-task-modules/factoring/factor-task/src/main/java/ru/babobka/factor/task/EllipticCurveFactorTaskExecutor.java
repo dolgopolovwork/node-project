@@ -24,7 +24,7 @@ public class EllipticCurveFactorTaskExecutor extends TaskExecutor {
     protected ExecutionResult executeImpl(NodeRequest request) {
         try {
             Map<String, Serializable> result = new HashMap<>();
-            BigInteger number = new BigInteger(request.getStringDataValue(Params.NUMBER.getValue()));
+            BigInteger number = request.getDataValue(Params.NUMBER.getValue());
             FactoringResult factoringResult = factorService.execute(number);
             if (factoringResult != null) {
                 result.put(Params.NUMBER.getValue(), number);

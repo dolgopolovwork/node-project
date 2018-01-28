@@ -8,7 +8,6 @@ import ru.babobka.nodebusiness.service.CacheServiceImpl;
 import ru.babobka.nodemasterserver.model.CacheEntry;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.util.HashMap;
@@ -29,12 +28,7 @@ public class CacheRequestListenerTest {
     @Before
     public void setUp() {
         cacheService = mock(CacheServiceImpl.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(cacheService);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(cacheService);
         cacheRequestListener = new CacheRequestListener();
     }
 

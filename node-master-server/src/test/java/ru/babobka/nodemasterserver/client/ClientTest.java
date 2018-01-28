@@ -8,7 +8,6 @@ import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -34,15 +33,10 @@ public class ClientTest {
         config = mock(MasterServerConfig.class);
         logger = mock(SimpleLogger.class);
         taskService = mock(TaskService.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(clientStorage);
-                container.put(config);
-                container.put(logger);
-                container.put(taskService);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(clientStorage);
+        Container.getInstance().put(config);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(taskService);
     }
 
     @After

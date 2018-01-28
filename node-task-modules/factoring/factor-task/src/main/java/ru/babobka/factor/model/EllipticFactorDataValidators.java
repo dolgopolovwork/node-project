@@ -5,8 +5,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.DataValidators;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.math.BigInteger;
 
@@ -15,35 +14,19 @@ import java.math.BigInteger;
  */
 public class EllipticFactorDataValidators extends DataValidators {
 
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
     @Override
     protected boolean isValidResponseImpl(NodeResponse response) {
-        try {
-            if (response != null && response.getStatus() == ResponseStatus.NORMAL) {
-                BigInteger factor = response.getDataValue(Params.FACTOR.getValue());
-                BigInteger n = response.getDataValue(Params.NUMBER.getValue());
-                if (factor != null && n != null && !factor.equals(BigInteger.ONE.negate()) && n.mod(factor).equals(BigInteger.ZERO)) {
-                    return true;
-                }
-            }
-        } catch (RuntimeException e) {
-            logger.error(e);
+        if (response.getStatus() != ResponseStatus.NORMAL) {
+            return false;
         }
-        return false;
+        BigInteger factor = response.getDataValue(Params.FACTOR.getValue());
+        BigInteger n = response.getDataValue(Params.NUMBER.getValue());
+        return !ArrayUtil.isNull(factor, n) && !factor.equals(BigInteger.ONE.negate()) && n.mod(factor).equals(BigInteger.ZERO);
     }
 
     @Override
     protected boolean isValidRequestImpl(NodeRequest request) {
-        try {
-            BigInteger n = request.getDataValue(Params.NUMBER.getValue());
-            if (n.compareTo(BigInteger.ZERO) <= 0) {
-                return false;
-            }
-        } catch (RuntimeException e) {
-            logger.error(e);
-            return false;
-        }
-        return true;
+        BigInteger n = request.getDataValue(Params.NUMBER.getValue());
+        return n.compareTo(BigInteger.ZERO) > 0;
     }
 }

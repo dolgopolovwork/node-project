@@ -35,8 +35,8 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
         SlaveServerConfig config = new SlaveServerConfig();
         config.setTasksFolderEnv("NODE_IFT_TASKS");
         config.setLoggerFolderEnv("NODE_IFT_LOGS");
-        config.setAuthTimeoutMillis(2000);
-        config.setRequestTimeoutMillis(5000);
+        config.setAuthTimeoutMillis(5000);
+        config.setRequestTimeoutMillis(15000);
         config.setServerHost("localhost");
         config.setServerPort(9090);
         return config;

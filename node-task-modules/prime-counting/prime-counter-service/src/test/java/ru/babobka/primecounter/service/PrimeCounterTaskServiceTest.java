@@ -3,7 +3,6 @@ package ru.babobka.primecounter.service;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.primecounter.model.Range;
@@ -21,13 +20,8 @@ public class PrimeCounterTaskServiceTest {
 
     @Before
     public void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(mock(SimpleLogger.class));
-                container.put(new DummyPrimeTester());
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(new DummyPrimeTester());
         primeCounterTaskService = new PrimeCounterTaskService(4);
     }
 

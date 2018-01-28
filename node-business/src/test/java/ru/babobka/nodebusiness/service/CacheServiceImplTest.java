@@ -3,7 +3,6 @@ package ru.babobka.nodebusiness.service;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.CacheDAO;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import static org.junit.Assert.assertEquals;
@@ -19,12 +18,7 @@ public class CacheServiceImplTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(cacheDAO);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(cacheDAO);
         cacheService = new CacheServiceImpl();
     }
 

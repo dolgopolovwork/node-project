@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.ReducingResult;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.Serializable;
@@ -29,12 +28,7 @@ public class EllipticFactorReducerTest {
     @Before
     public void setUp() {
         ellipticFactorDataValidators = mock(EllipticFactorDataValidators.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(ellipticFactorDataValidators);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(ellipticFactorDataValidators);
         reducer = new EllipticFactorReducer();
     }
 

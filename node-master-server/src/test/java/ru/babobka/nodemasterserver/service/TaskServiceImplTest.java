@@ -15,7 +15,6 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.RequestDistributor;
 import ru.babobka.nodetask.model.SubTask;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -46,18 +45,13 @@ public class TaskServiceImplTest {
         logger = mock(SimpleLogger.class);
         responseStorage = mock(ResponseStorage.class);
         distributionService = mock(DistributionService.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put("masterServerTaskPool", taskPool);
-                container.put(slavesStorage);
-                container.put(logger);
-                container.put(responseStorage);
-                container.put(distributionService);
-                container.put(mock(OnTaskIsReady.class));
-                container.put(mock(OnRaceStyleTaskIsReady.class));
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put("masterServerTaskPool", taskPool);
+        Container.getInstance().put(slavesStorage);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(responseStorage);
+        Container.getInstance().put(distributionService);
+        Container.getInstance().put(mock(OnTaskIsReady.class));
+        Container.getInstance().put(mock(OnRaceStyleTaskIsReady.class));
         taskService = new TaskServiceImpl();
     }
 

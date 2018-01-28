@@ -8,7 +8,6 @@ import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.vsjws.webserver.WebServer;
@@ -40,19 +39,14 @@ public class MasterServerTest {
         incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
         logger = mock(SimpleLogger.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(nodeUsersService);
-                container.put(heartBeatingThread);
-                container.put(incomingClientsThread);
-                container.put(listenerThread);
-                container.put(masterServerConfig);
-                container.put(webServer);
-                container.put(logger);
-                container.put(slavesStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(nodeUsersService);
+        Container.getInstance().put(heartBeatingThread);
+        Container.getInstance().put(incomingClientsThread);
+        Container.getInstance().put(listenerThread);
+        Container.getInstance().put(masterServerConfig);
+        Container.getInstance().put(webServer);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(slavesStorage);
         masterServer = spy(new MasterServer());
     }
 

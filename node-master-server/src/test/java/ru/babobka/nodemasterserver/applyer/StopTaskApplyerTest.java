@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.slave.AbstractNetworkSlave;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.util.UUID;
@@ -22,12 +21,7 @@ public class StopTaskApplyerTest {
     @Before
     public void setUp() {
         responseStorage = mock(ResponseStorage.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(responseStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(responseStorage);
     }
 
     @After

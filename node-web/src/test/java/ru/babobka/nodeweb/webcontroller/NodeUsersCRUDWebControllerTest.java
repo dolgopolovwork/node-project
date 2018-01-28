@@ -5,7 +5,6 @@ import org.junit.Test;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
@@ -35,14 +34,9 @@ public class NodeUsersCRUDWebControllerTest {
 
     @BeforeClass
     public static void setUp() {
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(nodeUsersService);
-                container.put(addUserValidator);
-                container.put(updateUserValidator);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(nodeUsersService);
+        Container.getInstance().put(addUserValidator);
+        Container.getInstance().put(updateUserValidator);
         nodeUsersCRUDWebController = new NodeUsersCRUDWebController();
     }
 

@@ -10,7 +10,6 @@ import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -41,16 +40,11 @@ public class SlaveTest {
         responseStorage = mock(ResponseStorage.class);
         slavesStorage = mock(SlavesStorage.class);
         distributionService = mock(DistributionService.class);
-        new ApplicationContainer() {
-            @Override
-            public void contain(Container container) {
-                container.put(masterServerConfig);
-                container.put(logger);
-                container.put(responseStorage);
-                container.put(distributionService);
-                container.put(slavesStorage);
-            }
-        }.contain(Container.getInstance());
+        Container.getInstance().put(masterServerConfig);
+        Container.getInstance().put(logger);
+        Container.getInstance().put(responseStorage);
+        Container.getInstance().put(distributionService);
+        Container.getInstance().put(slavesStorage);
     }
 
     @After

@@ -17,7 +17,6 @@ public class PrimeCounterDataValidators extends DataValidators {
                 && (int) response.getDataValue(Params.PRIME_COUNT.getValue()) > 0;
     }
 
-
     @Override
     protected boolean isValidRequestImpl(NodeRequest request) {
         long begin = request.getDataValue(Params.BEGIN.getValue());
