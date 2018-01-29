@@ -3,7 +3,7 @@ package ru.babobka.nodeift;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodeclient.Client;
+import ru.babobka.dlp.Client;
 import ru.babobka.nodeift.master.MasterServerRunner;
 import ru.babobka.nodeift.slave.SlaveServerCluster;
 import ru.babobka.nodeift.slave.SlaveServerRunner;

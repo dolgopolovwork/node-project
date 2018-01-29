@@ -1,4 +1,4 @@
-package ru.babobka.nodeclient;
+package ru.babobka.dlp;
 
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;

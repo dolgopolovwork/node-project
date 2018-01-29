@@ -1,4 +1,4 @@
-package ru.babobka.nodeclient;
+package ru.babobka.dlp;
 
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.ArrayUtil;

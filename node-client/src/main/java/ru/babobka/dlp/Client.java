@@ -1,4 +1,4 @@
-package ru.babobka.nodeclient;
+package ru.babobka.dlp;
 
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;

@@ -1,16 +1,17 @@
 package ru.babobka.slavenoderun;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import ru.babobka.dlp.CLI;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
 
-import java.io.IOException;
-
 /**
  * Created by 123 on 06.12.2017.
  */
-public class MainApplication {
+public class MainApplication extends CLI {
     private static final String CONFIG_PATH_OPTION = "configPath";
     private static final String LOGIN_OPTION = "login";
     private static final String PASSWORD_OPTION = "password";
@@ -25,33 +26,32 @@ public class MainApplication {
         Container.getInstance().put(new SlaveServerFactory());
     }
 
-    public static void main(String[] args) throws IOException {
-        CommandLineParser parser = new DefaultParser();
-        Options cmdOptions = createCmdOptions();
-        try {
-            CommandLine cmd = parser.parse(cmdOptions, args);
-            String login = cmd.getOptionValue(LOGIN_OPTION);
-            String password = cmd.getOptionValue(PASSWORD_OPTION);
-            String pathToConfig = getPathToConfig(cmd);
-            new ConnectionSafeSlaveRunner().run(pathToConfig, login, password);
-        } catch (ParseException e) {
-            printErr(e.getMessage());
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("slave-node-run", cmdOptions);
-        } catch (Exception e) {
-            printErr(e.getMessage());
-        }
-    }
-
-    private static Options createCmdOptions() {
+    @Override
+    protected Options createCmdOptions() {
         Options options = new Options();
-        Option configPath = Option.builder(CONFIG_PATH_OPT).longOpt(CONFIG_PATH_OPTION).hasArg().desc("Defines path to configuration json file. May be omitted, if environment variable " + ENV_VAR_CONFIG + " is set.").build();
-        Option loginOption = Option.builder(LOGIN_OPT).longOpt(LOGIN_OPTION).hasArg().desc("Slave login").required().build();
-        Option passwordOption = Option.builder(PASSWORD_OPT).longOpt(PASSWORD_OPTION).hasArg().desc("Slave password").required().build();
+        Option configPath = Option.builder(CONFIG_PATH_OPT).longOpt(CONFIG_PATH_OPTION).hasArg().
+                desc("Defines path to configuration json file. May be omitted, if environment variable " + ENV_VAR_CONFIG + " is set.").build();
+        Option loginOption = Option.builder(LOGIN_OPT).longOpt(LOGIN_OPTION).hasArg().
+                desc("Slave login").required().build();
+        Option passwordOption = Option.builder(PASSWORD_OPT).longOpt(PASSWORD_OPTION).hasArg().
+                desc("Slave password").required().build();
         options.addOption(configPath);
         options.addOption(loginOption);
         options.addOption(passwordOption);
         return options;
+    }
+
+    @Override
+    protected void run(CommandLine cmd) {
+        String login = cmd.getOptionValue(LOGIN_OPTION);
+        String password = cmd.getOptionValue(PASSWORD_OPTION);
+        String pathToConfig = getPathToConfig(cmd);
+        new ConnectionSafeSlaveRunner().run(pathToConfig, login, password);
+    }
+
+    @Override
+    protected String getAppName() {
+        return "slave-node-run";
     }
 
     private static String getPathToConfig(CommandLine cmd) {
@@ -67,14 +67,7 @@ public class MainApplication {
         throw new IllegalArgumentException("Path to config was not set");
     }
 
-
-    private static void printErr(String msg) {
-        System.err.println(msg);
+    public static void main(String[] args) {
+        new MainApplication().onMain(args);
     }
-
-    private static void print(String msg) {
-        System.out.println(msg);
-    }
-
-
 }

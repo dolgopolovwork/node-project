@@ -1,4 +1,4 @@
-package ru.babobka.nodeclient;
+package ru.babobka.dlp;
 
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;

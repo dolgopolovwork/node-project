@@ -21,6 +21,8 @@ public interface TextUtil {
 
     Gson GSON = new Gson();
 
+    String DIGITS_PATTERN = "[0-9]+";
+
     static boolean isValidEmail(String email) {
         return email != null && email.matches(EMAIL_PATTERN);
     }
@@ -30,6 +32,11 @@ public interface TextUtil {
             return "";
         }
         return s;
+    }
+
+
+    static boolean isNumber(String text) {
+        return !isEmpty(text) && text.matches(DIGITS_PATTERN);
     }
 
     static boolean isValidUUID(String uuid) {
