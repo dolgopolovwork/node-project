@@ -15,8 +15,8 @@ public class HeartBeatingThread extends CyclicThread {
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 
     @Override
-    public void sleep() throws InterruptedException {
-        Thread.sleep(masterServerConfig.getHeartBeatTimeOutMillis());
+    public int sleepMillis() {
+        return masterServerConfig.getHeartBeatTimeOutMillis();
     }
 
     @Override

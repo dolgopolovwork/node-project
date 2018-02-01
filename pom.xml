@@ -25,6 +25,7 @@
         <module>master-node-run</module>
         <module>slave-node-run</module>
         <module>node-client</module>
+        <module>node-tester</module>
         <module>node-task-modules/factoring/factor</module>
         <module>node-task-modules/factoring/factor-node-benchmark</module>
         <module>node-task-modules/dlp/dlp-service</module>

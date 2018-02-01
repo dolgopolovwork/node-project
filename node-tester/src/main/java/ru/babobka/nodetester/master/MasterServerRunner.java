@@ -1,4 +1,4 @@
-package ru.babobka.nodeift.master;
+package ru.babobka.nodetester.master;
 
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeutils.container.Container;
@@ -8,8 +8,10 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class MasterServerRunner {
 
-    public static void init() {
-        Container.getInstance().put(new MasterServerApplicationContainer());
+    public static MasterServerApplicationContainer init() {
+        MasterServerApplicationContainer container = new MasterServerApplicationContainer();
+        Container.getInstance().put(container);
+        return container;
     }
 
     public static MasterServer runMasterServer() {

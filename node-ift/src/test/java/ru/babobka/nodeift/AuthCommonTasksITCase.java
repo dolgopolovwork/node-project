@@ -4,11 +4,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodeift.master.MasterServerRunner;
-import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodetester.master.MasterServerRunner;
+import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -29,7 +29,7 @@ public class AuthCommonTasksITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(new SimpleLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase", true));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

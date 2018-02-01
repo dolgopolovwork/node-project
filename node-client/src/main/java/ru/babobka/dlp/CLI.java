@@ -7,11 +7,11 @@ import org.apache.commons.cli.*;
  */
 public abstract class CLI {
 
-    protected static void printErr(String msg) {
+    public static void printErr(String msg) {
         System.err.println(msg);
     }
 
-    protected static void print(String msg) {
+    public static void print(String msg) {
         System.out.println(msg);
     }
 

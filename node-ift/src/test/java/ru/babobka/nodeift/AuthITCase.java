@@ -3,11 +3,11 @@ package ru.babobka.nodeift;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodeift.master.MasterServerRunner;
-import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
+import ru.babobka.nodetester.master.MasterServerRunner;
+import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -29,7 +29,7 @@ public class AuthITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(new SimpleLogger("AuthITCase", System.getenv("NODE_IFT_LOGS"), "AuthITCase", true));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_IFT_LOGS"), "AuthITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -45,7 +45,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         try {
             MasterServerConfig config = container.get(MasterServerConfig.class);
-            container.put(new SimpleLogger("master-server", config.getLoggerFolder(), "master"));
+            container.put(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder(), "master"));
             container.put(new NodeUtilsApplicationContainer());
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());

@@ -3,14 +3,14 @@ package ru.babobka.nodeift;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodeift.master.MasterServerRunner;
-import ru.babobka.nodeift.slave.SlaveServerCluster;
-import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodetester.master.MasterServerRunner;
+import ru.babobka.nodetester.slave.SlaveServerRunner;
+import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -42,7 +42,7 @@ public class PrimeCounterITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(new SimpleLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase", true));
+            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

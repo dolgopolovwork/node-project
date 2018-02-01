@@ -4,15 +4,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.dlp.Client;
-import ru.babobka.nodeift.master.MasterServerRunner;
-import ru.babobka.nodeift.slave.SlaveServerCluster;
-import ru.babobka.nodeift.slave.SlaveServerRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodetester.master.MasterServerRunner;
+import ru.babobka.nodetester.slave.SlaveServerRunner;
+import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 
@@ -39,7 +39,7 @@ public class ClientITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(new SimpleLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest", true));
+            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest"));
         } catch (IOException e) {
             e.printStackTrace();
         }

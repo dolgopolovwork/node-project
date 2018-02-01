@@ -16,6 +16,7 @@ public class FactorizingBenchmark {
     static {
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new FastMultiplicationProvider());
+
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -25,7 +26,8 @@ public class FactorizingBenchmark {
     }
 
     private static void displayStatistics(int factorBits, int tests, int cores) {
-        EllipticCurveFactorService ellipticCurveFactorService = new EllipticCurveFactorServiceFactory().get(cores);
+        Container.getInstance().put("service-threads", cores);
+        EllipticCurveFactorService ellipticCurveFactorService = new EllipticCurveFactorServiceFactory().get();
         long sumTime = 0;
         long timeTakes;
         long[] timeArray = new long[tests];

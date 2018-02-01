@@ -15,11 +15,8 @@ public abstract class CyclicThread extends Thread {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    sleep();
+                    sleep(sleepMillis());
                     onAwake();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
                 } catch (RuntimeException e) {
                     logger.error(e);
                 }
@@ -29,8 +26,17 @@ public abstract class CyclicThread extends Thread {
         }
     }
 
-    public void sleep() throws InterruptedException {
-        //do nothing by default
+    public int sleepMillis() {
+        return 0;
+    }
+
+    public void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            interrupt();
+            logger.error(e);
+        }
     }
 
     public void onExit() {

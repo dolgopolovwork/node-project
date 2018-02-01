@@ -1,4 +1,4 @@
-package ru.babobka.nodeift.master;
+package ru.babobka.nodetester.master;
 
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodebusiness.service.MasterAuthService;
@@ -25,6 +25,7 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.HashUtil;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -52,6 +53,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             MasterServerConfig config = createTestConfig();
             new MasterServerConfigValidator().validate(config);
             container.put(config);
+            container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder(), "master"));
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
             container.put(new NodeWebApplicationContainer());
