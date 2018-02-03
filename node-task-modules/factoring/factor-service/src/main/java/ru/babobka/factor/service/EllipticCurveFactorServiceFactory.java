@@ -7,6 +7,6 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class EllipticCurveFactorServiceFactory {
     public EllipticCurveFactorService get() {
-        return new EllipticCurveFactorService(Container.getInstance().get("service-threads"));
+        return new EllipticCurveFactorService(Container.getInstance().get("service-threads", Runtime.getRuntime().availableProcessors()));
     }
 }

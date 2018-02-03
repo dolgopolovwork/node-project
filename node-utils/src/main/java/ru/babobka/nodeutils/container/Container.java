@@ -70,6 +70,15 @@ public class Container {
         return object;
     }
 
+    @SuppressWarnings("unchecked")
+    public synchronized <T> T get(String key, T defaultValue) {
+        T object = (T) namedContainerMap.get(key);
+        if (object == null) {
+            return defaultValue;
+        }
+        return object;
+    }
+
     public synchronized <T> T get(Class<T> clazz) {
         T object = getNoException(clazz);
         if (object == null) {

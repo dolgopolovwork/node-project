@@ -3,6 +3,8 @@ package ru.babobka.dlp.model;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.dlp.model.PollardDlpDataValidators;
+import ru.babobka.dlp.model.PollardDlpReducer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodeutils.container.Container;

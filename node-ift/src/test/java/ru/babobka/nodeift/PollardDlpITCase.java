@@ -38,7 +38,7 @@ public class PollardDlpITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PollardDlpITCase", System.getenv("NODE_IFT_LOGS"), "PollardDlpITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("PollardDlpITCase", System.getenv("NODE_LOGS"), "PollardDlpITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

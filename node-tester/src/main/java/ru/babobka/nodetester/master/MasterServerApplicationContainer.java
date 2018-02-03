@@ -81,8 +81,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
 
     private MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolderEnv("NODE_IFT_TASKS");
-        config.setLoggerFolderEnv("NODE_IFT_LOGS");
+        config.setTasksFolderEnv("NODE_TASKS");
+        config.setLoggerFolderEnv("NODE_LOGS");
         config.setAuthTimeOutMillis(2000);
         config.setClientListenerPort(9999);
         config.setDebugMode(true);
@@ -101,6 +101,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         webServerConfig.setPort(config.getWebListenerPort());
         webServerConfig.setLogFolder(config.getLoggerFolder());
         webServerConfig.setSessionTimeoutSeconds(15 * 60);
+        webServerConfig.setSilentLog(true);
         WebServer webServer = new WebServer(webServerConfig);
         AuthWebFilter authWebFilter = new AuthWebFilter(config.getRestServiceLogin(), config.getRestServiceHashedPassword());
         webServer.addController("users", new NodeUsersCRUDWebController()).addWebFilter(authWebFilter);

@@ -4,6 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import ru.babobka.nodeclient.CLI;
+import ru.babobka.nodeclient.Client;
+import ru.babobka.nodeclient.ClientApplicationContainer;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
@@ -39,7 +42,7 @@ public class MainApplication extends CLI {
     }
 
     @Override
-    protected Options createCmdOptions() {
+    protected Options createOptions() {
         Options options = new Options();
         Option host = Option.builder(HOST_OPT).longOpt(HOST_OPTION).hasArg().
                 desc("Host of master node server").required().build();

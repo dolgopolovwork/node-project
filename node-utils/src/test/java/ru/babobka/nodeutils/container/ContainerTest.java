@@ -1,6 +1,7 @@
 package ru.babobka.nodeutils.container;
 
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
@@ -10,13 +11,18 @@ import static org.junit.Assert.*;
 
 public class ContainerTest {
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         Container.getInstance().put("abc");
         Container.getInstance().put(Integer.valueOf(123));
         Container.getInstance().put(new B());
         Container.getInstance().put(StandardCharsets.UTF_8);
         Container.getInstance().put("key", Integer.valueOf(123));
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test
@@ -88,6 +94,20 @@ public class ContainerTest {
         Container.getInstance().putIfNotExists(number);
         Container.getInstance().putIfNotExists(secondNumber);
         assertEquals(Container.getInstance().get(Double.class), number);
+    }
+
+    @Test
+    public void testGetDefault() {
+        int defaultValue = 1;
+        assertEquals((int) Container.getInstance().get("abc", defaultValue), defaultValue);
+    }
+
+    @Test
+    public void testGetDefaultContains() {
+        int defaultValue = 1;
+        int realValue = 2;
+        Container.getInstance().put("abc", realValue);
+        assertEquals((int) Container.getInstance().get("abc", defaultValue), realValue);
     }
 
     interface A {

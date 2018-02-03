@@ -8,6 +8,6 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class PollardDlpServiceFactory {
     public ParallelPollardDlpService get() {
-        return new ParallelPollardDlpService(Container.getInstance().get("service-threads"));
+        return new ParallelPollardDlpService(Container.getInstance().get("service-threads", Runtime.getRuntime().availableProcessors()));
     }
 }

@@ -1,6 +1,7 @@
 package ru.babobka.dlp.model;
 
 import org.junit.Test;
+import ru.babobka.dlp.model.PollardDlpDistributor;
 import ru.babobka.dlp.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 

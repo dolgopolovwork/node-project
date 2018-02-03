@@ -3,7 +3,7 @@ package ru.babobka.slavenoderun;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import ru.babobka.dlp.CLI;
+import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -27,7 +27,7 @@ public class MainApplication extends CLI {
     }
 
     @Override
-    protected Options createCmdOptions() {
+    protected Options createOptions() {
         Options options = new Options();
         Option configPath = Option.builder(CONFIG_PATH_OPT).longOpt(CONFIG_PATH_OPTION).hasArg().
                 desc("Defines path to configuration json file. May be omitted, if environment variable " + ENV_VAR_CONFIG + " is set.").build();

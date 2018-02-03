@@ -53,7 +53,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.dlp.MainApplication</mainClass>
+                            <mainClass>ru.babobka.nodeclient.MainApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

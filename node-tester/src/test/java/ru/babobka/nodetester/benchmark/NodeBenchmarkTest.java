@@ -9,8 +9,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
-import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
+import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;

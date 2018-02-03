@@ -29,7 +29,7 @@ public class AuthITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_IFT_LOGS"), "AuthITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_LOGS"), "AuthITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

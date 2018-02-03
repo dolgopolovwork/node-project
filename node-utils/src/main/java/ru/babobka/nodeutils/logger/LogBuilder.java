@@ -31,13 +31,13 @@ interface LogBuilder {
         String fileName = folder.getAbsolutePath() + File.separator + prefix + "_" + System.currentTimeMillis()
                 + ".log";
         FileHandler fh = new FileHandler(fileName);
+        LogFormatter formatter = new LogFormatter();
         if (writeConsole) {
             Handler ch = new ConsoleHandler();
-            LogFormatter formatter = new LogFormatter();
             ch.setFormatter(formatter);
             logger.addHandler(ch);
-            fh.setFormatter(formatter);
         }
+        fh.setFormatter(formatter);
         logger.addHandler(fh);
         logger.setUseParentHandlers(false);
         return logger;

@@ -10,6 +10,7 @@ import java.util.Random;
  * Created by 123 on 11.01.2018.
  */
 public class PollardEntity {
+    private static final Random RANDOM = new Random();
     private static final BigInteger TWO = BigInteger.valueOf(2L);
     private final Fp x;
     private final Fp g;
@@ -33,11 +34,10 @@ public class PollardEntity {
         this.genExp = genExp;
     }
 
-    public static PollardEntity initRandom(Fp a, Fp g) {
-        Random random = new Random();
+    public synchronized static PollardEntity initRandom(Fp a, Fp g) {
         BigInteger orderMod = g.getMod().subtract(BigInteger.ONE);
-        Fp valueExp = new Fp(new BigInteger(random.nextInt(orderMod.bitLength()), random), orderMod);
-        Fp genExp = new Fp(new BigInteger(random.nextInt(orderMod.bitLength()), random), orderMod);
+        Fp valueExp = new Fp(new BigInteger(RANDOM.nextInt(orderMod.bitLength()), RANDOM), orderMod);
+        Fp genExp = new Fp(new BigInteger(RANDOM.nextInt(orderMod.bitLength()), RANDOM), orderMod);
         return new PollardEntity(a.pow(valueExp.getNumber()).mult(g.pow(genExp.getNumber())), a, g, valueExp, genExp);
     }
 

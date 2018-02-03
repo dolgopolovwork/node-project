@@ -42,7 +42,7 @@ public class PrimeCounterITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_IFT_LOGS"), "PrimeCounterITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_LOGS"), "PrimeCounterITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

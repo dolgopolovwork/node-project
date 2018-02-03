@@ -3,6 +3,6 @@
   "serverHost": "localhost",
   "requestTimeoutMillis": 15000,
   "authTimeoutMillis": 5000,
-  "loggerFolderEnv": "NODE_IFT_LOGS",
-  "tasksFolderEnv": "NODE_IFT_TASKS"
+  "loggerFolderEnv": "NODE_LOGS",
+  "tasksFolderEnv": "NODE_TASKS"
 }

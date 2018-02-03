@@ -30,6 +30,7 @@
         <module>node-task-modules/factoring/factor-node-benchmark</module>
         <module>node-task-modules/dlp/dlp-service</module>
         <module>node-task-modules/dlp/dlp-task</module>
+        <module>node-task-modules/dlp/dlp-node-benchmark</module>
         <module>node-task-modules/dlp/dlp</module>
     </modules>
 

@@ -3,7 +3,7 @@ package ru.babobka.nodeift;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.dlp.Client;
+import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
@@ -39,7 +39,7 @@ public class ClientITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_IFT_LOGS"), "clientTest"));
+            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_LOGS"), "clientTest"));
         } catch (IOException e) {
             e.printStackTrace();
         }

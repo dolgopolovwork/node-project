@@ -7,7 +7,6 @@
     <artifactId>factor-node-benchmark</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>factor-node-benchmark</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeclient</groupId>
@@ -60,7 +59,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.node.factorbenchmark.MainApplication</mainClass>
+                            <mainClass>ru.babobka.node.factor.benchmark.MainApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

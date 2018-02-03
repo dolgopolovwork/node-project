@@ -38,7 +38,7 @@ public class EllipticCurveITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("EllipticCurveITCase", System.getenv("NODE_IFT_LOGS"), "EllipticCurveITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("EllipticCurveITCase", System.getenv("NODE_LOGS"), "EllipticCurveITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

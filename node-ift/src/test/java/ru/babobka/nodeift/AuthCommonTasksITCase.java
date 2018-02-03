@@ -29,7 +29,7 @@ public class AuthCommonTasksITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_IFT_LOGS"), "AuthCommonTasksITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_LOGS"), "AuthCommonTasksITCase"));
         } catch (IOException e) {
             e.printStackTrace();
         }

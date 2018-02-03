@@ -2,8 +2,8 @@ package ru.babobka.dlp;
 
 import ru.babobka.dlp.service.PollardDlpServiceFactory;
 import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
-import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
+import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 

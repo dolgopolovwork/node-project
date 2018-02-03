@@ -7,6 +7,6 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class PrimeCounterServiceFactory {
     public PrimeCounterTaskService get() {
-        return new PrimeCounterTaskService(Container.getInstance().get("service-threads"));
+        return new PrimeCounterTaskService(Container.getInstance().get("service-threads", Runtime.getRuntime().availableProcessors()));
     }
 }
