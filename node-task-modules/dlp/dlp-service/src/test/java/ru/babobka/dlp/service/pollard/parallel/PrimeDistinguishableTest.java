@@ -1,7 +1,6 @@
-package ru.babobka.nodeclient.service.pollard.parallel;
+package ru.babobka.dlp.service.pollard.parallel;
 
 import org.junit.Test;
-import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

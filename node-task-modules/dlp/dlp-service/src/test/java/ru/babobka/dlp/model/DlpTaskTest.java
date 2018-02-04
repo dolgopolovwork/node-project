@@ -1,7 +1,6 @@
-package ru.babobka.nodeclient.model;
+package ru.babobka.dlp.model;
 
 import org.junit.Test;
-import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

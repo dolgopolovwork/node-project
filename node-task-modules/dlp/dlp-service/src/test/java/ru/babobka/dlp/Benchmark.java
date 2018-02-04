@@ -1,10 +1,10 @@
-package ru.babobka.nodeclient;
+package ru.babobka.dlp;
 
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.service.DlpService;
 import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
 import ru.babobka.dlp.service.pollard.PollardCollisionService;
-import ru.babobka.nodeclient.service.pollard.parallel.ParallelPollardDLPServiceTestable;
+import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
@@ -24,10 +24,9 @@ public class Benchmark {
     static {
         Container.getInstance().put(new PollardCollisionService());
         Container.getInstance().put(new PrimeDistinguishable());
-        Container.getInstance().put(new ClassicPollardDlpService());
     }
 
-    private static final ClassicPollardDlpService pollardDLPService = Container.getInstance().get(ClassicPollardDlpService.class);
+    private static final ClassicPollardDlpService pollardDLPService = new ClassicPollardDlpService();
     private static final ParallelPollardDLPServiceTestable parallelPollardDLPService = new ParallelPollardDLPServiceTestable();
 
     public static void main(String[] args) {
@@ -36,10 +35,11 @@ public class Benchmark {
         for (int i = 32; i <= 64; i++) {
             MathUtil.SafePrime safePrime = MathUtil.getSafePrime(i);
             BigInteger gen = MathUtil.getGenerator(safePrime);
-            long longGen = gen.longValue();
-            long longPrime = safePrime.getPrime().longValue();
-            printBenchMark(longGen, longPrime, pollardDLPService);
-            printBenchMark(longGen, longPrime, parallelPollardDLPService);
+            long intGen = gen.longValue();
+            long intPrime = safePrime.getPrime().longValue();
+            System.out.println(safePrime.getPrime().bitLength() + " bits");
+            printBenchMark(intGen, intPrime, pollardDLPService);
+            printBenchMark(intGen, intPrime, parallelPollardDLPService);
         }
         parallelPollardDLPService.stop();
     }

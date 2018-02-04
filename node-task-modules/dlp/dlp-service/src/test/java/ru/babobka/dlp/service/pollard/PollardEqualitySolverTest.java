@@ -1,10 +1,9 @@
-package ru.babobka.nodeclient.service.pollard;
+package ru.babobka.dlp.service.pollard;
 
 import org.junit.Test;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
-import ru.babobka.dlp.service.pollard.PollardEqualitySolver;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

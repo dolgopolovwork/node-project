@@ -1,11 +1,9 @@
-package ru.babobka.nodeclient.service.pollard;
+package ru.babobka.dlp.service.pollard;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.dlp.model.DlpTask;
-import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
-import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 
