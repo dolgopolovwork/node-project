@@ -167,16 +167,17 @@ public class PrimeCounterITCase {
         }
     }
 
+    //TODO иногда валится
     @Test
-    public void testCountPrimesLargeRangeTwoSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
         SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 3, true)) {
             final AtomicInteger failedTest = new AtomicInteger(0);
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(() -> {
-                    for (int i1 = 0; i1 < 30; i1++) {
+                    for (int j = 0; j < 250; j++) {
                         try {
                             NodeRequest request = getLargeRangeRequest();
                             logger.info("Tested request task id is [" + request.getTaskId() + "]");

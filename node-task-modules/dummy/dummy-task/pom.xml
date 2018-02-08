@@ -39,6 +39,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                        <outputDirectory>${env.NODE_TASKS}</outputDirectory>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>

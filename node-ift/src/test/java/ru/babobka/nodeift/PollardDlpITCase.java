@@ -43,6 +43,7 @@ public class PollardDlpITCase {
             e.printStackTrace();
         }
         MasterServerRunner.init();
+        System.out.println("wtf");
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);

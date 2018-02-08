@@ -6,6 +6,7 @@ import org.junit.Test;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
 
@@ -20,6 +21,7 @@ public class ParallelPollardDlpServiceTest {
 
     @Before
     public void setUp() {
+        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(new PrimeDistinguishable());
         dlpService = new ParallelPollardDLPServiceTestable();
     }
@@ -40,6 +42,5 @@ public class ParallelPollardDlpServiceTest {
             assertEquals(y, gen.pow(dlpService.dlp(dlpTask)));
             dlpService.reset();
         }
-        dlpService.stop();
     }
 }

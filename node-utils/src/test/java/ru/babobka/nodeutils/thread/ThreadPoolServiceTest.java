@@ -3,13 +3,13 @@ package ru.babobka.nodeutils.thread;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.nodeutils.container.Container;
 
 import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by 123 on 21.10.2017.
@@ -20,6 +20,7 @@ public class ThreadPoolServiceTest {
 
     @Before
     public void setUp() {
+        Container.getInstance().put("service-thread-pool", mock(ExecutorService.class));
         threadPoolService = spy(new MockThreadPoolService(1));
     }
 
@@ -54,13 +55,13 @@ public class ThreadPoolServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExecuteNoStopNullInput() {
-        threadPoolService.executeNoShutDown(null);
+        threadPoolService.execute(null);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testExecutNoStopWasStopped() {
         threadPoolService.stop();
-        threadPoolService.executeNoShutDown("test");
+        threadPoolService.execute("test");
     }
 
     @Test
@@ -68,7 +69,6 @@ public class ThreadPoolServiceTest {
         String input = "test";
         threadPoolService.execute(input);
         verify(threadPoolService).executeImpl(input);
-        verify(threadPoolService).shutdown();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -95,15 +95,7 @@ public class ThreadPoolServiceTest {
         threadPoolService.execute(input);
     }
 
-    @Test
-    public void testExecuteNoStop() {
-        String input = "test";
-        threadPoolService.executeNoShutDown(input);
-        verify(threadPoolService).executeImpl(input);
-        assertFalse(threadPoolService.isStopped());
-    }
-
-    private static class MockThreadPoolService extends ThreadPoolService {
+    private static class MockThreadPoolService extends ThreadPoolService<Serializable, Serializable> {
 
         public MockThreadPoolService(int cores) {
             super(cores);

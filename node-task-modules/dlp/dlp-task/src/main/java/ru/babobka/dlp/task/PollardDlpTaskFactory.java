@@ -35,7 +35,6 @@ public class PollardDlpTaskFactory extends TaskFactory<PollardDlpTask> {
             container.put(new PollardDlpDistributor());
             container.put(new PollardDlpDataValidators());
             container.put(new PollardDlpReducer());
-            container.put(new PollardDlpTaskExecutor());
         }
     }
 }

@@ -6,6 +6,7 @@ import ru.babobka.factor.model.FactoringResult;
 import ru.babobka.factor.model.ec.multprovider.FastMultiplicationProvider;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -17,6 +18,7 @@ public class EllipticCurveFactorServiceTest {
 
     @BeforeClass
     public static void setUp() {
+        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new FastMultiplicationProvider());
     }

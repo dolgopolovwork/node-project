@@ -1,7 +1,7 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
-import ru.babobka.dlp.service.DlpService;
 import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.service.DlpService;
 
 import java.math.BigInteger;
 
@@ -18,11 +18,7 @@ public class ParallelPollardDLPServiceTestable extends DlpService {
 
     @Override
     protected BigInteger dlpImpl(DlpTask task) {
-        return parallelPollardDlpService.executeNoShutDown(task);
-    }
-
-    public void stop() {
-        parallelPollardDlpService.stop();
+        return parallelPollardDlpService.execute(task);
     }
 
     public void reset() {

@@ -11,6 +11,7 @@ import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 /**
  * Created by 123 on 05.11.2017.
@@ -25,6 +26,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             new SlaveServerConfigValidator().validate(config);
             container.put(config);
             container.putIfNotExists(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder(), "slave"));
+            Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool());
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());
             container.put("slaveServerTaskPool", new TaskPool(config.getTasksFolder()));

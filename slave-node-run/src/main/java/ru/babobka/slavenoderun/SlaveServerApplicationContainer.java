@@ -10,6 +10,7 @@ import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             container.put(config);
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());
+            Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool());
             container.put("slaveServerTaskPool", new TaskPool(config.getTasksFolder()));
             container.put(new SlaveAuthService());
         } catch (IOException | RuntimeException e) {

@@ -8,6 +8,7 @@ import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.nodeutils.util.MathUtil;
 
 import java.math.BigInteger;
@@ -22,6 +23,7 @@ public class Benchmark {
     private static final int TESTS = 100;
 
     static {
+        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(new PollardCollisionService());
         Container.getInstance().put(new PrimeDistinguishable());
     }
@@ -41,7 +43,6 @@ public class Benchmark {
             printBenchMark(intGen, intPrime, pollardDLPService);
             printBenchMark(intGen, intPrime, parallelPollardDLPService);
         }
-        parallelPollardDLPService.stop();
     }
 
     private static void warmUp() {

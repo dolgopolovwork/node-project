@@ -10,22 +10,22 @@
     <name>node-project</name>
 
     <modules>
-        <module>node-task-modules/factoring/factor-service</module>
-        <module>node-task-modules/factoring/factor-task</module>
         <module>node-master-server</module>
         <module>node-serials</module>
         <module>node-slave-server</module>
         <module>node-utils</module>
-        <module>node-task-modules/prime-counting/prime-counter-task</module>
         <module>node-task</module>
         <module>node-ift</module>
         <module>node-business</module>
         <module>node-web</module>
-        <module>node-task-modules/prime-counting/prime-counter-service</module>
         <module>master-node-run</module>
         <module>slave-node-run</module>
         <module>node-client</module>
         <module>node-tester</module>
+        <module>node-task-modules/factoring/factor-service</module>
+        <module>node-task-modules/factoring/factor-task</module>
+        <module>node-task-modules/prime-counting/prime-counter-task</module>
+        <module>node-task-modules/prime-counting/prime-counter-service</module>
         <module>node-task-modules/dummy/dummy-task</module>
         <module>node-task-modules/dummy/dummy-node-benchmark</module>
         <module>node-task-modules/factoring/factor</module>

@@ -5,6 +5,7 @@ import ru.babobka.factor.service.EllipticCurveFactorService;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -14,19 +15,18 @@ import static org.mockito.Mockito.mock;
 
 public class FactorizingBenchmark {
     static {
+        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new FastMultiplicationProvider());
-
     }
 
     public static void main(String[] args) throws InterruptedException {
         for (int i = 32; i < 40; i++) {
-            displayStatistics(i, 100, 4);
+            displayStatistics(i, 100);
         }
     }
 
-    private static void displayStatistics(int factorBits, int tests, int cores) {
-        Container.getInstance().put("service-threads", cores);
+    private static void displayStatistics(int factorBits, int tests) {
         EllipticCurveFactorService ellipticCurveFactorService = new EllipticCurveFactorServiceFactory().get();
         long sumTime = 0;
         long timeTakes;
@@ -39,7 +39,7 @@ public class FactorizingBenchmark {
                 BigInteger number = BigInteger.probablePrime(factorBits, new Random())
                         .multiply(BigInteger.probablePrime(factorBits, new Random()));
                 oldTime = System.currentTimeMillis();
-                ellipticCurveFactorService.executeNoShutDown(number);
+                ellipticCurveFactorService.execute(number);
                 timeTakes = System.currentTimeMillis() - oldTime;
                 timeArray[i] = timeTakes;
                 sumTime += timeTakes;
@@ -56,7 +56,7 @@ public class FactorizingBenchmark {
             ellipticCurveFactorService.stop();
         }
         Arrays.sort(timeArray);
-        System.out.println("bits " + (factorBits * 2) + "\t|\tcores " + cores + "\t|\tavg time " + (sumTime / tests)
+        System.out.println("bits " + (factorBits * 2) + "\t|\tavg time " + (sumTime / tests)
                 + "\t|\tmedian time " + timeArray[tests / 2] + "\t|\tmin time " + minTime + "\t|\tmax time " + maxTime);
     }
 

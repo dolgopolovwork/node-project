@@ -9,6 +9,7 @@ import ru.babobka.primecounter.model.Range;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by 123 on 20.06.2017.
@@ -16,6 +17,7 @@ import java.util.concurrent.Future;
 public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final AtomicBoolean done = new AtomicBoolean(false);
 
     PrimeCounterTaskService(int cores) {
         super(cores);
@@ -23,14 +25,14 @@ public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
 
     @Override
     protected void stopImpl() {
-        //do nothing
+        done.set(true);
     }
 
     @Override
     protected Integer executeImpl(Range range) {
         int result = 0;
         List<Range> ranges = Range.getRanges(range.getBegin(), range.getEnd(), getCores());
-        List<Future<Integer>> futureList = submit(PrimeCounterCallable.createCalls(ranges));
+        List<Future<Integer>> futureList = submit(PrimeCounterCallable.createCalls(done, ranges));
         try {
             for (Future<Integer> future : futureList) {
                 result += future.get();

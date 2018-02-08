@@ -1,13 +1,11 @@
 package ru.babobka.nodeutils.thread;
 
+import ru.babobka.nodeutils.container.Container;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,8 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class ThreadPoolService<I extends Serializable, O extends Serializable> {
     private final int cores;
     private final Lock executionLock = new ReentrantLock();
-    private final UUID serviceId = UUID.randomUUID();
-    private ExecutorService threadPool;
+    private final ExecutorService threadPool = Container.getInstance().get("service-thread-pool");
     private boolean stopped;
 
     public ThreadPoolService(int cores) {
@@ -30,37 +27,15 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
 
     protected abstract void stopImpl();
 
-    synchronized void shutdown() {
-        if (threadPool != null) {
-            threadPool.shutdownNow();
-        }
-    }
-
-    synchronized boolean isShutDown() {
-        if (threadPool != null) {
-            return threadPool.isShutdown();
-        }
-        return false;
-    }
-
     public synchronized void stop() {
         try {
             stopImpl();
         } finally {
-            shutdown();
             stopped = true;
         }
     }
 
     public O execute(I input) {
-        try {
-            return executeNoShutDown(input);
-        } finally {
-            shutdown();
-        }
-    }
-
-    public O executeNoShutDown(I input) {
         if (input == null) {
             throw new IllegalArgumentException("input is null");
         } else if (isStopped()) {
@@ -82,19 +57,12 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
             throw new IllegalArgumentException("can not submit null callables");
         }
         List<Future<T>> futures = new ArrayList<>(callables.size());
-        if (!getThreadPool().isShutdown()) {
+        if (!threadPool.isShutdown()) {
             for (Callable<T> callable : callables) {
-                futures.add(getThreadPool().submit(callable));
+                futures.add(threadPool.submit(callable));
             }
         }
         return futures;
-    }
-
-    private synchronized ExecutorService getThreadPool() {
-        if (threadPool == null || threadPool.isShutdown()) {
-            threadPool = Executors.newFixedThreadPool(cores);
-        }
-        return threadPool;
     }
 
     public synchronized boolean isStopped() {
@@ -105,7 +73,19 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
         return cores;
     }
 
-    public UUID getServiceId() {
-        return serviceId;
+    public static ExecutorService createDaemonPool(int threads) {
+        return Executors.newFixedThreadPool(threads,
+                new ThreadFactory() {
+                    public Thread newThread(Runnable r) {
+                        Thread t = Executors.defaultThreadFactory().newThread(r);
+                        t.setDaemon(true);
+                        return t;
+                    }
+                });
     }
+
+    public static ExecutorService createDaemonPool() {
+        return createDaemonPool((int) (Runtime.getRuntime().availableProcessors() * 1.5));
+    }
+
 }

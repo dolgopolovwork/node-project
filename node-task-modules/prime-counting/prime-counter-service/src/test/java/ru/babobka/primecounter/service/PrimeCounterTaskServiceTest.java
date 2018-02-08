@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.primecounter.model.Range;
 import ru.babobka.primecounter.tester.DummyPrimeTester;
 
@@ -20,9 +21,10 @@ public class PrimeCounterTaskServiceTest {
 
     @Before
     public void setUp() {
+        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new DummyPrimeTester());
-        primeCounterTaskService = new PrimeCounterTaskService(4);
+        primeCounterTaskService = new PrimeCounterTaskService(Runtime.getRuntime().availableProcessors());
     }
 
     @After
