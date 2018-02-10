@@ -21,13 +21,17 @@ public class PrimeCounterTaskExecutor extends TaskExecutor {
 
     @Override
     protected ExecutionResult executeImpl(NodeRequest request) {
-        Map<String, Serializable> result = new HashMap<>();
-        long begin = Long.parseLong(request.getStringDataValue(Params.BEGIN.getValue()));
-        long end = Long.parseLong(request.getStringDataValue(Params.END.getValue()));
-        Range range = new Range(begin, end);
-        int primes = primeCounterTaskService.execute(range);
-        result.put(Params.PRIME_COUNT.getValue(), primes);
-        return new ExecutionResult(primeCounterTaskService.isStopped(), result);
+        try {
+            Map<String, Serializable> result = new HashMap<>();
+            long begin = Long.parseLong(request.getStringDataValue(Params.BEGIN.getValue()));
+            long end = Long.parseLong(request.getStringDataValue(Params.END.getValue()));
+            Range range = new Range(begin, end);
+            int primes = primeCounterTaskService.execute(range);
+            result.put(Params.PRIME_COUNT.getValue(), primes);
+            return new ExecutionResult(primeCounterTaskService.isStopped(), result);
+        } finally {
+            primeCounterTaskService.stop();
+        }
     }
 
     @Override

@@ -78,6 +78,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
                 new ThreadFactory() {
                     public Thread newThread(Runnable r) {
                         Thread t = Executors.defaultThreadFactory().newThread(r);
+                        t.setPriority(Thread.MAX_PRIORITY);
                         t.setDaemon(true);
                         return t;
                     }
