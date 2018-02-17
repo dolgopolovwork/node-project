@@ -9,6 +9,7 @@ import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
+import ru.babobka.nodemasterserver.service.TaskMonitoringService;
 import ru.babobka.nodemasterserver.service.TaskServiceImpl;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
@@ -62,6 +63,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.put(new ResponseStorage());
             container.put(new ClientStorage());
             container.put("masterServerTaskPool", new TaskPool(config.getTasksFolder()));
+            container.put(new TaskMonitoringService());
             container.put(new TaskServiceImpl());
             container.put(new StoppedTasks());
             container.put(new SlaveFactory());

@@ -32,6 +32,11 @@ public class ParallelPollardDlpService extends ThreadPoolService<DlpTask, BigInt
     }
 
     @Override
+    protected BigInteger getStoppedResponse() {
+        return BigInteger.ONE;
+    }
+
+    @Override
     protected BigInteger executeImpl(DlpTask task) {
         if (task.getY().isMultNeutral()) {
             return BigInteger.ZERO;

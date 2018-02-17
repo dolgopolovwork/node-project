@@ -37,9 +37,11 @@ public class TaskServiceImplTest {
     private ResponseStorage responseStorage;
     private DistributionService distributionService;
     private TaskServiceImpl taskService;
+    private TaskMonitoringService taskMonitoringService;
 
     @Before
     public void setUp() {
+        taskMonitoringService = mock(TaskMonitoringService.class);
         taskPool = mock(TaskPool.class);
         slavesStorage = mock(SlavesStorage.class);
         logger = mock(SimpleLogger.class);
@@ -48,6 +50,7 @@ public class TaskServiceImplTest {
         Container.getInstance().put("masterServerTaskPool", taskPool);
         Container.getInstance().put(slavesStorage);
         Container.getInstance().put(logger);
+        Container.getInstance().put(taskMonitoringService);
         Container.getInstance().put(responseStorage);
         Container.getInstance().put(distributionService);
         Container.getInstance().put(mock(OnTaskIsReady.class));

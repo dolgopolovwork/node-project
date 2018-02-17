@@ -41,18 +41,22 @@ public class SlaveServerCluster extends AbstractCluster {
 
     @Override
     protected void startImpl() {
+        synchronized (slaveServerList) {
+            for (SlaveServer slaveServer : slaveServerList) {
+                slaveServer.start();
+            }
+        }
         if (glitchThread != null) {
             glitchThread.start();
-        }
-        for (SlaveServer slaveServer : slaveServerList) {
-            slaveServer.start();
         }
     }
 
     @Override
     protected void closeImpl() {
-        for (SlaveServer slaveServer : slaveServerList) {
-            slaveServer.interrupt();
+        synchronized (slaveServerList) {
+            for (SlaveServer slaveServer : slaveServerList) {
+                slaveServer.interrupt();
+            }
         }
         if (glitchThread == null) {
             return;

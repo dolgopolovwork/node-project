@@ -32,6 +32,11 @@ public class EllipticCurveFactorService extends ThreadPoolService<BigInteger, Fa
     }
 
     @Override
+    protected FactoringResult getStoppedResponse() {
+        return new FactoringResult(BigInteger.ONE, null);
+    }
+
+    @Override
     protected FactoringResult executeImpl(BigInteger number) {
         done.set(false);
         FactoringResult factoringResult;

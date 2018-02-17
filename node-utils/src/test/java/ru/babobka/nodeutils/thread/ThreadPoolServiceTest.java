@@ -8,6 +8,7 @@ import ru.babobka.nodeutils.container.Container;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -47,21 +48,17 @@ public class ThreadPoolServiceTest {
         threadPoolService.execute(null);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testExecuteWasStopped() {
-        threadPoolService.stop();
-        threadPoolService.execute("test");
-    }
-
     @Test(expected = IllegalArgumentException.class)
     public void testExecuteNoStopNullInput() {
         threadPoolService.execute(null);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testExecutNoStopWasStopped() {
+    @Test
+    public void testExecuteWasStopped() {
         threadPoolService.stop();
-        threadPoolService.execute("test");
+        Serializable stoppedResponse = mock(Serializable.class);
+        doReturn(stoppedResponse).when(threadPoolService).getStoppedResponse();
+        assertEquals(stoppedResponse, threadPoolService.execute("test"));
     }
 
     @Test
@@ -78,6 +75,11 @@ public class ThreadPoolServiceTest {
             @Override
             protected void stopImpl() {
 
+            }
+
+            @Override
+            protected Serializable getStoppedResponse() {
+                return null;
             }
 
             @Override
@@ -104,6 +106,11 @@ public class ThreadPoolServiceTest {
         @Override
         protected void stopImpl() {
 
+        }
+
+        @Override
+        protected Serializable getStoppedResponse() {
+            return null;
         }
 
         @Override

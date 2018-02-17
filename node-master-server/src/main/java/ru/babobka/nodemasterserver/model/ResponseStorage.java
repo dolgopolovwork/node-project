@@ -2,6 +2,7 @@ package ru.babobka.nodemasterserver.model;
 
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,11 @@ public class ResponseStorage {
 
     public synchronized boolean setStopAllResponses(UUID taskId) {
         Responses responses = responsesMap.get(taskId);
-        return responses != null && responses.fill(NodeResponse.stopped(taskId));
+        if (responses == null) {
+            return false;
+        }
+        responses.setStatus(ResponseStatus.STOPPED);
+        return responses.fill(NodeResponse.stopped(taskId));
     }
 
     public synchronized Map<UUID, ResponsesMeta> getRunningTasksMetaMap() {

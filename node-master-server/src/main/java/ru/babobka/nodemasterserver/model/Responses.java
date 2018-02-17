@@ -88,6 +88,12 @@ public class Responses {
         return true;
     }
 
+    synchronized void setStatus(ResponseStatus status) {
+        for (NodeResponse response : responsesList) {
+            response.setStatus(status);
+        }
+    }
+
 
     public List<NodeResponse> getResponseList() throws TimeoutException {
         return getResponseList(HOUR_MILLIS);

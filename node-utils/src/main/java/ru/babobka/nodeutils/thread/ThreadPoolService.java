@@ -39,7 +39,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
         if (input == null) {
             throw new IllegalArgumentException("input is null");
         } else if (isStopped()) {
-            throw new IllegalStateException("service was stopped");
+            return getStoppedResponse();
         } else if (!executionLock.tryLock()) {
             throw new IllegalStateException("task is already in use");
         }
@@ -49,6 +49,8 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
             executionLock.unlock();
         }
     }
+
+    protected abstract O getStoppedResponse();
 
     protected abstract O executeImpl(I input);
 

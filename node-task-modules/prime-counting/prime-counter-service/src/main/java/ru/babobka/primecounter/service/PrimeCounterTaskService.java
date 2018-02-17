@@ -29,6 +29,11 @@ public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
     }
 
     @Override
+    protected Integer getStoppedResponse() {
+        return 0;
+    }
+
+    @Override
     protected Integer executeImpl(Range range) {
         int result = 0;
         List<Range> ranges = Range.getRanges(range.getBegin(), range.getEnd(), getCores());

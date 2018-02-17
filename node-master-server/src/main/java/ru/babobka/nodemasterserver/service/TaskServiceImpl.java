@@ -33,6 +33,7 @@ public class TaskServiceImpl implements TaskService {
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
+    private final TaskMonitoringService taskMonitoringService = Container.getInstance().get(TaskMonitoringService.class);
 
     @Override
     public boolean cancelTask(UUID taskId) throws TaskExecutionException {
@@ -44,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
             if (responses == null)
                 return false;
             responseStorage.setStopAllResponses(taskId);
+            taskMonitoringService.incrementCanceledTasksCount();
             return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (RuntimeException e) {
             throw new TaskExecutionException("Can not cancel task", e);
@@ -54,25 +56,29 @@ public class TaskServiceImpl implements TaskService {
     public TaskExecutionResult executeTask(NodeRequest request, int maxNodes)
             throws TaskExecutionException {
         try {
+            taskMonitoringService.incrementStartedTasksCount();
             SubTask task = taskPool.get(request.getTaskName());
             TaskStartResult startResult = startTask(request, task, maxNodes);
-            if (startResult.isSystemError()) {
-                throw new TaskExecutionException("System error");
-            } else if (startResult.isFailed()) {
+            if (startResult.isSystemError() || startResult.isFailed()) {
+                taskMonitoringService.incrementFailedTasksCount();
                 throw new TaskExecutionException(startResult.getMessage());
             }
             Timer timer = new Timer();
             Responses responses = responseStorage.get(request.getTaskId());
-            if (responses == null)
+            if (responses == null) {
+                taskMonitoringService.incrementFailedTasksCount();
                 throw new TaskExecutionException("No such task with given id " + request.getTaskId());
+            }
             List<NodeResponse> responseList = responses.getResponseList();
             if (responses.isStopped()) {
                 return TaskExecutionResult.stopped();
             }
             Map<String, Serializable> resultMap = task.getReducer().reduce(responseList).map();
             logger.info("Got responses " + responses);
+            taskMonitoringService.incrementExecutedTasksCount();
             return TaskExecutionResult.normal(timer, resultMap);
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
+            taskMonitoringService.incrementFailedTasksCount();
             throw new TaskExecutionException(e);
         } finally {
             responseStorage.remove(request.getTaskId());
@@ -108,7 +114,6 @@ public class TaskServiceImpl implements TaskService {
         distributionService.broadcastRequests(request.getTaskName(), requests);
     }
 
-
     private TaskStartResult startTask(NodeRequest request, SubTask task, int maxNodes) {
         UUID taskId = request.getTaskId();
         DataValidators dataValidators = task.getDataValidators();
@@ -124,7 +129,7 @@ public class TaskServiceImpl implements TaskService {
             logger.error(e);
             List<Slave> slaves = slavesStorage.getListByTaskId(taskId);
             distributionService.broadcastStopRequests(slaves, taskId);
-            return TaskStartResult.systemError(taskId, "Can not distribute task data");
+            return TaskStartResult.systemError(taskId, e.getMessage());
         }
     }
 

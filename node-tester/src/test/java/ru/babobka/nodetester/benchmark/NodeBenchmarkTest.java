@@ -33,6 +33,7 @@ public class NodeBenchmarkTest {
     public void setUp() {
         masterServer = mock(MasterServer.class);
         nodeBenchmark = spy(NodeBenchmark.class);
+        doNothing().when(nodeBenchmark).runMBeanServer();
         PowerMockito.mockStatic(MasterServerRunner.class);
         PowerMockito.mockStatic(SlaveServerRunner.class);
         BDDMockito.given(MasterServerRunner.runMasterServer()).willReturn(masterServer);
@@ -72,5 +73,6 @@ public class NodeBenchmarkTest {
         verify(cluster).start();
         assertEquals((int) Container.getInstance().get("service-threads"), slaveThreads);
         verify(masterServer).interrupt();
+        verify(nodeBenchmark).runMBeanServer();
     }
 }

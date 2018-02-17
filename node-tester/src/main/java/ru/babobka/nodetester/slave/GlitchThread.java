@@ -32,16 +32,18 @@ public class GlitchThread extends CyclicThread {
 
     @Override
     public synchronized void onAwake() {
-        if (slaveServerList.isEmpty()) {
-            return;
-        }
-        removeRandomSlave(slaveServerList);
-        try {
-            sleep(500);
-            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(login, password);
-            slaveServerList.add(slaveServer);
-        } catch (Exception e) {
-            logger.error(e);
+        synchronized (slaveServerList) {
+            if (slaveServerList.isEmpty()) {
+                return;
+            }
+            removeRandomSlave(slaveServerList);
+            try {
+                sleep(500);
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(login, password);
+                slaveServerList.add(slaveServer);
+            } catch (Exception e) {
+                logger.error(e);
+            }
         }
     }
 
