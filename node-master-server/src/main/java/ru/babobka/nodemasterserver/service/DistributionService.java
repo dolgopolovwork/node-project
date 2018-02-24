@@ -27,13 +27,13 @@ public class DistributionService {
         } else if (slave.isNoTasks()) {
             return;
         }
-        logger.debug("Redistribution");
+        logger.debug("redistribution");
         Map<String, List<NodeRequest>> groupedTasks = slave.getRequestsGroupedByTasks();
         for (Map.Entry<String, List<NodeRequest>> requestByUriEntry : groupedTasks.entrySet()) {
             try {
                 broadcastRequests(requestByUriEntry.getKey(), requestByUriEntry.getValue());
             } catch (Exception e) {
-                logger.debug("Redistribution failed");
+                logger.error("redistribution failed");
                 throw new DistributionException(e);
             }
         }
@@ -51,14 +51,14 @@ public class DistributionService {
         } else if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }
-        logger.debug("Requests to broadcast " + requests);
+        logger.debug("requests to broadcast " + requests);
         int lastRequestId = -1;
         try {
             List<Slave> slaves = slavesStorage.getList(taskName);
             if (slaves.isEmpty()) {
                 throw new IOException("cluster is empty");
             }
-            logger.debug("Slaves to broadcast " + slaves);
+            logger.debug("slaves to broadcast " + slaves);
             for (NodeRequest request : requests) {
                 lastRequestId++;
                 slaves.get(lastRequestId % slaves.size()).executeTask(request);
@@ -66,7 +66,7 @@ public class DistributionService {
         } catch (IOException e) {
             if (retry < maxRetry) {
                 waitForGoodTimes();
-                logger.debug("Broadcast retry " + retry);
+                logger.debug("broadcast retry " + retry);
                 logger.error(e);
                 broadcastRequests(taskName, requests.subList(Math.max(lastRequestId, 0), requests.size()), retry + 1, maxRetry);
             } else {
@@ -86,6 +86,7 @@ public class DistributionService {
 
     public boolean broadcastStopRequests(List<Slave> slaves, UUID taskId) {
         if (slaves == null || slaves.isEmpty()) {
+            logger.debug("no slaves to broadcast");
             return false;
         }
         for (Slave slave : slaves) {

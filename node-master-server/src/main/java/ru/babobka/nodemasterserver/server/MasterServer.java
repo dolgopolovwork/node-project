@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -8,6 +9,8 @@ import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.vsjws.webserver.WebServer;
+
+import java.io.IOException;
 
 
 /**
@@ -51,6 +54,11 @@ public class MasterServer extends Thread {
         interruptAndJoin(webServer);
         interruptAndJoin(listenerThread);
         interruptAndJoin(heartBeatingThread);
+        try {
+            Container.getInstance().get(CacheDAO.class).close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (slavesStorage != null) {
             slavesStorage.clear();
         }

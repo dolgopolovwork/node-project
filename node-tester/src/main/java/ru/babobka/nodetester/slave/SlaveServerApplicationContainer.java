@@ -25,7 +25,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);
             container.put(config);
-            container.putIfNotExists(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder(), "slave"));
+            container.putIfNotExists(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
             Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool());
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());

@@ -3,6 +3,7 @@ package ru.babobka.nodemasterserver.server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -11,6 +12,8 @@ import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.vsjws.webserver.WebServer;
+
+import java.io.IOException;
 
 import static org.mockito.Mockito.*;
 
@@ -28,6 +31,7 @@ public class MasterServerTest {
     private MasterServerConfig masterServerConfig;
     private NodeUsersService nodeUsersService;
     private SimpleLogger logger;
+    private CacheDAO cacheDAO;
 
     @Before
     public void setUp() {
@@ -35,6 +39,7 @@ public class MasterServerTest {
         masterServerConfig = mock(MasterServerConfig.class);
         heartBeatingThread = mock(HeartBeatingThread.class);
         listenerThread = mock(IncomingSlaveListenerThread.class);
+        cacheDAO = mock(CacheDAO.class);
         webServer = mock(WebServer.class);
         incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
@@ -47,6 +52,7 @@ public class MasterServerTest {
         Container.getInstance().put(webServer);
         Container.getInstance().put(logger);
         Container.getInstance().put(slavesStorage);
+        Container.getInstance().put(cacheDAO);
         masterServer = spy(new MasterServer());
     }
 
@@ -64,7 +70,7 @@ public class MasterServerTest {
     }
 
     @Test
-    public void testRunException() {
+    public void testRunException() throws IOException {
         doThrow(new RuntimeException()).when(listenerThread).start();
         masterServer.run();
         verify(logger).error(any(RuntimeException.class));
@@ -79,11 +85,12 @@ public class MasterServerTest {
     }
 
     @Test
-    public void testClear() {
+    public void testClear() throws IOException {
         masterServer.clear();
         verify(masterServer).interruptAndJoin(webServer);
         verify(masterServer).interruptAndJoin(listenerThread);
         verify(masterServer).interruptAndJoin(heartBeatingThread);
+        verify(cacheDAO).close();
     }
 
     @Test

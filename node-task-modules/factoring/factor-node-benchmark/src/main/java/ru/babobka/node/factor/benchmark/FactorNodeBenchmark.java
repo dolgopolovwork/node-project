@@ -37,13 +37,14 @@ public class FactorNodeBenchmark extends NodeBenchmark {
     @Override
     protected void onBenchmark() {
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        BigInteger number = createBigInteger(numberBitLength);
-        Timer timer = new Timer();
         int port = masterServerConfig.getClientListenerPort();
+        long totalTime = 0;
         try (Client client = createClient("localhost", port)) {
             for (int test = 0; test < tests; test++) {
-                Future<NodeResponse> future = client.executeTask(createFactorRequest(number));
+                Future<NodeResponse> future = client.executeTask(createFactorRequest(createBigInteger(numberBitLength)));
+                Timer timer = new Timer();
                 NodeResponse response = future.get();
+                totalTime += timer.getTimePassed();
                 if (response.getStatus() != ResponseStatus.NORMAL) {
                     printErr("Can not get the result. Response is " + response);
                     return;
@@ -54,7 +55,7 @@ public class FactorNodeBenchmark extends NodeBenchmark {
             return;
         }
         print(numberBitLength + " bit number takes " +
-                (timer.getTimePassed() / (double) tests) + "mls");
+                (totalTime / (double) tests) + "mls");
     }
 
     private static BigInteger createBigInteger(int bits) {
@@ -62,10 +63,6 @@ public class FactorNodeBenchmark extends NodeBenchmark {
         BigInteger p = BigInteger.probablePrime(factorLength, new Random());
         BigInteger q = BigInteger.probablePrime(factorLength, new Random());
         return p.multiply(q);
-    }
-
-    private static Client createClient(String host, int port) {
-        return new Client(host, port);
     }
 
     private static NodeRequest createFactorRequest(BigInteger number) {

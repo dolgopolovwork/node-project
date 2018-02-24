@@ -9,8 +9,17 @@ public class TaskMonitoringService implements TaskMonitoringServiceMBean {
 
     private final AtomicInteger executedTasks = new AtomicInteger();
     private final AtomicInteger failedTasks = new AtomicInteger();
-    private final AtomicInteger statedTasks = new AtomicInteger();
+    private final AtomicInteger startedTasks = new AtomicInteger();
     private final AtomicInteger canceledTasks = new AtomicInteger();
+    private final AtomicInteger cacheHitCount = new AtomicInteger();
+
+    public void clear() {
+        executedTasks.set(0);
+        failedTasks.set(0);
+        startedTasks.set(0);
+        canceledTasks.set(0);
+        cacheHitCount.set(0);
+    }
 
     public void incrementExecutedTasksCount() {
         executedTasks.incrementAndGet();
@@ -21,16 +30,20 @@ public class TaskMonitoringService implements TaskMonitoringServiceMBean {
     }
 
     public void incrementStartedTasksCount() {
-        statedTasks.incrementAndGet();
+        startedTasks.incrementAndGet();
     }
 
     public void incrementCanceledTasksCount() {
         canceledTasks.incrementAndGet();
     }
 
+    public void incrementCacheHitCount() {
+        cacheHitCount.incrementAndGet();
+    }
+
     @Override
     public int getStartedTasksCount() {
-        return statedTasks.get();
+        return startedTasks.get();
     }
 
     @Override
@@ -46,5 +59,10 @@ public class TaskMonitoringService implements TaskMonitoringServiceMBean {
     @Override
     public int getCanceledTasksCount() {
         return canceledTasks.get();
+    }
+
+    @Override
+    public int getCacheHitCount() {
+        return cacheHitCount.get();
     }
 }

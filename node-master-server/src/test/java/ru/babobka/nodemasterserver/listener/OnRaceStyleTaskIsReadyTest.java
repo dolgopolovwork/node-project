@@ -50,7 +50,6 @@ public class OnRaceStyleTaskIsReadyTest {
         NodeResponse response = NodeResponse.dummy(taskId);
         when(slavesStorage.getListByTaskId(response)).thenReturn(slaves);
         onRaceStyleTaskIsReady.onResponse(response);
-        verify(logger).info(anyString());
         verify(distributionService).broadcastStopRequests(slaves, response.getTaskId());
     }
 

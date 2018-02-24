@@ -12,15 +12,15 @@ import java.util.logging.Logger;
  */
 interface LogBuilder {
 
-    static Logger build(String loggerName, String runningFolder, String prefix) throws IOException {
-        return build(loggerName, runningFolder, prefix, true);
+    static Logger buildRegular(String loggerName, String runningFolder, boolean debugMode) throws IOException {
+        return buil(loggerName, runningFolder, true, debugMode);
     }
 
-    static Logger buildNoConsole(String loggerName, String runningFolder, String prefix) throws IOException {
-        return build(loggerName, runningFolder, prefix, false);
+    static Logger buildNoConsole(String loggerName, String runningFolder, boolean debugMode) throws IOException {
+        return buil(loggerName, runningFolder, false, debugMode);
     }
 
-    static Logger build(String loggerName, String runningFolder, String prefix, boolean writeConsole) throws IOException {
+    static Logger buil(String loggerName, String runningFolder, boolean writeConsole, boolean debugMode) throws IOException {
 
         Logger logger = Logger.getLogger(loggerName + "_" + System.currentTimeMillis());
 
@@ -28,10 +28,10 @@ interface LogBuilder {
         if (!folder.exists() && !folder.mkdirs()) {
             throw new IOException("Can not create folder " + folder);
         }
-        String fileName = folder.getAbsolutePath() + File.separator + prefix + "_" + System.currentTimeMillis()
+        String fileName = folder.getAbsolutePath() + File.separator + "_" + System.currentTimeMillis()
                 + ".log";
         FileHandler fh = new FileHandler(fileName);
-        LogFormatter formatter = new LogFormatter();
+        LogFormatter formatter = new LogFormatter(debugMode);
         if (writeConsole) {
             Handler ch = new ConsoleHandler();
             ch.setFormatter(formatter);

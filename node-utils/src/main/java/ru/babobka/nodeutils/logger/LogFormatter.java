@@ -15,21 +15,44 @@ final class LogFormatter extends Formatter {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+    private final boolean debugMode;
+
+    public LogFormatter(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+
     @Override
     public String format(LogRecord record) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(new Date(record.getMillis())).append(" ").append(record.getLevel().getLocalizedName()).append(" thread ").append(Thread.currentThread().getId()).append(" : ")
-                .append(formatMessage(record)).append(LINE_SEPARATOR);
-
+        StringBuilder logBuilder;
+        if (debugMode) {
+            logBuilder = debugFormat(record);
+        } else {
+            logBuilder = regularFormat(record);
+        }
         if (record.getThrown() != null) {
             try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
                 record.getThrown().printStackTrace(pw);
                 pw.close();
-                sb.append(sw.toString());
+                logBuilder.append(sw.toString());
             } catch (IOException e) {
                 throw new IllegalStateException("Can not init logger " + e);
             }
         }
-        return sb.toString();
+        return logBuilder.toString();
+    }
+
+    private StringBuilder debugFormat(LogRecord record) {
+        StringBuilder sb = new StringBuilder();
+        return sb.append(new Date(record.getMillis()))
+                .append(" ").append(record.getLevel().getLocalizedName())
+                .append(" thread ").append(Thread.currentThread().getId()).append(" : ")
+                .append(formatMessage(record)).append(LINE_SEPARATOR);
+    }
+
+    private StringBuilder regularFormat(LogRecord record) {
+        StringBuilder sb = new StringBuilder();
+        return sb.append(new Date(record.getMillis()))
+                .append(" ").append(record.getLevel().getLocalizedName()).append(" ")
+                .append(formatMessage(record)).append(LINE_SEPARATOR);
     }
 }

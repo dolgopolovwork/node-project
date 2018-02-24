@@ -1,5 +1,6 @@
 package ru.babobka.nodetester.benchmark;
 
+import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskMonitoringService;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -39,6 +40,10 @@ public abstract class NodeBenchmark {
         } finally {
             masterServer.interrupt();
         }
+    }
+
+    protected Client createClient(String host, int port) {
+        return new Client(host, port);
     }
 
     void runMBeanServer() {

@@ -11,4 +11,6 @@ public interface TaskMonitoringServiceMBean {
     int getFailedTasksCount();
 
     int getCanceledTasksCount();
+
+    int getCacheHitCount();
 }

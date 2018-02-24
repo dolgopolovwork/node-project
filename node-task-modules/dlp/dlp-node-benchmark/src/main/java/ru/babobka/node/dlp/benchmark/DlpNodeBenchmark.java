@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
@@ -24,7 +25,7 @@ import static ru.babobka.nodeclient.CLI.printErr;
  * Created by 123 on 01.02.2018.
  */
 public class DlpNodeBenchmark extends NodeBenchmark {
-
+    private static final Random RAND = new Random();
     private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
     private final int tests;
     private final int orderBitLength;
@@ -39,12 +40,14 @@ public class DlpNodeBenchmark extends NodeBenchmark {
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         MathUtil.SafePrime safePrime = MathUtil.getSafePrime(orderBitLength);
         BigInteger gen = MathUtil.getGenerator(safePrime);
-        Timer timer = new Timer();
         int port = masterServerConfig.getClientListenerPort();
+        long totalTime = 0;
         try (Client client = createClient("localhost", port)) {
             for (int test = 0; test < tests; test++) {
-                Future<NodeResponse> future = client.executeTask(createDlpRequest(gen, BigInteger.TEN, safePrime.getPrime()));
+                Future<NodeResponse> future = client.executeTask(createDlpRequest(gen, createNumber(safePrime.getPrime()), safePrime.getPrime()));
+                Timer timer = new Timer();
                 NodeResponse response = future.get();
+                totalTime += timer.getTimePassed();
                 if (response.getStatus() != ResponseStatus.NORMAL) {
                     printErr("Can not get the result. Response is " + response);
                     return;
@@ -55,12 +58,15 @@ public class DlpNodeBenchmark extends NodeBenchmark {
             return;
         }
         print(safePrime.getPrime().bitLength() + " bit order takes " +
-                (timer.getTimePassed() / (double) tests) + "mls");
+                (totalTime / (double) tests) + "mls");
     }
 
-
-    private static ru.babobka.nodeclient.Client createClient(String host, int port) {
-        return new Client(host, port);
+    private BigInteger createNumber(BigInteger mod) {
+        BigInteger number = BigInteger.valueOf(RAND.nextInt()).mod(mod);
+        if (number.equals(BigInteger.ZERO)) {
+            return createNumber(mod);
+        }
+        return number;
     }
 
     private static NodeRequest createDlpRequest(BigInteger x, BigInteger y, BigInteger mod) {

@@ -25,14 +25,14 @@ public class SlaveServer extends Thread {
     public SlaveServer(NodeConnection connection, String login, String password) throws IOException {
         this.connection = connection;
         if (!authService.auth(connection, login, HashUtil.hexSha2(password))) {
-            logger.error("Auth fail");
+            logger.error("auth fail");
             throw new SlaveAuthFailException();
         } else {
-            logger.info("Auth success");
+            logger.info("auth success");
             connection.send(taskPool.getTaskNames());
             boolean haveCommonTasks = connection.receive();
             if (!haveCommonTasks) {
-                logger.error("No common tasks with master server");
+                logger.error("no common tasks with master server");
                 throw new SlaveAuthFailException();
             }
         }
@@ -45,7 +45,6 @@ public class SlaveServer extends Thread {
 
     @Override
     public void run() {
-        //TODO как бы тут затестить
         try (SocketController controller = new SocketController(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()), tasksStorage)) {
             while (!isInterrupted()) {
                 controller.control(connection);
@@ -54,7 +53,7 @@ public class SlaveServer extends Thread {
             if (!isInterrupted()) {
                 logger.error(e);
             }
-            logger.info("Exiting slave server");
+            logger.info("exiting slave server");
         } finally {
             clear();
         }

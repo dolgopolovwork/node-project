@@ -36,6 +36,7 @@ public class GlitchThread extends CyclicThread {
             if (slaveServerList.isEmpty()) {
                 return;
             }
+            logger.debug("removing slave");
             removeRandomSlave(slaveServerList);
             try {
                 sleep(500);

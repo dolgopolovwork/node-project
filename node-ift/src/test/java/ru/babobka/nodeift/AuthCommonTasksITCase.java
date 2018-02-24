@@ -29,7 +29,7 @@ public class AuthCommonTasksITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_LOGS"), "AuthCommonTasksITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,8 +39,10 @@ public class AuthCommonTasksITCase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     @Before

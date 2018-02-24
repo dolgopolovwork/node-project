@@ -44,14 +44,14 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             Socket socket = serverSocket.accept();
             NodeConnection connection = nodeConnectionFactory.create(socket);
             connection.setReadTimeOut(config.getAuthTimeOutMillis());
-            logger.info("New connection");
+            logger.info("new connection");
             if (auth(connection)) {
-                logger.info("New slave was successfully authenticated");
+                logger.info("new slave was successfully authenticated");
                 Set<String> availableTasks = connection.receive();
                 boolean containsAnyOfTask = taskPool.containsAnyOfTask(availableTasks);
                 connection.send(containsAnyOfTask);
                 if (!containsAnyOfTask) {
-                    logger.error("New slave doesn't have any common tasks with master");
+                    logger.error("new slave doesn't have any common tasks with master");
                     return;
                 }
                 Slave slave = slaveFactory.create(availableTasks, connection);
@@ -59,7 +59,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
                 slave.start();
                 connection.setReadTimeOut(config.getRequestTimeOutMillis());
             } else {
-                logger.info("Auth fail");
+                logger.warning("auth fail");
                 connection.close();
             }
         } catch (IOException e) {
@@ -73,7 +73,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             return authService.auth(connection);
         } catch (RuntimeException e) {
-            logger.error("Error occurred while authenticating new slave", e);
+            logger.error("error occurred while authenticating new slave", e);
             return false;
         }
     }
@@ -85,7 +85,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         } catch (IOException e) {
             logger.error(e);
         }
-        logger.debug("IncomingSlaveListenerThread is done");
+        logger.debug(this.getClass().getSimpleName()+" is done");
     }
 
     @Override

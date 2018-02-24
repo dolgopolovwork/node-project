@@ -39,7 +39,7 @@ public class ClientITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_LOGS"), "clientTest"));
+            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,8 +49,10 @@ public class ClientITCase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     @Test

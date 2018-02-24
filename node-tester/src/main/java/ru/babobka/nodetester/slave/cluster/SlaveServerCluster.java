@@ -53,11 +53,20 @@ public class SlaveServerCluster extends AbstractCluster {
 
     @Override
     protected void closeImpl() {
+        interruptGlitchThread();
         synchronized (slaveServerList) {
             for (SlaveServer slaveServer : slaveServerList) {
                 slaveServer.interrupt();
+                try {
+                    slaveServer.join();
+                } catch (InterruptedException e) {
+                    slaveServer.interrupt();
+                }
             }
         }
+    }
+
+    protected void interruptGlitchThread() {
         if (glitchThread == null) {
             return;
         }

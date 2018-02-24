@@ -29,7 +29,7 @@ public class AuthITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_LOGS"), "AuthITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,8 +39,10 @@ public class AuthITCase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     @Test(expected = SlaveAuthFailException.class)

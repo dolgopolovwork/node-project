@@ -35,7 +35,7 @@ public class IncomingClientListenerThread extends Thread {
             }
         } finally {
             onExit();
-            logger.debug("IncomingClientListenerThread is done");
+            logger.debug(this.getClass().getSimpleName()+ " is done");
         }
     }
 
@@ -76,12 +76,12 @@ public class IncomingClientListenerThread extends Thread {
                 try {
                     executorService.submit(createClientExecutor(nodeConnection, request));
                 } catch (RuntimeException e) {
-                    logger.error("Error while handling request " + request, e);
+                    logger.error("errror occurred while handling request " + request, e);
                 }
                 return;
             }
             default: {
-                logger.warning("Can not handle request " + request);
+                logger.warning("can not handle request " + request);
             }
         }
     }

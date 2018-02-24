@@ -50,11 +50,6 @@ public class DummyNodeBenchmark extends NodeBenchmark {
                 (timer.getTimePassed() / (double) tests) + "mls");
     }
 
-
-    private static Client createClient(String host, int port) {
-        return new Client(host, port);
-    }
-
     private static NodeRequest createDummyRequest() {
         return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, new HashMap<>());
     }

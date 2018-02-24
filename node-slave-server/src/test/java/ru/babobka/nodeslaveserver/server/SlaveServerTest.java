@@ -52,7 +52,7 @@ public class SlaveServerTest {
         when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(true);
         when(connection.receive()).thenReturn(true);
         new SlaveServer(connection, "abc", "xyz");
-        verify(simpleLogger).info("Auth success");
+        verify(simpleLogger).info("auth success");
         verify(connection).send(anySet());
     }
 

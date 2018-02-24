@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,10 +32,10 @@ public interface HashUtil {
         HashCodeBuilder hashBuilder = new HashCodeBuilder(17, 31);
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (entry.getValue() != null) {
-                hashBuilder.append(entry.getValue().hashCode());
+                hashBuilder.append(entry.getValue().hashCode()).append(entry.getKey());
             }
         }
-        return hashBuilder.hashCode();
+        return hashBuilder.toHashCode();
     }
 
     static String hexSha2(String message) {

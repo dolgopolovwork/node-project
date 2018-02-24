@@ -45,9 +45,9 @@ public class RequestHandlerRunnable implements Runnable {
             lastResponse = response;
             if (response.getStatus() != ResponseStatus.STOPPED) {
                 connection.send(response);
-                logger.info("Response was sent " + response);
+                logger.info("response was sent " + response);
             } else {
-                logger.warning("Response was stopped " + response);
+                logger.warning("response was stopped " + response);
             }
         } catch (RuntimeException e) {
             logger.error(e);
@@ -58,7 +58,7 @@ public class RequestHandlerRunnable implements Runnable {
             }
 
         } catch (IOException e) {
-            logger.error("Response wasn't sent " + lastResponse, e);
+            logger.error("response wasn't sent " + lastResponse, e);
         }
     }
 }

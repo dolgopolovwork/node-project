@@ -18,8 +18,6 @@ public class MasterServerConfigValidator extends Validator<MasterServerConfig> {
                 new LoggerFolderValidationRule(),
                 new MainServerPortValidationRule(),
                 new RequestTimeoutMillisValidationRule(),
-                new RestServiceLoginValidationRule(),
-                new RestServicePasswordValidationRule(),
                 new TaskFolderValidationRule(),
                 new WebPortValidationRule()));
     }

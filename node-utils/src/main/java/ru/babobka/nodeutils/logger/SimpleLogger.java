@@ -15,25 +15,25 @@ public class SimpleLogger {
         this.debugMode = false;
     }
 
-    public SimpleLogger(String loggerName, String runningFolder, String prefix, boolean debugMode, boolean writeConsole) throws IOException {
+    public SimpleLogger(String loggerName, String runningFolder, boolean debugMode, boolean writeConsole) throws IOException {
         if (writeConsole) {
-            logger = LogBuilder.build(loggerName, runningFolder, prefix);
+            logger = LogBuilder.buildRegular(loggerName, runningFolder, debugMode);
         } else {
-            logger = LogBuilder.buildNoConsole(loggerName, runningFolder, prefix);
+            logger = LogBuilder.buildNoConsole(loggerName, runningFolder, debugMode);
         }
         this.debugMode = debugMode;
     }
 
-    public static SimpleLogger defaultLogger(String loggerName, String runningFolder, String prefix) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, prefix, false, true);
+    public static SimpleLogger defaultLogger(String loggerName, String runningFolder) throws IOException {
+        return new SimpleLogger(loggerName, runningFolder, false, true);
     }
 
-    public static SimpleLogger debugLogger(String loggerName, String runningFolder, String prefix) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, prefix, true, true);
+    public static SimpleLogger debugLogger(String loggerName, String runningFolder) throws IOException {
+        return new SimpleLogger(loggerName, runningFolder, true, true);
     }
 
-    public static SimpleLogger silentLogger(String loggerName, String runningFolder, String prefix) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, prefix, false, false);
+    public static SimpleLogger silentLogger(String loggerName, String runningFolder) throws IOException {
+        return new SimpleLogger(loggerName, runningFolder, false, false);
     }
 
     public void info(Object o) {

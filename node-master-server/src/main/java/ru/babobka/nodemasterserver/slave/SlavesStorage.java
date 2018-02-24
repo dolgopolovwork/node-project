@@ -18,6 +18,11 @@ public class SlavesStorage {
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final List<Slave> slaves = new ArrayList<>();
+    private final UUID storageId = UUID.randomUUID();
+
+    public SlavesStorage() {
+        logger.debug("slave storage " + storageId + " was created");
+    }
 
     public synchronized List<SlaveUser> getCurrentClusterUserList() {
         List<SlaveUser> clusterUserList = new ArrayList<>();
@@ -29,12 +34,12 @@ public class SlavesStorage {
     }
 
     synchronized void remove(Slave slave) {
-        logger.info("Remove slave " + slave);
+        logger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);
     }
 
     synchronized void add(Slave slave) {
-        logger.info("Add new slave " + slave);
+        logger.info("add new slave " + slave + " to storage " + storageId);
         slaves.add(slave);
     }
 
@@ -125,6 +130,7 @@ public class SlavesStorage {
     }
 
     public synchronized void clear() {
+        logger.debug("clear storage " + storageId);
         if (!isEmpty()) {
             interruptAll();
             slaves.clear();

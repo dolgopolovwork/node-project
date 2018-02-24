@@ -2,6 +2,7 @@ package ru.babobka.nodetester.master;
 
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 
 /**
  * Created by 123 on 06.11.2017.

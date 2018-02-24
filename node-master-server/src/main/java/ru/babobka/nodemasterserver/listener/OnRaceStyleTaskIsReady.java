@@ -22,7 +22,7 @@ public class OnRaceStyleTaskIsReady implements OnResponseListener {
     public void onResponse(NodeResponse response) {
         List<Slave> slaves = slavesStorage.getListByTaskId(response);
         if (!slaves.isEmpty()) {
-            logger.info("Cancel all requests for task id " + response.getTaskId());
+            logger.debug("cancel all requests for task id " + response.getTaskId());
             distributionService.broadcastStopRequests(slaves,
                     response.getTaskId());
         }

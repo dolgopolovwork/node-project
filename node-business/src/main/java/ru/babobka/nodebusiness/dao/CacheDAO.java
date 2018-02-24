@@ -1,11 +1,14 @@
 package ru.babobka.nodebusiness.dao;
 
+import java.io.Closeable;
 import java.io.Serializable;
 
-public interface CacheDAO<K extends Serializable> {
+public interface CacheDAO extends Closeable {
 
-    <T extends Serializable> T get(K key);
+    <T extends Serializable> T get(Integer key);
 
-    void put(K key, Serializable value);
+    void put(Integer key, Serializable value);
+
+    void clear();
 
 }

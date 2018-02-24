@@ -3,14 +3,15 @@ package ru.babobka.nodemasterserver.listener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodebusiness.service.CacheService;
-import ru.babobka.nodebusiness.service.CacheServiceImpl;
+import ru.babobka.nodebusiness.service.ResponseCacheService;
 import ru.babobka.nodemasterserver.model.CacheEntry;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -23,12 +24,12 @@ public class CacheRequestListenerTest {
 
     private CacheRequestListener cacheRequestListener;
 
-    private CacheService<Integer> cacheService;
+    private ResponseCacheService responseCacheService;
 
     @Before
     public void setUp() {
-        cacheService = mock(CacheServiceImpl.class);
-        Container.getInstance().put(cacheService);
+        responseCacheService = mock(ResponseCacheService.class);
+        Container.getInstance().put(responseCacheService);
         cacheRequestListener = new CacheRequestListener();
     }
 
@@ -47,7 +48,7 @@ public class CacheRequestListenerTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getData()).thenReturn(new HashMap<>());
         when(request.getTaskName()).thenReturn("abc");
-        when(cacheService.get(anyInt())).thenReturn(null);
+        when(responseCacheService.get(anyInt())).thenReturn(null);
         assertNull(cacheRequestListener.onRequest(request));
     }
 
@@ -57,7 +58,7 @@ public class CacheRequestListenerTest {
         when(request.getData()).thenReturn(new HashMap<>());
         when(request.getTaskName()).thenReturn("abc");
         CacheEntry cacheEntry = new CacheEntry("xyz", new HashMap<>(), mock(TaskExecutionResult.class));
-        when(cacheService.get(anyInt())).thenReturn(cacheEntry);
+        when(responseCacheService.get(anyInt())).thenReturn(cacheEntry);
         assertNull(cacheRequestListener.onRequest(request));
     }
 
@@ -69,7 +70,7 @@ public class CacheRequestListenerTest {
         when(request.getTaskName()).thenReturn(taskName);
         TaskExecutionResult taskExecutionResult = mock(TaskExecutionResult.class);
         CacheEntry cacheEntry = new CacheEntry(taskName, new HashMap<>(), taskExecutionResult);
-        when(cacheService.get(anyInt())).thenReturn(cacheEntry);
+        when(responseCacheService.get(anyInt())).thenReturn(cacheEntry);
         assertEquals(cacheRequestListener.onRequest(request), taskExecutionResult);
     }
 
@@ -89,7 +90,7 @@ public class CacheRequestListenerTest {
         TaskExecutionResult result = mock(TaskExecutionResult.class);
         when(result.isWasStopped()).thenReturn(true);
         cacheRequestListener.afterRequest(request, result);
-        verify(cacheService, never()).put(anyInt(), any(CacheEntry.class));
+        verify(responseCacheService, never()).put(anyInt(), any(CacheEntry.class));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class CacheRequestListenerTest {
         when(request.getTaskName()).thenReturn("abc");
         when(request.getData()).thenReturn(new HashMap<>());
         cacheRequestListener.afterRequest(request, result);
-        verify(cacheService).put(anyInt(), any(CacheEntry.class));
+        verify(responseCacheService).put(anyInt(), any(CacheEntry.class));
     }
 
 }

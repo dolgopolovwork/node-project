@@ -21,6 +21,8 @@ public abstract class NodeBenchmarkCLI extends CLI {
     private static final String SLAVES_OPT = "s";
     private static final String SERVICE_THREADS_OPTION = "threads";
     private static final String SERVICE_THREADS_OPT = "st";
+    private static final String CACHE_OPTION = "cache";
+    private static final String CACHE_OPT = "c";
 
     @Override
     protected Options createOptions() {
@@ -31,10 +33,14 @@ public abstract class NodeBenchmarkCLI extends CLI {
                 desc("Slave nodes to run").build();
         Option threads = Option.builder(SERVICE_THREADS_OPT).longOpt(SERVICE_THREADS_OPTION).hasArg().
                 desc("Threads to use per slave").build();
-        options.addOption(tests).addOption(slaves).addOption(threads);
+        Option cache = Option.builder(CACHE_OPT).longOpt(CACHE_OPTION).
+                desc("Enables cache").build();
+        options.addOption(tests).addOption(slaves).addOption(threads).addOption(cache);
         Options benchmarkOptions = createBenchmarkOptions();
-        for (Option benchmarkOption : benchmarkOptions.getOptions()) {
-            options.addOption(benchmarkOption);
+        if (benchmarkOptions != null) {
+            for (Option benchmarkOption : benchmarkOptions.getOptions()) {
+                options.addOption(benchmarkOption);
+            }
         }
         return options;
     }
@@ -77,7 +83,8 @@ public abstract class NodeBenchmarkCLI extends CLI {
     @Override
     protected void run(CommandLine cmd) {
         try {
-            Container.getInstance().put(SimpleLogger.silentLogger("silent-log", TextUtil.getEnv("NODE_LOGS"), "benchmark"));
+            Container.getInstance().put(SimpleLogger.silentLogger("silent-log", TextUtil.getEnv("NODE_LOGS")));
+            Container.getInstance().put("enableCache", cmd.hasOption(CACHE_OPTION));
         } catch (IOException e) {
             printErr(e.getMessage());
             return;

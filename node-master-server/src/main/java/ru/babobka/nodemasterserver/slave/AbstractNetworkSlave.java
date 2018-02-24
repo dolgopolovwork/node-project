@@ -38,12 +38,13 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
             throw new IllegalArgumentException("Connection is closed");
         }
         this.connection = connection;
-        logger.info("New connection " + connection + " slaveId: " + getSlaveId());
+        logger.info("new connection " + connection + " slaveId: " + getSlaveId());
     }
 
 
     @Override
     public void run() {
+        logger.debug("slave " + this.getSlaveId() + " is running");
         try {
             while (!isInterrupted()) {
                 connection.setReadTimeOut(masterServerConfig.getRequestTimeOutMillis());
@@ -57,11 +58,11 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
                 logger.error(e);
             }
         } finally {
-            logger.info("Removing connection " + connection);
+            logger.info("removing connection " + connection);
             synchronized (AbstractSlave.class) {
                 onExit();
             }
-            logger.info("Slave " + getSlaveId() + " was disconnected");
+            logger.info("slave " + getSlaveId() + " was disconnected");
         }
     }
 
@@ -90,15 +91,15 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         logger.info("send request " + request + " to slave " + getSlaveId());
         if (closedConnection) {
             logger.warning("connection of slave " + getSlaveId() + " was closed");
-            throw new IOException("Closed connection");
+            throw new IOException("closed connection");
         } else if (hasRequest(request)) {
-            logger.warning("Slave " + getSlaveId() + " already has request with id " + request.getId());
+            logger.warning("slave " + getSlaveId() + " already has request with id " + request.getId());
         } else if (!(request.getRequestStatus() == RequestStatus.RACE && hasTask(request.getTaskId()))) {
             addTask(request);
             getConnection().send(request);
             logger.info(request + " was sent by slave " + getSlaveId());
         } else {
-            logger.info("Request  " + request + " was ignored due to race style");
+            logger.info("request  " + request + " was ignored due to race style");
             responseStorage.get(request.getTaskId()).add(NodeResponse.dummy(request));
         }
     }

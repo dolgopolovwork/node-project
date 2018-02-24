@@ -38,7 +38,7 @@ public class EllipticCurveITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("EllipticCurveITCase", System.getenv("NODE_LOGS"), "EllipticCurveITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("EllipticCurveITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,8 +49,10 @@ public class EllipticCurveITCase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     private static void createFactorTest(int primeBitLength, TaskService taskService) throws TaskExecutionException {

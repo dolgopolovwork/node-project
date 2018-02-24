@@ -42,7 +42,7 @@ public class PrimeCounterITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_LOGS"), "PrimeCounterITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +53,10 @@ public class PrimeCounterITCase {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     private static NodeRequest createPrimeCounterRequest(long begin, long end) {

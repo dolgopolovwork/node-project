@@ -1,6 +1,7 @@
 package ru.babobka.nodeserials;
 
 import ru.babobka.nodeserials.enumerations.RequestStatus;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -56,6 +57,10 @@ public class NodeRequest extends NodeData {
         int result = super.hashCode();
         result = 31 * result + (requestStatus != null ? requestStatus.hashCode() : 0);
         return result;
+    }
+
+    public int cacheKey() {
+        return HashUtil.hashMap(getData()) ^ getTaskName().hashCode();
     }
 
     @Override

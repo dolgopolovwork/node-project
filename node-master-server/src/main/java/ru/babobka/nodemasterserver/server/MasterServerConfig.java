@@ -19,10 +19,6 @@ public class MasterServerConfig implements Serializable {
 
     private int webListenerPort;
 
-    private String restServiceLogin;
-
-    private String restServiceHashedPassword;
-
     private String loggerFolder;
 
     private String loggerFolderEnv;
@@ -34,6 +30,8 @@ public class MasterServerConfig implements Serializable {
     private boolean debugMode;
 
     private boolean localOnly;
+
+    private boolean enableCache;
 
     public int getAuthTimeOutMillis() {
         return authTimeOutMillis;
@@ -73,24 +71,6 @@ public class MasterServerConfig implements Serializable {
 
     public void setWebListenerPort(int webListenerPort) {
         this.webListenerPort = webListenerPort;
-    }
-
-    public String getRestServiceLogin() {
-        return restServiceLogin;
-    }
-
-    public void setRestServiceLogin(String restServiceLogin) {
-        this.restServiceLogin = restServiceLogin;
-    }
-
-    public String getRestServiceHashedPassword() {
-        return restServiceHashedPassword;
-    }
-
-    public void setRestServiceHashedPassword(String restServiceHashedPassword) {
-        if (restServiceHashedPassword != null) {
-            this.restServiceHashedPassword = restServiceHashedPassword;
-        }
     }
 
     public String getLoggerFolder() {
@@ -149,6 +129,13 @@ public class MasterServerConfig implements Serializable {
         this.localOnly = localOnly;
     }
 
+    public boolean isEnableCache() {
+        return enableCache;
+    }
+
+    public void setEnableCache(boolean enableCache) {
+        this.enableCache = enableCache;
+    }
 
     @Override
     public String toString() {
@@ -159,14 +146,13 @@ public class MasterServerConfig implements Serializable {
                 ", requestTimeOutMillis=" + requestTimeOutMillis +
                 ", heartBeatTimeOutMillis=" + heartBeatTimeOutMillis +
                 ", webListenerPort=" + webListenerPort +
-                ", restServiceLogin='" + restServiceLogin + '\'' +
-                ", restServiceHashedPassword='" + restServiceHashedPassword + '\'' +
                 ", loggerFolder='" + loggerFolder + '\'' +
                 ", loggerFolderEnv='" + loggerFolderEnv + '\'' +
                 ", tasksFolder='" + tasksFolder + '\'' +
                 ", tasksFolderEnv='" + tasksFolderEnv + '\'' +
                 ", debugMode=" + debugMode +
                 ", localOnly=" + localOnly +
+                ", enableCache=" + enableCache +
                 '}';
     }
 }

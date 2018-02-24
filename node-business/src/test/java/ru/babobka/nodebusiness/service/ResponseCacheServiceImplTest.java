@@ -11,31 +11,31 @@ import static org.mockito.Mockito.*;
 /**
  * Created by 123 on 13.08.2017.
  */
-public class CacheServiceImplTest {
+public class ResponseCacheServiceImplTest {
 
     private static final CacheDAO cacheDAO = mock(CacheDAO.class);
-    private static CacheService cacheService;
+    private static ResponseCacheService responseCacheService;
 
     @BeforeClass
     public static void setUp() {
         Container.getInstance().put(cacheDAO);
-        cacheService = new CacheServiceImpl();
+        responseCacheService = new ResponseCacheService();
     }
 
     @Test
     public void testPut() {
-        String key = "abc";
-        int value = 123;
-        cacheService.put(key, value);
+        Integer key = 123;
+        int value = 456;
+        responseCacheService.put(key, value);
         verify(cacheDAO).put(key, value);
     }
 
     @Test
     public void testGet() {
-        String key = "abc";
-        int value = 123;
+        Integer key = 123;
+        int value = 456;
         when(cacheDAO.get(key)).thenReturn(value);
-        assertEquals((int) cacheService.get(key), value);
+        assertEquals((int) responseCacheService.get(key), value);
     }
 
 }

@@ -40,12 +40,15 @@ public class TaskServiceImpl implements TaskService {
         if (taskId == null)
             throw new IllegalArgumentException("taskId is null");
         try {
-            logger.info("Trying to cancel task " + taskId);
+            logger.debug("Trying to cancel task " + taskId);
             Responses responses = responseStorage.get(taskId);
-            if (responses == null)
+            if (responses == null) {
+                logger.debug("No responses were found. Can not cancel.");
                 return false;
+            }
             responseStorage.setStopAllResponses(taskId);
             taskMonitoringService.incrementCanceledTasksCount();
+            //TODO нужно просто вернуть true
             return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (RuntimeException e) {
             throw new TaskExecutionException("Can not cancel task", e);
@@ -74,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
                 return TaskExecutionResult.stopped();
             }
             Map<String, Serializable> resultMap = task.getReducer().reduce(responseList).map();
-            logger.info("Got responses " + responses);
+            logger.debug("Got responses " + responses);
             taskMonitoringService.incrementExecutedTasksCount();
             return TaskExecutionResult.normal(timer, resultMap);
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
@@ -107,10 +110,10 @@ public class TaskServiceImpl implements TaskService {
         if (clusterSize <= 0) {
             throw new DistributionException("cluster size is " + clusterSize);
         }
-        logger.info("Cluster size is " + clusterSize);
+        logger.debug("cluster size is " + clusterSize);
         responseStorage.create(taskId, new Responses(clusterSize, task, request.getData()));
         List<NodeRequest> requests = task.getDistributor().distribute(request, clusterSize);
-        logger.info("Requests to distribute " + requests);
+        logger.debug("requests to distribute " + requests);
         distributionService.broadcastRequests(request.getTaskName(), requests);
     }
 
@@ -121,7 +124,7 @@ public class TaskServiceImpl implements TaskService {
             logger.error(WRONG_ARGUMENTS);
             return TaskStartResult.failed(taskId, WRONG_ARGUMENTS);
         }
-        logger.info("Started task id is " + taskId);
+        logger.debug("started task id is " + taskId);
         try {
             broadcastTask(request, task, maxNodes);
             return TaskStartResult.ok(taskId);

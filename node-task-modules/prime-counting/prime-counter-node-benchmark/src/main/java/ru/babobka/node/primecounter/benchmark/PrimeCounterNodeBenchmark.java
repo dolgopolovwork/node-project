@@ -56,10 +56,6 @@ public class PrimeCounterNodeBenchmark extends NodeBenchmark {
                 (timer.getTimePassed() / (double) tests) + "mls");
     }
 
-    private static Client createClient(String host, int port) {
-        return new Client(host, port);
-    }
-
     private static NodeRequest createPrimeCounterRequest(long begin, long end) {
         Map<String, Serializable> data = new HashMap<>();
         data.put("begin", begin);

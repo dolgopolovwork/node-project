@@ -38,20 +38,21 @@ public class PollardDlpITCase {
     @BeforeClass
     public static void setUp() {
         try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PollardDlpITCase", System.getenv("NODE_LOGS"), "PollardDlpITCase"));
+            Container.getInstance().put(SimpleLogger.debugLogger("PollardDlpITCase", System.getenv("NODE_LOGS")));
         } catch (IOException e) {
             e.printStackTrace();
         }
         MasterServerRunner.init();
-        System.out.println("wtf");
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         masterServer.interrupt();
+        masterServer.join();
+        Container.getInstance().clear();
     }
 
     private static void createDlpTest(int modBitLength, TaskService taskService) throws TaskExecutionException {
