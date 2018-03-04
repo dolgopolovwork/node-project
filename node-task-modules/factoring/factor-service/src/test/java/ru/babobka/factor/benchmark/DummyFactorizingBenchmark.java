@@ -13,7 +13,7 @@ import java.util.Random;
 
 import static org.mockito.Mockito.mock;
 
-public class FactorizingBenchmark {
+public class DummyFactorizingBenchmark {
     static {
         Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(mock(SimpleLogger.class));

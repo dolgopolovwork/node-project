@@ -48,7 +48,6 @@ public class TaskServiceImpl implements TaskService {
             }
             responseStorage.setStopAllResponses(taskId);
             taskMonitoringService.incrementCanceledTasksCount();
-            //TODO нужно просто вернуть true
             return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (RuntimeException e) {
             throw new TaskExecutionException("Can not cancel task", e);

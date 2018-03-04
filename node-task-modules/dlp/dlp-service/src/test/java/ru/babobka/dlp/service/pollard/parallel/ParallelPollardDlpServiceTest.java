@@ -40,7 +40,6 @@ public class ParallelPollardDlpServiceTest {
             Fp y = new Fp(BigInteger.valueOf(i), mod);
             DlpTask dlpTask = new DlpTask(gen, y);
             assertEquals(y, gen.pow(dlpService.dlp(dlpTask)));
-            dlpService.reset();
         }
     }
 }

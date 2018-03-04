@@ -38,7 +38,7 @@ public class DlpNodeBenchmark extends NodeBenchmark {
     @Override
     protected void onBenchmark() {
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        MathUtil.SafePrime safePrime = MathUtil.getSafePrime(orderBitLength);
+        MathUtil.SafePrime safePrime = MathUtil.getSafePrime(orderBitLength-1);
         BigInteger gen = MathUtil.getGenerator(safePrime);
         int port = masterServerConfig.getClientListenerPort();
         long totalTime = 0;

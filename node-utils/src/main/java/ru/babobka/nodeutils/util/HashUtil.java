@@ -10,7 +10,6 @@ import java.util.Map;
 /**
  * Created by 123 on 19.08.2017.
  */
-//TODO добавь md5
 public interface HashUtil {
     static byte[] sha2(String message) {
         if (message == null) {

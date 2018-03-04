@@ -43,6 +43,7 @@ public class ParallelPollardDlpService extends ThreadPoolService<DlpTask, BigInt
         } else if (task.getY().equals(task.getGen())) {
             return BigInteger.ONE;
         }
+        done.set(false);
         ParallelCollisionService collisionService = createCollisionService(new ConcurrentHashMap<>());
         List<PollardWalk> calls = PollardWalk.createCalls(collisionService, task, getCores());
         List<Future<Pair<PollardEntity>>> futures = submit(calls);

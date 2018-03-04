@@ -26,6 +26,7 @@
         <module>node-task-modules/factoring/factor-service</module>
         <module>node-task-modules/factoring/factor-task</module>
         <module>node-task-modules/factoring/factor-node-benchmark</module>
+        <module>node-task-modules/factoring/factor-benchmark</module>
         <module>node-task-modules/prime-counting/prime-counter-task</module>
         <module>node-task-modules/prime-counting/prime-counter-service</module>
         <module>node-task-modules/prime-counting/prime-counter-node-benchmark</module>
@@ -34,6 +35,7 @@
         <module>node-task-modules/dlp/dlp-service</module>
         <module>node-task-modules/dlp/dlp-task</module>
         <module>node-task-modules/dlp/dlp-node-benchmark</module>
+        <module>node-task-modules/dlp/dlp-benchmark</module>
         <module>node-task-modules/dlp/dlp</module>
     </modules>
 

@@ -21,7 +21,4 @@ public class ParallelPollardDLPServiceTestable extends DlpService {
         return parallelPollardDlpService.execute(task);
     }
 
-    public void reset() {
-        parallelPollardDlpService.setDone(false);
-    }
 }

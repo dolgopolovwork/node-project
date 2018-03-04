@@ -1,4 +1,4 @@
-package ru.babobka.dlp;
+package ru.babobka.dlp.benchmark;
 
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.service.DlpService;
@@ -16,7 +16,7 @@ import java.math.BigInteger;
 /**
  * Created by 123 on 08.01.2018.
  */
-public class Benchmark {
+public class DummyDlpBenchmark {
 
     private static final int LITTLE_MOD = 659;
     private static final int LITTLE_GEN = 2;
@@ -37,11 +37,11 @@ public class Benchmark {
         for (int i = 32; i <= 64; i++) {
             MathUtil.SafePrime safePrime = MathUtil.getSafePrime(i);
             BigInteger gen = MathUtil.getGenerator(safePrime);
-            long intGen = gen.longValue();
-            long intPrime = safePrime.getPrime().longValue();
+            long longGen = gen.longValue();
+            long longPrime = safePrime.getPrime().longValue();
             System.out.println(safePrime.getPrime().bitLength() + " bits");
-            printBenchMark(intGen, intPrime, pollardDLPService);
-            printBenchMark(intGen, intPrime, parallelPollardDLPService);
+            printBenchMark(longGen, longPrime, pollardDLPService);
+            printBenchMark(longGen, longPrime, parallelPollardDLPService);
         }
     }
 
@@ -70,9 +70,6 @@ public class Benchmark {
             Fp y = new Fp(BigInteger.valueOf(i), bigMod);
             DlpTask dlpTask = new DlpTask(bigGen, y);
             dlpService.dlp(dlpTask);
-            if (dlpService instanceof ParallelPollardDLPServiceTestable) {
-                ((ParallelPollardDLPServiceTestable) dlpService).reset();
-            }
         }
     }
     /*
