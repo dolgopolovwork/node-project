@@ -24,14 +24,6 @@ public class SlavesStorage {
         logger.debug("slave storage " + storageId + " was created");
     }
 
-    public synchronized List<SlaveUser> getCurrentClusterUserList() {
-        List<SlaveUser> clusterUserList = new ArrayList<>();
-        for (Slave slave : slaves) {
-            if (!slave.isInterrupted())
-                clusterUserList.add(new SlaveUser(slave));
-        }
-        return clusterUserList;
-    }
 
     synchronized void remove(Slave slave) {
         logger.info("remove slave " + slave + " from storage " + storageId);

@@ -4,6 +4,7 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -19,7 +20,7 @@ public class MasterServerRunner {
 
     public void run(String configPath) throws IOException {
         Container container = Container.getInstance();
-        MasterServerConfig config = TextUtil.readJsonFile(streamUtil, configPath, MasterServerConfig.class);
+        MasterServerConfig config = JSONUtil.readJsonFile(streamUtil, configPath, MasterServerConfig.class);
         configValidator.validate(config);
         container.put(config);
         container.put(createMasterServerContainer());

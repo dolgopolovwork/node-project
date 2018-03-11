@@ -41,7 +41,6 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         logger.info("new connection " + connection + " slaveId: " + getSlaveId());
     }
 
-
     @Override
     public void run() {
         logger.debug("slave " + this.getSlaveId() + " is running");
@@ -107,6 +106,10 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     public void stopTask(UUID taskId) throws IOException {
         applyToTasks(new StopTaskApplyer(taskId, this));
         getConnection().send(NodeRequest.stop(taskId));
+    }
+
+    public String getHostName() {
+        return getConnection().getHostName();
     }
 
     public void cancelAllTasks() {

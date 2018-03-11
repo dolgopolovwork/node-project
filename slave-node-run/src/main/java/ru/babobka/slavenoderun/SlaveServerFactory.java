@@ -4,6 +4,7 @@ import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -19,7 +20,7 @@ public class SlaveServerFactory {
 
     public SlaveServer create(String configPath, String login, String hashedPassword) throws IOException {
         Container container = Container.getInstance();
-        SlaveServerConfig config = TextUtil.readJsonFile(streamUtil, configPath, SlaveServerConfig.class);
+        SlaveServerConfig config = JSONUtil.readJsonFile(streamUtil, configPath, SlaveServerConfig.class);
         configValidator.validate(config);
         container.put(config);
         container.put(createSlaveServerContainer());

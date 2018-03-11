@@ -15,9 +15,6 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
-import ru.babobka.nodemasterserver.webcontroller.AvailableTasksWebController;
-import ru.babobka.nodemasterserver.webcontroller.ClusterInfoWebController;
-import ru.babobka.nodemasterserver.webcontroller.TasksInfoWebController;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.StoppedTasks;
 import ru.babobka.nodeutils.container.ApplicationContainer;
@@ -26,6 +23,8 @@ import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
+import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
+import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
 import ru.babobka.vsjws.webserver.WebServer;
 import ru.babobka.vsjws.webserver.WebServerConfig;
 
@@ -70,17 +69,15 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
     }
 
     private WebServer createWebServer(MasterServerConfig config) throws IOException {
+        Container.getInstance().put(new WebServerConfigValidator());
+        Container.getInstance().put(new JSONWebControllerMapper());
         WebServerConfig webServerConfig = new WebServerConfig();
         webServerConfig.setServerName("node web server");
         webServerConfig.setPort(config.getWebListenerPort());
         webServerConfig.setLogFolder(config.getLoggerFolder());
         webServerConfig.setSessionTimeoutSeconds(15 * 60);
-        webServerConfig.setSilentLog(true);
         WebServer webServer = new WebServer(webServerConfig);
         webServer.addController("users", new NodeUsersCRUDWebController());
-        webServer.addController("availableTasks", new AvailableTasksWebController());
-        webServer.addController("clusterInfo", new ClusterInfoWebController());
-        webServer.addController("taskInfo", new TasksInfoWebController());
         return webServer;
     }
 }

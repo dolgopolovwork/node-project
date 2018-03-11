@@ -51,23 +51,6 @@ public class ResponseStorage {
         return responses.fill(NodeResponse.stopped(taskId));
     }
 
-    public synchronized Map<UUID, ResponsesMeta> getRunningTasksMetaMap() {
-        Map<UUID, ResponsesMeta> taskMap = new HashMap<>();
-        for (Map.Entry<UUID, Responses> entry : responsesMap.entrySet()) {
-            if (!entry.getValue().isComplete()) {
-                taskMap.put(entry.getKey(), entry.getValue().getMeta());
-            }
-        }
-        return taskMap;
-    }
-
-    public synchronized ResponsesMeta getTaskMeta(UUID taskId) {
-        Responses responses = get(taskId);
-        if (responses != null) {
-            return responses.getMeta();
-        }
-        return null;
-    }
 
     public synchronized void remove(UUID taskId) {
         responsesMap.remove(taskId);

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeResponse;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -134,39 +133,5 @@ public class ResponseStorageTest {
     @Test
     public void testGetTaskMetaUnexisting() {
         assertNull(responseStorage.get(UUID.randomUUID()));
-    }
-
-    @Test
-    public void testGetTaskMeta() {
-        UUID taskId = UUID.randomUUID();
-        ResponsesMeta responsesMeta = mock(ResponsesMeta.class);
-        Responses responses = mock(Responses.class);
-        when(responses.getMeta()).thenReturn(responsesMeta);
-        responseStorage.create(taskId, responses);
-        assertEquals(responseStorage.getTaskMeta(taskId), responsesMeta);
-    }
-
-    @Test
-    public void testGetTaskMetaNoSuchTask() {
-        UUID taskId = UUID.randomUUID();
-        assertNull(responseStorage.getTaskMeta(taskId));
-    }
-
-    @Test
-    public void testGetRunningTasksMetaMap() {
-        UUID notCompleteTaskId = UUID.randomUUID();
-        UUID completeTaskId = UUID.randomUUID();
-        Responses responsesComplete = mock(Responses.class);
-        Responses responsesNotComplete = mock(Responses.class);
-        ResponsesMeta responsesMeta = mock(ResponsesMeta.class);
-        when(responsesNotComplete.isComplete()).thenReturn(false);
-        when(responsesComplete.isComplete()).thenReturn(true);
-        when(responsesNotComplete.getMeta()).thenReturn(responsesMeta);
-        responseStorage.create(completeTaskId, responsesComplete);
-        responseStorage.create(notCompleteTaskId, responsesNotComplete);
-        Map<UUID, ResponsesMeta> runningResponsesMetaMap = responseStorage.getRunningTasksMetaMap();
-        assertEquals(runningResponsesMetaMap.size(), 1);
-        assertTrue(runningResponsesMetaMap.containsKey(notCompleteTaskId));
-
     }
 }

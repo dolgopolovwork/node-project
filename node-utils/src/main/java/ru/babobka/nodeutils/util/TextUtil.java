@@ -1,29 +1,27 @@
 package ru.babobka.nodeutils.util;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-public interface TextUtil {
+public class TextUtil {
 
-    Charset CHARSET = StandardCharsets.UTF_8;
+    static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    String UUID_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+    private static final String UUID_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
-    String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-    Gson GSON = new Gson();
+    private static final String DIGITS_PATTERN = "[0-9]+";
 
-    String DIGITS_PATTERN = "[0-9]+";
+    private TextUtil() {
 
-    static boolean isValidEmail(String email) {
+    }
+
+    public static boolean isValidEmail(String email) {
         return email != null && email.matches(EMAIL_PATTERN);
     }
 
@@ -34,8 +32,7 @@ public interface TextUtil {
         return s;
     }
 
-
-    static boolean isNumber(String text) {
+    public static boolean isNumber(String text) {
         return !isEmpty(text) && text.matches(DIGITS_PATTERN);
     }
 
@@ -43,7 +40,7 @@ public interface TextUtil {
         return !isEmpty(uuid) && uuid.matches(UUID_PATTERN);
     }
 
-    static boolean isEmpty(String s) {
+    public static boolean isEmpty(String s) {
         return s == null || s.length() == 0;
     }
 
@@ -55,11 +52,30 @@ public interface TextUtil {
         }
     }
 
-    static boolean isValidPort(int port) {
+    public static int[] getLongestRepeats(String text, char repeatedChar) {
+        if (text == null || text.isEmpty()) {
+            throw new IllegalArgumentException("text must be set");
+        }
+        int[] repeats = new int[text.length()];
+        char[] chars = text.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] != repeatedChar) {
+                continue;
+            }
+            if (i == 0) {
+                repeats[i] = 1;
+            } else {
+                repeats[i] = repeats[i - 1] + 1;
+            }
+        }
+        return repeats;
+    }
+
+    public static boolean isValidPort(int port) {
         return port > 0 && port <= 65535;
     }
 
-    static int tryParseInt(String s, int defaultValue) {
+    public static int tryParseInt(String s, int defaultValue) {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
@@ -67,7 +83,11 @@ public interface TextUtil {
         }
     }
 
-    static String getFirstNonNull(String... strings) {
+    public static int tryParseInt(String s) {
+        return tryParseInt(s, 0);
+    }
+
+    public static String getFirstNonNull(String... strings) {
         if (strings == null) {
             return null;
         }
@@ -79,7 +99,7 @@ public interface TextUtil {
         return null;
     }
 
-    static String getEnv(String name) {
+    public static String getEnv(String name) {
         if (name == null) {
             return null;
         }
@@ -92,30 +112,14 @@ public interface TextUtil {
         return "";
     }
 
-    static String getStringFromException(Exception ex) {
+    public static String getStringFromException(Exception ex) {
         StringWriter errors = new StringWriter();
         ex.printStackTrace(new PrintWriter(errors));
         return errors.toString();
     }
 
-    static String beautifyServerName(String serverName, int port) {
+    public static String beautifyServerName(String serverName, int port) {
         return "'" + serverName + "':" + port;
-    }
-
-    static <T extends Serializable> T readJsonFile(StreamUtil streamUtil, String pathToJson, Class<T> clazz) throws IOException {
-        if (streamUtil == null) {
-            throw new IllegalArgumentException("streamUtil is null");
-        } else if (TextUtil.isEmpty(pathToJson)) {
-            throw new IllegalArgumentException("pathToJson is null");
-        } else if (clazz == null) {
-            throw new IllegalArgumentException("class was not specified");
-        }
-        String fileContent = streamUtil.readFile(pathToJson);
-        try {
-            return GSON.fromJson(fileContent, clazz);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
     }
 
 }

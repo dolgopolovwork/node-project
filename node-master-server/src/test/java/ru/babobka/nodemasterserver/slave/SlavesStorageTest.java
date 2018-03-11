@@ -5,7 +5,6 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
-import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -97,18 +96,6 @@ public class SlavesStorageTest {
             slavesStorage.add(slave);
         }
         assertEquals(slavesStorage.getFullList().size(), size);
-    }
-
-    @Test
-    public void testGetCurrentClusterUserList() {
-        Slave slave = mock(Slave.class);
-        NodeConnection connection = mock(NodeConnection.class);
-        when(slave.getConnection()).thenReturn(connection);
-        int size = 3;
-        for (int i = 0; i < size; i++) {
-            slavesStorage.add(slave);
-        }
-        assertEquals(slavesStorage.getCurrentClusterUserList().size(), size);
     }
 
     @Test

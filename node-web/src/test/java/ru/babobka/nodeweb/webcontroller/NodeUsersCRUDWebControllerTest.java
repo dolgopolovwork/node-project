@@ -50,7 +50,7 @@ public class NodeUsersCRUDWebControllerTest {
         HttpResponse response = nodeUsersCRUDWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
         //TODO придумать залипуху для сравнения контентов
-        // assertEquals(response.getContent(), user);
+        // assertEquals(failed.getContent(), user);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class NodeUsersCRUDWebControllerTest {
         HttpResponse response = nodeUsersCRUDWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
         //TODO придумать залипуху для сравнения контентов
-        //assertEquals(response.getContent(), users);
+        //assertEquals(failed.getContent(), users);
     }
 
     @Test

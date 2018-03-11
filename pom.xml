@@ -37,6 +37,7 @@
         <module>node-task-modules/dlp/dlp-node-benchmark</module>
         <module>node-task-modules/dlp/dlp-benchmark</module>
         <module>node-task-modules/dlp/dlp</module>
+        <module>vsjws</module>
     </modules>
 
     <build>

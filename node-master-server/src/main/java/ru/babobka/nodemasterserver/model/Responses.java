@@ -28,10 +28,10 @@ public class Responses {
     private final OnResponseListener taskIsReadyListener = Container.getInstance().get(OnTaskIsReady.class);
     private final OnResponseListener raceStyleTaskIsReadyListener = Container.getInstance().get(OnRaceStyleTaskIsReady.class);
     private final int maxSize;
-    private final ResponsesMeta meta;
     private final List<NodeResponse> responsesList = new LinkedList<>();
     private final CountDownLatch countDownLatch;
     private final SubTask task;
+    private final long startTime;
 
     public Responses(int maxSize, SubTask task, Map<String, Serializable> params) {
         if (maxSize < 1) {
@@ -42,7 +42,7 @@ public class Responses {
         this.maxSize = maxSize;
         this.countDownLatch = new CountDownLatch(maxSize);
         this.task = task;
-        this.meta = new ResponsesMeta(task.getName(), params, System.currentTimeMillis());
+        this.startTime = System.currentTimeMillis();
     }
 
     synchronized boolean isComplete() {
@@ -50,7 +50,7 @@ public class Responses {
     }
 
     public synchronized boolean add(NodeResponse response) {
-        logger.info("Add new response " + response);
+        logger.info("Add new failed " + response);
         if (isComplete() || alreadyHasResponse(response)) {
             return false;
         }
@@ -130,8 +130,8 @@ public class Responses {
         return resultingResponses;
     }
 
-    public ResponsesMeta getMeta() {
-        return meta;
+    public long getStartTime() {
+        return startTime;
     }
 
     @Override
