@@ -83,6 +83,7 @@ public abstract class NodeBenchmarkCLI extends CLI {
     @Override
     protected void run(CommandLine cmd) {
         try {
+            TextUtil.hideWarnings("SLF4J");
             Container.getInstance().put(SimpleLogger.silentLogger("silent-log", TextUtil.getEnv("NODE_LOGS")));
             Container.getInstance().put("enableCache", cmd.hasOption(CACHE_OPTION));
         } catch (IOException e) {

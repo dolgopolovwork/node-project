@@ -1,7 +1,9 @@
 package ru.babobka.nodeutils.util;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -50,6 +52,32 @@ public class TextUtil {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
+    }
+
+    public static void hideWarnings(String... prefixes) {
+        try {
+            PrintStream filterOut = new PrintStream(System.err, true, "UTF-8") {
+                public void println(String line) {
+                    if (!startsWith(line, prefixes))
+                        super.println(line);
+                }
+            };
+            System.setErr(filterOut);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean startsWith(String text, String[] prefixes) {
+        if (text == null || prefixes == null) {
+            return false;
+        }
+        for (String prefix : prefixes) {
+            if (text.startsWith(prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static int[] getLongestRepeats(String text, char repeatedChar) {
@@ -114,6 +142,7 @@ public class TextUtil {
 
     public static String getStringFromException(Exception ex) {
         StringWriter errors = new StringWriter();
+        //TODO закрыть нужно или че?
         ex.printStackTrace(new PrintWriter(errors));
         return errors.toString();
     }
