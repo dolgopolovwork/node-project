@@ -13,7 +13,7 @@ public class MainApplication extends NodeBenchmarkCLI {
 
     @Override
     protected void benchMarkRun(CommandLine cmd) {
-        new DummyNodeBenchmark(getTests(cmd)).run(getSlaves(cmd), getServiceThreads(cmd));
+        new DummyNodeBenchmark(getAppName(), getTests(cmd)).run(getSlaves(cmd), getServiceThreads(cmd));
     }
 
     @Override

@@ -30,7 +30,7 @@ public class PrimeCounterCallable implements Callable<Integer> {
 
     public static List<PrimeCounterCallable> createCalls(AtomicBoolean done, List<Range> ranges) {
         if (ranges == null) {
-            throw new IllegalArgumentException("can not create calls of null ranges");
+            throw new IllegalArgumentException("cannot create calls of null ranges");
         }
         List<PrimeCounterCallable> callables = new ArrayList<>(ranges.size());
         for (Range range : ranges) {

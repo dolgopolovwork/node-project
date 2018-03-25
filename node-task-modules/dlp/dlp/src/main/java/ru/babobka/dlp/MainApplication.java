@@ -95,9 +95,9 @@ public class MainApplication extends CLI {
             Timer timer = new Timer();
             NodeResponse response = future.get();
             if (response.getStatus() == ResponseStatus.NORMAL) {
-                print("The result is " + response.getData() + ". " + timer.getTimePassed() + "mls passed.");
+                print("the result is " + response.getData() + ". " + timer.getTimePassed() + "mls passed.");
             } else {
-                printErr("Can not get the result. The real data received is " + response);
+                printErr("can not get the result. the real data received is " + response);
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
             e.printStackTrace();

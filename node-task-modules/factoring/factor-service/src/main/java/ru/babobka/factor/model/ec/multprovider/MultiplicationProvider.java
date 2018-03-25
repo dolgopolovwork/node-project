@@ -11,7 +11,7 @@ public abstract class MultiplicationProvider {
         if (point == null) {
             throw new IllegalArgumentException("point is null");
         } else if (times < 0) {
-            throw new IllegalArgumentException("can not multiple by negative numbers");
+            throw new IllegalArgumentException("cannot multiple by negative numbers");
         } else if (point.isInfinityPoint()) {
             return point;
         } else if (times == 0L) {

@@ -18,7 +18,7 @@ public class DlpTask implements Serializable {
         } else if (!gen.getMod().equals(y.getMod())) {
             throw new IllegalArgumentException("Generator and y are from different groups");
         } else if (y.equals(Fp.addNeutral(y.getMod()))) {
-            throw new IllegalArgumentException("Can not get dlp for zero");
+            throw new IllegalArgumentException("cannot get dlp for zero");
         }
         this.gen = gen;
         this.y = y;

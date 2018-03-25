@@ -35,7 +35,7 @@ final class LogFormatter extends Formatter {
                 pw.close();
                 logBuilder.append(sw.toString());
             } catch (IOException e) {
-                throw new IllegalStateException("Can not init logger " + e);
+                throw new IllegalStateException("cannot init logger " + e);
             }
         }
         return logBuilder.toString();

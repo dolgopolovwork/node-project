@@ -1,19 +1,19 @@
 package ru.babobka.node.dummybenchmark;
 
 import ru.babobka.nodeclient.Client;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetester.benchmark.NodeBenchmark;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.time.Timer;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static ru.babobka.nodeclient.CLI.print;
 import static ru.babobka.nodeclient.CLI.printErr;
 
 /**
@@ -22,32 +22,27 @@ import static ru.babobka.nodeclient.CLI.printErr;
 public class DummyNodeBenchmark extends NodeBenchmark {
 
     private static final String TASK_NAME = "ru.babobka.dummy.DummyTask";
-    private final int tests;
 
-    public DummyNodeBenchmark(int tests) {
-        this.tests = tests;
+    public DummyNodeBenchmark(String appName, int tests) {
+        super(appName, tests);
     }
 
     @Override
-    protected void onBenchmark() {
-        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        Timer timer = new Timer();
-        int port = masterServerConfig.getClientListenerPort();
-        try (Client client = createClient("localhost", port)) {
-            for (int test = 0; test < tests; test++) {
-                Future<NodeResponse> future = client.executeTask(createDummyRequest());
-                NodeResponse response = future.get();
-                if (response.getStatus() != ResponseStatus.NORMAL) {
-                    printErr("Can not get the result. Response is " + response);
-                    return;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+    protected String getDescription() {
+        return "dummy benchmark";
+    }
+
+    @Override
+    protected void onBenchmark(Client client, AtomicLong timerStorage) throws IOException, ExecutionException, InterruptedException {
+        Future<NodeResponse> future = client.executeTask(createDummyRequest());
+        Timer requestTimer = new Timer();
+        NodeResponse response = future.get();
+        timerStorage.addAndGet(requestTimer.getTimePassed());
+        if (response.getStatus() != ResponseStatus.NORMAL) {
+            String message = "cannot get the result. response is " + response;
+            printErr(message);
+            throw new IOException(message);
         }
-        print("dummy task takes " +
-                (timer.getTimePassed() / (double) tests) + "mls");
     }
 
     private static NodeRequest createDummyRequest() {

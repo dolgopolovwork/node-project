@@ -12,7 +12,7 @@ public abstract class Reducer {
 
     public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException {
         if (responses == null) {
-            throw new IllegalArgumentException("can not reduce null responses");
+            throw new IllegalArgumentException("cannot reduce null responses");
         }
         try {
             return reduceImpl(responses);

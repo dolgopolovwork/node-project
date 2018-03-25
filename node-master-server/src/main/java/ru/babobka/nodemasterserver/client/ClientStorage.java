@@ -22,7 +22,7 @@ public class ClientStorage {
 
     public synchronized void addAll(List<Client> clients) {
         if (clients == null) {
-            throw new IllegalArgumentException("can not add null clients");
+            throw new IllegalArgumentException("cannot add null clients");
         }
         for (Client client : clients) {
             add(client);

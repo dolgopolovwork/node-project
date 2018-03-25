@@ -85,7 +85,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         } catch (IOException e) {
             logger.error(e);
         }
-        logger.debug(this.getClass().getSimpleName()+" is done");
+        logger.debug(this.getClass().getSimpleName() + " is done");
     }
 
     @Override

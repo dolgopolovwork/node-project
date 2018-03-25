@@ -7,7 +7,7 @@ public abstract class Applyer<O> {
 
     public void apply(O object) {
         if (object == null) {
-            throw new IllegalArgumentException("Can not apply to null object");
+            throw new IllegalArgumentException("cannot apply to null object");
         }
         applyImpl(object);
     }

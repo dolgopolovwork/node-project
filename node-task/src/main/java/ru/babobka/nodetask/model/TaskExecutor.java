@@ -9,7 +9,7 @@ public abstract class TaskExecutor {
 
     public ExecutionResult execute(NodeRequest request) {
         if (request == null) {
-            throw new IllegalArgumentException("can not execute null request");
+            throw new IllegalArgumentException("cannot execute null request");
         }
         return executeImpl(request);
     }

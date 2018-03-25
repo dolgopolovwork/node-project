@@ -35,7 +35,7 @@ public class IncomingClientListenerThread extends Thread {
             }
         } finally {
             onExit();
-            logger.debug(this.getClass().getSimpleName()+ " is done");
+            logger.debug(this.getClass().getSimpleName() + " is done");
         }
     }
 
@@ -81,7 +81,7 @@ public class IncomingClientListenerThread extends Thread {
                 return;
             }
             default: {
-                logger.warning("can not handle request " + request);
+                logger.warning("cannot handle request " + request);
             }
         }
     }

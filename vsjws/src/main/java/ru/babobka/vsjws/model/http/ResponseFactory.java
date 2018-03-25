@@ -81,7 +81,7 @@ public class ResponseFactory {
 
     public static HttpResponse json(Object object) {
         if (object == null) {
-            throw new IllegalArgumentException("JSON object can not be null");
+            throw new IllegalArgumentException("json object cannot be null");
         } else {
             if (object instanceof String) {
                 return json(object.toString());

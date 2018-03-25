@@ -80,6 +80,19 @@ public class TextUtil {
         return false;
     }
 
+    public static String arrayToString(Object... objects) {
+        if (objects == null || objects.length == 0) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        String indent = "";
+        for (Object object : objects) {
+            stringBuilder.append(indent).append(object);
+            indent = ", ";
+        }
+        return stringBuilder.toString();
+    }
+
     public static int[] getLongestRepeats(String text, char repeatedChar) {
         if (text == null || text.isEmpty()) {
             throw new IllegalArgumentException("text must be set");

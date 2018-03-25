@@ -76,7 +76,7 @@ public class Fp implements Serializable {
 
     public Fp mult(BigInteger n) {
         if (n == null) {
-            throw new IllegalArgumentException("can not mult null times");
+            throw new IllegalArgumentException("cannot mult null times");
         } else if (n.equals(BigInteger.ONE)) {
             return this;
         }
@@ -86,7 +86,7 @@ public class Fp implements Serializable {
     public Fp divide(Fp fp) {
         validateMod(fp);
         if (fp.getNumber().equals(BigInteger.ZERO)) {
-            throw new IllegalArgumentException("Can not divide by zero");
+            throw new IllegalArgumentException("cannot divide by zero");
         } else if (fp.isMultNeutral()) {
             return this;
         }
@@ -106,7 +106,7 @@ public class Fp implements Serializable {
         if (power == null) {
             throw new IllegalArgumentException("power is null");
         } else if (power.compareTo(BigInteger.ZERO) < 0) {
-            throw new IllegalArgumentException("can not power to negative number");
+            throw new IllegalArgumentException("cannot power to negative number");
         } else if (power.equals(BigInteger.ONE) || isMultNeutral()) {
             return this;
         }

@@ -42,7 +42,7 @@ public class HttpResponse extends Response<byte[]> {
     public HttpResponse addHeader(String key, String value) {
         if (isRestrictedHeader(key)) {
             throw new IllegalArgumentException(
-                    "You can not manually specify '" + key + "' header. It is restricted.");
+                    "you cannot manually specify '" + key + "' header. It is restricted.");
         }
         if (key.endsWith(":")) {
             getHeaders().put(key, value);

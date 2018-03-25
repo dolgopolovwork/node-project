@@ -84,7 +84,7 @@ public class RawHttpRequest {
                 protocol = line.substring(line.lastIndexOf(' '), line.length()).trim();
                 uri = line.substring(method.length(), line.length() - protocol.length()).trim();
             } catch (RuntimeException e) {
-                throw new IllegalArgumentException("Can not parse first line");
+                throw new IllegalArgumentException("cannot parse first line");
             }
         }
 

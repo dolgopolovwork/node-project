@@ -133,9 +133,9 @@ public class MathUtil {
 
     public static long dummyFactor(long n) {
         if (n < 0) {
-            throw new IllegalArgumentException("Can not factor negative number");
+            throw new IllegalArgumentException("cannot factor negative number");
         } else if (n == 0) {
-            throw new IllegalArgumentException("Can not factor zero");
+            throw new IllegalArgumentException("cannot factor zero");
         }
         if (n != 2 && n % 2 == 0) {
             return 2;

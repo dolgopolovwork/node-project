@@ -6,7 +6,7 @@ package ru.babobka.nodeutils.func;
 public abstract class Mapper<F, T> {
     public T map(F entity) {
         if (entity == null) {
-            throw new IllegalArgumentException("Can not map null value");
+            throw new IllegalArgumentException("cannot map null value");
         }
         return mapImpl(entity);
     }

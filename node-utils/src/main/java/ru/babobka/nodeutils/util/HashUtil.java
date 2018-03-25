@@ -4,7 +4,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +25,7 @@ public interface HashUtil {
 
     static int hashMap(Map<?, ?> map) {
         if (map == null) {
-            throw new IllegalArgumentException("Can not hash null map");
+            throw new IllegalArgumentException("cannot hash null map");
         }
         HashCodeBuilder hashBuilder = new HashCodeBuilder(17, 31);
         for (Map.Entry<?, ?> entry : map.entrySet()) {

@@ -1,7 +1,9 @@
 package ru.babobka.nodeutils.util;
 
 import java.io.*;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -76,21 +78,6 @@ public class StreamUtil {
             }
         }
         return files;
-    }
-
-    public String getRunningFolder() throws URISyntaxException {
-        String folder = new File(StreamUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath())
-                .toString();
-        if (folder.endsWith(".jar")) {
-            folder = folder.substring(0, folder.lastIndexOf(File.separator));
-        }
-        return folder;
-    }
-
-    public String readTextFileFromJar(String jarFilePath, String fileName) throws IOException {
-        URL url = new URL("jar:file:" + jarFilePath + "!/" + fileName);
-        InputStream is = url.openStream();
-        return readFile(is);
     }
 
     public void sendObject(Object object, Socket socket) throws IOException {

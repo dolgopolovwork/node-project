@@ -1,9 +1,9 @@
 package ru.babobka.dlp.service.pollard;
 
-import ru.babobka.dlp.service.DlpService;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
+import ru.babobka.dlp.service.DlpService;
 import ru.babobka.nodeutils.container.Container;
 
 import java.math.BigInteger;

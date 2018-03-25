@@ -3,6 +3,7 @@ package ru.babobka.nodemasterserver.server;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
+import ru.babobka.nodemasterserver.service.TaskMonitoringService;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -10,7 +11,10 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.vsjws.webserver.WebServer;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 
 /**
@@ -71,6 +75,15 @@ public class MasterServer extends Thread {
         } catch (InterruptedException e) {
             thread.interrupt();
             logger.error(e);
+        }
+    }
+
+    public static void runMBeanServer() {
+        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+        try {
+            mBeanServer.registerMBean(Container.getInstance().get(TaskMonitoringService.class), new ObjectName("node-project:type=benchmark,name=task monitoring"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

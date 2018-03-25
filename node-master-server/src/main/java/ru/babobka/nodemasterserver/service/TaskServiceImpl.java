@@ -40,17 +40,17 @@ public class TaskServiceImpl implements TaskService {
         if (taskId == null)
             throw new IllegalArgumentException("taskId is null");
         try {
-            logger.debug("Trying to cancel task " + taskId);
+            logger.debug("trying to cancel task " + taskId);
             Responses responses = responseStorage.get(taskId);
             if (responses == null) {
-                logger.debug("No responses were found. Can not cancel.");
+                logger.debug("no responses were found. cannot cancel.");
                 return false;
             }
             responseStorage.setStopAllResponses(taskId);
             taskMonitoringService.incrementCanceledTasksCount();
             return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (RuntimeException e) {
-            throw new TaskExecutionException("Can not cancel task", e);
+            throw new TaskExecutionException("cannot cancel task", e);
         }
     }
 

@@ -47,7 +47,7 @@ public class DistributionService {
     void broadcastRequests(String taskName, List<NodeRequest> requests, int retry, int maxRetry)
             throws DistributionException {
         if (maxRetry < 0) {
-            throw new IllegalArgumentException("maxRetry can not be negative");
+            throw new IllegalArgumentException("maxRetry cannot be negative");
         } else if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }

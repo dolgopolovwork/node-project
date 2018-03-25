@@ -21,7 +21,7 @@ public abstract class AbstractClient implements Runnable {
         } else if (connection.isClosed()) {
             throw new IllegalArgumentException("connection is closed");
         } else if (request == null) {
-            throw new IllegalArgumentException("can not process null request");
+            throw new IllegalArgumentException("cannot process null request");
         }
         this.connection = connection;
         this.request = request;

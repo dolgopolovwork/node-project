@@ -49,7 +49,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     protected void benchMarkRun(CommandLine cmd) {
         int begin = Integer.parseInt(cmd.getOptionValue(BEGIN_OPTION));
         int end = Integer.parseInt(cmd.getOptionValue(END_OPTION));
-        new PrimeCounterNodeBenchmark(getTests(cmd), begin, end).run(getSlaves(cmd), getServiceThreads(cmd));
+        new PrimeCounterNodeBenchmark(getAppName(), getTests(cmd), begin, end).run(getSlaves(cmd), getServiceThreads(cmd));
     }
 
     @Override

@@ -4,7 +4,7 @@
     <xsl:template match="/">
         <html>
             <head>
-                <title>XSLT example</title>
+                <description>XSLT example</description>
             </head>
             <body>
                 <table border="1">

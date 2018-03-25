@@ -52,7 +52,11 @@ public class SocketProcessorRunnable implements Runnable {
                 response.addCookie(Request.SESSION_ID_HEADER, sessionId);
             }
             if (!httpSession.exists(sessionId)) {
-                httpSession.create(sessionId);
+                httpSession.create(sessionId, request);
+            } else if (!httpSession.get(sessionId).getInfo().getCreatorAddress().equals(request.getAddress())) {
+                logger.warning("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
+                response = ResponseFactory.code(ResponseCode.FORBIDDEN);
+                return;
             }
             HttpWebController httpWebController;
             if (uri.startsWith("/web-content")) {

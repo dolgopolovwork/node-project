@@ -50,7 +50,7 @@ public abstract class Request<B> {
         if (sessionId == null) {
             return null;
         }
-        return httpSession.get(sessionId);
+        return httpSession.getData(sessionId);
     }
 
     public Map<String, Serializable> getSessionCopy() {

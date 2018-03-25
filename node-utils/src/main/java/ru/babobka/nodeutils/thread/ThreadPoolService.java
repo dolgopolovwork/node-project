@@ -5,7 +5,10 @@ import ru.babobka.nodeutils.container.Container;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -56,7 +59,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
 
     protected synchronized <T> List<Future<T>> submit(List<? extends Callable<T>> callables) {
         if (callables == null) {
-            throw new IllegalArgumentException("can not submit null callables");
+            throw new IllegalArgumentException("cannot submit null callables");
         }
         List<Future<T>> futures = new ArrayList<>(callables.size());
         if (!threadPool.isShutdown()) {
@@ -76,15 +79,12 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
     }
 
     public static ExecutorService createDaemonPool(int threads) {
-        return Executors.newFixedThreadPool(threads,
-                new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        Thread t = Executors.defaultThreadFactory().newThread(r);
-                        t.setPriority(Thread.MAX_PRIORITY);
-                        t.setDaemon(true);
-                        return t;
-                    }
-                });
+        return Executors.newFixedThreadPool(threads, r -> {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setPriority(Thread.MAX_PRIORITY);
+            t.setDaemon(true);
+            return t;
+        });
     }
 
     public static ExecutorService createDaemonPool() {

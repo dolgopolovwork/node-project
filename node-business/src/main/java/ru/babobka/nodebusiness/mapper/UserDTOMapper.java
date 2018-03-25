@@ -12,9 +12,6 @@ import java.util.UUID;
 public class UserDTOMapper extends Mapper<UserDTO, User> {
     @Override
     public User mapImpl(UserDTO userDTO) {
-        if (userDTO == null) {
-            throw new IllegalArgumentException("userDTO is null");
-        }
         User user = new User();
         if (userDTO.getName() != null)
             user.setName(userDTO.getName());

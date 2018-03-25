@@ -1,7 +1,7 @@
 package ru.babobka.dlp.task;
 
-import ru.babobka.dlp.service.PollardDlpServiceFactory;
 import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.service.PollardDlpServiceFactory;
 import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDlpService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.ExecutionResult;

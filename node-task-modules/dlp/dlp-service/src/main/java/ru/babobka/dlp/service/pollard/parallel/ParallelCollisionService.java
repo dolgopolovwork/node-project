@@ -1,8 +1,8 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
 import ru.babobka.dlp.model.Pair;
-import ru.babobka.dlp.service.pollard.ClassicPollardFunction;
 import ru.babobka.dlp.model.PollardEntity;
+import ru.babobka.dlp.service.pollard.ClassicPollardFunction;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.util.ArrayUtil;

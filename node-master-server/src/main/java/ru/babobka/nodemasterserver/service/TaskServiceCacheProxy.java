@@ -7,7 +7,6 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 
 import java.io.IOException;
 import java.util.UUID;

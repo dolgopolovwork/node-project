@@ -37,11 +37,11 @@ public class TaskPool {
             throw new CanNotInitTaskFactoryException(e);
         } catch (RuntimeException e) {
             throw new CanNotInitTaskFactoryException(
-                    "Can not init factory pool. Try to redownload new jars to node-slave-server task folder", e);
+                    "cannot init factory pool. try to redownload new jars to node-slave-server task folder", e);
         }
         if (tasksMap.isEmpty()) {
             throw new CanNotInitTaskFactoryException(
-                    "Can not init factory pool. No task to run. Try to redownload new jars to node-slave-server task folder");
+                    "cannot init factory pool. no task to run. try to redownload new jars to node-slave-server task folder");
         }
     }
 

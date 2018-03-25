@@ -17,7 +17,7 @@ public class Range implements Serializable {
 
     public Range(long begin, long end) {
         if (begin < 0) {
-            throw new IllegalArgumentException("begin can not be negative");
+            throw new IllegalArgumentException("begin cannot be negative");
         } else if (begin > end) {
             throw new IllegalArgumentException("begin is bigger than end");
         }
@@ -27,13 +27,13 @@ public class Range implements Serializable {
 
     public static List<Range> getRanges(long begin, long end, int parts) {
         if (begin < 0) {
-            throw new IllegalArgumentException("begin can not be negative");
+            throw new IllegalArgumentException("begin cannot be negative");
         } else if (begin > end) {
             throw new IllegalArgumentException("begin is bigger than end");
         } else if (parts <= 0) {
             throw new IllegalArgumentException("the must be at least one part of range");
         } else if (Math.abs(end - begin) < parts) {
-            throw new IllegalArgumentException("can not divide range [" + begin + ":" + end + "] into " + parts + " part(s)");
+            throw new IllegalArgumentException("cannot divide range [" + begin + ":" + end + "] into " + parts + " part(s)");
         }
         List<Range> ranges = new ArrayList<>(parts);
         long portion = (end - begin) / parts;

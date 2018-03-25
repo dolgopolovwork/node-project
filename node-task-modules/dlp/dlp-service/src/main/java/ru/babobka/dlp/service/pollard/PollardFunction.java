@@ -7,7 +7,7 @@ import ru.babobka.dlp.model.PollardEntity;
  */
 public abstract class PollardFunction {
 
-   public PollardEntity mix(PollardEntity pollardEntity) {
+    public PollardEntity mix(PollardEntity pollardEntity) {
         if (pollardEntity == null) {
             throw new IllegalArgumentException("pollardEntity is null");
         }

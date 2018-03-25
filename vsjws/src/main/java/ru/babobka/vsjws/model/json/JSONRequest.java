@@ -2,7 +2,6 @@ package ru.babobka.vsjws.model.json;
 
 import org.json.JSONObject;
 import ru.babobka.nodeutils.util.JSONUtil;
-import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.Param;
 import ru.babobka.vsjws.model.Request;

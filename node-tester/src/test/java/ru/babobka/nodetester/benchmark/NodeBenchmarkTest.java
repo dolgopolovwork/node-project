@@ -7,13 +7,17 @@ import org.mockito.BDDMockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
+import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
@@ -26,14 +30,32 @@ import static org.mockito.Mockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MasterServerRunner.class, SlaveServerRunner.class})
 public class NodeBenchmarkTest {
+    private Client client;
     private NodeBenchmark nodeBenchmark;
     private MasterServer masterServer;
+    private MasterServerConfig config;
+    private int port = 1010;
+    private int tests = 100;
 
     @Before
     public void setUp() {
+        config = mock(MasterServerConfig.class);
+        when(config.getClientListenerPort()).thenReturn(port);
+        Container.getInstance().put(config);
+        client = mock(Client.class);
         masterServer = mock(MasterServer.class);
-        nodeBenchmark = spy(NodeBenchmark.class);
-        doNothing().when(nodeBenchmark).runMBeanServer();
+        nodeBenchmark = spy(new NodeBenchmark("testApp", tests) {
+            @Override
+            protected String getDescription() {
+                return null;
+            }
+
+            @Override
+            protected void onBenchmark(Client client, AtomicLong timerStorage) throws IOException, ExecutionException, InterruptedException {
+
+            }
+        });
+        doNothing().when(nodeBenchmark).startMonitoring();
         PowerMockito.mockStatic(MasterServerRunner.class);
         PowerMockito.mockStatic(SlaveServerRunner.class);
         BDDMockito.given(MasterServerRunner.runMasterServer()).willReturn(masterServer);
@@ -52,27 +74,28 @@ public class NodeBenchmarkTest {
     }
 
     @Test
-    public void testRunException() throws IOException {
+    public void testRunException() throws IOException, ExecutionException, InterruptedException {
         int slaveThreads = 2;
         int slaves = 1;
         doThrow(new IOException()).when(nodeBenchmark).createCluster(anyString(), anyString(), anyInt());
         nodeBenchmark.run(slaves, slaveThreads);
-        verify(nodeBenchmark, never()).onBenchmark();
+        verify(nodeBenchmark, never()).onBenchmark(eq(client), any(AtomicLong.class));
         assertEquals((int) Container.getInstance().get("service-threads"), slaveThreads);
         verify(masterServer).interrupt();
     }
 
     @Test
-    public void testRun() throws IOException, InterruptedException {
+    public void testRun() throws IOException, InterruptedException, ExecutionException {
         int slaveThreads = 2;
         int slaves = 1;
         SlaveServerCluster cluster = mock(SlaveServerCluster.class);
         doReturn(cluster).when(nodeBenchmark).createCluster(anyString(), anyString(), anyInt());
         nodeBenchmark.run(slaves, slaveThreads);
-        verify(nodeBenchmark).onBenchmark();
+        doReturn(null).when(nodeBenchmark).executeCycledBenchmark(tests);
+        verify(nodeBenchmark).executeCycledBenchmark(tests);
         verify(cluster).start();
         assertEquals((int) Container.getInstance().get("service-threads"), slaveThreads);
         verify(masterServer).interrupt();
-        verify(nodeBenchmark).runMBeanServer();
+        verify(nodeBenchmark).startMonitoring();
     }
 }

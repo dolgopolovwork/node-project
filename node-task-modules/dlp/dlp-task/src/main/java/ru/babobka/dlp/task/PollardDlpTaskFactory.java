@@ -1,9 +1,9 @@
 package ru.babobka.dlp.task;
 
+import ru.babobka.dlp.DlpServiceApplicationContainer;
 import ru.babobka.dlp.model.PollardDlpDataValidators;
 import ru.babobka.dlp.model.PollardDlpDistributor;
 import ru.babobka.dlp.model.PollardDlpReducer;
-import ru.babobka.dlp.DlpServiceApplicationContainer;
 import ru.babobka.nodetask.model.TaskFactory;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
