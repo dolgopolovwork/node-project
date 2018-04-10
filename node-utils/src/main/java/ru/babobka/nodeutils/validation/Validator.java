@@ -11,6 +11,10 @@ public class Validator<D> {
 
     private final List<ValidationRule<D>> rules = new ArrayList<>();
 
+    public Validator(ValidationRule<D> rule) {
+        rules.add(rule);
+    }
+
     public Validator(ValidationRule<D>[] rules) {
         this(Arrays.asList(rules));
     }

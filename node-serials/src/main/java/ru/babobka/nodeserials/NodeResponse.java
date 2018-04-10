@@ -11,8 +11,8 @@ public class NodeResponse extends NodeData {
     private static final UUID DUMMY_UUID = new UUID(0, 0);
     private static final long serialVersionUID = -1071154624719215439L;
     private final long timeTakes;
-    private volatile ResponseStatus status;
     private final String message;
+    private volatile ResponseStatus status;
 
     public NodeResponse(UUID id, UUID taskId, long timeTakes, ResponseStatus status, String message,
                         Map<String, Serializable> data, String taskName) {

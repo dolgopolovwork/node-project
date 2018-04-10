@@ -7,7 +7,6 @@
     <artifactId>node-business</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>node-business</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeutils</groupId>

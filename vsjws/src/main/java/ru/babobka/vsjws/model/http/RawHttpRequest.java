@@ -37,18 +37,16 @@ public class RawHttpRequest {
                 int contentLength = TextUtil.tryParseInt(headers.get(HttpRequest.CONTENT_LENGTH_HEADER));
                 this.body = HttpUtil.readBody(contentLength, br);
                 break;
+            }
+            line = URLDecoder.decode(line, ResponseFactory.MAIN_ENCODING.name());
+            if (row == 0) {
+                firstLine = new FirstLine(line);
             } else {
-                line = URLDecoder.decode(line, ResponseFactory.MAIN_ENCODING.name());
-                if (row == 0) {
-                    firstLine = new FirstLine(line);
-                } else {
-                    Header header = new Header(line);
-                    headers.put(header.getKey(), header.getValue());
-                }
+                Header header = new Header(line);
+                headers.put(header.getKey(), header.getValue());
             }
             row++;
         }
-
     }
 
     public Map<String, String> getHeaders() {

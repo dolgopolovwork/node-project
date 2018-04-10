@@ -7,6 +7,8 @@ import org.apache.commons.cli.ParseException;
 import ru.babobka.nodebusiness.StorageApplicationContainer;
 import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.ClassLoaderUtil;
 import ru.babobka.nodeutils.util.TextUtil;
@@ -95,10 +97,10 @@ public abstract class NodeBenchmarkCLI extends CLI {
         Container container = Container.getInstance();
         try {
             TextUtil.hideWarnings("SLF4J");
-            container.put(SimpleLogger.silentLogger("silent-log", TextUtil.getEnv("NODE_LOGS")));
-            container.put("enableCache", cmd.hasOption(CACHE_OPTION));
+            container.put(SimpleLogger.silentLogger("silent-log", TextUtil.getEnv(Env.NODE_LOGS)));
+            Properties.put("enableCache", cmd.hasOption(CACHE_OPTION));
             if (cmd.hasOption(PERMANENT_DRIVER_OPTION)) {
-                container.put("permanent", true);
+                Properties.put("permanent", true);
                 ClassLoaderUtil.addPath(cmd.getOptionValue(PERMANENT_DRIVER_OPTION));
                 container.put(new StorageApplicationContainer());
             }

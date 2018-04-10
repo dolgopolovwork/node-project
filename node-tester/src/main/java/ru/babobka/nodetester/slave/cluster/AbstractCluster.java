@@ -12,7 +12,7 @@ public abstract class AbstractCluster implements Closeable {
     private boolean closed;
     private boolean started;
 
-    public AbstractCluster(String login, String password, int slaves) throws IOException {
+    public AbstractCluster(String login, String password, int slaves) {
         ArrayUtil.validateNonNull(login, password);
         if (slaves < 1) {
             throw new IllegalArgumentException("There must be at least one slave in cluster");

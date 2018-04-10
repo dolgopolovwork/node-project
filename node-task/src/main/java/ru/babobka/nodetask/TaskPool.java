@@ -66,7 +66,7 @@ public class TaskPool {
         if (taskFactory != null) {
             return taskFactory.createTask();
         } else {
-            throw new IOException("Task " + name + " was not found");
+            throw new IOException("task " + name + " was not found");
         }
     }
 

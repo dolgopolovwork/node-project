@@ -9,7 +9,10 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
 
 /**
@@ -22,6 +25,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         try {
             container.put(new NodeUtilsApplicationContainer());
             MasterServerConfig config = createTestConfig();
+            container.putIfNotExists(new NodeConnectionFactory());
             new MasterServerConfigValidator().validate(config);
             container.put(config);
             container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder()));
@@ -38,12 +42,12 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
 
     private MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolderEnv("NODE_TASKS");
-        config.setLoggerFolderEnv("NODE_LOGS");
+        config.setTasksFolderEnv(Env.NODE_TASKS.name());
+        config.setLoggerFolderEnv(Env.NODE_LOGS.name());
         config.setAuthTimeOutMillis(2000);
         config.setClientListenerPort(9999);
         config.setDebugMode(true);
-        config.setEnableCache(Container.getInstance().get("enableCache", false));
+        config.setEnableCache(Properties.getBool("enableCache", false));
         config.setHeartBeatTimeOutMillis(5000);
         config.setRequestTimeOutMillis(15000);
         config.setSlaveListenerPort(9090);

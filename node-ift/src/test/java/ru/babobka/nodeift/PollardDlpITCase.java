@@ -12,8 +12,10 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.util.MathUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -32,16 +34,12 @@ public class PollardDlpITCase {
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
-    private static MasterServer masterServer;
-    private static TaskService taskService;
+    protected static MasterServer masterServer;
+    protected static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PollardDlpITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(PollardDlpITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();

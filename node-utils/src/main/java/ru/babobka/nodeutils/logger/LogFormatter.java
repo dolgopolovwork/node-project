@@ -14,7 +14,6 @@ import java.util.logging.LogRecord;
 final class LogFormatter extends Formatter {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     private final boolean debugMode;
 
     public LogFormatter(boolean debugMode) {

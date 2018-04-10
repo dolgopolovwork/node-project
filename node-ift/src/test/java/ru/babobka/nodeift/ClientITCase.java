@@ -14,7 +14,9 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -34,15 +36,11 @@ import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 public class ClientITCase {
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
-    private static MasterServer masterServer;
+    protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("ClientITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(ClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -86,7 +84,7 @@ public class ClientITCase {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
             slaveServerCluster.start();
-            for (int i = 0; i < 25; i++) {
+            for (int i = 0; i < getTests(); i++) {
                 Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
                 NodeResponse response = future.get();
                 assertEquals((int) response.getDataValue("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
@@ -120,7 +118,7 @@ public class ClientITCase {
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 35;
-            for (int i = 0; i < 25; i++) {
+            for (int i = 0; i < getTests(); i++) {
                 BigInteger p = BigInteger.probablePrime(bits, new Random());
                 BigInteger q = BigInteger.probablePrime(bits, new Random());
                 NodeRequest request = createFactorTest(p, q);
@@ -130,6 +128,10 @@ public class ClientITCase {
                 assertTrue(factor.equals(p) || factor.equals(q));
             }
         }
+    }
+
+    protected int getTests() {
+        return 35;
     }
 
 }

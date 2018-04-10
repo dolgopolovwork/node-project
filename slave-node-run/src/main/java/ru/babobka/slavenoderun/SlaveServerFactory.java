@@ -4,10 +4,12 @@ import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
+import java.net.Socket;
 
 /**
  * Created by 123 on 05.12.2017.
@@ -27,7 +29,7 @@ public class SlaveServerFactory {
     }
 
     private SlaveServer createSlaveServer(String host, int port, String login, String password) throws IOException {
-        return new SlaveServer(host, port, login, password);
+        return new SlaveServer(new Socket(host, port), login, password);
     }
 
     private SlaveServerApplicationContainer createSlaveServerContainer() {

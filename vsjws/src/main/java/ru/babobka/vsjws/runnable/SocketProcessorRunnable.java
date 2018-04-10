@@ -9,6 +9,7 @@ import ru.babobka.vsjws.exception.InvalidContentLengthException;
 import ru.babobka.vsjws.model.Request;
 import ru.babobka.vsjws.model.http.*;
 import ru.babobka.vsjws.util.HttpUtil;
+import ru.babobka.vsjws.validator.request.RequestValidator;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
 import ru.babobka.vsjws.webcontroller.StaticResourcesController;
 
@@ -27,6 +28,7 @@ public class SocketProcessorRunnable implements Runnable {
     private final Map<String, HttpWebController> controllerMap;
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final StaticResourcesController staticResourcesController = new StaticResourcesController();
+    private final RequestValidator requestValidator = Container.getInstance().get(RequestValidator.class);
 
     public SocketProcessorRunnable(Socket socket, Map<String, HttpWebController> controllerMap, HttpSession httpSession) {
         this.socket = socket;
@@ -39,7 +41,9 @@ public class SocketProcessorRunnable implements Runnable {
         HttpResponse response = ResponseFactory.code(ResponseCode.NOT_FOUND);
         boolean noContent = false;
         try {
-            HttpRequest request = new HttpRequest(httpSession, socket.getInetAddress(), new RawHttpRequest(socket.getInputStream()));
+            RawHttpRequest rawHttpRequest = new RawHttpRequest(socket.getInputStream());
+            requestValidator.validate(rawHttpRequest);
+            HttpRequest request = new HttpRequest(httpSession, socket.getInetAddress(), rawHttpRequest);
             if (request.getMethod() == HttpMethod.HEAD)
                 noContent = true;
             String uri = HttpUtil.cleanUri(request.getUri());

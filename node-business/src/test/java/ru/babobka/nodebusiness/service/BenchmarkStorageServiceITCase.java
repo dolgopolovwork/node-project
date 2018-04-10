@@ -25,6 +25,7 @@ public class BenchmarkStorageServiceITCase {
 
     @BeforeClass
     public static void setUp() {
+        Container.getInstance().clear();
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new StreamUtil());
         Container.getInstance().put(new StorageApplicationContainer());

@@ -18,4 +18,8 @@ public enum HttpMethod {
         }
         return false;
     }
+
+    public static boolean isMethodWithContent(String method) {
+        return method.equals(HttpMethod.PATCH.toString()) || method.equals(HttpMethod.POST.toString()) || method.equals(HttpMethod.PUT.toString());
+    }
 }

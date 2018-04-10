@@ -30,6 +30,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final TaskPool taskPool = Container.getInstance().get("masterServerTaskPool");
 
     public IncomingSlaveListenerThread(ServerSocket serverSocket) {
+        setDaemon(true);
         if (serverSocket == null) {
             throw new IllegalArgumentException("serverSocket is null");
         } else if (serverSocket.isClosed()) {
@@ -39,29 +40,30 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     }
 
     @Override
-    public void onAwake() {
+    public void onCycle() {
         try {
             Socket socket = serverSocket.accept();
             NodeConnection connection = nodeConnectionFactory.create(socket);
             connection.setReadTimeOut(config.getAuthTimeOutMillis());
             logger.info("new connection");
-            if (auth(connection)) {
-                logger.info("new slave was successfully authenticated");
-                Set<String> availableTasks = connection.receive();
-                boolean containsAnyOfTask = taskPool.containsAnyOfTask(availableTasks);
-                connection.send(containsAnyOfTask);
-                if (!containsAnyOfTask) {
-                    logger.error("new slave doesn't have any common tasks with master");
-                    return;
-                }
-                Slave slave = slaveFactory.create(availableTasks, connection);
-                slavesStorage.add(slave);
-                slave.start();
-                connection.setReadTimeOut(config.getRequestTimeOutMillis());
-            } else {
+            if (!auth(connection)) {
                 logger.warning("auth fail");
                 connection.close();
+                return;
             }
+            logger.info("new slave was successfully authenticated");
+            Set<String> availableTasks = connection.receive();
+            boolean containsAnyOfTask = taskPool.containsAnyOfTask(availableTasks);
+            connection.send(containsAnyOfTask);
+            if (!containsAnyOfTask) {
+                logger.error("new slave doesn't have any common tasks with master");
+                return;
+            }
+            Slave slave = slaveFactory.create(availableTasks, connection);
+            slavesStorage.add(slave);
+            slave.start();
+            connection.setReadTimeOut(config.getRequestTimeOutMillis());
+
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
                 logger.error(e);
@@ -96,6 +98,5 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         } catch (IOException e) {
             logger.error(e);
         }
-
     }
 }

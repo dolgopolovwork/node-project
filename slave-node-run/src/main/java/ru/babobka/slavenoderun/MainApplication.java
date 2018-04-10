@@ -6,7 +6,11 @@ import org.apache.commons.cli.Options;
 import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.util.TextUtil;
+
+import javax.xml.soap.Text;
 
 /**
  * Created by 123 on 06.12.2017.
@@ -18,7 +22,6 @@ public class MainApplication extends CLI {
     private static final String CONFIG_PATH_OPT = "c";
     private static final String LOGIN_OPT = "l";
     private static final String PASSWORD_OPT = "p";
-    private static final String ENV_VAR_CONFIG = "NODE_SLAVE_CONFIG";
 
     static {
         Container.getInstance().put(new StreamUtil());
@@ -30,7 +33,7 @@ public class MainApplication extends CLI {
     protected Options createOptions() {
         Options options = new Options();
         Option configPath = Option.builder(CONFIG_PATH_OPT).longOpt(CONFIG_PATH_OPTION).hasArg().
-                desc("Defines path to configuration json file. May be omitted, if environment variable " + ENV_VAR_CONFIG + " is set.").build();
+                desc("Defines path to configuration json file. May be omitted, if environment variable " + Env.NODE_SLAVE_CONFIG + " is set.").build();
         Option loginOption = Option.builder(LOGIN_OPT).longOpt(LOGIN_OPTION).hasArg().
                 desc("Slave login").required().build();
         Option passwordOption = Option.builder(PASSWORD_OPT).longOpt(PASSWORD_OPTION).hasArg().
@@ -59,9 +62,9 @@ public class MainApplication extends CLI {
         if (configPath != null) {
             return configPath;
         }
-        configPath = System.getenv(ENV_VAR_CONFIG);
+        configPath = TextUtil.getEnv(Env.NODE_SLAVE_CONFIG);
         if (configPath != null) {
-            print("Path to config was taken from environment variable " + ENV_VAR_CONFIG);
+            print("Path to config was taken from environment variable " + Env.NODE_SLAVE_CONFIG);
             return configPath;
         }
         throw new IllegalArgumentException("Path to config was not set");

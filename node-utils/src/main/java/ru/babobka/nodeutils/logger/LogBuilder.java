@@ -23,7 +23,6 @@ interface LogBuilder {
     static Logger buil(String loggerName, String runningFolder, boolean writeConsole, boolean debugMode) throws IOException {
 
         Logger logger = Logger.getLogger(loggerName + "_" + System.currentTimeMillis());
-
         File folder = new File(runningFolder + File.separator);
         if (!folder.exists() && !folder.mkdirs()) {
             throw new IOException("cannot create folder " + folder);

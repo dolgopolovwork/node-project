@@ -6,11 +6,15 @@ import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 /**
@@ -20,8 +24,9 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
     @Override
     public void contain(Container container) {
         try {
-            container.put("service-threads", Runtime.getRuntime().availableProcessors());
+            Properties.put("service-threads", Runtime.getRuntime().availableProcessors());
             container.put(new NodeUtilsApplicationContainer());
+            container.putIfNotExists(new NodeConnectionFactory());
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);
             container.put(config);
@@ -38,9 +43,9 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
 
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setTasksFolderEnv("NODE_TASKS");
-        config.setLoggerFolderEnv("NODE_LOGS");
-        config.setAuthTimeoutMillis(5000);
+        config.setTasksFolderEnv(Env.NODE_TASKS.name());
+        config.setLoggerFolderEnv(Env.NODE_LOGS.name());
+        config.setAuthTimeoutMillis(15000);
         config.setRequestTimeoutMillis(15000);
         config.setServerHost("localhost");
         config.setServerPort(9090);

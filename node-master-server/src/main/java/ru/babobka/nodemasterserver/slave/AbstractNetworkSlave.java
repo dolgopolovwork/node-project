@@ -86,8 +86,8 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     }
 
     public synchronized void executeTask(NodeRequest request) throws IOException {
-        boolean closedConnection = getConnection().isClosed();
         logger.info("send request " + request + " to slave " + getSlaveId());
+        boolean closedConnection = getConnection().isClosed();
         if (closedConnection) {
             logger.warning("connection of slave " + getSlaveId() + " was closed");
             throw new IOException("closed connection");

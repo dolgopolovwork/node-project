@@ -37,18 +37,18 @@ public class SocketController implements Controller<NodeConnection>, Closeable {
         if (request.getRequestStatus() == RequestStatus.HEART_BEAT) {
             connection.send(NodeResponse.heartBeat());
         } else if (request.getRequestStatus() == RequestStatus.STOP) {
-            logger.info("Stopping request " + request);
+            logger.info("stopping request " + request);
             tasksStorage.stopTask(request);
         } else if (request.getRequestStatus() == RequestStatus.RACE && tasksStorage.exists(request.getTaskId())) {
             logger.warning(request.getTaskName() + " is race style task. Repeated request was not handled.");
         } else if (!tasksStorage.wasStopped(request)) {
-            logger.info("New request " + request);
+            logger.info("new request " + request);
             SubTask subTask = taskPool.get(request.getTaskName());
             tasksStorage.put(request, subTask);
             try {
                 threadPool.submit(new RequestHandlerRunnable(connection, tasksStorage, request, subTask));
             } catch (RejectedExecutionException e) {
-                logger.warning("New request was rejected", e);
+                logger.warning("new request was rejected", e);
             }
         }
     }

@@ -10,7 +10,9 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,16 +25,12 @@ import static org.mockito.Mockito.when;
  * Created by 123 on 07.11.2017.
  */
 public class AuthCommonTasksITCase {
-    private static MasterServer masterServer;
+    protected static MasterServer masterServer;
     private TaskPool taskPool;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthCommonTasksITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(AuthCommonTasksITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -49,7 +47,6 @@ public class AuthCommonTasksITCase {
     public void setUpMocks() {
         taskPool = mock(TaskPool.class);
         Container.getInstance().put("slaveServerTaskPool", taskPool);
-
     }
 
     @Test(expected = SlaveAuthFailException.class)

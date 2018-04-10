@@ -9,7 +9,9 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.io.IOException;
@@ -23,9 +25,10 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         try {
             SlaveServerConfig config = container.get(SlaveServerConfig.class);
-            container.put("service-threads", Runtime.getRuntime().availableProcessors());
-            container.putIfNotExists(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
+            Properties.put("service-threads", Runtime.getRuntime().availableProcessors());
+            container.put(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
             container.put(new NodeUtilsApplicationContainer());
+            container.put(new NodeConnectionFactory());
             container.put(config);
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());

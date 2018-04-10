@@ -10,9 +10,11 @@ import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.assertFalse;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.*;
  */
 public class IncomingClientListenerThreadTest {
 
+    private NodeConnectionFactory nodeConnectionFactory;
     private MasterServerConfig config;
     private SimpleLogger logger;
     private ExecutorService executorService;
@@ -33,6 +36,7 @@ public class IncomingClientListenerThreadTest {
 
     @Before
     public void setUp() {
+        nodeConnectionFactory = mock(NodeConnectionFactory.class);
         serverSocket = mock(ServerSocket.class);
         config = mock(MasterServerConfig.class);
         logger = mock(SimpleLogger.class);
@@ -42,6 +46,7 @@ public class IncomingClientListenerThreadTest {
         Container.getInstance().put(logger);
         Container.getInstance().put(config);
         Container.getInstance().put(taskService);
+        Container.getInstance().put(nodeConnectionFactory);
         incomingClientsThread = spy(new IncomingClientListenerThread(serverSocket));
     }
 
@@ -157,7 +162,9 @@ public class IncomingClientListenerThreadTest {
     @Test
     public void testProcessConnection() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        doReturn(connection).when(incomingClientsThread).createNodeConnection(serverSocket);
+        Socket socket = mock(Socket.class);
+        when(serverSocket.accept()).thenReturn(socket);
+        doReturn(connection).when(nodeConnectionFactory).create(socket);
         NodeRequest request = mock(NodeRequest.class);
         when(connection.receive()).thenReturn(request);
         doNothing().when(incomingClientsThread).handleRequest(connection, request);

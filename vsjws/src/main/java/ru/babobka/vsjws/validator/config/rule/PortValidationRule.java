@@ -1,6 +1,7 @@
 package ru.babobka.vsjws.validator.config.rule;
 
-import ru.babobka.vsjws.validator.ValidationRule;
+
+import ru.babobka.nodeutils.validation.ValidationRule;
 import ru.babobka.vsjws.webserver.WebServerConfig;
 
 /**

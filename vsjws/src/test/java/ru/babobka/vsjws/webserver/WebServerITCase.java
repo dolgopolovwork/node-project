@@ -14,6 +14,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
 import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
+import ru.babobka.vsjws.validator.request.RequestValidator;
 import ru.babobka.vsjws.webcontroller.it.CookieTimeController;
 import ru.babobka.vsjws.webcontroller.it.InternalErrorController;
 import ru.babobka.vsjws.webcontroller.it.JsonTestController;
@@ -42,6 +43,7 @@ public class WebServerITCase {
         Container.getInstance().put(mock(SimpleLogger.class));
         Container.getInstance().put(new WebServerConfigValidator());
         Container.getInstance().put(new JSONWebControllerMapper());
+        Container.getInstance().put(new RequestValidator());
         WebServerConfig config = new WebServerConfig();
         config.setServerName(SERVER_NAME);
         config.setPort(PORT);

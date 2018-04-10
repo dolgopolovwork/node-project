@@ -46,7 +46,7 @@ public class HeartBeatingThreadTest {
 
     @Test
     public void testOnAwake() throws IOException {
-        heartBeatingThread.onAwake();
+        heartBeatingThread.onCycle();
         verify(slavesStorage).heartBeatAllSlaves();
         verify(clientStorage).heartBeatAllClients();
     }

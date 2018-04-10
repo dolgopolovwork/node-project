@@ -17,7 +17,7 @@ public interface HttpUtil {
 
     static void writeResponse(OutputStream os, HttpResponse response, boolean noContent) throws IOException {
         if (response == null) {
-            throw new IllegalArgumentException("Response is null");
+            throw new IllegalArgumentException("response is null");
         }
         os.write(getHeadersString(response).getBytes(ResponseFactory.MAIN_ENCODING));
         if (noContent) {

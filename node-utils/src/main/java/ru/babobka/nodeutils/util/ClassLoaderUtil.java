@@ -9,6 +9,11 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import static java.security.AccessController.doPrivileged;
 
@@ -36,5 +41,29 @@ public class ClassLoaderUtil {
         } catch (NoSuchMethodException | MalformedURLException | InvocationTargetException | IllegalAccessException e) {
             throw new IOException(e);
         }
+    }
+
+    public static List<Object> getObjectsFromJar(String jarFilePath, Class<?> clazz) throws IOException {
+        List<Object> objects = new ArrayList<>();
+        try (JarFile jarFile = new JarFile(jarFilePath);
+             URLClassLoader cl = URLClassLoader
+                     .newInstance(new URL[]{new URL("jar:file:" + jarFilePath + "!/")})) {
+            Enumeration<JarEntry> e = jarFile.entries();
+            while (e.hasMoreElements()) {
+                JarEntry je = e.nextElement();
+                if (je.isDirectory() || !je.getName().endsWith(".class")) {
+                    continue;
+                }
+                String className = je.getName().substring(0, je.getName().length() - 6);
+                className = className.replace('/', '.');
+                Class<?> c = cl.loadClass(className);
+                if (clazz.isAssignableFrom(c) && !clazz.equals(c)) {
+                    objects.add(c.newInstance());
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new IOException(e);
+        }
+        return objects;
     }
 }

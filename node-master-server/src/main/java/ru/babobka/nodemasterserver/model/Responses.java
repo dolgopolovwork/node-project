@@ -50,7 +50,6 @@ public class Responses {
     }
 
     public synchronized boolean add(NodeResponse response) {
-        logger.info("Add new failed " + response);
         if (isComplete() || alreadyHasResponse(response)) {
             return false;
         }

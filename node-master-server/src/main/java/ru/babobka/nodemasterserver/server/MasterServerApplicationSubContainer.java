@@ -6,6 +6,7 @@ import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
+import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.service.TaskMonitoringService;
@@ -25,6 +26,7 @@ import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
 import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
+import ru.babobka.vsjws.validator.request.RequestValidator;
 import ru.babobka.vsjws.webserver.WebServer;
 import ru.babobka.vsjws.webserver.WebServerConfig;
 
@@ -46,6 +48,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new ClientStorage());
             container.put("masterServerTaskPool", new TaskPool(config.getTasksFolder()));
             container.put(new TaskMonitoringService());
+            container.put(new ResponsesMapper());
             if (config.isEnableCache()) {
                 container.put(new CacheRequestListener());
                 container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
@@ -58,7 +61,6 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(config.getClientListenerPort(), config.isLocalOnly())));
             container.put(new HeartBeatingThread());
             container.put(new MasterAuthService());
-            container.put(new NodeConnectionFactory());
             container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(config.getSlaveListenerPort(), config.isLocalOnly())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
@@ -69,6 +71,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
     }
 
     private WebServer createWebServer(MasterServerConfig config) throws IOException {
+        Container.getInstance().put(new RequestValidator());
         Container.getInstance().put(new WebServerConfigValidator());
         Container.getInstance().put(new JSONWebControllerMapper());
         WebServerConfig webServerConfig = new WebServerConfig();

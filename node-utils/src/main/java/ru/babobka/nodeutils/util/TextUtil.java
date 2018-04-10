@@ -1,5 +1,7 @@
 package ru.babobka.nodeutils.util;
 
+import ru.babobka.nodeutils.enums.Env;
+
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,16 +13,12 @@ import java.util.Locale;
 public class TextUtil {
 
     static final Charset CHARSET = StandardCharsets.UTF_8;
-
     private static final String UUID_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
     private static final String DIGITS_PATTERN = "[0-9]+";
 
     private TextUtil() {
-
     }
 
     public static boolean isValidEmail(String email) {
@@ -80,19 +78,6 @@ public class TextUtil {
         return false;
     }
 
-    public static String arrayToString(Object... objects) {
-        if (objects == null || objects.length == 0) {
-            return "";
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        String indent = "";
-        for (Object object : objects) {
-            stringBuilder.append(indent).append(object);
-            indent = ", ";
-        }
-        return stringBuilder.toString();
-    }
-
     public static int[] getLongestRepeats(String text, char repeatedChar) {
         if (text == null || text.isEmpty()) {
             throw new IllegalArgumentException("text must be set");
@@ -140,6 +125,10 @@ public class TextUtil {
         return null;
     }
 
+    public static String getEnv(Env env) {
+        return getEnv(env.name());
+    }
+
     public static String getEnv(String name) {
         if (name == null) {
             return null;
@@ -155,7 +144,6 @@ public class TextUtil {
 
     public static String getStringFromException(Exception ex) {
         StringWriter errors = new StringWriter();
-        //TODO закрыть нужно или че?
         ex.printStackTrace(new PrintWriter(errors));
         return errors.toString();
     }

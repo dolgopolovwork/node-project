@@ -12,8 +12,6 @@ public abstract class Request<B> {
 
     public static final String CONTENT_LENGTH_HEADER = "Content-Length";
     public static final String SESSION_ID_HEADER = "X-Session-Id";
-    public static final String PROTOCOL = "HTTP/1.1";
-    protected static final String HOST_HEADER = "Host";
     private final UUID id = UUID.randomUUID();
     private final List<Param> urlParams = new LinkedList<>();
     private final Map<String, String> cookies = new HashMap<>();
@@ -129,11 +127,6 @@ public abstract class Request<B> {
             }
         }
         return "";
-    }
-
-    protected boolean isMethodWithContent(String method) {
-        return method.equals(HttpMethod.PATCH.toString()) || method.equals(HttpMethod.POST.toString()) || method.equals(HttpMethod.PUT.toString());
-
     }
 
     protected List<String> getParams(String key, List<Param> params) {

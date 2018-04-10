@@ -7,6 +7,7 @@ import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
+import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.Responses;
 import ru.babobka.nodemasterserver.slave.Slave;
@@ -55,6 +56,7 @@ public class TaskServiceImplTest {
         Container.getInstance().put(distributionService);
         Container.getInstance().put(mock(OnTaskIsReady.class));
         Container.getInstance().put(mock(OnRaceStyleTaskIsReady.class));
+        Container.getInstance().put(new ResponsesMapper());
         taskService = new TaskServiceImpl();
     }
 

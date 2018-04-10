@@ -5,7 +5,6 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.*;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +48,7 @@ public class DummyTask extends SubTask {
         return new TaskExecutor() {
             @Override
             protected ExecutionResult executeImpl(NodeRequest request) {
-                return ExecutionResult.ok(new HashMap<String, Serializable>());
+                return ExecutionResult.ok(new HashMap<>());
             }
 
             @Override

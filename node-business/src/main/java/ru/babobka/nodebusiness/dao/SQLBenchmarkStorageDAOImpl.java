@@ -23,7 +23,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
 
     @Override
     public boolean insert(Benchmark benchmark) {
-        QueryRunner run = new QueryRunner(dataSource);
+        QueryRunner run = createQueryRunner(dataSource);
         try {
             run.update("INSERT INTO Benchmark (" +
                             "id, executionTime, startTime, description, appName, slaves, serviceThreads, os, user, processors, ramBytes, javaVersion" +
@@ -43,7 +43,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
 
     @Override
     public List<Benchmark> getAll() {
-        QueryRunner run = new QueryRunner(dataSource);
+        QueryRunner run = createQueryRunner(dataSource);
         ResultSetHandler<List<Benchmark>> hander = new BeanListHandler<>(Benchmark.class);
         try {
             List<Benchmark> persons = run.query("SELECT * FROM Benchmark", hander);
@@ -55,7 +55,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
 
     @Override
     public Benchmark get(String id) {
-        QueryRunner run = new QueryRunner(dataSource);
+        QueryRunner run = createQueryRunner(dataSource);
         ResultSetHandler<Benchmark> handler = new BeanHandler<>(Benchmark.class);
         try {
             return run.query("SELECT * FROM Benchmark WHERE id=?", handler, id);
@@ -66,7 +66,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
 
     @Override
     public boolean remove(String id) {
-        QueryRunner run = new QueryRunner(dataSource);
+        QueryRunner run = createQueryRunner(dataSource);
         try {
             int deleted = run.update("DELETE FROM benchmark WHERE ID=?", id);
             return deleted > 0;
@@ -75,5 +75,10 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
             return false;
         }
     }
+
+    QueryRunner createQueryRunner(DataSource dataSource) {
+        return new QueryRunner(dataSource);
+    }
+
 
 }

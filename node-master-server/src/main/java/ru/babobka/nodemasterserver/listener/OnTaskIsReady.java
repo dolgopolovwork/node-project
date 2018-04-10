@@ -9,7 +9,7 @@ import ru.babobka.nodeutils.logger.SimpleLogger;
  */
 public class OnTaskIsReady implements OnResponseListener {
 
-    private static final String TASK = "Task";
+    private static final String TASK = "task";
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
 

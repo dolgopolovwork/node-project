@@ -23,7 +23,7 @@ public class HttpWebController implements WebController<HttpRequest, HttpRespons
         return this;
     }
 
-    public final HttpResponse control(HttpRequest request) throws Exception {
+    public final HttpResponse control(HttpRequest request) {
         HttpResponse response = null;
         for (WebFilter filter : webFilters) {
             FilterResponse filterResponse = filter.onFilter(request);

@@ -12,7 +12,9 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,23 +31,19 @@ import static org.junit.Assert.*;
  */
 public class PrimeCounterITCase {
 
-    static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
-    static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
-    static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
-    static final int PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER = 283146;
+    protected static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
+    protected static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
+    protected static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
+    protected static final int PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER = 283146;
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private static final String TASK_NAME = "ru.babobka.primecounter.task.PrimeCounterTask";
-    private static MasterServer masterServer;
-    private static TaskService taskService;
+    protected static MasterServer masterServer;
+    protected static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("PrimeCounterITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(PrimeCounterITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -87,7 +85,7 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCountPrimesLittleRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
@@ -215,7 +213,7 @@ public class PrimeCounterITCase {
             Thread[] threads = new Thread[5];
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(() -> {
-                    for (int i1 = 0; i1 < 5; i1++) {
+                    for (int j = 0; j < 5; j++) {
                         try {
                             NodeRequest request = getExtraLargeRangeRequest();
                             logger.info("Tested request task id is [" + request.getTaskId() + "]");

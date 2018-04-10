@@ -38,7 +38,7 @@ public class GlitchThreadTest {
     @Test
     public void onAwakeEmptyList() {
         GlitchThread glitchThread = spy(new GlitchThread("login", "password", new ArrayList<>()));
-        glitchThread.onAwake();
+        glitchThread.onCycle();
         verify(glitchThread, never()).removeRandomSlave(anyList());
     }
 
@@ -47,7 +47,7 @@ public class GlitchThreadTest {
         SlaveServer slaveServer = mock(SlaveServer.class);
         List<SlaveServer> slaveServerList = new ArrayList<>(Arrays.asList(slaveServer, slaveServer));
         GlitchThread glitchThread = spy(new GlitchThread("login", "password", slaveServerList));
-        glitchThread.onAwake();
+        glitchThread.onCycle();
         verify(glitchThread).removeRandomSlave(slaveServerList);
     }
 

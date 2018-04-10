@@ -74,5 +74,4 @@ public class SimpleLogger {
         logger.severe(message + "\t" + TextUtil.getStringFromException(e));
     }
 
-
 }

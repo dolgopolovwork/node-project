@@ -31,7 +31,7 @@ public class GlitchThread extends CyclicThread {
     }
 
     @Override
-    public synchronized void onAwake() {
+    public synchronized void onCycle() {
         synchronized (slaveServerList) {
             if (slaveServerList.isEmpty()) {
                 return;

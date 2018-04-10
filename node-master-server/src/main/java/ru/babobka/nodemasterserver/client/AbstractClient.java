@@ -31,10 +31,6 @@ public abstract class AbstractClient implements Runnable {
         connection.send(NodeRequest.heartBeatRequest());
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -9,14 +9,16 @@ import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 /**
@@ -24,15 +26,11 @@ import static org.junit.Assert.fail;
  */
 public class AuthITCase {
 
-    private static MasterServer masterServer;
+    protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("AuthITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(AuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -58,7 +56,7 @@ public class AuthITCase {
 
     @Test
     public void testMassAuthSuccess() throws IOException {
-        int slaves = 100;
+        int slaves = getTests();
         List<SlaveServer> slaveServerList = new ArrayList<>(slaves);
         for (int i = 0; i < slaves; i++) {
             slaveServerList.add(SlaveServerRunner.runSlaveServer("test_user", "test_password"));
@@ -71,15 +69,20 @@ public class AuthITCase {
     @Test
     public void testMassAuthSuccessParallel() throws IOException, InterruptedException {
         int cores = Runtime.getRuntime().availableProcessors();
-        final AtomicInteger authFails = new AtomicInteger();
+        final AtomicBoolean authFail = new AtomicBoolean(false);
         Thread[] authThreads = new Thread[cores];
         for (int i = 0; i < cores; i++) {
             authThreads[i] = new Thread(() -> {
-                for (int i1 = 0; i1 < 20; i1++) {
+                for (int j = 0; j < getTests(); j++) {
+                    if (authFail.get()) {
+                        break;
+                    }
                     try {
                         SlaveServerRunner.runSlaveServer("test_user", "test_password");
                     } catch (IOException e) {
-                        authFails.incrementAndGet();
+                        e.printStackTrace();
+                        authFail.set(true);
+                        break;
                     }
                 }
             });
@@ -89,12 +92,12 @@ public class AuthITCase {
         for (Thread thread : authThreads) {
             thread.join();
         }
-        assertEquals(authFails.get(), 0);
+        assertFalse(authFail.get());
     }
 
     @Test
     public void testMassAuthFail() throws IOException {
-        int slaves = 100;
+        int slaves = getTests();
         for (int i = 0; i < slaves; i++) {
             try {
                 SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
@@ -103,5 +106,9 @@ public class AuthITCase {
                 //that's ok
             }
         }
+    }
+
+    protected int getTests() {
+        return 100;
     }
 }

@@ -77,19 +77,10 @@ public class MasterServerTest {
         verify(masterServer).clear();
     }
 
-    @Test
-    public void testInterruptAndJoin() throws InterruptedException {
-        Thread thread = mock(Thread.class);
-        masterServer.interruptAndJoin(thread);
-        verify(thread).interrupt();
-    }
 
     @Test
     public void testClear() throws IOException {
         masterServer.clear();
-        verify(masterServer).interruptAndJoin(webServer);
-        verify(masterServer).interruptAndJoin(listenerThread);
-        verify(masterServer).interruptAndJoin(heartBeatingThread);
         verify(cacheDAO).close();
     }
 

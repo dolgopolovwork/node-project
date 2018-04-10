@@ -11,6 +11,7 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.Properties;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -90,7 +91,7 @@ public abstract class NodeBenchmark {
     }
 
     private void saveBenchmark(BenchmarkData benchmarkData, int slaves, int serviceThreads) {
-        boolean ableToSave = Container.getInstance().get("permanent", false);
+        boolean ableToSave = Properties.getBool("permanent", false);
         if (!ableToSave) {
             return;
         }

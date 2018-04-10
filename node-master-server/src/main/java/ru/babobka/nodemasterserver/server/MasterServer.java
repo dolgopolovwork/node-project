@@ -54,10 +54,6 @@ public class MasterServer extends Thread {
     }
 
     synchronized void clear() {
-        interruptAndJoin(incomingClientsThread);
-        interruptAndJoin(webServer);
-        interruptAndJoin(listenerThread);
-        interruptAndJoin(heartBeatingThread);
         try {
             Container.getInstance().get(CacheDAO.class).close();
         } catch (IOException e) {
@@ -68,15 +64,6 @@ public class MasterServer extends Thread {
         }
     }
 
-    void interruptAndJoin(Thread thread) {
-        thread.interrupt();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            thread.interrupt();
-            logger.error(e);
-        }
-    }
 
     public static void runMBeanServer() {
         MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();

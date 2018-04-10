@@ -8,8 +8,12 @@ import ru.babobka.vsjws.model.json.JSONRequest;
 public class JSONRequestMapper {
     public JSONRequest map(HttpSession session, HttpRequest request) {
         return new JSONRequest(session,
-                request.getUri(), request.getUrlParams(), request.getCookies(), request.getHeaders(),
-                request.getAddress(), JSONUtil.toJsonDefault(request.getBody()), request.getMethod());
+                request.getUri(),
+                request.getUrlParams(),
+                request.getCookies(),
+                request.getHeaders(),
+                request.getAddress(),
+                JSONUtil.toJsonDefault(request.getBody()),
+                request.getMethod());
     }
-
 }

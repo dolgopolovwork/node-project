@@ -15,7 +15,10 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 
@@ -26,21 +29,17 @@ import static ru.babobka.nodeift.PrimeCounterITCase.*;
  * Created by 123 on 18.02.2018.
  */
 public class CacheITCase {
-    private static MasterServer masterServer;
+    protected static MasterServer masterServer;
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
-    private static TaskService taskService;
-    private static TaskMonitoringService monitoringService;
-    private static CacheDAO cacheDAO;
+    protected static TaskService taskService;
+    protected static TaskMonitoringService monitoringService;
+    protected static CacheDAO cacheDAO;
 
     @BeforeClass
-    public static void setUp() {
-        try {
-            Container.getInstance().put(SimpleLogger.debugLogger("CacheITCase", System.getenv("NODE_LOGS")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Container.getInstance().put("enableCache", true);
+    public static void setUp() throws IOException {
+        Container.getInstance().put(SimpleLogger.debugLogger(CacheITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Properties.put("enableCache", true);
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();
@@ -67,7 +66,7 @@ public class CacheITCase {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < getTests(); i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
                 assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
@@ -77,7 +76,7 @@ public class CacheITCase {
 
     @Test
     public void testCacheCountPrimesLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
-        final int requests = 5;
+        final int requests = getTests();
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
@@ -91,7 +90,7 @@ public class CacheITCase {
 
     @Test
     public void testCacheCountPrimesLargeRangeOneSlaveClosedCluster() throws IOException, TaskExecutionException, InterruptedException {
-        final int requests = 5;
+        final int requests = getTests();
         NodeRequest request = getLargeRangeRequest();
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
             slaveServerCluster.start();
@@ -103,5 +102,9 @@ public class CacheITCase {
             assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
         assertEquals(monitoringService.getCacheHitCount(), requests - 1);
+    }
+
+    protected int getTests() {
+        return 15;
     }
 }

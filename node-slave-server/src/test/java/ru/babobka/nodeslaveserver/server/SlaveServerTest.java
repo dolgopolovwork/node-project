@@ -9,8 +9,10 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.HashSet;
 
 import static org.mockito.Mockito.*;
@@ -22,14 +24,17 @@ public class SlaveServerTest {
     private AuthService authService;
     private SimpleLogger simpleLogger;
     private TaskPool taskPool;
+    private NodeConnectionFactory nodeConnectionFactory;
 
     @Before
     public void setUp() {
+        nodeConnectionFactory = mock(NodeConnectionFactory.class);
         authService = mock(AuthService.class);
         simpleLogger = mock(SimpleLogger.class);
         taskPool = mock(TaskPool.class);
         Container.getInstance().put(authService);
         Container.getInstance().put(simpleLogger);
+        Container.getInstance().put(nodeConnectionFactory);
         Container.getInstance().put("slaveServerTaskPool", taskPool);
     }
 
@@ -42,7 +47,8 @@ public class SlaveServerTest {
     public void testAuthFail() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(false);
-        new SlaveServer(connection, "abc", "xyz");
+        when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        new SlaveServer(mock(Socket.class), "abc", "xyz");
     }
 
     @Test
@@ -51,7 +57,8 @@ public class SlaveServerTest {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
         when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(true);
         when(connection.receive()).thenReturn(true);
-        new SlaveServer(connection, "abc", "xyz");
+        when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        new SlaveServer(mock(Socket.class), "abc", "xyz");
         verify(simpleLogger).info("auth success");
         verify(connection).send(anySet());
     }
@@ -62,7 +69,8 @@ public class SlaveServerTest {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
         when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(true);
         when(connection.receive()).thenReturn(true);
-        SlaveServer slaveServer = new SlaveServer(connection, "abc", "xyz");
+        when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        SlaveServer slaveServer = new SlaveServer(mock(Socket.class), "abc", "xyz");
         slaveServer.clear();
         verify(connection).close();
     }

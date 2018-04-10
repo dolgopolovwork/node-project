@@ -33,7 +33,6 @@ public class StreamUtil {
     }
 
     public String readFile(InputStream is) {
-
         try (Scanner scanner = new Scanner(is, TextUtil.CHARSET.name())) {
             scanner.useDelimiter("\\A");
             String lineBreak = "";

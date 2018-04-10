@@ -25,17 +25,15 @@ public class NodeUsersCRUDWebController extends JSONWebController {
     @Override
     public HttpResponse onGet(JSONRequest request) {
         String uidParam = request.getUrlParam("id");
-        if (!uidParam.isEmpty()) {
-            UUID id = UUID.fromString(uidParam);
-            User user = nodeUsersService.get(id);
-            if (user == null) {
-                return ResponseFactory.code(ResponseCode.NOT_FOUND);
-            } else {
-                return ResponseFactory.json(user);
-            }
-        } else {
+        if (uidParam.isEmpty()) {
             return ResponseFactory.json(nodeUsersService.getList());
         }
+        UUID id = UUID.fromString(uidParam);
+        User user = nodeUsersService.get(id);
+        if (user == null) {
+            return ResponseFactory.code(ResponseCode.NOT_FOUND);
+        }
+        return ResponseFactory.json(user);
     }
 
     @Override
@@ -44,13 +42,12 @@ public class NodeUsersCRUDWebController extends JSONWebController {
         if (uidParam.isEmpty()) {
             return ResponseFactory.text("Parameter 'id' was not set")
                     .setResponseCode(ResponseCode.BAD_REQUEST);
+        }
+        UUID id = UUID.fromString(uidParam);
+        if (nodeUsersService.remove(id)) {
+            return ResponseFactory.ok();
         } else {
-            UUID id = UUID.fromString(uidParam);
-            if (nodeUsersService.remove(id)) {
-                return ResponseFactory.ok();
-            } else {
-                return ResponseFactory.code(ResponseCode.NOT_FOUND);
-            }
+            return ResponseFactory.code(ResponseCode.NOT_FOUND);
         }
     }
 

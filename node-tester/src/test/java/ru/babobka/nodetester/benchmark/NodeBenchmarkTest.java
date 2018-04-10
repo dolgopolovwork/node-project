@@ -14,6 +14,7 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.container.Properties;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -94,7 +95,7 @@ public class NodeBenchmarkTest {
         doReturn(null).when(nodeBenchmark).executeCycledBenchmark(tests);
         verify(nodeBenchmark).executeCycledBenchmark(tests);
         verify(cluster).start();
-        assertEquals((int) Container.getInstance().get("service-threads"), slaveThreads);
+        assertEquals(Properties.getInt("service-threads"), slaveThreads);
         verify(masterServer).interrupt();
         verify(nodeBenchmark).startMonitoring();
     }

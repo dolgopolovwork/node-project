@@ -48,6 +48,7 @@ public class TaskServiceCacheProxy implements TaskService {
     boolean canBeCached(NodeRequest request) throws TaskExecutionException {
         SubTask task;
         try {
+            //TODO создавать для этого целый объект задачи? ну хз хз
             task = taskPool.get(request.getTaskName());
         } catch (IOException e) {
             throw new TaskExecutionException(e);

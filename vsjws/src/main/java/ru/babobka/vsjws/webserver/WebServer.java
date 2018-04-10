@@ -39,11 +39,12 @@ public class WebServer extends Thread {
 
     public WebServer(WebServerConfig config)
             throws IOException {
+        setDaemon(true);
         configValidator.validate(config);
         this.name = config.getServerName();
         this.port = config.getPort();
         this.httpSession = new HttpSession(config.getSessionTimeoutSeconds());
-        logger.debug("Debug mode is on");
+        logger.debug("debug mode is on");
         threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         this.serverSocket = new ServerSocket(port);
     }
@@ -63,7 +64,7 @@ public class WebServer extends Thread {
 
     public void run() {
         try {
-            logger.info("Run web-server " + getFullName());
+            logger.info("run web-server " + getFullName());
             OnServerStartListener listener = onServerStartListener;
             if (listener != null) {
                 listener.onStart(name, port);
@@ -82,7 +83,7 @@ public class WebServer extends Thread {
         } finally {
             clear();
         }
-        logger.info("Web-server " + getFullName() + " is done");
+        logger.info("web-server " + getFullName() + " is done");
     }
 
     private void clear() {

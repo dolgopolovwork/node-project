@@ -4,6 +4,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,9 +17,11 @@ public class IncomingClientListenerThread extends Thread {
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final ExecutorService executorService = Container.getInstance().get("clientsThreadPool");
+    private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final ServerSocket serverSocket;
 
     public IncomingClientListenerThread(ServerSocket serverSocket) {
+        setDaemon(true);
         if (serverSocket == null) {
             throw new IllegalArgumentException("serverSocket is null");
         } else if (serverSocket.isClosed()) {
@@ -61,7 +64,7 @@ public class IncomingClientListenerThread extends Thread {
             throw new IllegalStateException("serverSocket is closed");
         }
         try {
-            NodeConnection nodeConnection = createNodeConnection(serverSocket);
+            NodeConnection nodeConnection = nodeConnectionFactory.create(serverSocket.accept());
             NodeRequest request = nodeConnection.receive();
             handleRequest(nodeConnection, request);
         } catch (IOException e) {
@@ -97,7 +100,4 @@ public class IncomingClientListenerThread extends Thread {
         return serverSocket.isClosed() || Thread.currentThread().isInterrupted();
     }
 
-    NodeConnection createNodeConnection(ServerSocket serverSocket) throws IOException {
-        return new NodeConnection(serverSocket.accept());
-    }
 }

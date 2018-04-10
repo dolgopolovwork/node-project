@@ -9,6 +9,10 @@ import ru.babobka.nodeutils.thread.CyclicThread;
 
 public class HeartBeatingThread extends CyclicThread {
 
+    public HeartBeatingThread() {
+        setDaemon(true);
+    }
+
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
@@ -20,7 +24,7 @@ public class HeartBeatingThread extends CyclicThread {
     }
 
     @Override
-    public void onAwake() {
+    public void onCycle() {
         logger.debug("heart beating time");
         clientStorage.heartBeatAllClients();
         slavesStorage.heartBeatAllSlaves();

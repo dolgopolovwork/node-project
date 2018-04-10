@@ -96,7 +96,7 @@ public class IncomingSlaveListenerThreadTest {
         when(connection.receive()).thenReturn(availableTasks);
         when(slaveFactory.create(availableTasks, connection)).thenReturn(slave);
         when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
-        incomingSlaveListenerThread.onAwake();
+        incomingSlaveListenerThread.onCycle();
         verify(slavesStorage).add(slave);
         verify(slave).start();
     }
@@ -108,7 +108,7 @@ public class IncomingSlaveListenerThreadTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         when(authService.auth(connection)).thenReturn(false);
-        incomingSlaveListenerThread.onAwake();
+        incomingSlaveListenerThread.onCycle();
         verify(connection).close();
     }
 
@@ -116,7 +116,7 @@ public class IncomingSlaveListenerThreadTest {
     public void testOnAwakeIOException() throws IOException {
         when(serverSocket.isClosed()).thenReturn(true);
         when(serverSocket.accept()).thenThrow(new IOException());
-        incomingSlaveListenerThread.onAwake();
+        incomingSlaveListenerThread.onCycle();
         verify(logger).error(any(IOException.class));
     }
 
