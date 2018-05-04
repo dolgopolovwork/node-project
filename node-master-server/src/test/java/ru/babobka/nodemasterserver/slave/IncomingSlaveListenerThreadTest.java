@@ -3,9 +3,12 @@ package ru.babobka.nodemasterserver.slave;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodebusiness.service.AuthService;
-import ru.babobka.nodebusiness.service.MasterAuthService;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.service.MasterAuthService;
+import ru.babobka.nodesecurity.data.SecureDataFactory;
+import ru.babobka.nodesecurity.auth.AuthResult;
+import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.service.SecurityService;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -30,7 +33,7 @@ public class IncomingSlaveListenerThreadTest {
     private SlaveFactory slaveFactory;
     private SimpleLogger logger;
     private SlavesStorage slavesStorage;
-    private AuthService authService;
+    private MasterAuthService authService;
     private ServerSocket serverSocket;
     private TaskPool taskPool;
     private MasterServerConfig masterServerConfig;
@@ -45,13 +48,18 @@ public class IncomingSlaveListenerThreadTest {
         authService = mock(MasterAuthService.class);
         serverSocket = mock(ServerSocket.class);
         taskPool = mock(TaskPool.class);
-        Container.getInstance().put(nodeConnectionFactory);
-        Container.getInstance().put(slaveFactory);
-        Container.getInstance().put(masterServerConfig);
-        Container.getInstance().put(logger);
-        Container.getInstance().put(slavesStorage);
-        Container.getInstance().put(authService);
-        Container.getInstance().put("masterServerTaskPool", taskPool);
+        Container.getInstance().put(container -> {
+            container.put(nodeConnectionFactory);
+            container.put(slaveFactory);
+            container.put(masterServerConfig);
+            container.put(logger);
+            container.put(slavesStorage);
+            container.put(authService);
+            container.put("masterServerTaskPool", taskPool);
+            container.put(mock(SecurityService.class));
+            container.put(mock(SecureDataFactory.class));
+        });
+
         incomingSlaveListenerThread = new IncomingSlaveListenerThread(serverSocket);
     }
 
@@ -90,11 +98,11 @@ public class IncomingSlaveListenerThreadTest {
         when(serverSocket.accept()).thenReturn(socket);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        when(authService.auth(connection)).thenReturn(true);
+        when(authService.auth(connection)).thenReturn(AuthResult.success(new byte[]{0}));
         Slave slave = mock(Slave.class);
         Set<String> availableTasks = new HashSet<>();
         when(connection.receive()).thenReturn(availableTasks);
-        when(slaveFactory.create(availableTasks, connection)).thenReturn(slave);
+        when(slaveFactory.create(eq(availableTasks), any(SecureNodeConnection.class))).thenReturn(slave);
         when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
         incomingSlaveListenerThread.onCycle();
         verify(slavesStorage).add(slave);
@@ -107,7 +115,7 @@ public class IncomingSlaveListenerThreadTest {
         when(serverSocket.accept()).thenReturn(socket);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        when(authService.auth(connection)).thenReturn(false);
+        when(authService.auth(connection)).thenReturn(AuthResult.fail());
         incomingSlaveListenerThread.onCycle();
         verify(connection).close();
     }

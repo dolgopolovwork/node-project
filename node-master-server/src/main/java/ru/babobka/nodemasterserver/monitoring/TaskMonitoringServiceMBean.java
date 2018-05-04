@@ -1,4 +1,4 @@
-package ru.babobka.nodemasterserver.service;
+package ru.babobka.nodemasterserver.monitoring;
 
 /**
  * Created by 123 on 10.02.2018.

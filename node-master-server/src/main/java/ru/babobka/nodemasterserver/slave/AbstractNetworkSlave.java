@@ -29,7 +29,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-    private final NodeConnection connection;
+    protected final NodeConnection connection;
 
     AbstractNetworkSlave(NodeConnection connection) {
         if (connection == null) {
@@ -38,7 +38,6 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
             throw new IllegalArgumentException("Connection is closed");
         }
         this.connection = connection;
-        logger.info("new connection " + connection + " slaveId: " + getSlaveId());
     }
 
     @Override
@@ -76,7 +75,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     }
 
     void sendHeartBeating() throws IOException {
-        getConnection().send(NodeRequest.heartBeatRequest());
+        getConnection().send(NodeRequest.heartBeat());
     }
 
     public Map<String, List<NodeRequest>> getRequestsGroupedByTasks() {
@@ -106,10 +105,6 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     public void stopTask(UUID taskId) throws IOException {
         applyToTasks(new StopTaskApplyer(taskId, this));
         getConnection().send(NodeRequest.stop(taskId));
-    }
-
-    public String getHostName() {
-        return getConnection().getHostName();
     }
 
     public void cancelAllTasks() {

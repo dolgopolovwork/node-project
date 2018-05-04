@@ -21,7 +21,6 @@ public class IncomingClientListenerThread extends Thread {
     private final ServerSocket serverSocket;
 
     public IncomingClientListenerThread(ServerSocket serverSocket) {
-        setDaemon(true);
         if (serverSocket == null) {
             throw new IllegalArgumentException("serverSocket is null");
         } else if (serverSocket.isClosed()) {

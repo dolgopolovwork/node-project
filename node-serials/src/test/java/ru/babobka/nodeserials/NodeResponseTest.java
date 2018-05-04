@@ -44,7 +44,7 @@ public class NodeResponseTest {
     public void testGetValue() {
         Map<String, Serializable> map = new HashMap<>();
         map.put("abc", 123);
-        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeatRequest(), 0);
+        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeat(), 0);
         assertEquals((int) nodeResponse.getDataValue("abc"), 123);
     }
 
@@ -52,7 +52,7 @@ public class NodeResponseTest {
     public void testGetValueDefault() {
         Map<String, Serializable> map = new HashMap<>();
         map.put("abc", 123);
-        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeatRequest(), 0);
+        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeat(), 0);
         assertEquals((int) nodeResponse.getDataValue("abc", -1), 123);
         assertEquals((int) nodeResponse.getDataValue("xyz", -1), -1);
     }

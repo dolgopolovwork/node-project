@@ -28,7 +28,7 @@ public abstract class AbstractClient implements Runnable {
     }
 
     public void sendHeartBeating() throws IOException {
-        connection.send(NodeRequest.heartBeatRequest());
+        connection.send(NodeRequest.heartBeat());
     }
 
     @Override

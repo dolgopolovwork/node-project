@@ -25,7 +25,7 @@ public class NodeConnectionTest {
         socket = mock(Socket.class);
         streamUtil = mock(StreamUtil.class);
         Container.getInstance().put(streamUtil);
-        connection = new NodeConnection(socket);
+        connection = new NodeConnectionImpl(socket);
     }
 
     @After
@@ -35,14 +35,14 @@ public class NodeConnectionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNullSocket() {
-        new NodeConnection(null);
+        new NodeConnectionImpl((Socket) null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorClosedSocket() {
         Socket socket = mock(Socket.class);
         when(socket.isClosed()).thenReturn(true);
-        new NodeConnection(socket);
+        new NodeConnectionImpl(socket);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class NodeConnectionTest {
     public void testCloseIsClosed() throws IOException {
         when(socket.isClosed()).thenReturn(true);
         connection.close();
-        verify(socket, times(0)).close();
+        verify(socket, never()).close();
     }
 
     @Test
@@ -100,7 +100,7 @@ public class NodeConnectionTest {
     }
 
     @Test(expected = IOException.class)
-    public void testSetReadTimeoutExcetion() throws IOException {
+    public void testSetReadTimeoutException() throws IOException {
         doThrow(new SocketException()).when(socket).setSoTimeout(anyInt());
         connection.setReadTimeOut(10);
     }

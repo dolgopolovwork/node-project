@@ -1,8 +1,9 @@
 package ru.babobka.nodeutils.util;
 
+import ru.babobka.nodeutils.math.SafePrime;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Random;
 
 /**
  * Created by dolgopolov.a on 23.11.15.
@@ -42,7 +43,7 @@ public class MathUtil {
         if (a.bitLength() < 50) {
             return isPrime(a.longValue());
         } else {
-            return a.isProbablePrime(50);
+            return a.isProbablePrime(100);
         }
     }
 
@@ -147,32 +148,6 @@ public class MathUtil {
             }
         }
         return 1;
-    }
-
-    public static class SafePrime {
-        private static final BigInteger TWO = BigInteger.valueOf(2L);
-        private BigInteger sophieNumber;
-        private BigInteger prime;
-
-        private SafePrime(int bits) {
-            if (bits < 2) {
-                throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
-            }
-            Random random = new Random();
-            prime = BigInteger.ONE;
-            while (!MathUtil.isPrime(prime)) {
-                sophieNumber = BigInteger.probablePrime(bits, random);
-                prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
-            }
-        }
-
-        public BigInteger getSophieNumber() {
-            return sophieNumber;
-        }
-
-        public BigInteger getPrime() {
-            return prime;
-        }
     }
 
     public static class BigIntEuclidean {

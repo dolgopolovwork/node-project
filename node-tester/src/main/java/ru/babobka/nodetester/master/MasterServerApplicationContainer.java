@@ -4,6 +4,8 @@ import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
+import ru.babobka.nodesecurity.SecurityApplicationContainer;
+import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
@@ -12,7 +14,10 @@ import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.math.Fp;
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
+import ru.babobka.nodeutils.util.MathUtil;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
 
 /**
@@ -28,6 +33,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.putIfNotExists(new NodeConnectionFactory());
             new MasterServerConfigValidator().validate(config);
             container.put(config);
+            container.put(new SecurityApplicationContainer());
+            container.put(createSrpConfig(config));
             container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder()));
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
@@ -40,7 +47,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         }
     }
 
-    private MasterServerConfig createTestConfig() {
+    private static MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
         config.setTasksFolderEnv(Env.NODE_TASKS.name());
         config.setLoggerFolderEnv(Env.NODE_LOGS.name());
@@ -52,7 +59,14 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setRequestTimeOutMillis(15000);
         config.setSlaveListenerPort(9090);
         config.setWebListenerPort(8080);
+        config.setBigSafePrime(MathUtil.getSafePrime(128));
         return config;
+    }
+
+    private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
+        SafePrime bigSafePrime = masterServerConfig.getBigSafePrime();
+        Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
+        return new SrpConfig(gen, 16);
     }
 
 }

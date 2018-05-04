@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
-import ru.babobka.nodebusiness.service.MasterAuthService;
+import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.service.DistributionService;
-import ru.babobka.nodemasterserver.service.TaskMonitoringService;
+import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.service.TaskServiceCacheProxy;
 import ru.babobka.nodemasterserver.service.TaskServiceImpl;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -21,7 +21,6 @@ import ru.babobka.nodetask.model.StoppedTasks;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
-import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
@@ -58,7 +57,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new StoppedTasks());
             container.put(new SlaveFactory());
             container.put("clientsThreadPool", Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
-            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(config.getClientListenerPort(), config.isLocalOnly())));
+            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(config.getClientListenerPort(), true)));
             container.put(new HeartBeatingThread());
             container.put(new MasterAuthService());
             container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(config.getSlaveListenerPort(), config.isLocalOnly())));

@@ -8,6 +8,7 @@ import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -35,7 +36,7 @@ public class DummyDlpBenchmark {
         warmUp();
         System.out.println("Done warm up");
         for (int i = 32; i <= 64; i++) {
-            MathUtil.SafePrime safePrime = MathUtil.getSafePrime(i);
+            SafePrime safePrime = MathUtil.getSafePrime(i);
             BigInteger gen = MathUtil.getGenerator(safePrime);
             long longGen = gen.longValue();
             long longPrime = safePrime.getPrime().longValue();

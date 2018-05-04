@@ -202,7 +202,7 @@ public class FpTest {
 
     @Test
     public void testPowLaw() {
-        BigInteger mod = BigInteger.TEN;
+        BigInteger mod = BigInteger.valueOf(100L);
         BigInteger exp1 = BigInteger.valueOf(4L);
         BigInteger exp2 = BigInteger.valueOf(5L);
         Fp fp = Fp.random(mod);

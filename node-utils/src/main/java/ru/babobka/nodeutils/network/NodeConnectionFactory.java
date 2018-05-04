@@ -8,6 +8,6 @@ import java.net.Socket;
 public class NodeConnectionFactory {
 
     public NodeConnection create(Socket socket) {
-        return new NodeConnection(socket);
+        return new NodeConnectionImpl(socket);
     }
 }

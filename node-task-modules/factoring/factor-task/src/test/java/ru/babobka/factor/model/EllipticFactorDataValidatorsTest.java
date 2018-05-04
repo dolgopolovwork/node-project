@@ -71,7 +71,7 @@ public class EllipticFactorDataValidatorsTest {
         Map<String, Serializable> dataMap = new HashMap<>();
         dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(3));
         dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
-        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
+        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeat(), 10L);
         assertFalse(ellipticFactorDataValidators.isValidResponse(nodeResponse));
     }
 
@@ -80,7 +80,7 @@ public class EllipticFactorDataValidatorsTest {
         Map<String, Serializable> dataMap = new HashMap<>();
         dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
         dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
-        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeatRequest(), 10L);
+        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeat(), 10L);
         assertTrue(ellipticFactorDataValidators.isValidResponse(nodeResponse));
     }
 }

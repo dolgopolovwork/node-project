@@ -8,12 +8,11 @@ import java.util.Random;
  * Created by 123 on 23.09.2017.
  */
 public class Fp implements Serializable {
+    private static final long serialVersionUID = -1025489560763994359L;
     private static final BigInteger TWO = BigInteger.valueOf(2L);
     private static final BigInteger THREE = BigInteger.valueOf(3L);
-    private static final long serialVersionUID = -1025489560763994359L;
     private final BigInteger number;
     private final BigInteger mod;
-
 
     public Fp(BigInteger number, BigInteger mod) {
         if (mod == null) {
@@ -98,10 +97,6 @@ public class Fp implements Serializable {
     }
 
 
-    public Fp pow(long power) {
-        return pow(BigInteger.valueOf(power));
-    }
-
     public Fp pow(BigInteger power) {
         if (power == null) {
             throw new IllegalArgumentException("power is null");
@@ -137,7 +132,7 @@ public class Fp implements Serializable {
         return this.getNumber().equals(BigInteger.ONE);
     }
 
-    private boolean isSameMod(Fp fp) {
+    public boolean isSameMod(Fp fp) {
         return fp.mod.equals(mod);
     }
 

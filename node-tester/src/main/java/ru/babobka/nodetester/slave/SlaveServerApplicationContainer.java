@@ -1,12 +1,12 @@
 package ru.babobka.nodetester.slave;
 
+import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetask.TaskPool;
-import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
@@ -26,6 +26,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
         try {
             Properties.put("service-threads", Runtime.getRuntime().availableProcessors());
             container.put(new NodeUtilsApplicationContainer());
+            container.put(new SecurityApplicationContainer());
             container.putIfNotExists(new NodeConnectionFactory());
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);

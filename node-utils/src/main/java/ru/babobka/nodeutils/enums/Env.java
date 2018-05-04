@@ -8,5 +8,5 @@ public enum Env {
     NODE_SLAVE_CONFIG,
     NODE_STORAGE_CONFIG,
     NODE_LOGS,
-    NODE_TASKS;
+    NODE_TASKS
 }

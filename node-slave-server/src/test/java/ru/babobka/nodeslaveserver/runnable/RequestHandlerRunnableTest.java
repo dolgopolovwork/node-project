@@ -42,7 +42,7 @@ public class RequestHandlerRunnableTest {
     public void testRunRegular() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        NodeRequest request = NodeRequest.heartBeatRequest();
+        NodeRequest request = NodeRequest.heartBeat();
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(taskRunnerService).runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class));
@@ -53,7 +53,7 @@ public class RequestHandlerRunnableTest {
     public void testRunIOException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        NodeRequest request = NodeRequest.heartBeatRequest();
+        NodeRequest request = NodeRequest.heartBeat();
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         doThrow(new IOException()).when(connection).send(any(NodeResponse.class));
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
@@ -63,7 +63,7 @@ public class RequestHandlerRunnableTest {
     @Test
     public void testRunRuntimeException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        NodeRequest request = NodeRequest.heartBeatRequest();
+        NodeRequest request = NodeRequest.heartBeat();
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenThrow(new RuntimeException());
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(logger).error(any(Exception.class));

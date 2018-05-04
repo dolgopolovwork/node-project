@@ -40,7 +40,7 @@ public class CancelAllTasksApplyerTest {
 
     @Test
     public void testApply() throws DistributionException {
-        NodeRequest request = NodeRequest.heartBeatRequest();
+        NodeRequest request = NodeRequest.heartBeat();
         cancelAllTasksApplyer.apply(request);
         verify(distributionService).broadcastStopRequests(anyList(), eq(request.getTaskId()));
     }

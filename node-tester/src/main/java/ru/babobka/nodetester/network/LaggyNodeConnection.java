@@ -1,6 +1,6 @@
 package ru.babobka.nodetester.network;
 
-import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.network.NodeConnectionImpl;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by 123 on 06.04.2018.
  */
-public class LaggyNodeConnection extends NodeConnection {
+public class LaggyNodeConnection extends NodeConnectionImpl {
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private final long maxSleepMillis;
 

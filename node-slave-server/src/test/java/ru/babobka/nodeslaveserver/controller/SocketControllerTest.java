@@ -56,7 +56,7 @@ public class SocketControllerTest {
 
     @Test
     public void testControlHeartBeat() throws IOException {
-        NodeRequest request = NodeRequest.heartBeatRequest();
+        NodeRequest request = NodeRequest.heartBeat();
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
         socketController.control(connection);

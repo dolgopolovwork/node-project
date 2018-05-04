@@ -19,6 +19,7 @@ public class MasterServerConfigValidator extends Validator<MasterServerConfig> {
                 new MainServerPortValidationRule(),
                 new RequestTimeoutMillisValidationRule(),
                 new TaskFolderValidationRule(),
-                new WebPortValidationRule()));
+                new WebPortValidationRule(),
+                new SrpConfigValidationRule()));
     }
 }

@@ -1,15 +1,14 @@
 package ru.babobka.nodebusiness.service;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.NodeUsersDAO;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
+import ru.babobka.nodesecurity.config.SrpConfig;
+import ru.babobka.nodesecurity.service.SecurityService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.HashUtil;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,24 +22,31 @@ import static org.mockito.Mockito.*;
  */
 public class NodeUsersServiceImplTest {
 
-    private static final NodeUsersDAO nodeUsersDAO = mock(NodeUsersDAO.class);
+    private NodeUsersDAO nodeUsersDAO;
+    private UserDTOMapper userDTOMapper;
+    private NodeUsersService nodeUsersService;
+    private SrpConfig srpConfig;
+    private SecurityService securityService;
 
-    private static final UserDTOMapper userDTOMapper = mock(UserDTOMapper.class);
+    @Before
+    public void setUp() {
+        nodeUsersDAO = mock(NodeUsersDAO.class);
+        userDTOMapper = mock(UserDTOMapper.class);
+        srpConfig = mock(SrpConfig.class);
+        securityService = mock(SecurityService.class);
+        Container.getInstance().put(container -> {
+            container.put(nodeUsersDAO);
+            container.put(userDTOMapper);
+            container.put(srpConfig);
+            container.put(securityService);
+        });
 
-    private static NodeUsersService nodeUsersService;
-
-    private final PodamFactory podamFactory = new PodamFactoryImpl();
-
-    @BeforeClass
-    public static void setUp() {
-        Container.getInstance().put(nodeUsersDAO);
-        Container.getInstance().put(userDTOMapper);
         nodeUsersService = new NodeUsersServiceImpl();
     }
 
     @Test
     public void testGetList() {
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = createUser();
         List<User> users = Arrays.asList(user, user, user);
         when(nodeUsersDAO.getList()).thenReturn(users);
         assertEquals(users.size(), nodeUsersService.getList().size());
@@ -48,7 +54,7 @@ public class NodeUsersServiceImplTest {
 
     @Test
     public void testGet() {
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = createUser();
         UUID uuid = UUID.randomUUID();
         user.setId(uuid);
         when(nodeUsersDAO.get(uuid)).thenReturn(user);
@@ -83,32 +89,15 @@ public class NodeUsersServiceImplTest {
         verify(nodeUsersDAO).add(any(User.class));
     }
 
-    @Test
-    public void testAuth() {
-        String hashedPassword = HashUtil.hexSha2("123");
-        String login = "test user";
+    private User createUser() {
         User user = new User();
-        user.setHashedPassword(hashedPassword);
-        when(nodeUsersDAO.get(login)).thenReturn(user);
-        assertTrue(nodeUsersService.auth(login, hashedPassword));
+        user.setEmail("abc@xyz.ru");
+        user.setName("abc");
+        user.setSalt(new byte[]{1, 2, 3});
+        user.setSecret(new byte[]{4, 5, 6});
+        user.setId(UUID.randomUUID());
+        return user;
     }
 
-    @Test
-    public void testAuthNotFoundUser() {
-        String hashedPassword = HashUtil.hexSha2("123");
-        String login = "test user";
-        when(nodeUsersDAO.get(login)).thenReturn(null);
-        assertFalse(nodeUsersService.auth(login, hashedPassword));
-    }
-
-    @Test
-    public void testAuthBadPassword() {
-        String hashedPassword = HashUtil.hexSha2("123");
-        String login = "test user";
-        User user = new User();
-        user.setHashedPassword(HashUtil.hexSha2("456"));
-        when(nodeUsersDAO.get(login)).thenReturn(null);
-        assertFalse(nodeUsersService.auth(login, hashedPassword));
-    }
 
 }

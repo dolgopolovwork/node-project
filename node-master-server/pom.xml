@@ -6,8 +6,6 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>node-master-server</name>
-    <url>http://maven.apache.org</url>
-
     <dependencies>
         <dependency>
             <groupId>ru.babobka.vsjws</groupId>
@@ -29,6 +27,13 @@
             <artifactId>mockito-all</artifactId>
             <version>2.0.2-beta</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.babobka.nodesecurity</groupId>
+            <artifactId>node-security</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-public class SocketController implements Controller<NodeConnection>, Closeable {
+public class SocketController extends Controller<NodeConnection> implements Closeable {
 
-    private final ExecutorService threadPool;
     private final TaskPool taskPool = Container.getInstance().get("slaveServerTaskPool");
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final ExecutorService threadPool;
     private final TasksStorage tasksStorage;
 
     public SocketController(ExecutorService threadPool, TasksStorage tasksStorage) {
@@ -31,7 +31,15 @@ public class SocketController implements Controller<NodeConnection>, Closeable {
     }
 
     @Override
-    public void control(NodeConnection connection) throws IOException {
+    protected void controlImpl(NodeConnection connection) {
+        try {
+            doControl(connection);
+        } catch (IOException e) {
+            throw new IllegalStateException("cannot control", e);
+        }
+    }
+
+    private void doControl(NodeConnection connection) throws IOException {
         connection.setReadTimeOut(slaveServerConfig.getRequestTimeoutMillis());
         NodeRequest request = connection.receive();
         if (request.getRequestStatus() == RequestStatus.HEART_BEAT) {
@@ -40,7 +48,7 @@ public class SocketController implements Controller<NodeConnection>, Closeable {
             logger.info("stopping request " + request);
             tasksStorage.stopTask(request);
         } else if (request.getRequestStatus() == RequestStatus.RACE && tasksStorage.exists(request.getTaskId())) {
-            logger.warning(request.getTaskName() + " is race style task. Repeated request was not handled.");
+            logger.warning(request.getTaskName() + " is race style task. repeated request was not handled.");
         } else if (!tasksStorage.wasStopped(request)) {
             logger.info("new request " + request);
             SubTask subTask = taskPool.get(request.getTaskName());

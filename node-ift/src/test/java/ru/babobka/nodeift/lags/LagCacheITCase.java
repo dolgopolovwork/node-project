@@ -3,7 +3,7 @@ package ru.babobka.nodeift.lags;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import ru.babobka.nodebusiness.dao.CacheDAO;
-import ru.babobka.nodemasterserver.service.TaskMonitoringService;
+import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;

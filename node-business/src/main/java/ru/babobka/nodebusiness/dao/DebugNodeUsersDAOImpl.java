@@ -1,6 +1,7 @@
 package ru.babobka.nodebusiness.dao;
 
 import ru.babobka.nodebusiness.model.User;
+import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,11 +70,10 @@ public class DebugNodeUsersDAOImpl implements NodeUsersDAO {
             foundUser.setEmail(user.getEmail());
         if (user.getName() != null)
             foundUser.setName(user.getName());
-        if (user.getTaskCount() != null)
-            foundUser.setTaskCount(user.getTaskCount());
-        if (user.getHashedPassword() != null)
-            foundUser.setHashedPassword(user.getHashedPassword());
-
+        if (!ArrayUtil.isEmpty(user.getSalt()))
+            foundUser.setSalt(user.getSalt());
+        if (!ArrayUtil.isEmpty(user.getSecret()))
+            foundUser.setSecret(user.getSecret());
         return true;
     }
 }

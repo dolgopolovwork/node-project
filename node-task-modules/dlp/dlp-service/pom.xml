@@ -7,7 +7,6 @@
     <artifactId>dlp-service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>dlp-service</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeutils</groupId>

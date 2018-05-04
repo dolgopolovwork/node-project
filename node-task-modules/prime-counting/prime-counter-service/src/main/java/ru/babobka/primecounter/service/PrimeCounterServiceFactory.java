@@ -1,6 +1,5 @@
 package ru.babobka.primecounter.service;
 
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 
 /**

@@ -1,53 +1,70 @@
 package ru.babobka.nodeslaveserver.service;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodeserials.NodeAuthRequest;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodesecurity.auth.AuthResult;
+import ru.babobka.nodesecurity.service.SecurityService;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by 123 on 02.09.2017.
+ * Created by 123 on 05.05.2018.
  */
 public class SlaveAuthServiceTest {
-    private SlaveServerConfig slaveServerConfig;
-    private AuthService authService;
+    private SlaveAuthService slaveAuthService;
+    private SimpleLogger simpleLogger;
+    private SecurityService securityService;
 
     @Before
     public void setUp() {
-        slaveServerConfig = mock(SlaveServerConfig.class);
-        Container.getInstance().put(slaveServerConfig);
-        authService = new SlaveAuthService();
-    }
-
-    @After
-    public void tearDown() {
-        Container.getInstance().clear();
+        simpleLogger = mock(SimpleLogger.class);
+        securityService = mock(SecurityService.class);
+        Container.getInstance().put(container -> {
+            container.put(simpleLogger);
+            container.put(securityService);
+        });
+        slaveAuthService = spy(new SlaveAuthService());
     }
 
     @Test
-    public void testAuth() throws IOException {
-        when(slaveServerConfig.getAuthTimeoutMillis()).thenReturn(10);
+    public void testAuthUserNotFound() throws IOException {
+        String login = "abc";
+        String password = "xyz";
         NodeConnection connection = mock(NodeConnection.class);
-        boolean authResult = true;
-        when(connection.receive()).thenReturn(authResult);
-        assertEquals(authService.auth(connection, "abc", "123"), authResult);
-        verify(connection).send(any(NodeAuthRequest.class));
+        when(connection.receive()).thenReturn(false);
+        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        assertFalse(authResult.isSuccess());
+        verify(connection).send(login);
     }
 
-    @Test(expected = IOException.class)
-    public void testAuthException() throws IOException {
-        when(slaveServerConfig.getAuthTimeoutMillis()).thenReturn(10);
+    @Test
+    public void testAuthFoundUserFail() throws IOException {
+        String login = "abc";
+        String password = "xyz";
         NodeConnection connection = mock(NodeConnection.class);
-        when(connection.receive()).thenThrow(new IOException());
-        authService.auth(connection, "abc", "123");
+        when(connection.receive()).thenReturn(true);
+        doReturn(AuthResult.fail()).when(slaveAuthService).srpUserAuth(connection, password);
+        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        assertFalse(authResult.isSuccess());
+        verify(connection).send(login);
     }
 
+    @Test
+    public void testAuthFoundUserSuccess() throws IOException {
+        String login = "abc";
+        String password = "xyz";
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.receive()).thenReturn(true);
+        doReturn(AuthResult.success(new byte[]{1, 2, 3})).when(slaveAuthService).srpUserAuth(connection, password);
+        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        assertTrue(authResult.isSuccess());
+        verify(connection).send(login);
+    }
 }

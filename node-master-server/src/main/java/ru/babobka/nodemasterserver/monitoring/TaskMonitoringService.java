@@ -1,4 +1,4 @@
-package ru.babobka.nodemasterserver.service;
+package ru.babobka.nodemasterserver.monitoring;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

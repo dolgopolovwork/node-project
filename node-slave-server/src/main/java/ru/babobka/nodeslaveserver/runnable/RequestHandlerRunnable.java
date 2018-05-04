@@ -18,17 +18,11 @@ import java.io.IOException;
 public class RequestHandlerRunnable implements Runnable {
 
     private final NodeConnection connection;
-
     private final NodeRequest request;
-
     private final SubTask subTask;
-
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-
     private final TaskRunnerService taskRunnerService = Container.getInstance().get(TaskRunnerService.class);
-
     private final TasksStorage tasksStorage;
-
     private NodeResponse lastResponse;
 
     public RequestHandlerRunnable(NodeConnection connection, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {

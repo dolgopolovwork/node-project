@@ -30,4 +30,19 @@ public class ArrayUtilTest {
         assertFalse(ArrayUtil.isNull("test", "qwerty"));
     }
 
+    @Test
+    public void testIsEmptyNull() {
+        assertTrue(ArrayUtil.isEmpty(null));
+    }
+
+    @Test
+    public void testIsEmpty() {
+        assertTrue(ArrayUtil.isEmpty(new byte[]{}));
+    }
+
+    @Test
+    public void testIsEmptyNotEmpty() {
+        assertFalse(ArrayUtil.isEmpty(new byte[]{1, 2, 3}));
+    }
+
 }

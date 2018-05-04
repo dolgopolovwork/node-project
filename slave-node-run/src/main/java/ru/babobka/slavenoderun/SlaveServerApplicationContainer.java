@@ -1,5 +1,6 @@
 package ru.babobka.slavenoderun;
 
+import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
@@ -28,6 +29,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             Properties.put("service-threads", Runtime.getRuntime().availableProcessors());
             container.put(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
             container.put(new NodeUtilsApplicationContainer());
+            container.put(new SecurityApplicationContainer());
             container.put(new NodeConnectionFactory());
             container.put(config);
             container.put(new NodeTaskApplicationContainer());

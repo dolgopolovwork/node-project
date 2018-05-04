@@ -24,7 +24,6 @@ public class SlavesStorage {
         logger.debug("slave storage " + storageId + " was created");
     }
 
-
     synchronized void remove(Slave slave) {
         logger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);

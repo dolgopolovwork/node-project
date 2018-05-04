@@ -5,6 +5,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetester.benchmark.NodeBenchmark;
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.time.Timer;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -26,7 +27,7 @@ public class DlpNodeBenchmark extends NodeBenchmark {
     private static final Random RAND = new Random();
     private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
     private final int orderBitLength;
-    private final MathUtil.SafePrime safePrime;
+    private final SafePrime safePrime;
     private final BigInteger gen;
 
     public DlpNodeBenchmark(String appName, int tests, int orderBitLength) {

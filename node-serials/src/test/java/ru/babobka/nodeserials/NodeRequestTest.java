@@ -26,7 +26,7 @@ public class NodeRequestTest {
 
     @Test
     public void testHeartBeat() {
-        NodeRequest nodeRequest = NodeRequest.heartBeatRequest();
+        NodeRequest nodeRequest = NodeRequest.heartBeat();
         assertEquals(nodeRequest.getRequestStatus(), RequestStatus.HEART_BEAT);
     }
 }

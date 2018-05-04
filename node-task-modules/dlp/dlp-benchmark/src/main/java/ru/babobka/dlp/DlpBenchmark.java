@@ -41,6 +41,7 @@ import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.math.Fp;
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -71,7 +72,7 @@ public class DlpBenchmark {
 
         @Setup(Level.Iteration)
         public void initNumber() {
-            MathUtil.SafePrime safePrime = MathUtil.getSafePrime(orderBits - 1);
+            SafePrime safePrime = MathUtil.getSafePrime(orderBits - 1);
             BigInteger gen = MathUtil.getGenerator(safePrime);
             BigInteger mod = safePrime.getPrime();
             BigInteger y = createNumber(mod);

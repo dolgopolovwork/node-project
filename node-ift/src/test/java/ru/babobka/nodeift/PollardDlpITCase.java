@@ -14,6 +14,7 @@ import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.util.MathUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -64,7 +65,7 @@ public class PollardDlpITCase {
     }
 
     private static NodeRequest createDlpRequest(int modBitLength) {
-        MathUtil.SafePrime safePrime = MathUtil.getSafePrime(modBitLength);
+        SafePrime safePrime = MathUtil.getSafePrime(modBitLength);
         BigInteger gen = MathUtil.getGenerator(safePrime);
         Map<String, Serializable> data = new HashMap<>();
         data.put("x", gen);

@@ -3,7 +3,7 @@ package ru.babobka.nodemasterserver.server;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
-import ru.babobka.nodemasterserver.service.TaskMonitoringService;
+import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -24,7 +24,7 @@ public class MasterServer extends Thread {
 
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
-    private final Thread listenerThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
+    private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
     private final WebServer webServer = Container.getInstance().get(WebServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
@@ -38,7 +38,7 @@ public class MasterServer extends Thread {
                 nodeUsersService.createDebugUser();
             }
             incomingClientsThread.start();
-            listenerThread.start();
+            incomingSlavesThread.start();
             heartBeatingThread.start();
             webServer.start();
         } catch (RuntimeException e) {
@@ -50,6 +50,8 @@ public class MasterServer extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
+        interruptAndJoin(incomingClientsThread);
+        interruptAndJoin(incomingSlavesThread);
         clear();
     }
 
@@ -61,6 +63,15 @@ public class MasterServer extends Thread {
         }
         if (slavesStorage != null) {
             slavesStorage.clear();
+        }
+    }
+
+    void interruptAndJoin(Thread thread) {
+        thread.interrupt();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            logger.error(e);
         }
     }
 

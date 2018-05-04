@@ -20,7 +20,7 @@ public class LagAuthCommonTasksITCase extends AuthCommonTasksITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(LagAuthCommonTasksITCase.class.getSimpleName(),  TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLogger.debugLogger(LagAuthCommonTasksITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();
         SlaveServerRunner.init();

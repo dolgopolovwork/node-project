@@ -15,23 +15,23 @@ public class NodeResponse extends NodeData {
     private volatile ResponseStatus status;
 
     public NodeResponse(UUID id, UUID taskId, long timeTakes, ResponseStatus status, String message,
-                        Map<String, Serializable> data, String taskName) {
-        super(id, taskId, taskName, System.currentTimeMillis(), data);
+                        Map<String, Serializable> data, String taskName, long timeStamp) {
+        super(id, taskId, taskName, timeStamp, data);
         this.timeTakes = timeTakes;
         this.status = status;
         this.message = message;
     }
 
     public NodeResponse(UUID taskId, ResponseStatus status) {
-        this(UUID.randomUUID(), taskId, -1, status, null, null, null);
+        this(UUID.randomUUID(), taskId, -1, status, null, null, null, System.currentTimeMillis());
     }
 
     public NodeResponse(UUID taskId, ResponseStatus status, String taskName) {
-        this(UUID.randomUUID(), taskId, 0, status, null, null, taskName);
+        this(UUID.randomUUID(), taskId, 0, status, null, null, taskName, System.currentTimeMillis());
     }
 
     public static NodeResponse failed(NodeRequest request) {
-        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, null, null, request.getTaskName());
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, null, null, request.getTaskName(), System.currentTimeMillis());
     }
 
     public static NodeResponse failed(UUID taskId) {
@@ -40,12 +40,12 @@ public class NodeResponse extends NodeData {
 
     public static NodeResponse failed(NodeRequest request, String message) {
         return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, message,
-                null, request.getTaskName());
+                null, request.getTaskName(), System.currentTimeMillis());
     }
 
     public static NodeResponse stopped(NodeRequest request) {
         return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.STOPPED, null,
-                null, request.getTaskName());
+                null, request.getTaskName(), System.currentTimeMillis());
     }
 
     public static NodeResponse dummy(UUID taskId) {
@@ -58,7 +58,7 @@ public class NodeResponse extends NodeData {
 
     public static NodeResponse heartBeat() {
         return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, ResponseStatus.HEART_BEAT, null, null,
-                null);
+                null, System.currentTimeMillis());
     }
 
     public static NodeResponse stopped(UUID taskId) {
@@ -67,7 +67,7 @@ public class NodeResponse extends NodeData {
 
     public static NodeResponse normal(Map<String, Serializable> result, NodeRequest request, long timePassed) {
         return new NodeResponse(request.getId(), request.getTaskId(), timePassed, ResponseStatus.NORMAL,
-                null, result, request.getTaskName());
+                null, result, request.getTaskName(), System.currentTimeMillis());
     }
 
     public long getTimeTakes() {

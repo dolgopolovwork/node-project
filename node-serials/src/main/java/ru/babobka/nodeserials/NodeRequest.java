@@ -1,7 +1,6 @@
 package ru.babobka.nodeserials;
 
 import ru.babobka.nodeserials.enumerations.RequestStatus;
-import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -16,25 +15,29 @@ public class NodeRequest extends NodeData {
     private static final long serialVersionUID = -7966050005036288334L;
     private final RequestStatus requestStatus;
 
-    private NodeRequest(UUID taskId, String taskName, Map<String, Serializable> data, RequestStatus requestStatus) {
-        super(UUID.randomUUID(), taskId, taskName, System.currentTimeMillis(), data);
+    protected NodeRequest(UUID id, UUID taskId, String taskName, Map<String, Serializable> data, RequestStatus requestStatus, long timeStamp) {
+        super(id, taskId, taskName, timeStamp, data);
         this.requestStatus = requestStatus;
     }
 
     public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data) {
-        return new NodeRequest(taskId, taskName, data, RequestStatus.NORMAL);
+        return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.NORMAL, System.currentTimeMillis());
+    }
+
+    public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data, long timeStamp) {
+        return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.NORMAL, timeStamp);
     }
 
     public static NodeRequest race(UUID taskId, String taskName, Map<String, Serializable> data) {
-        return new NodeRequest(taskId, taskName, data, RequestStatus.RACE);
+        return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.RACE, System.currentTimeMillis());
     }
 
     public static NodeRequest stop(UUID taskId) {
-        return new NodeRequest(taskId, null, null, RequestStatus.STOP);
+        return new NodeRequest(UUID.randomUUID(), taskId, null, null, RequestStatus.STOP, System.currentTimeMillis());
     }
 
-    public static NodeRequest heartBeatRequest() {
-        return new NodeRequest(UUID.randomUUID(), null, null, RequestStatus.HEART_BEAT);
+    public static NodeRequest heartBeat() {
+        return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), null, null, RequestStatus.HEART_BEAT, System.currentTimeMillis());
     }
 
     public RequestStatus getRequestStatus() {
@@ -60,7 +63,7 @@ public class NodeRequest extends NodeData {
     }
 
     public int cacheKey() {
-        return HashUtil.hashMap(getData()) ^ getTaskName().hashCode();
+        return getData().hashCode() ^ getTaskName().hashCode();
     }
 
     @Override

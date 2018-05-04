@@ -1,8 +1,9 @@
 package ru.babobka.nodemasterserver.slave;
 
-import ru.babobka.nodebusiness.service.AuthService;
-import ru.babobka.nodebusiness.service.MasterAuthService;
 import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.service.MasterAuthService;
+import ru.babobka.nodesecurity.auth.AuthResult;
+import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -25,12 +26,11 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final SlaveFactory slaveFactory = Container.getInstance().get(SlaveFactory.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
-    private final AuthService authService = Container.getInstance().get(MasterAuthService.class);
+    private final MasterAuthService authService = Container.getInstance().get(MasterAuthService.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final TaskPool taskPool = Container.getInstance().get("masterServerTaskPool");
 
     public IncomingSlaveListenerThread(ServerSocket serverSocket) {
-        setDaemon(true);
         if (serverSocket == null) {
             throw new IllegalArgumentException("serverSocket is null");
         } else if (serverSocket.isClosed()) {
@@ -41,12 +41,14 @@ public class IncomingSlaveListenerThread extends CyclicThread {
 
     @Override
     public void onCycle() {
+        NodeConnection connection = null;
         try {
             Socket socket = serverSocket.accept();
-            NodeConnection connection = nodeConnectionFactory.create(socket);
+            connection = nodeConnectionFactory.create(socket);
             connection.setReadTimeOut(config.getAuthTimeOutMillis());
             logger.info("new connection");
-            if (!auth(connection)) {
+            AuthResult authResult = authService.auth(connection);
+            if (!authResult.isSuccess()) {
                 logger.warning("auth fail");
                 connection.close();
                 return;
@@ -59,26 +61,20 @@ public class IncomingSlaveListenerThread extends CyclicThread {
                 logger.error("new slave doesn't have any common tasks with master");
                 return;
             }
-            Slave slave = slaveFactory.create(availableTasks, connection);
+            Slave slave = slaveFactory.create(availableTasks, new SecureNodeConnection(connection, authResult.getSecretKey()));
             slavesStorage.add(slave);
             slave.start();
             connection.setReadTimeOut(config.getRequestTimeOutMillis());
-
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
                 logger.error(e);
             }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
-    boolean auth(NodeConnection connection) {
-        try {
-            return authService.auth(connection);
-        } catch (RuntimeException e) {
-            logger.error("error occurred while authenticating new slave", e);
-            return false;
-        }
-    }
 
     @Override
     public void onExit() {

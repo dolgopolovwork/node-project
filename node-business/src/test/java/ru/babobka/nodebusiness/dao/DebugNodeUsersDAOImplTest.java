@@ -86,9 +86,7 @@ public class DebugNodeUsersDAOImplTest {
         assertTrue(nodeUsersDAO.update(testUUID, user));
         User foundUser = nodeUsersDAO.get(testUUID);
         assertEquals(user.getEmail(), foundUser.getEmail());
-        assertNotNull(foundUser.getTaskCount());
         assertNotNull(foundUser.getName());
-        assertNotNull(foundUser.getHashedPassword());
         assertNotNull(foundUser.getId());
     }
 }

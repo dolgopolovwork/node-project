@@ -1,9 +1,14 @@
 package ru.babobka.nodeslaveserver.controller;
 
-import java.io.IOException;
+public abstract class Controller<C> {
 
-public interface Controller<C> {
+    public void control(C controlObject) {
+        if (controlObject == null) {
+            throw new IllegalArgumentException("cannot control null object");
+        }
+        controlImpl(controlObject);
+    }
 
-    void control(C controlObject) throws IOException;
+    protected abstract void controlImpl(C controlObject);
 
 }

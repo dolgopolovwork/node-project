@@ -203,7 +203,7 @@ public class SlaveTest {
 
     @Test
     public void testApplyToTasks() {
-        List<NodeRequest> requestList = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> requestList = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat(), NodeRequest.heartBeat());
         NodeConnection connection = mock(NodeConnection.class);
         Slave slave = spy(new Slave(new HashSet<>(), connection));
         slave.addTasks(requestList);

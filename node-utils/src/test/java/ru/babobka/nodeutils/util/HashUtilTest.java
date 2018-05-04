@@ -11,7 +11,7 @@ public class HashUtilTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSha2NullMessage() {
-        HashUtil.sha2(null);
+        HashUtil.sha2((String)null);
     }
 
     @Test

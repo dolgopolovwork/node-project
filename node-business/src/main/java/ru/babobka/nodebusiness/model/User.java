@@ -1,24 +1,20 @@
 package ru.babobka.nodebusiness.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.UUID;
 
 
 /**
  * Created by dolgopolov.a on 29.10.15.
  */
-public final class User implements Serializable {
+public class User implements Serializable {
 
-    private static final long serialVersionUID = 6569577055168857213L;
-
+    private static final long serialVersionUID = 6569577055168857214L;
     private String name;
-
-    private String hashedPassword;
-
-    private Integer taskCount;
-
+    private byte[] secret;
+    private byte[] salt;
     private String email;
-
     private UUID id;
 
     public String getEmail() {
@@ -29,12 +25,26 @@ public final class User implements Serializable {
         this.email = email;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
+    public byte[] getSecret() {
+        if (secret != null)
+            return secret.clone();
+        return new byte[]{};
     }
 
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    public void setSecret(byte[] secret) {
+        if (secret != null)
+            this.secret = secret.clone();
+    }
+
+    public byte[] getSalt() {
+        if (salt != null)
+            return salt.clone();
+        return new byte[]{};
+    }
+
+    public void setSalt(byte[] salt) {
+        if (salt != null)
+            this.salt = salt.clone();
     }
 
     public String getName() {
@@ -43,14 +53,6 @@ public final class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getTaskCount() {
-        return taskCount;
-    }
-
-    public void setTaskCount(Integer taskCount) {
-        this.taskCount = taskCount;
     }
 
     public UUID getId() {
@@ -69,9 +71,8 @@ public final class User implements Serializable {
         User user = (User) o;
 
         if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (hashedPassword != null ? !hashedPassword.equals(user.hashedPassword) : user.hashedPassword != null)
-            return false;
-        if (taskCount != null ? !taskCount.equals(user.taskCount) : user.taskCount != null) return false;
+        if (!Arrays.equals(secret, user.secret)) return false;
+        if (!Arrays.equals(salt, user.salt)) return false;
         if (email != null ? !email.equals(user.email) : user.email != null) return false;
         return id != null ? id.equals(user.id) : user.id == null;
     }
@@ -79,10 +80,21 @@ public final class User implements Serializable {
     @Override
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (hashedPassword != null ? hashedPassword.hashCode() : 0);
-        result = 31 * result + (taskCount != null ? taskCount.hashCode() : 0);
+        result = 31 * result + Arrays.hashCode(secret);
+        result = 31 * result + Arrays.hashCode(salt);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", secret=" + Arrays.toString(secret) +
+                ", salt=" + Arrays.toString(salt) +
+                ", email='" + email + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

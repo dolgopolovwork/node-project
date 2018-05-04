@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.Serializable;
@@ -8,30 +9,19 @@ public class MasterServerConfig implements Serializable {
 
     private static final long serialVersionUID = 156081573106293600L;
     private int authTimeOutMillis;
-
     private int slaveListenerPort;
-
     private int clientListenerPort;
-
     private int requestTimeOutMillis;
-
     private int heartBeatTimeOutMillis;
-
     private int webListenerPort;
-
     private String loggerFolder;
-
     private String loggerFolderEnv;
-
     private String tasksFolder;
-
     private String tasksFolderEnv;
-
     private boolean debugMode;
-
     private boolean localOnly;
-
     private boolean enableCache;
+    private SafePrime bigSafePrime;
 
     public int getAuthTimeOutMillis() {
         return authTimeOutMillis;
@@ -137,6 +127,14 @@ public class MasterServerConfig implements Serializable {
         this.enableCache = enableCache;
     }
 
+    public SafePrime getBigSafePrime() {
+        return bigSafePrime;
+    }
+
+    public void setBigSafePrime(SafePrime bigSafePrime) {
+        this.bigSafePrime = bigSafePrime;
+    }
+
     @Override
     public String toString() {
         return "MasterServerConfig{" +
@@ -153,6 +151,7 @@ public class MasterServerConfig implements Serializable {
                 ", debugMode=" + debugMode +
                 ", localOnly=" + localOnly +
                 ", enableCache=" + enableCache +
+                ", bigSafePrime=" + bigSafePrime +
                 '}';
     }
 }

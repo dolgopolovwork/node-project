@@ -45,7 +45,11 @@ public class WebServer extends Thread {
         this.port = config.getPort();
         this.httpSession = new HttpSession(config.getSessionTimeoutSeconds());
         logger.debug("debug mode is on");
-        threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+        threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE, r -> {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
+        });
         this.serverSocket = new ServerSocket(port);
     }
 

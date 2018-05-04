@@ -3,6 +3,7 @@ package ru.babobka.nodeclient;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.network.NodeConnectionImpl;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.Closeable;
@@ -33,7 +34,11 @@ public class Client implements Closeable {
     }
 
     public Client(String host, int port) {
-        this(host, port, Executors.newCachedThreadPool());
+        this(host, port, Executors.newCachedThreadPool(r -> {
+            Thread t = Executors.defaultThreadFactory().newThread(r);
+            t.setDaemon(true);
+            return t;
+        }));
     }
 
     public NodeFuture<NodeResponse> executeTask(NodeRequest request) throws IOException {
@@ -43,7 +48,7 @@ public class Client implements Closeable {
     }
 
     private NodeConnection createConnection(String host, int port) throws IOException {
-        return new NodeConnection(new Socket(host, port));
+        return new NodeConnectionImpl(new Socket(host, port));
     }
 
     @Override

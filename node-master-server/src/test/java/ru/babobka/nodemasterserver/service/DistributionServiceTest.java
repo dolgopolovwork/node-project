@@ -75,7 +75,7 @@ public class DistributionServiceTest {
     public void testRedistributeException() throws DistributionException {
         AbstractNetworkSlave abstractNetworkSlave = mock(AbstractNetworkSlave.class);
         Map<String, List<NodeRequest>> groupedTasks = new HashMap<>();
-        List<NodeRequest> requests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> requests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat());
         groupedTasks.put("testTask", requests);
         when(abstractNetworkSlave.getRequestsGroupedByTasks()).thenReturn(groupedTasks);
         doThrow(new DistributionException()).when(distributionService).broadcastRequests(anyString(), anyList());
@@ -86,7 +86,7 @@ public class DistributionServiceTest {
     public void testRedistribute() throws DistributionException {
         AbstractNetworkSlave abstractNetworkSlave = mock(AbstractNetworkSlave.class);
         Map<String, List<NodeRequest>> groupedTasks = new HashMap<>();
-        List<NodeRequest> requests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> requests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat());
         groupedTasks.put("testTask", requests);
         when(abstractNetworkSlave.getRequestsGroupedByTasks()).thenReturn(groupedTasks);
         distributionService.redistribute(abstractNetworkSlave);
@@ -104,7 +104,7 @@ public class DistributionServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testBroadcastRequestsNegativeMaxRetry() throws DistributionException {
-        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat());
         distributionService.broadcastRequests("taskName", nodeRequests, 0, -1);
     }
 
@@ -116,7 +116,7 @@ public class DistributionServiceTest {
     @Test(expected = DistributionException.class)
     public void testBroadcastRequestsNoSlavesToDistribute() throws DistributionException {
         when(slavesStorage.getList(anyString())).thenReturn(new ArrayList<>());
-        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat());
         distributionService.broadcastRequests("taskName", nodeRequests, 0, 5);
     }
 
@@ -125,7 +125,7 @@ public class DistributionServiceTest {
         Slave slave = mock(Slave.class);
         List<Slave> slaves = Arrays.asList(slave, slave, slave);
         when(slavesStorage.getList(anyString())).thenReturn(slaves);
-        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat());
         distributionService.broadcastRequests("taskName", nodeRequests, 0, 5);
         verify(slave, times(nodeRequests.size())).executeTask(any(NodeRequest.class));
     }
@@ -135,7 +135,7 @@ public class DistributionServiceTest {
         Slave slave = mock(Slave.class);
         List<Slave> slaves = Arrays.asList(slave, slave);
         when(slavesStorage.getList(anyString())).thenReturn(slaves);
-        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest(), NodeRequest.heartBeatRequest());
+        List<NodeRequest> nodeRequests = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat(), NodeRequest.heartBeat());
         distributionService.broadcastRequests("taskName", nodeRequests, 0, 5);
         verify(slave, times(nodeRequests.size())).executeTask(any(NodeRequest.class));
     }

@@ -13,13 +13,13 @@ public interface NodeUsersService {
 
     User get(UUID id);
 
+    User get(String login);
+
     boolean remove(UUID id);
 
     void add(UserDTO user);
 
     boolean update(UUID id, UserDTO user);
-
-    boolean auth(String login, String hashedPassword);
 
     void createDebugUser();
 }

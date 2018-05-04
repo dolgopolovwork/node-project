@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class NodeBenchmark {
 
-    private MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+    private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private final BenchmarkMapper benchmarkMapper = new BenchmarkMapper();
