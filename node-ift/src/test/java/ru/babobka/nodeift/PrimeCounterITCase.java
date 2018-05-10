@@ -167,7 +167,6 @@ public class PrimeCounterITCase {
         }
     }
 
-    //TODO иногда валится
     @Test
     public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
         SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
@@ -411,7 +410,6 @@ public class PrimeCounterITCase {
         }
     }
 
-    //TODO вот этот немного тупит
     @Test
     public void testCancelTaskTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2)) {

@@ -48,11 +48,12 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         return callables;
     }
 
+    //TODO напиши на это тесты, чтобы понять, что нужен инкремент в цикле
     static synchronized void initPrimes(long border) {
         if (border <= lastMaxBorder) {
             return;
         }
-        for (long i = lastMaxBorder; i <= border; i++) {
+        for (long i = lastMaxBorder+1; i <= border; i++) {
             if (MathUtil.isPrime(i)) {
                 primes.add(i);
             }

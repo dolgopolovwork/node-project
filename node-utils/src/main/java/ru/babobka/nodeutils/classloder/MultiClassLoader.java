@@ -56,8 +56,8 @@ abstract class MultiClassLoader extends ClassLoader {
         try {
             result = super.findSystemClass(className);
             return result;
-        } catch (ClassNotFoundException e) {
-            // e.printStackTrace();
+        } catch (ClassNotFoundException expected) {
+            // this is ok
         }
 
         // ----- Try to load it from preferred source

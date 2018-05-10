@@ -58,7 +58,7 @@ public class TaskExecutorCallable implements Callable<NodeResponse> {
             connection.setReadTimeOut(READ_TIMEOUT_MILLIS);
             connection.send(NodeResponse.heartBeat());
         } catch (IOException e) {
-            //That's ok
+            //that's ok
             e.printStackTrace();
         }
     }

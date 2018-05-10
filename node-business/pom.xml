@@ -7,6 +7,7 @@
     <artifactId>node-business</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>node-business</name>
+    <description>Business tier: user management, caching and etc.</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeutils</groupId>
@@ -51,12 +52,6 @@
             <artifactId>podam</artifactId>
             <version>2.3.5.RELEASE</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ru.babobka.nodeserials</groupId>
-            <artifactId>node-serials</artifactId>
-            <version>1.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>ru.babobka.nodesecurity</groupId>

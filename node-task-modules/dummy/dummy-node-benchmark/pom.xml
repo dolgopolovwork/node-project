@@ -6,6 +6,7 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>dummy-node-benchmark</name>
+    <description>Runnable application for testing dummy requests with real nodes on single machine.</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeclient</groupId>

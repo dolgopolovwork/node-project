@@ -7,6 +7,7 @@
     <artifactId>factor-node-benchmark</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>factor-node-benchmark</name>
+    <description>DLP task implementation.</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeclient</groupId>

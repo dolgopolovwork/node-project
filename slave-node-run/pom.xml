@@ -7,6 +7,7 @@
     <artifactId>slave-node-run</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>slave-node-run</name>
+    <description>The node slave server runner</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeslaveserver</groupId>

@@ -6,6 +6,7 @@
     <artifactId>prime-counter-service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>prime-counter-service</name>
+    <description>Prime counting service tier</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

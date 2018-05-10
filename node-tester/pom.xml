@@ -6,6 +6,7 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>node-tester</name>
+    <description>Contains classes for building integration tests and benchmarking.</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -43,6 +44,12 @@
             <artifactId>powermock-module-junit4</artifactId>
             <version>1.7.3</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
         <dependency>
@@ -50,8 +57,13 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>1.7.3</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
 
         <dependency>
             <groupId>ru.babobka.nodemasterserver</groupId>

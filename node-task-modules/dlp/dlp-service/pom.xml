@@ -7,6 +7,7 @@
     <artifactId>dlp-service</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>dlp-service</name>
+    <description>DLP service tier</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeutils</groupId>

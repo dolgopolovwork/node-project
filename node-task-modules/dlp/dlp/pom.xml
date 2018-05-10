@@ -6,6 +6,7 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>dlp</name>
+    <description>Runnable client for solving DLP.</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeclient</groupId>

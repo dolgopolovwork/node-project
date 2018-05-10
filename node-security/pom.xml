@@ -7,6 +7,7 @@
     <artifactId>node-security</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>node-security</name>
+    <description>Security tier. Contains classes for making object transmitting very safe.</description>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

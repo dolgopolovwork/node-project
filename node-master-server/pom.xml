@@ -6,14 +6,8 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>node-master-server</name>
+    <description>This is the master server that handles all the incoming requests and distributes tasks to slaves.</description>
     <dependencies>
-        <dependency>
-            <groupId>ru.babobka.vsjws</groupId>
-            <artifactId>vsjws</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>

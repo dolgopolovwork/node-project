@@ -12,6 +12,7 @@
     <artifactId>master-node-run</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>master-node-run</name>
+    <description>The node master server runner</description>
     <dependencies>
 
         <dependency>

@@ -7,6 +7,7 @@
     <artifactId>factor</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>factor</name>
+    <description>Runnable client for number factorization.</description>
     <dependencies>
         <dependency>
             <groupId>ru.babobka.nodeclient</groupId>
