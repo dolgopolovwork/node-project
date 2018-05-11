@@ -40,6 +40,7 @@ public abstract class CLI {
         try {
             run(cmd);
         } catch (Exception e) {
+            e.printStackTrace();
             printErr(e.getMessage());
         }
     }

@@ -10,5 +10,10 @@
   "loggerFolderEnv": "NODE_LOGS",
   "tasksFolderEnv": "NODE_TASKS",
   "localOnly": true,
-  "enableCache": false
+  "enableCache": false,
+   "bigSafePrime": {
+    "sophieNumber": 237727875013823482469555423741567754821,
+    "prime": 475455750027646964939110847483135509643
+  },
+  "challengeBytes": 16
 }

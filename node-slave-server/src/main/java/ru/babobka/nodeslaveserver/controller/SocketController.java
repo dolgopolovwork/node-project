@@ -35,7 +35,9 @@ public class SocketController extends Controller<NodeConnection> implements Clos
         try {
             doControl(connection);
         } catch (IOException e) {
-            throw new IllegalStateException("cannot control", e);
+            if (!connection.isClosed()) {
+                throw new IllegalStateException("cannot control", e);
+            }
         }
     }
 

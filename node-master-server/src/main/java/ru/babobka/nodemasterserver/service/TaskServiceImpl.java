@@ -127,11 +127,13 @@ public class TaskServiceImpl implements TaskService {
         return maxNodes == 0 ? actualClusterSize : Math.min(maxNodes, actualClusterSize);
     }
 
-    private TaskStartResult startTask(NodeRequest request, SubTask task, int maxNodes) {
+    TaskStartResult startTask(NodeRequest request, SubTask task, int maxNodes) {
         UUID taskId = request.getTaskId();
         DataValidators dataValidators = task.getDataValidators();
         if (!dataValidators.isValidRequest(request)) {
             return TaskStartResult.failed(taskId, "wrong arguments");
+        } else if (task.isRequestDataTooBig(request)) {
+            return TaskStartResult.failed(taskId, "too big arguments");
         }
         logger.debug("started task id is " + taskId);
         try {

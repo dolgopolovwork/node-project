@@ -60,13 +60,13 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setSlaveListenerPort(9090);
         config.setWebListenerPort(8080);
         config.setBigSafePrime(MathUtil.getSafePrime(128));
+        config.setChallengeBytes(16);
         return config;
     }
 
     private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
         SafePrime bigSafePrime = masterServerConfig.getBigSafePrime();
         Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
-        return new SrpConfig(gen, 16);
+        return new SrpConfig(gen, masterServerConfig.getChallengeBytes());
     }
-
 }

@@ -24,7 +24,6 @@ import java.io.IOException;
  */
 public class MasterServerApplicationContainer implements ApplicationContainer {
 
-    private static final int CHALLENGE_BYTES = 16;
 
     @Override
     public void contain(Container container) {
@@ -47,7 +46,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
         SafePrime bigSafePrime = masterServerConfig.getBigSafePrime();
         Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
-        return new SrpConfig(gen, CHALLENGE_BYTES);
+        return new SrpConfig(gen, masterServerConfig.getChallengeBytes());
     }
 
 }

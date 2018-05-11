@@ -20,6 +20,10 @@ public abstract class SubTask {
 
     public abstract boolean isRequestDataTooSmall(NodeRequest request);
 
+    public boolean isRequestDataTooBig(NodeRequest request) {
+        return false;
+    }
+
     public abstract RequestDistributor getDistributor();
 
     public abstract String getDescription();

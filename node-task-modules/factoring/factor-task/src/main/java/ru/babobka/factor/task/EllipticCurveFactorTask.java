@@ -50,6 +50,12 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
+    public boolean isRequestDataTooBig(NodeRequest request) {
+        BigInteger number = new BigInteger(request.getStringDataValue(Params.NUMBER.getValue()));
+        return number.bitLength() > 256;
+    }
+
+    @Override
     public String getDescription() {
         return DESCRIPTION;
     }

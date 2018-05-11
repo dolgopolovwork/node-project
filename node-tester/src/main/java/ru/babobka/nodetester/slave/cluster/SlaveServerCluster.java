@@ -66,7 +66,7 @@ public class SlaveServerCluster extends AbstractCluster {
         }
     }
 
-    protected void interruptGlitchThread() {
+    private void interruptGlitchThread() {
         if (glitchThread == null) {
             return;
         }

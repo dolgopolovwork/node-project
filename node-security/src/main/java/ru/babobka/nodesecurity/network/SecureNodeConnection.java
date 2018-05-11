@@ -89,4 +89,9 @@ public class SecureNodeConnection implements NodeConnection {
     public boolean isClosed() {
         return connection.isClosed();
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

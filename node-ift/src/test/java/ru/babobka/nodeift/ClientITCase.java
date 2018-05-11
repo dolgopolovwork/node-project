@@ -111,6 +111,23 @@ public class ClientITCase {
     }
 
     @Test
+    public void testFactorOneSlaveTooBigRequest() throws IOException, InterruptedException, ExecutionException {
+        MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
+        SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD);
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+            slaveServerCluster.start();
+            int bits = 256;
+            BigInteger p = BigInteger.probablePrime(bits, new Random());
+            BigInteger q = BigInteger.probablePrime(bits, new Random());
+            NodeRequest request = createFactorTest(p, q);
+            Future<NodeResponse> future = client.executeTask(request);
+            NodeResponse response = future.get();
+            assertEquals(response.getStatus(), ResponseStatus.FAILED);
+        }
+    }
+
+    @Test
     public void testFactorTwoSlavesMassive() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);

@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class NodeBenchmark {
 
-    private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private final BenchmarkMapper benchmarkMapper = new BenchmarkMapper();
@@ -41,6 +40,7 @@ public abstract class NodeBenchmark {
     }
 
     BenchmarkData executeCycledBenchmark(int tests) {
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         int port = masterServerConfig.getClientListenerPort();
         AtomicLong timer = new AtomicLong();
         try (Client client = createLocalClient(port)) {

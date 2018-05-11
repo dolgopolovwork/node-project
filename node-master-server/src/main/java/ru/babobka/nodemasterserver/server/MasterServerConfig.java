@@ -22,6 +22,7 @@ public class MasterServerConfig implements Serializable {
     private boolean localOnly;
     private boolean enableCache;
     private SafePrime bigSafePrime;
+    private int challengeBytes;
 
     public int getAuthTimeOutMillis() {
         return authTimeOutMillis;
@@ -135,23 +136,11 @@ public class MasterServerConfig implements Serializable {
         this.bigSafePrime = bigSafePrime;
     }
 
-    @Override
-    public String toString() {
-        return "MasterServerConfig{" +
-                "authTimeOutMillis=" + authTimeOutMillis +
-                ", slaveListenerPort=" + slaveListenerPort +
-                ", clientListenerPort=" + clientListenerPort +
-                ", requestTimeOutMillis=" + requestTimeOutMillis +
-                ", heartBeatTimeOutMillis=" + heartBeatTimeOutMillis +
-                ", webListenerPort=" + webListenerPort +
-                ", loggerFolder='" + loggerFolder + '\'' +
-                ", loggerFolderEnv='" + loggerFolderEnv + '\'' +
-                ", tasksFolder='" + tasksFolder + '\'' +
-                ", tasksFolderEnv='" + tasksFolderEnv + '\'' +
-                ", debugMode=" + debugMode +
-                ", localOnly=" + localOnly +
-                ", enableCache=" + enableCache +
-                ", bigSafePrime=" + bigSafePrime +
-                '}';
+    public int getChallengeBytes() {
+        return challengeBytes;
+    }
+
+    public void setChallengeBytes(int challengeBytes) {
+        this.challengeBytes = challengeBytes;
     }
 }
