@@ -10,25 +10,10 @@ import java.util.Random;
  * Created by 123 on 04.05.2018.
  */
 public class SafePrime implements Serializable {
-    private static final BigInteger TWO = BigInteger.valueOf(2L);
     private static final long serialVersionUID = 8763199470347175919L;
+    private static final BigInteger TWO = BigInteger.valueOf(2L);
     private final BigInteger sophieNumber;
     private final BigInteger prime;
-
-    public SafePrime(int bits) {
-        if (bits < 2) {
-            throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
-        }
-        BigInteger sophieNumber = null;
-        Random random = new Random();
-        BigInteger prime = BigInteger.ONE;
-        while (!MathUtil.isPrime(prime)) {
-            sophieNumber = BigInteger.probablePrime(bits, random);
-            prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
-        }
-        this.sophieNumber = sophieNumber;
-        this.prime = prime;
-    }
 
     public SafePrime(BigInteger sophieNumber, BigInteger prime) {
         if (sophieNumber == null) {
@@ -45,6 +30,20 @@ public class SafePrime implements Serializable {
         }
         this.sophieNumber = sophieNumber;
         this.prime = prime;
+    }
+
+    public static SafePrime random(int bits) {
+        if (bits < 2) {
+            throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
+        }
+        BigInteger sophieNumber = null;
+        Random random = new Random();
+        BigInteger prime = BigInteger.ONE;
+        while (!MathUtil.isPrime(prime)) {
+            sophieNumber = BigInteger.probablePrime(bits, random);
+            prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
+        }
+        return new SafePrime(sophieNumber, prime);
     }
 
     public BigInteger getSophieNumber() {

@@ -3,7 +3,8 @@ package ru.babobka.nodemasterserver.client;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
@@ -42,11 +43,14 @@ public class IncomingClientListenerThreadTest {
         logger = mock(SimpleLogger.class);
         executorService = mock(ExecutorService.class);
         taskService = mock(TaskService.class);
-        Container.getInstance().put("clientsThreadPool", executorService);
-        Container.getInstance().put(logger);
-        Container.getInstance().put(config);
-        Container.getInstance().put(taskService);
-        Container.getInstance().put(nodeConnectionFactory);
+        Container.getInstance().put(container -> {
+            container.put(MasterServerKey.CLIENTS_THREAD_POOL, executorService);
+            container.put(logger);
+            container.put(config);
+            container.put(taskService);
+            container.put(nodeConnectionFactory);
+        });
+
         incomingClientsThread = spy(new IncomingClientListenerThread(serverSocket));
     }
 

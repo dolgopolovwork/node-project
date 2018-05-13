@@ -18,9 +18,9 @@ public class RawHttpRequestValidationRule implements ValidationRule<RawHttpReque
     @Override
     public void validate(RawHttpRequest rawHttpRequest) {
         if (rawHttpRequest.getFirstLine() == null) {
-            throw new IllegalArgumentException("First line is empty");
+            throw new IllegalArgumentException("first line is empty");
         } else if (!rawHttpRequest.getHeaders().containsKey("Host")) {
-            throw new IllegalArgumentException("Header 'Host' was not set");
+            throw new IllegalArgumentException("header 'Host' was not set");
         }
         RawHttpRequest.FirstLine firstLine = rawHttpRequest.getFirstLine();
         String method = firstLine.getMethod();
@@ -30,7 +30,7 @@ public class RawHttpRequestValidationRule implements ValidationRule<RawHttpReque
         } else if (!HttpMethod.isValidMethod(method)) {
             throw new IllegalArgumentException("HTTP method is invalid");
         } else if (isMethodWithContent(method) && contentLength == -1) {
-            throw new InvalidContentLengthException("'Content-Length' header wasn't set properly");
+            throw new InvalidContentLengthException();
         } else if (!firstLine.getProtocol().equals(HttpRequest.PROTOCOL)) {
             throw new BadProtocolSpecifiedException();
         }

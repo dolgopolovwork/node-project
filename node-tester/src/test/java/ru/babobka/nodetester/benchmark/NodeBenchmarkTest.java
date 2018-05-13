@@ -9,12 +9,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.PortConfig;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -41,7 +43,9 @@ public class NodeBenchmarkTest {
     @Before
     public void setUp() {
         config = mock(MasterServerConfig.class);
-        when(config.getClientListenerPort()).thenReturn(port);
+        PortConfig portConfig = new PortConfig();
+        portConfig.setClientListenerPort(port);
+        when(config.getPorts()).thenReturn(portConfig);
         Container.getInstance().put(config);
         client = mock(Client.class);
         masterServer = mock(MasterServer.class);
@@ -81,7 +85,7 @@ public class NodeBenchmarkTest {
         doThrow(new IOException()).when(nodeBenchmark).createCluster(anyString(), anyString(), anyInt());
         nodeBenchmark.run(slaves, slaveThreads);
         verify(nodeBenchmark, never()).onBenchmark(eq(client), any(AtomicLong.class));
-        assertEquals((int) Container.getInstance().get("service-threads"), slaveThreads);
+        assertEquals((int) Container.getInstance().get(UtilKey.SERVICE_THREADS_NUM), slaveThreads);
         verify(masterServer).interrupt();
     }
 
@@ -95,7 +99,7 @@ public class NodeBenchmarkTest {
         doReturn(null).when(nodeBenchmark).executeCycledBenchmark(tests);
         verify(nodeBenchmark).executeCycledBenchmark(tests);
         verify(cluster).start();
-        assertEquals(Properties.getInt("service-threads"), slaveThreads);
+        assertEquals(Properties.getInt(UtilKey.SERVICE_THREADS_NUM), slaveThreads);
         verify(masterServer).interrupt();
         verify(nodeBenchmark).startMonitoring();
     }

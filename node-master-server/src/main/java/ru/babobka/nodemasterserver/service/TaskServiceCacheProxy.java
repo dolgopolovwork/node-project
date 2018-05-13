@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
@@ -17,7 +18,7 @@ import java.util.UUID;
  */
 public class TaskServiceCacheProxy implements TaskService {
 
-    private final TaskPool taskPool = Container.getInstance().get("masterServerTaskPool");
+    private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
     private final TaskService taskService;
     private final CacheRequestListener cacheRequestListener = Container.getInstance().get(CacheRequestListener.class);
     private final TaskMonitoringService taskMonitoringService = Container.getInstance().get(TaskMonitoringService.class);

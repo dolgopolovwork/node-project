@@ -1,8 +1,10 @@
 package ru.babobka.nodeutils.util;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * Created by 123 on 19.08.2017.
@@ -25,7 +27,7 @@ public interface HashUtil {
     }
 
     static byte[] sha2(int... hashCodes) {
-        if (hashCodes == null || hashCodes.length == 0) {
+        if (ArrayUtil.isEmpty(hashCodes)) {
             throw new IllegalArgumentException("hashCodes is empty");
         }
         try {
@@ -47,9 +49,37 @@ public interface HashUtil {
         return object.hashCode();
     }
 
+    static byte[] sha2(Map<String, Serializable> data) {
+        if (data == null) {
+            throw new IllegalArgumentException("cannot hash null data");
+        } else if (data.isEmpty()) {
+            return new byte[]{};
+        }
+        try {
+            MessageDigest sha256 = MessageDigest.getInstance(SHA_256);
+            for (Map.Entry<String, Serializable> entry : data.entrySet()) {
+                sha256.update(entry.getKey().getBytes(TextUtil.CHARSET));
+                sha256.update(toByteArray(entry.getValue()));
+            }
+            return sha256.digest();
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static byte[] toByteArray(Object object) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutput out = new ObjectOutputStream(bos)) {
+            out.writeObject(object);
+            out.flush();
+            return bos.toByteArray();
+        }
+    }
+
     static byte[] sha2(byte[] message, byte[] salt) {
-        if (message == null || message.length == 0) {
-            throw new IllegalArgumentException("message is empty");
+        if (message == null) {
+            throw new IllegalArgumentException("message is null");
+        } else if (salt == null) {
+            throw new IllegalArgumentException("salt is null");
         }
         try {
             MessageDigest sha256 = MessageDigest.getInstance(SHA_256);

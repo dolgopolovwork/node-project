@@ -1,7 +1,7 @@
 package ru.babobka.masternoderun;
 
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.JSONUtil;

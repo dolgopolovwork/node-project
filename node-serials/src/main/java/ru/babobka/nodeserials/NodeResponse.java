@@ -1,6 +1,7 @@
 package ru.babobka.nodeserials;
 
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -84,6 +85,16 @@ public class NodeResponse extends NodeData {
 
     public void setStatus(ResponseStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public byte[] getHash() {
+        byte[] hash = super.getHash();
+        byte[] smallHash = HashUtil.sha2(
+                status.ordinal(),
+                HashUtil.safeHashCode(message),
+                (int) timeTakes);
+        return HashUtil.sha2(hash, smallHash);
     }
 
     @Override

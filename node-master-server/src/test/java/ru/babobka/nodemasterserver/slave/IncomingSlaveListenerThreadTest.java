@@ -3,10 +3,12 @@ package ru.babobka.nodemasterserver.slave;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.TimeoutConfig;
 import ru.babobka.nodemasterserver.service.MasterAuthService;
-import ru.babobka.nodesecurity.data.SecureDataFactory;
 import ru.babobka.nodesecurity.auth.AuthResult;
+import ru.babobka.nodesecurity.data.SecureDataFactory;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodesecurity.service.SecurityService;
 import ru.babobka.nodetask.TaskPool;
@@ -55,7 +57,7 @@ public class IncomingSlaveListenerThreadTest {
             container.put(logger);
             container.put(slavesStorage);
             container.put(authService);
-            container.put("masterServerTaskPool", taskPool);
+            container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, taskPool);
             container.put(mock(SecurityService.class));
             container.put(mock(SecureDataFactory.class));
         });
@@ -95,6 +97,8 @@ public class IncomingSlaveListenerThreadTest {
     @Test
     public void testOnAwake() throws IOException {
         Socket socket = mock(Socket.class);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
         when(serverSocket.accept()).thenReturn(socket);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
@@ -112,6 +116,8 @@ public class IncomingSlaveListenerThreadTest {
     @Test
     public void testOnAwakeAuthFail() throws IOException {
         Socket socket = mock(Socket.class);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
         when(serverSocket.accept()).thenReturn(socket);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);

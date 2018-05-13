@@ -1,6 +1,7 @@
 package ru.babobka.nodeutils.thread;
 
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class ThreadPoolService<I extends Serializable, O extends Serializable> {
     private final int cores;
     private final Lock executionLock = new ReentrantLock();
-    private final ExecutorService threadPool = Container.getInstance().get("service-thread-pool");
+    private final ExecutorService threadPool = Container.getInstance().get(UtilKey.SERVICE_THREAD_POOL);
     private boolean stopped;
 
     public ThreadPoolService(int cores) {

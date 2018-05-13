@@ -17,7 +17,7 @@ public class ContainerTest {
         Container.getInstance().put(Integer.valueOf(123));
         Container.getInstance().put(new B());
         Container.getInstance().put(StandardCharsets.UTF_8);
-        Container.getInstance().put("key", Integer.valueOf(123));
+        Container.getInstance().put(TestKey.XYZ, Integer.valueOf(123));
     }
 
     @After
@@ -42,12 +42,12 @@ public class ContainerTest {
 
     @Test
     public void testGetByKey() {
-        assertEquals(Container.getInstance().get("key"), Integer.valueOf(123));
+        assertEquals(Container.getInstance().get(TestKey.XYZ), Integer.valueOf(123));
     }
 
     @Test(expected = ContainerException.class)
     public void testGetByKeyNotExisting() {
-        Container.getInstance().get("abc");
+        Container.getInstance().get(TestKey.ABC);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -57,7 +57,7 @@ public class ContainerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNullObject() {
-        Container.getInstance().put("abc", null);
+        Container.getInstance().put(TestKey.ABC, null);
     }
 
     @Test
@@ -99,15 +99,15 @@ public class ContainerTest {
     @Test
     public void testGetDefault() {
         int defaultValue = 1;
-        assertEquals((int) Container.getInstance().get("abc", defaultValue), defaultValue);
+        assertEquals((int) Container.getInstance().get(TestKey.ABC, defaultValue), defaultValue);
     }
 
     @Test
     public void testGetDefaultContains() {
         int defaultValue = 1;
         int realValue = 2;
-        Container.getInstance().put("abc", realValue);
-        assertEquals((int) Container.getInstance().get("abc", defaultValue), realValue);
+        Container.getInstance().put(TestKey.ABC, realValue);
+        assertEquals((int) Container.getInstance().get(TestKey.ABC, defaultValue), realValue);
     }
 
     interface A {
@@ -116,6 +116,10 @@ public class ContainerTest {
 
     static class B implements A {
 
+    }
+
+    enum TestKey implements Key {
+        ABC, XYZ
     }
 
 }

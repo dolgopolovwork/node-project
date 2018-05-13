@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.client;
 
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 public class IncomingClientListenerThread extends Thread {
 
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-    private final ExecutorService executorService = Container.getInstance().get("clientsThreadPool");
+    private final ExecutorService executorService = Container.getInstance().get(MasterServerKey.CLIENTS_THREAD_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final ServerSocket serverSocket;
 

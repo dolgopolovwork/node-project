@@ -5,7 +5,7 @@ import ru.babobka.nodemasterserver.applyer.GroupTaskApplyer;
 import ru.babobka.nodemasterserver.applyer.StopTaskApplyer;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
@@ -33,9 +33,9 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
 
     AbstractNetworkSlave(NodeConnection connection) {
         if (connection == null) {
-            throw new IllegalArgumentException("Connection is null");
+            throw new IllegalArgumentException("connection is null");
         } else if (connection.isClosed()) {
-            throw new IllegalArgumentException("Connection is closed");
+            throw new IllegalArgumentException("connection is closed");
         }
         this.connection = connection;
     }
@@ -45,13 +45,14 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         logger.debug("slave " + this.getSlaveId() + " is running");
         try {
             while (!isInterrupted()) {
-                connection.setReadTimeOut(masterServerConfig.getRequestTimeOutMillis());
+                connection.setReadTimeOut(masterServerConfig.getTimeouts().getRequestTimeOutMillis());
                 NodeResponse response = connection.receive();
                 if (response.getStatus() != ResponseStatus.HEART_BEAT) {
                     onReceive(response);
                 }
             }
         } catch (IOException | RuntimeException e) {
+            e.printStackTrace();
             if (!isInterrupted() && !connection.isClosed()) {
                 logger.error(e);
             }

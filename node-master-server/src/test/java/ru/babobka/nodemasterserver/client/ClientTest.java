@@ -4,7 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.TimeoutConfig;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
@@ -134,12 +135,14 @@ public class ClientTest {
     public void testProcessConnection() throws IOException {
         NodeRequest request = mock(NodeRequest.class);
         NodeConnection connection = mock(NodeConnection.class);
-        when(config.getRequestTimeOutMillis()).thenReturn(1000);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        timeoutConfig.setRequestTimeOutMillis(1000);
+        when(config.getTimeouts()).thenReturn(timeoutConfig);
         Client client = spy(new Client(connection, request));
         doReturn(false).doReturn(true).when(client).isDone();
         client.processConnection();
         verify(connection).receive();
-        verify(connection).setReadTimeOut(config.getRequestTimeOutMillis());
+        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
     }
 
     @Test
@@ -170,7 +173,9 @@ public class ClientTest {
     public void testRun() {
         NodeRequest request = mock(NodeRequest.class);
         NodeConnection connection = mock(NodeConnection.class);
-        when(config.getRequestTimeOutMillis()).thenReturn(1000);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        timeoutConfig.setRequestTimeOutMillis(1000);
+        when(config.getTimeouts()).thenReturn(timeoutConfig);
         Client client = spy(new Client(connection, request));
         doNothing().when(client).runExecution();
         doNothing().when(client).processConnection();

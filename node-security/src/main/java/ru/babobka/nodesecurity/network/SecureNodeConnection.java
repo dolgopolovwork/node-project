@@ -82,6 +82,7 @@ public class SecureNodeConnection implements NodeConnection {
 
     @Override
     public void close() {
+      //  throw new RuntimeException("close");
         connection.close();
     }
 
@@ -92,6 +93,6 @@ public class SecureNodeConnection implements NodeConnection {
 
     @Override
     public String toString() {
-        return super.toString();
+        return connection.toString();
     }
 }

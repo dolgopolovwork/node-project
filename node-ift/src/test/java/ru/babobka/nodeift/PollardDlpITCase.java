@@ -65,7 +65,7 @@ public class PollardDlpITCase {
     }
 
     private static NodeRequest createDlpRequest(int modBitLength) {
-        SafePrime safePrime = MathUtil.getSafePrime(modBitLength);
+        SafePrime safePrime = SafePrime.random(modBitLength);
         BigInteger gen = MathUtil.getGenerator(safePrime);
         Map<String, Serializable> data = new HashMap<>();
         data.put("x", gen);

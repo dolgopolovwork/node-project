@@ -33,7 +33,7 @@ public class DlpNodeBenchmark extends NodeBenchmark {
     public DlpNodeBenchmark(String appName, int tests, int orderBitLength) {
         super(appName, tests);
         this.orderBitLength = orderBitLength;
-        safePrime = MathUtil.getSafePrime(orderBitLength - 1);
+        safePrime = SafePrime.random(orderBitLength - 1);
         gen = MathUtil.getGenerator(safePrime);
     }
 

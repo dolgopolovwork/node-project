@@ -41,13 +41,13 @@ public class Container {
         applicationContainer.contain(this);
     }
 
-    public synchronized void put(String key, Object object) {
+    public synchronized void put(Key key, Object object) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
         } else if (object == null) {
             throw new IllegalArgumentException("object to put is null");
         }
-        namedContainerMap.put(key, object);
+        namedContainerMap.put(key.name(), object);
     }
 
 
@@ -62,8 +62,8 @@ public class Container {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized <T> T get(String key) {
-        T object = (T) namedContainerMap.get(key);
+    public synchronized <T> T get(Key key) {
+        T object = (T) namedContainerMap.get(key.name());
         if (object == null) {
             throw new ContainerException("Object named " + key + " was not found");
         }
@@ -71,8 +71,8 @@ public class Container {
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized <T> T get(String key, T defaultValue) {
-        T object = (T) namedContainerMap.get(key);
+    public synchronized <T> T get(Key key, T defaultValue) {
+        T object = (T) namedContainerMap.get(key.name());
         if (object == null) {
             return defaultValue;
         }

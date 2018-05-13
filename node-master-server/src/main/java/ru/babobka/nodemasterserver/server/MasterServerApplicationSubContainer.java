@@ -1,15 +1,17 @@
 package ru.babobka.nodemasterserver.server;
 
-import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
-import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.service.DistributionService;
+import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.service.TaskServiceCacheProxy;
 import ru.babobka.nodemasterserver.service.TaskServiceImpl;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -45,10 +47,11 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new DistributionService());
             container.put(new ResponseStorage());
             container.put(new ClientStorage());
-            container.put("masterServerTaskPool", new TaskPool(config.getTasksFolder()));
+            container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, new TaskPool(
+                    config.getFolders().getTasksFolder()));
             container.put(new TaskMonitoringService());
             container.put(new ResponsesMapper());
-            if (config.isEnableCache()) {
+            if (config.getModes().isCacheMode()) {
                 container.put(new CacheRequestListener());
                 container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
             } else {
@@ -56,15 +59,18 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             }
             container.put(new StoppedTasks());
             container.put(new SlaveFactory());
-            container.put("clientsThreadPool", Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
-            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(config.getClientListenerPort(), true)));
+            container.put(MasterServerKey.CLIENTS_THREAD_POOL,
+                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
+                    config.getPorts().getClientListenerPort(), true)));
             container.put(new HeartBeatingThread());
             container.put(new MasterAuthService());
-            container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(config.getSlaveListenerPort(), config.isLocalOnly())));
+            container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
+                    config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMode())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
             container.put(createWebServer(config));
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException e) {
             throw new ContainerException(e);
         }
     }
@@ -75,8 +81,8 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
         Container.getInstance().put(new JSONWebControllerMapper());
         WebServerConfig webServerConfig = new WebServerConfig();
         webServerConfig.setServerName("node web server");
-        webServerConfig.setPort(config.getWebListenerPort());
-        webServerConfig.setLogFolder(config.getLoggerFolder());
+        webServerConfig.setPort(config.getPorts().getWebListenerPort());
+        webServerConfig.setLogFolder(config.getFolders().getLoggerFolder());
         webServerConfig.setSessionTimeoutSeconds(15 * 60);
         WebServer webServer = new WebServer(webServerConfig);
         webServer.addController("users", new NodeUsersCRUDWebController());

@@ -4,6 +4,7 @@ import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeslaveserver.controller.SocketController;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
@@ -20,7 +21,7 @@ public class SlaveServer extends Thread {
 
     private final SlaveAuthService authService = Container.getInstance().get(SlaveAuthService.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
-    private final TaskPool taskPool = Container.getInstance().get("slaveServerTaskPool");
+    private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
@@ -51,7 +52,8 @@ public class SlaveServer extends Thread {
             while (!isInterrupted() && !connection.isClosed()) {
                 controller.control(connection);
             }
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
+            e.printStackTrace();
             if (!isInterrupted()) {
                 logger.error(e);
             }
