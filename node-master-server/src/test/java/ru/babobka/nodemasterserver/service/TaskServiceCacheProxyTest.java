@@ -3,6 +3,7 @@ package ru.babobka.nodemasterserver.service;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
@@ -33,9 +34,12 @@ public class TaskServiceCacheProxyTest {
         taskPool = mock(TaskPool.class);
         taskService = mock(TaskServiceImpl.class);
         cacheRequestListener = mock(CacheRequestListener.class);
-        Container.getInstance().put("masterServerTaskPool", taskPool);
-        Container.getInstance().put(cacheRequestListener);
-        Container.getInstance().put(taskMonitoringService);
+        Container.getInstance().put(container -> {
+            container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, taskPool);
+            container.put(cacheRequestListener);
+            container.put(taskMonitoringService);
+        });
+
         taskServiceCacheProxy = spy(new TaskServiceCacheProxy(taskService));
     }
 

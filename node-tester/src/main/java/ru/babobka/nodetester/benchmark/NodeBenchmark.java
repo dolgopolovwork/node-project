@@ -5,13 +5,15 @@ import ru.babobka.nodebusiness.service.BenchmarkStorageService;
 import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodetester.benchmark.mapper.BenchmarkMapper;
+import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
+import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -41,7 +43,7 @@ public abstract class NodeBenchmark {
 
     BenchmarkData executeCycledBenchmark(int tests) {
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        int port = masterServerConfig.getClientListenerPort();
+        int port = masterServerConfig.getPorts().getClientListenerPort();
         AtomicLong timer = new AtomicLong();
         try (Client client = createLocalClient(port)) {
             for (int test = 0; test < tests; test++) {
@@ -66,7 +68,7 @@ public abstract class NodeBenchmark {
         MasterServerRunner.init();
         SlaveServerRunner.init();
         startMonitoring();
-        Container.getInstance().put("service-threads", serviceThreads);
+        Container.getInstance().put(UtilKey.SERVICE_THREADS_NUM, serviceThreads);
         MasterServer masterServer = MasterServerRunner.runMasterServer();
         try (SlaveServerCluster slaveServerCluster = createCluster(LOGIN, PASSWORD, slaves)) {
             slaveServerCluster.start();
@@ -91,7 +93,7 @@ public abstract class NodeBenchmark {
     }
 
     private void saveBenchmark(BenchmarkData benchmarkData, int slaves, int serviceThreads) {
-        boolean ableToSave = Properties.getBool("permanent", false);
+        boolean ableToSave = Properties.getBool(TesterKey.PERMANENT, false);
         if (!ableToSave) {
             return;
         }

@@ -4,8 +4,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
@@ -46,7 +48,7 @@ public class AuthCommonTasksITCase {
     @Before
     public void setUpMocks() {
         taskPool = mock(TaskPool.class);
-        Container.getInstance().put("slaveServerTaskPool", taskPool);
+        Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
     }
 
     @Test(expected = SlaveAuthFailException.class)
@@ -67,7 +69,7 @@ public class AuthCommonTasksITCase {
     @Test
     public void testOneCommonTask() throws IOException {
         Set<String> availableTasks = new HashSet<>();
-        TaskPool masterSlaveTaskPool = Container.getInstance().get("masterServerTaskPool");
+        TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
         SlaveServerRunner.runSlaveServer("test_user", "test_password");

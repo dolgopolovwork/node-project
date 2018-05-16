@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
@@ -51,7 +52,7 @@ public class TaskServiceImplTest {
         responseStorage = mock(ResponseStorage.class);
         distributionService = mock(DistributionService.class);
         Container.getInstance().put(container -> {
-            container.put("masterServerTaskPool", taskPool);
+            container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, taskPool);
             container.put(slavesStorage);
             container.put(logger);
             container.put(taskMonitoringService);

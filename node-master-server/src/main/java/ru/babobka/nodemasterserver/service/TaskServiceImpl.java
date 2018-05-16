@@ -2,6 +2,7 @@ package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.Responses;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 public class TaskServiceImpl implements TaskService {
 
     private static final int MAX_ATTEMPTS = 5;
-    private final TaskPool taskPool = Container.getInstance().get("masterServerTaskPool");
+    private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);

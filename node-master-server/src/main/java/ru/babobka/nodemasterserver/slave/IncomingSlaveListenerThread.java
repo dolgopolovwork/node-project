@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.slave;
 
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
@@ -28,7 +29,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final MasterAuthService authService = Container.getInstance().get(MasterAuthService.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
-    private final TaskPool taskPool = Container.getInstance().get("masterServerTaskPool");
+    private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
 
     public IncomingSlaveListenerThread(ServerSocket serverSocket) {
         if (serverSocket == null) {
@@ -45,7 +46,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             Socket socket = serverSocket.accept();
             connection = nodeConnectionFactory.create(socket);
-            connection.setReadTimeOut(config.getAuthTimeOutMillis());
+            connection.setReadTimeOut(config.getTimeouts().getAuthTimeOutMillis());
             logger.info("new connection");
             AuthResult authResult = authService.auth(connection);
             if (!authResult.isSuccess()) {
@@ -64,7 +65,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             Slave slave = slaveFactory.create(availableTasks, new SecureNodeConnection(connection, authResult.getSecretKey()));
             slavesStorage.add(slave);
             slave.start();
-            connection.setReadTimeOut(config.getRequestTimeOutMillis());
+            connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
                 logger.error(e);

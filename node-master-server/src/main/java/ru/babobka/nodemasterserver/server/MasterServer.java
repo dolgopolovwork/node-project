@@ -4,6 +4,7 @@ import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -34,7 +35,7 @@ public class MasterServer extends Thread {
     @Override
     public void run() {
         try {
-            if (masterServerConfig.isDebugMode()) {
+            if (masterServerConfig.getModes().isDebugMode()) {
                 nodeUsersService.createDebugUser();
             }
             incomingClientsThread.start();
@@ -42,6 +43,7 @@ public class MasterServer extends Thread {
             heartBeatingThread.start();
             webServer.start();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             logger.error(e);
             clear();
         }

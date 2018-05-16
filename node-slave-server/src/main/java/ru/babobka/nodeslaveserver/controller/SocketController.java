@@ -3,6 +3,7 @@ package ru.babobka.nodeslaveserver.controller;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
+import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodetask.TaskPool;
@@ -19,7 +20,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 public class SocketController extends Controller<NodeConnection> implements Closeable {
 
-    private final TaskPool taskPool = Container.getInstance().get("slaveServerTaskPool");
+    private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final ExecutorService threadPool;
@@ -35,9 +36,7 @@ public class SocketController extends Controller<NodeConnection> implements Clos
         try {
             doControl(connection);
         } catch (IOException e) {
-            if (!connection.isClosed()) {
-                throw new IllegalStateException("cannot control", e);
-            }
+            throw new IllegalStateException("cannot control", e);
         }
     }
 

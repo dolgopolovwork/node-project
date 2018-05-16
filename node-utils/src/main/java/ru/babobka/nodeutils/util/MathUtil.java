@@ -95,10 +95,6 @@ public class MathUtil {
         }
     }
 
-    public static SafePrime getSafePrime(int bits) {
-        return new SafePrime(bits);
-    }
-
     public static BigInteger getGenerator(SafePrime safePrime) {
         BigInteger gen = BigInteger.ONE;
         while (!isGenerator(safePrime, gen)) {

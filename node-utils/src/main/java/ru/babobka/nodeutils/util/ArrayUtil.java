@@ -25,4 +25,24 @@ public interface ArrayUtil {
     static boolean isEmpty(byte[] array) {
         return array == null || array.length == 0;
     }
+
+    static boolean isEmpty(int[] array) {
+        return array == null || array.length == 0;
+    }
+
+    static boolean isUnique(int... array) {
+        if (ArrayUtil.isEmpty(array)) {
+            return true;
+        } else if (array.length == 1) {
+            return true;
+        }
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i + 1; j < array.length; j++) {
+                if (array[i] == array[j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

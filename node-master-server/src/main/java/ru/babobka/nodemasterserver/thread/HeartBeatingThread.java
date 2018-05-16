@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.thread;
 
 import ru.babobka.nodemasterserver.client.ClientStorage;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.SimpleLogger;
@@ -20,7 +20,7 @@ public class HeartBeatingThread extends CyclicThread {
 
     @Override
     public int sleepMillis() {
-        return masterServerConfig.getHeartBeatTimeOutMillis();
+        return masterServerConfig.getTimeouts().getHeartBeatTimeOutMillis();
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
@@ -57,7 +57,7 @@ public class ClientITCase {
     public void testPrimeCountNoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+        try (Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
             assertEquals(response.getStatus(), ResponseStatus.FAILED);
@@ -69,7 +69,7 @@ public class ClientITCase {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
@@ -82,7 +82,7 @@ public class ClientITCase {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             for (int i = 0; i < getTests(); i++) {
                 Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
@@ -97,7 +97,7 @@ public class ClientITCase {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 45;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -115,7 +115,7 @@ public class ClientITCase {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 256;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -132,7 +132,7 @@ public class ClientITCase {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getClientListenerPort())) {
+             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 35;
             for (int i = 0; i < getTests(); i++) {

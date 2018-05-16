@@ -2,7 +2,7 @@ package ru.babobka.masternoderun;
 
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
@@ -24,12 +24,11 @@ import java.io.IOException;
  */
 public class MasterServerApplicationContainer implements ApplicationContainer {
 
-
     @Override
     public void contain(Container container) {
         try {
             MasterServerConfig config = container.get(MasterServerConfig.class);
-            container.put(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder()));
+            container.put(SimpleLogger.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
             container.put(new SecurityApplicationContainer());
             container.put(createSrpConfig(config));
             container.put(new NodeConnectionFactory());
@@ -44,9 +43,9 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     }
 
     private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
-        SafePrime bigSafePrime = masterServerConfig.getBigSafePrime();
+        SafePrime bigSafePrime = masterServerConfig.getSecurity().getBigSafePrime();
         Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
-        return new SrpConfig(gen, masterServerConfig.getChallengeBytes());
+        return new SrpConfig(gen, masterServerConfig.getSecurity().getChallengeBytes());
     }
 
 }

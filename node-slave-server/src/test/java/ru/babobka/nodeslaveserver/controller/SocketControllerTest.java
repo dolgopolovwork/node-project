@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
@@ -41,7 +42,7 @@ public class SocketControllerTest {
         tasksStorage = mock(TasksStorage.class);
         executorService = mock(ExecutorService.class);
         taskRunnerService = mock(TaskRunnerService.class);
-        Container.getInstance().put("slaveServerTaskPool", taskPool);
+        Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
         Container.getInstance().put(slaveServerConfig);
         Container.getInstance().put(simpleLogger);
         Container.getInstance().put(taskRunnerService);

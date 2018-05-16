@@ -6,11 +6,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
-import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
+import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
@@ -39,7 +40,7 @@ public class CacheITCase {
     @BeforeClass
     public static void setUp() throws IOException {
         Container.getInstance().put(SimpleLogger.debugLogger(CacheITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
-        Properties.put("enableCache", true);
+        Properties.put(TesterKey.ENABLE_CACHE, true);
         MasterServerRunner.init();
         SlaveServerRunner.init();
         masterServer = MasterServerRunner.runMasterServer();

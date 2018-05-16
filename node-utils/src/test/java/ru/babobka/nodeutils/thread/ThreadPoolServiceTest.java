@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
@@ -21,7 +22,7 @@ public class ThreadPoolServiceTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put("service-thread-pool", mock(ExecutorService.class));
+        Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, mock(ExecutorService.class));
         threadPoolService = spy(new MockThreadPoolService(1));
     }
 

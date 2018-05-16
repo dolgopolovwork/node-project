@@ -2,11 +2,12 @@ package ru.babobka.nodetester.master;
 
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
-import ru.babobka.nodemasterserver.server.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.*;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
+import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
@@ -35,7 +36,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.put(config);
             container.put(new SecurityApplicationContainer());
             container.put(createSrpConfig(config));
-            container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getLoggerFolder()));
+            container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
             container.put(new NodeWebApplicationContainer());
@@ -49,24 +50,40 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
 
     private static MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-        config.setTasksFolderEnv(Env.NODE_TASKS.name());
-        config.setLoggerFolderEnv(Env.NODE_LOGS.name());
-        config.setAuthTimeOutMillis(2000);
-        config.setClientListenerPort(9999);
-        config.setDebugMode(true);
-        config.setEnableCache(Properties.getBool("enableCache", false));
-        config.setHeartBeatTimeOutMillis(5000);
-        config.setRequestTimeOutMillis(15000);
-        config.setSlaveListenerPort(9090);
-        config.setWebListenerPort(8080);
-        config.setBigSafePrime(MathUtil.getSafePrime(128));
-        config.setChallengeBytes(16);
+
+        FolderConfig folderConfig = new FolderConfig();
+        folderConfig.setTasksFolderEnv(Env.NODE_TASKS.name());
+        folderConfig.setLoggerFolderEnv(Env.NODE_LOGS.name());
+        config.setFolders(folderConfig);
+
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        timeoutConfig.setAuthTimeOutMillis(2000);
+        timeoutConfig.setHeartBeatTimeOutMillis(5000);
+        timeoutConfig.setRequestTimeOutMillis(15000);
+        config.setTimeouts(timeoutConfig);
+
+        ModeConfig modeConfig = new ModeConfig();
+        modeConfig.setDebugMode(true);
+        modeConfig.setCacheMode(Properties.getBool(TesterKey.ENABLE_CACHE, false));
+        config.setModes(modeConfig);
+
+        PortConfig portConfig = new PortConfig();
+        portConfig.setSlaveListenerPort(9090);
+        portConfig.setWebListenerPort(8080);
+        portConfig.setClientListenerPort(9999);
+        config.setPorts(portConfig);
+
+        SecurityConfig securityConfig = new SecurityConfig();
+        securityConfig.setBigSafePrime(SafePrime.random((128)));
+        securityConfig.setChallengeBytes(16);
+        config.setSecurity(securityConfig);
         return config;
     }
 
     private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
-        SafePrime bigSafePrime = masterServerConfig.getBigSafePrime();
+        SecurityConfig securityConfig = masterServerConfig.getSecurity();
+        SafePrime bigSafePrime = securityConfig.getBigSafePrime();
         Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
-        return new SrpConfig(gen, masterServerConfig.getChallengeBytes());
+        return new SrpConfig(gen, securityConfig.getChallengeBytes());
     }
 }

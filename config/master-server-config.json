@@ -1,19 +1,28 @@
 {
-  "debugMode": true,
-  "authTimeOutMillis": 2000,
-  "slaveListenerPort": 9090,
-  "clientListenerPort": 9999,
-  "requestTimeOutMillis": 15000,
-  "heartBeatTimeOutMillis": 5000,
-  "webListenerPort": 8080,
-  "restServiceLogin": "abc",
-  "loggerFolderEnv": "NODE_LOGS",
-  "tasksFolderEnv": "NODE_TASKS",
-  "localOnly": true,
-  "enableCache": false,
-   "bigSafePrime": {
-    "sophieNumber": 237727875013823482469555423741567754821,
-    "prime": 475455750027646964939110847483135509643
+  "modes": {
+    "debugMode": true,
+    "localMode": true,
+    "cacheMode": false
   },
-  "challengeBytes": 16
+  "folders": {
+    "loggerFolderEnv": "NODE_LOGS",
+    "tasksFolderEnv": "NODE_TASKS"
+  },
+  "timeouts": {
+    "authTimeOutMillis": 2000,
+    "requestTimeOutMillis": 15000,
+    "heartBeatTimeOutMillis": 5000
+  },
+  "ports": {
+    "slaveListenerPort": 9090,
+    "clientListenerPort": 9999,
+    "webListenerPort": 8080
+  },
+  "security": {
+    "bigSafePrime": {
+      "sophieNumber": 237727875013823482469555423741567754821,
+      "prime": 475455750027646964939110847483135509643
+    },
+    "challengeBytes": 16
+  }
 }

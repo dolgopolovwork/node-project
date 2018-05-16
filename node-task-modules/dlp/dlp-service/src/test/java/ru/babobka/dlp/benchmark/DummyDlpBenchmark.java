@@ -7,6 +7,7 @@ import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.UtilKey;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
@@ -24,9 +25,11 @@ public class DummyDlpBenchmark {
     private static final int TESTS = 100;
 
     static {
-        Container.getInstance().put("service-thread-pool", ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
-        Container.getInstance().put(new PollardCollisionService());
-        Container.getInstance().put(new PrimeDistinguishable());
+        Container.getInstance().put(container -> {
+            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
+            container.put(new PollardCollisionService());
+            container.put(new PrimeDistinguishable());
+        });
     }
 
     private static final ClassicPollardDlpService pollardDLPService = new ClassicPollardDlpService();
@@ -36,7 +39,7 @@ public class DummyDlpBenchmark {
         warmUp();
         System.out.println("Done warm up");
         for (int i = 32; i <= 64; i++) {
-            SafePrime safePrime = MathUtil.getSafePrime(i);
+            SafePrime safePrime = SafePrime.random(i);
             BigInteger gen = MathUtil.getGenerator(safePrime);
             long longGen = gen.longValue();
             long longPrime = safePrime.getPrime().longValue();
