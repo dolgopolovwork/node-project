@@ -4,7 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.ModeConfig;
 import ru.babobka.nodemasterserver.server.config.TimeoutConfig;
 import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodesecurity.auth.AuthResult;
@@ -39,9 +41,11 @@ public class IncomingSlaveListenerThreadTest {
     private ServerSocket serverSocket;
     private TaskPool taskPool;
     private MasterServerConfig masterServerConfig;
+    private Sessions sessions;
 
     @Before
     public void setUp() {
+        sessions = mock(Sessions.class);
         masterServerConfig = mock(MasterServerConfig.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
         slaveFactory = mock(SlaveFactory.class);
@@ -60,9 +64,10 @@ public class IncomingSlaveListenerThreadTest {
             container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, taskPool);
             container.put(mock(SecurityService.class));
             container.put(mock(SecureDataFactory.class));
+            container.put(sessions);
         });
 
-        incomingSlaveListenerThread = new IncomingSlaveListenerThread(serverSocket);
+        incomingSlaveListenerThread = spy(new IncomingSlaveListenerThread(serverSocket));
     }
 
     @After
@@ -99,14 +104,16 @@ public class IncomingSlaveListenerThreadTest {
         Socket socket = mock(Socket.class);
         TimeoutConfig timeoutConfig = new TimeoutConfig();
         when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        ModeConfig modeConfig = new ModeConfig();
+        when(masterServerConfig.getModes()).thenReturn(modeConfig);
         when(serverSocket.accept()).thenReturn(socket);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        when(authService.auth(connection)).thenReturn(AuthResult.success(new byte[]{0}));
+        when(authService.auth(connection)).thenReturn(AuthResult.success("abc", new byte[]{0}));
         Slave slave = mock(Slave.class);
         Set<String> availableTasks = new HashSet<>();
         when(connection.receive()).thenReturn(availableTasks);
-        when(slaveFactory.create(eq(availableTasks), any(SecureNodeConnection.class))).thenReturn(slave);
+        when(slaveFactory.create(eq(availableTasks), any(SecureNodeConnection.class), any(OnSlaveExitListener.class))).thenReturn(slave);
         when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
         incomingSlaveListenerThread.onCycle();
         verify(slavesStorage).add(slave);
@@ -123,6 +130,26 @@ public class IncomingSlaveListenerThreadTest {
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         when(authService.auth(connection)).thenReturn(AuthResult.fail());
         incomingSlaveListenerThread.onCycle();
+        verify(connection).close();
+    }
+
+    @Test
+    public void testOnAwakeSessionCreatedFail() throws IOException {
+        String login = "abc";
+        Socket socket = mock(Socket.class);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        when(serverSocket.accept()).thenReturn(socket);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(nodeConnectionFactory.create(socket)).thenReturn(connection);
+        AuthResult authResult = AuthResult.success(login, new byte[]{1, 2, 3});
+        when(authService.auth(connection)).thenReturn(authResult);
+        doReturn(false).when(incomingSlaveListenerThread).isAbleToRunNewSlave(authResult);
+        Set<String> availableTasks = new HashSet<>();
+        when(connection.receive()).thenReturn(availableTasks);
+        when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
+        incomingSlaveListenerThread.onCycle();
+        verify(connection).send(false);
         verify(connection).close();
     }
 

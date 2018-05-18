@@ -63,8 +63,9 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setTimeouts(timeoutConfig);
 
         ModeConfig modeConfig = new ModeConfig();
-        modeConfig.setDebugMode(true);
+        modeConfig.setTestUserMode(true);
         modeConfig.setCacheMode(Properties.getBool(TesterKey.ENABLE_CACHE, false));
+        modeConfig.setSingleSessionMode(false);
         config.setModes(modeConfig);
 
         PortConfig portConfig = new PortConfig();

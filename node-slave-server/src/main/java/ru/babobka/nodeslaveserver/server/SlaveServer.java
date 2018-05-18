@@ -30,15 +30,20 @@ public class SlaveServer extends Thread {
         NodeConnection connection = nodeConnectionFactory.create(socket);
         AuthResult authResult = authService.auth(connection, login, password);
         if (!authResult.isSuccess()) {
-            logger.error("auth fail");
-            throw new SlaveAuthFailException();
+            connection.close();
+            throw new SlaveAuthFailException("auth fail");
         }
         logger.info("auth success");
         connection.send(taskPool.getTaskNames());
         boolean haveCommonTasks = connection.receive();
         if (!haveCommonTasks) {
-            logger.error("no common tasks with master server");
-            throw new SlaveAuthFailException();
+            connection.close();
+            throw new SlaveAuthFailException("no common tasks with master server");
+        }
+        boolean sessionWasCreated = connection.receive();
+        if (!sessionWasCreated) {
+            connection.close();
+            throw new SlaveAuthFailException("cannot create session");
         }
         tasksStorage = new TasksStorage();
         this.connection = new SecureNodeConnection(connection, authResult.getSecretKey());

@@ -43,15 +43,23 @@ public class AuthITCase {
         Container.getInstance().clear();
     }
 
+
     @Test(expected = SlaveAuthFailException.class)
     public void testAuthFail() throws IOException {
-        SlaveServerRunner.runSlaveServer("bad login", "bad password");
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", "bad password");
+        interruptAndJoin(slaveServer);
     }
 
     @Test
     public void testAuthSuccess() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("test_user", "test_password");
-        slaveServer.interrupt();
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        interruptAndJoin(slaveServer);
+    }
+
+    @Test
+    public void testAuth() throws IOException {
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        interruptAndJoin(slaveServer);
     }
 
     @Test
@@ -59,15 +67,13 @@ public class AuthITCase {
         int slaves = getTests();
         List<SlaveServer> slaveServerList = new ArrayList<>(slaves);
         for (int i = 0; i < slaves; i++) {
-            slaveServerList.add(SlaveServerRunner.runSlaveServer("test_user", "test_password"));
+            slaveServerList.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD));
         }
-        for (SlaveServer slaveServer : slaveServerList) {
-            slaveServer.interrupt();
-        }
+        interruptAndJoin(slaveServerList);
     }
 
     @Test
-    public void testMassAuthSuccessParallel() throws IOException, InterruptedException {
+    public void testMassAuthSuccessParallel() throws IOException {
         int cores = Runtime.getRuntime().availableProcessors();
         final AtomicBoolean authFail = new AtomicBoolean(false);
         Thread[] authThreads = new Thread[cores];
@@ -78,7 +84,8 @@ public class AuthITCase {
                         break;
                     }
                     try {
-                        SlaveServerRunner.runSlaveServer("test_user", "test_password");
+                        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+                        interruptAndJoin(slaveServer);
                     } catch (IOException e) {
                         e.printStackTrace();
                         authFail.set(true);
@@ -88,10 +95,7 @@ public class AuthITCase {
             });
             authThreads[i].start();
         }
-
-        for (Thread thread : authThreads) {
-            thread.join();
-        }
+        joinAll(authThreads);
         assertFalse(authFail.get());
     }
 
@@ -100,11 +104,39 @@ public class AuthITCase {
         int slaves = getTests();
         for (int i = 0; i < slaves; i++) {
             try {
-                SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
+                interruptAndJoin(slaveServer);
                 fail();
             } catch (SlaveAuthFailException e) {
                 //that's ok
             }
+        }
+    }
+
+    private void joinAll(Thread[] threads) {
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void interruptAndJoin(SlaveServer slaveServer) {
+        try {
+            if (slaveServer != null) {
+                slaveServer.interrupt();
+                slaveServer.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void interruptAndJoin(List<SlaveServer> slaveServers) {
+        for (SlaveServer slaveServer : slaveServers) {
+            interruptAndJoin(slaveServer);
         }
     }
 

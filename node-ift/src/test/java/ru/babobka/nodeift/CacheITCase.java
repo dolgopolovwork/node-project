@@ -31,8 +31,6 @@ import static ru.babobka.nodeift.PrimeCounterITCase.*;
  */
 public class CacheITCase {
     protected static MasterServer masterServer;
-    private static final String LOGIN = "test_user";
-    private static final String PASSWORD = "test_password";
     protected static TaskService taskService;
     protected static TaskMonitoringService monitoringService;
     protected static CacheDAO cacheDAO;
@@ -64,7 +62,7 @@ public class CacheITCase {
 
     @Test
     public void testCacheCountPrimesLittleRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < getTests(); i++) {
@@ -78,7 +76,7 @@ public class CacheITCase {
     @Test
     public void testCacheCountPrimesLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
         final int requests = getTests();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < requests; i++) {
@@ -93,7 +91,7 @@ public class CacheITCase {
     public void testCacheCountPrimesLargeRangeOneSlaveClosedCluster() throws IOException, TaskExecutionException, InterruptedException {
         final int requests = getTests();
         NodeRequest request = getLargeRangeRequest();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             TaskExecutionResult result = taskService.executeTask(request);
             assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);

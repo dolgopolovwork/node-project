@@ -30,6 +30,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final MasterAuthService authService = Container.getInstance().get(MasterAuthService.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
+    private final Sessions sessions = Container.getInstance().get(Sessions.class);
 
     public IncomingSlaveListenerThread(ServerSocket serverSocket) {
         if (serverSocket == null) {
@@ -57,15 +58,26 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             logger.info("new slave was successfully authenticated");
             Set<String> availableTasks = connection.receive();
             boolean containsAnyOfTask = taskPool.containsAnyOfTask(availableTasks);
-            connection.send(containsAnyOfTask);
             if (!containsAnyOfTask) {
                 logger.error("new slave doesn't have any common tasks with master");
+                fail(connection);
+                return;
+            } else {
+                success(connection);
+            }
+            if (!isAbleToRunNewSlave(authResult)) {
+                fail(connection);
+                logger.error("not able to create session for user " + authResult.getUserName());
                 return;
             }
-            Slave slave = slaveFactory.create(availableTasks, new SecureNodeConnection(connection, authResult.getSecretKey()));
-            slavesStorage.add(slave);
-            slave.start();
-            connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
+            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, authResult.getSecretKey());
+            if (runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
+                connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
+                success(connection);
+            } else {
+                sessions.remove(authResult.getUserName());
+                fail(connection);
+            }
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
                 logger.error(e);
@@ -76,6 +88,37 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         }
     }
 
+    boolean isAbleToRunNewSlave(AuthResult authResult) {
+        return config.getModes().isSingleSessionMode() ? sessions.put(authResult.getUserName()) : true;
+    }
+
+    private boolean runNewSlave(Set<String> availableTasks, String userName, SecureNodeConnection secureNodeConnection) {
+        try {
+            Slave slave = slaveFactory.create(availableTasks, secureNodeConnection, () -> {
+                if (config.getModes().isSingleSessionMode()) {
+                    sessions.remove(userName);
+                }
+            });
+            slavesStorage.add(slave);
+            slave.start();
+            return true;
+        } catch (RuntimeException e) {
+            logger.error("cannot run new slave");
+            return false;
+        }
+    }
+
+    private void fail(NodeConnection connection) throws IOException {
+        try {
+            connection.send(false);
+        } finally {
+            connection.close();
+        }
+    }
+
+    private void success(NodeConnection connection) throws IOException {
+        connection.send(true);
+    }
 
     @Override
     public void onExit() {

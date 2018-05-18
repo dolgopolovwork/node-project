@@ -35,7 +35,7 @@ public class MasterServer extends Thread {
     @Override
     public void run() {
         try {
-            if (masterServerConfig.getModes().isDebugMode()) {
+            if (masterServerConfig.getModes().isTestUserMode()) {
                 nodeUsersService.createDebugUser();
             }
             incomingClientsThread.start();

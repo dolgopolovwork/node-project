@@ -51,11 +51,9 @@ public class ResponseStorage {
         return responses.fill(NodeResponse.stopped(taskId));
     }
 
-
     public synchronized void remove(UUID taskId) {
         responsesMap.remove(taskId);
     }
-
 
     @Override
     public String toString() {

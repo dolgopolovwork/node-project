@@ -34,8 +34,7 @@ import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
  * Created by 123 on 12.12.2017.
  */
 public class ClientITCase {
-    private static final String LOGIN = "test_user";
-    private static final String PASSWORD = "test_password";
+
     protected static MasterServer masterServer;
 
     @BeforeClass
@@ -68,7 +67,7 @@ public class ClientITCase {
     public void testPrimeCountTwoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
@@ -81,7 +80,7 @@ public class ClientITCase {
     public void testPrimeCountTwoSlavesMassive() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             for (int i = 0; i < getTests(); i++) {
@@ -96,7 +95,7 @@ public class ClientITCase {
     public void testFactorTwoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 45;
@@ -114,7 +113,7 @@ public class ClientITCase {
     public void testFactorOneSlaveTooBigRequest() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 256;
@@ -131,7 +130,7 @@ public class ClientITCase {
     public void testFactorTwoSlavesMassive() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(LOGIN, PASSWORD, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2);
              Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 35;
