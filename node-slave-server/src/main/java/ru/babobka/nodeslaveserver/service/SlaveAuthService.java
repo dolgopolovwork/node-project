@@ -23,15 +23,15 @@ public class SlaveAuthService extends AbstractAuth {
 
     public AuthResult auth(NodeConnection connection, String login, String password) throws IOException {
         connection.send(login);
-        boolean userFound = connection.receive();
-        if (!userFound) {
-            logger.debug(login + " was not found");
+        boolean ableToLogin = connection.receive();
+        if (!ableToLogin) {
+            logger.debug("cannot login as " + login);
             return AuthResult.fail();
         }
-        return srpUserAuth(connection, password);
+        return srpUserAuth(connection, login, password);
     }
 
-    AuthResult srpUserAuth(NodeConnection connection, String password) throws IOException {
+    AuthResult srpUserAuth(NodeConnection connection, String login, String password) throws IOException {
         AuthData authData = connection.receive();
         SrpConfig srpConfig = authData.getSrpConfig();
         Fp a = new Fp(securityService.generatePrivateKey(authData.getSrpConfig()), srpConfig.getG().getMod());
@@ -46,28 +46,33 @@ public class SlaveAuthService extends AbstractAuth {
         if (!B.isSameMod(srpConfig.getG()) || B.isMultNeutral() || B.isAddNeutral()) {
             logger.debug("invalid B :" + B);
             return fail(connection);
-        } else {
-            logger.debug("server's B is fine");
-            success(connection);
         }
+        logger.debug("server's B is fine");
+        success(connection);
         Fp u = new Fp(new BigInteger(HashUtil.sha2(A.getNumber().toByteArray(), B.getNumber().toByteArray())), srpConfig.getG().getMod());
         byte[] hashedPassword = HashUtil.sha2(password);
         byte[] secret = HashUtil.sha2(hashedPassword, authData.getSalt());
         Fp x = new Fp(new BigInteger(secret), srpConfig.getG().getMod());
         byte[] secretKey = securityService.createSecretKeyUser(B, a, u, x, srpConfig);
+        boolean validKeys = checkSecretKeys(connection, secretKey, authData);
+        if (!validKeys) {
+            return fail(connection);
+        }
+        success(connection);
+        return AuthResult.success(login, secretKey);
+    }
+
+    private boolean checkSecretKeys(NodeConnection connection, byte[] secretKey, AuthData authData) throws IOException {
         boolean solvedChallenge = securityService.solveChallenge(connection, secretKey);
         if (!solvedChallenge) {
             logger.debug("failed to solve challenge");
-            return AuthResult.fail();
+            return false;
         }
         boolean challengeResult = securityService.sendChallenge(connection, secretKey, authData.getSrpConfig());
         if (!challengeResult) {
             logger.debug("server failed to solve challenge");
-            return AuthResult.fail();
-        } else {
-            success(connection);
-            return AuthResult.success(secretKey);
+            return false;
         }
+        return true;
     }
-
 }

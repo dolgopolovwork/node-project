@@ -54,7 +54,7 @@ public class AuthCommonTasksITCase {
     @Test(expected = SlaveAuthFailException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        SlaveServerRunner.runSlaveServer("test_user", "test_password");
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
     }
 
     @Test(expected = SlaveAuthFailException.class)
@@ -63,7 +63,7 @@ public class AuthCommonTasksITCase {
         availableTasks.add("abc");
         availableTasks.add("xyz");
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer("test_user", "test_password");
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME,  TestCredentials.PASSWORD);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AuthCommonTasksITCase {
         TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer("test_user", "test_password");
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME,  TestCredentials.PASSWORD);
     }
 
 }

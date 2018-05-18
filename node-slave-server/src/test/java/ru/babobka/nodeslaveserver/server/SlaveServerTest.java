@@ -64,8 +64,20 @@ public class SlaveServerTest {
     public void testAuthSuccess() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success(new byte[]{0}));
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
         when(connection.receive()).thenReturn(true);
+        when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        new SlaveServer(mock(Socket.class), "abc", "xyz");
+        verify(simpleLogger).info("auth success");
+        verify(connection).send(anySet());
+    }
+
+    @Test(expected = SlaveAuthFailException.class)
+    public void testFailedSessions() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(connection.receive()).thenReturn(true, false);
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
         new SlaveServer(mock(Socket.class), "abc", "xyz");
         verify(simpleLogger).info("auth success");
@@ -76,7 +88,7 @@ public class SlaveServerTest {
     public void testClear() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success(new byte[]{0}));
+        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
         when(connection.receive()).thenReturn(true);
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
         SlaveServer slaveServer = new SlaveServer(mock(Socket.class), "abc", "xyz");

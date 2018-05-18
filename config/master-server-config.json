@@ -2,7 +2,8 @@
   "modes": {
     "debugMode": true,
     "localMode": true,
-    "cacheMode": false
+    "cacheMode": false,
+    "singleSessionMode": false
   },
   "folders": {
     "loggerFolderEnv": "NODE_LOGS",

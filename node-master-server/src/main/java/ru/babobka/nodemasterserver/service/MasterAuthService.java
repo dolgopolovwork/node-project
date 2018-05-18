@@ -2,6 +2,7 @@ package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
+import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.auth.AbstractAuth;
 import ru.babobka.nodesecurity.auth.AuthData;
 import ru.babobka.nodesecurity.auth.AuthResult;
@@ -25,17 +26,21 @@ public class MasterAuthService extends AbstractAuth {
     private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
     private final SrpConfig srpConfig = Container.getInstance().get(SrpConfig.class);
     private final SecurityService securityService = Container.getInstance().get(SecurityService.class);
+    private final Sessions sessions = Container.getInstance().get(Sessions.class);
 
     public AuthResult auth(NodeConnection connection) throws IOException {
         String login = connection.receive();
+        if (sessions.contains(login)) {
+            logger.debug(login + " is already authenticated");
+            return fail(connection);
+        }
         User user = usersService.get(login);
         if (user == null) {
             logger.debug("can not find user " + login);
             return fail(connection);
-        } else {
-            logger.debug(login + " was found");
-            success(connection);
         }
+        logger.debug(login + " was found");
+        success(connection);
         return srpHostAuth(connection, user);
     }
 
@@ -45,10 +50,9 @@ public class MasterAuthService extends AbstractAuth {
         if (!A.isSameMod(srpConfig.getG()) || A.isAddNeutral() || A.isMultNeutral()) {
             logger.debug("invalid A :" + A);
             return fail(connection);
-        } else {
-            logger.debug("client's A is fine");
-            success(connection);
         }
+        logger.debug("client's A is fine");
+        success(connection);
         Fp b = new Fp(securityService.generatePrivateKey(srpConfig), srpConfig.getG().getMod());
         Fp v = new Fp(new BigInteger(user.getSecret()), srpConfig.getG().getMod());
         Fp k = srpConfig.getK();
@@ -60,20 +64,22 @@ public class MasterAuthService extends AbstractAuth {
             return fail(connection);
         }
         byte[] secretKey = securityService.createSecretKeyHost(A, B, b, v, srpConfig);
+        boolean validKeys = checkSecretKeys(connection, secretKey);
+        if (!validKeys) {
+            return fail(connection);
+        }
+        return AuthResult.success(user.getName(), secretKey);
+    }
+
+    private boolean checkSecretKeys(NodeConnection connection, byte[] secretKey) throws IOException {
         boolean challengeResult = securityService.sendChallenge(connection, secretKey, srpConfig);
         if (!challengeResult) {
             logger.debug("client failed to solve challenge");
-            return fail(connection);
-        } else {
-            logger.debug("client solved challenge");
-            success(connection);
+            return false;
         }
-        boolean solvedChallengeResult = securityService.solveChallenge(connection, secretKey);
-        if (!solvedChallengeResult) {
-            return fail(connection);
-        } else {
-            return AuthResult.success(secretKey);
-        }
+        logger.debug("client solved challenge");
+        success(connection);
+        return securityService.solveChallenge(connection, secretKey);
     }
 
 }

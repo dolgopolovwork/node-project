@@ -15,6 +15,7 @@ import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.service.TaskServiceCacheProxy;
 import ru.babobka.nodemasterserver.service.TaskServiceImpl;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
+import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -43,6 +44,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
         try {
             StreamUtil streamUtil = container.get(StreamUtil.class);
             MasterServerConfig config = container.get(MasterServerConfig.class);
+            container.put(new Sessions());
             container.put(new SlavesStorage());
             container.put(new DistributionService());
             container.put(new ResponseStorage());
@@ -66,7 +68,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new HeartBeatingThread());
             container.put(new MasterAuthService());
             container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
-                    config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMode())));
+                    config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMachineMode())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
             container.put(createWebServer(config));

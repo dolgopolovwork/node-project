@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.exception.DistributionException;
+import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.Responses;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
@@ -139,10 +140,12 @@ public class SlaveTest {
     @Test
     public void testOnExitNoTasks() {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        OnSlaveExitListener onSlaveExitListener = mock(OnSlaveExitListener.class);
+        Slave slave = spy(new Slave(new HashSet<>(), connection, onSlaveExitListener));
         when(slave.isNoTasks()).thenReturn(true);
         slave.onExit();
         verify(slavesStorage).remove(slave);
+        verify(onSlaveExitListener).onExit();
         verify(connection).close();
     }
 

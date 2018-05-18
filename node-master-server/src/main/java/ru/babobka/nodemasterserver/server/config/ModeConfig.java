@@ -7,24 +7,25 @@ import java.io.Serializable;
  */
 public class ModeConfig implements Serializable {
     private static final long serialVersionUID = 7927649430932591211L;
-    private boolean debugMode;
-    private boolean localMode;
+    private boolean testUserMode;
+    private boolean localMachineMode;
     private boolean cacheMode;
+    private boolean singleSessionMode;
 
-    public boolean isDebugMode() {
-        return debugMode;
+    public boolean isTestUserMode() {
+        return testUserMode;
     }
 
-    public void setDebugMode(boolean debugMode) {
-        this.debugMode = debugMode;
+    public void setTestUserMode(boolean testUserMode) {
+        this.testUserMode = testUserMode;
     }
 
-    public boolean isLocalMode() {
-        return localMode;
+    public boolean isLocalMachineMode() {
+        return localMachineMode;
     }
 
-    public void setLocalMode(boolean localMode) {
-        this.localMode = localMode;
+    public void setLocalMachineMode(boolean localMachineMode) {
+        this.localMachineMode = localMachineMode;
     }
 
     public boolean isCacheMode() {
@@ -33,5 +34,13 @@ public class ModeConfig implements Serializable {
 
     public void setCacheMode(boolean cacheMode) {
         this.cacheMode = cacheMode;
+    }
+
+    public boolean isSingleSessionMode() {
+        return singleSessionMode;
+    }
+
+    public void setSingleSessionMode(boolean singleSessionMode) {
+        this.singleSessionMode = singleSessionMode;
     }
 }

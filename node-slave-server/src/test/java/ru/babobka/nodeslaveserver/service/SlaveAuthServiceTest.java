@@ -10,8 +10,7 @@ import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -50,7 +49,7 @@ public class SlaveAuthServiceTest {
         String password = "xyz";
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(true);
-        doReturn(AuthResult.fail()).when(slaveAuthService).srpUserAuth(connection, password);
+        doReturn(AuthResult.fail()).when(slaveAuthService).srpUserAuth(connection, login, password);
         AuthResult authResult = slaveAuthService.auth(connection, login, password);
         assertFalse(authResult.isSuccess());
         verify(connection).send(login);
@@ -62,9 +61,10 @@ public class SlaveAuthServiceTest {
         String password = "xyz";
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(true);
-        doReturn(AuthResult.success(new byte[]{1, 2, 3})).when(slaveAuthService).srpUserAuth(connection, password);
+        doReturn(AuthResult.success(login, new byte[]{1, 2, 3})).when(slaveAuthService).srpUserAuth(connection, login, password);
         AuthResult authResult = slaveAuthService.auth(connection, login, password);
         assertTrue(authResult.isSuccess());
+        assertEquals(authResult.getUserName(), login);
         verify(connection).send(login);
     }
 }
