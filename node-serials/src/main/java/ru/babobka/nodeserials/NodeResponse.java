@@ -88,16 +88,6 @@ public class NodeResponse extends NodeData {
     }
 
     @Override
-    public byte[] getHash() {
-        byte[] hash = super.getHash();
-        byte[] smallHash = HashUtil.sha2(
-                status.ordinal(),
-                HashUtil.safeHashCode(message),
-                (int) timeTakes);
-        return HashUtil.sha2(hash, smallHash);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

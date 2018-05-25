@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,12 +19,12 @@ import static org.mockito.Mockito.*;
 public class ClientStorageTest {
 
     private ClientStorage clientStorage;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
 
     @Before
     public void setUp() {
-        logger = mock(SimpleLogger.class);
-        Container.getInstance().put(logger);
+        nodeLogger = mock(NodeLogger.class);
+        Container.getInstance().put(nodeLogger);
         clientStorage = new ClientStorage();
     }
 
@@ -58,7 +58,7 @@ public class ClientStorageTest {
         clientStorage.heartBeatAllClients();
         verify(client1).sendHeartBeating();
         verify(client2).sendHeartBeating();
-        verify(logger).error(any(Exception.class));
+        verify(nodeLogger).error(any(Exception.class));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ClientStorageTest {
         List<Client> clients = Arrays.asList(client, client, client);
         clientStorage.addAll(clients);
         clientStorage.clear();
-        verify(logger, times(clients.size())).error(any(Exception.class));
+        verify(nodeLogger, times(clients.size())).error(any(Exception.class));
         assertTrue(clientStorage.isEmpty());
         assertEquals(clientStorage.getSize(), 0);
     }

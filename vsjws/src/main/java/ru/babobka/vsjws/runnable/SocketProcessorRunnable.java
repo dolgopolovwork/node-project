@@ -1,7 +1,7 @@
 package ru.babobka.vsjws.runnable;
 
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.exception.BadProtocolSpecifiedException;
@@ -26,7 +26,7 @@ public class SocketProcessorRunnable implements Runnable {
     private final Socket socket;
     private final HttpSession httpSession;
     private final Map<String, HttpWebController> controllerMap;
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final StaticResourcesController staticResourcesController = new StaticResourcesController();
     private final RequestValidator requestValidator = Container.getInstance().get(RequestValidator.class);
 
@@ -58,7 +58,7 @@ public class SocketProcessorRunnable implements Runnable {
             if (!httpSession.exists(sessionId)) {
                 httpSession.create(sessionId, request);
             } else if (!httpSession.get(sessionId).getInfo().getCreatorAddress().equals(request.getAddress())) {
-                logger.warning("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
+                nodeLogger.warning("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
                 response = ResponseFactory.code(ResponseCode.FORBIDDEN);
                 return;
             }
@@ -77,18 +77,18 @@ public class SocketProcessorRunnable implements Runnable {
         } catch (SocketTimeoutException e) {
             response = ResponseFactory.exception(e).setResponseCode(ResponseCode.REQUEST_TIMEOUT);
         } catch (Exception e) {
-            logger.error(e);
+            nodeLogger.error(e);
             response = ResponseFactory.exception(e);
         } finally {
             try {
                 HttpUtil.writeResponse(socket.getOutputStream(), response, noContent);
             } catch (IOException e1) {
-                logger.error(e1);
+                nodeLogger.error(e1);
             }
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
         }
     }

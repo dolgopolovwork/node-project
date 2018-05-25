@@ -7,7 +7,7 @@ import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -28,7 +28,7 @@ public class EllipticFactorDataValidatorsTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(NodeLogger.class));
         ellipticFactorDataValidators = new EllipticFactorDataValidators();
     }
 

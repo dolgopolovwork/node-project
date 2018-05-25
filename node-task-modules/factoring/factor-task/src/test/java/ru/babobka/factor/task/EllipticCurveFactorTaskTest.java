@@ -10,7 +10,7 @@ import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -29,7 +29,7 @@ public class EllipticCurveFactorTaskTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(NodeLogger.class));
         Container.getInstance().put(mock(EllipticCurveFactorServiceFactory.class));
         Container.getInstance().put(mock(EllipticFactorDistributor.class));
         Container.getInstance().put(mock(EllipticFactorReducer.class));

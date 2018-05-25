@@ -13,7 +13,7 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 public class SocketControllerTest {
     private TaskPool taskPool;
     private SlaveServerConfig slaveServerConfig;
-    private SimpleLogger simpleLogger;
+    private NodeLogger nodeLogger;
     private TasksStorage tasksStorage;
     private SocketController socketController;
     private ExecutorService executorService;
@@ -38,13 +38,13 @@ public class SocketControllerTest {
     public void setUp() {
         taskPool = mock(TaskPool.class);
         slaveServerConfig = mock(SlaveServerConfig.class);
-        simpleLogger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         tasksStorage = mock(TasksStorage.class);
         executorService = mock(ExecutorService.class);
         taskRunnerService = mock(TaskRunnerService.class);
         Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
         Container.getInstance().put(slaveServerConfig);
-        Container.getInstance().put(simpleLogger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(taskRunnerService);
         socketController = new SocketController(executorService, tasksStorage);
     }
@@ -86,7 +86,7 @@ public class SocketControllerTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
         socketController.control(connection);
-        verify(simpleLogger).warning(anyString());
+        verify(nodeLogger).warning(anyString());
         verify(connection, never()).send(any(NodeResponse.class));
         verify(executorService, never()).submit(any(RequestHandlerRunnable.class));
     }

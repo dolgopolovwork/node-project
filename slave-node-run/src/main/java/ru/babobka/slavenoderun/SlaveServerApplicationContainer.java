@@ -14,6 +14,7 @@ import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.key.UtilKey;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
@@ -29,14 +30,14 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
         try {
             SlaveServerConfig config = container.get(SlaveServerConfig.class);
             Properties.put(UtilKey.SERVICE_THREADS_NUM, Runtime.getRuntime().availableProcessors());
-            container.put(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
+            container.put(SimpleLoggerFactory.defaultLogger("slave-server", config.getLoggerFolder()));
             container.put(new NodeUtilsApplicationContainer());
             container.put(new SecurityApplicationContainer());
             container.put(new NodeConnectionFactory());
             container.put(config);
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());
-            Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool());
+            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool());
             container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, new TaskPool(config.getTasksFolder()));
             container.put(new SlaveAuthService());
         } catch (IOException | RuntimeException e) {

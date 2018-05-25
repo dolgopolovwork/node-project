@@ -1,8 +1,14 @@
 package ru.babobka.nodeutils.util;
 
 import org.junit.Test;
+import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -74,6 +80,40 @@ public class MathUtilTest {
                     assertEquals(a.multiply(euclidean.getX()).mod(b), euclidean.getGcd());
                 }
             }
+        }
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRelativePrimeNullNumber() {
+        MathUtil.getRelativePrime(null);
+    }
+
+    @Test
+    public void testGetRelativePrime() throws InterruptedException {
+        int bits = 45;
+        Random random = new Random();
+        ExecutorService executorService = ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors());
+        AtomicBoolean failed = new AtomicBoolean();
+        AtomicInteger counter = new AtomicInteger();
+        int tests = 1000;
+        for (int i = 0; i < tests; i++) {
+            executorService.submit(() -> {
+                byte[] numberBytes = new byte[8 + random.nextInt(bits)];
+                random.nextBytes(numberBytes);
+                BigInteger number = new BigInteger(numberBytes);
+                BigInteger relativePrime = MathUtil.getRelativePrime(number);
+                if (!number.gcd(relativePrime).equals(BigInteger.ONE)) {
+                    failed.set(true);
+                    executorService.shutdownNow();
+                } else if (counter.incrementAndGet() == tests) {
+                    executorService.shutdownNow();
+                }
+            });
+        }
+        executorService.awaitTermination(2, TimeUnit.MINUTES);
+        if (failed.get()) {
+            fail();
         }
     }
 

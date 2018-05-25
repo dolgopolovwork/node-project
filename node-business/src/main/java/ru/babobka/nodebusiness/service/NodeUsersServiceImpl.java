@@ -6,7 +6,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.HashUtil;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class NodeUsersServiceImpl implements NodeUsersService {
 
     private final UserDTOMapper userDTOMapper = Container.getInstance().get(UserDTOMapper.class);
-    private final SecurityService securityService = Container.getInstance().get(SecurityService.class);
+    private final SRPService SRPService = Container.getInstance().get(SRPService.class);
     private final SrpConfig srpConfig = Container.getInstance().get(SrpConfig.class);
     private final NodeUsersDAO userDAO = Container.getInstance().get(NodeUsersDAO.class);
 
@@ -57,7 +57,7 @@ public class NodeUsersServiceImpl implements NodeUsersService {
         user.setEmail("test@email.com");
         user.setId(UUID.randomUUID());
         user.setSalt(new byte[]{1, 2, 3});
-        byte[] debugSecret = securityService.secretBuilder(HashUtil.sha2("test_password"), user.getSalt(), srpConfig);
+        byte[] debugSecret = SRPService.secretBuilder(HashUtil.sha2("test_password"), user.getSalt(), srpConfig);
         user.setSecret(debugSecret);
         userDAO.add(user);
     }

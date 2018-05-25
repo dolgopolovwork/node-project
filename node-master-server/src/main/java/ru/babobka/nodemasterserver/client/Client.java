@@ -7,7 +7,7 @@ import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public class Client extends AbstractClient {
 
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
     private volatile boolean done;
 
@@ -52,7 +52,7 @@ public class Client extends AbstractClient {
         } catch (IOException e) {
             if (!isDone()) {
                 cancelTask();
-                logger.error(e);
+                nodeLogger.error(e);
             }
         }
     }
@@ -65,7 +65,7 @@ public class Client extends AbstractClient {
         try {
             taskService.cancelTask(request.getTaskId());
         } catch (TaskExecutionException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
         setDone();
     }
@@ -100,7 +100,7 @@ public class Client extends AbstractClient {
             }
             setDone();
         } catch (TaskExecutionException e) {
-            logger.error(e);
+            nodeLogger.error(e);
             sendFailed();
         }
     }
@@ -112,7 +112,7 @@ public class Client extends AbstractClient {
             try {
                 executeTask();
             } catch (IOException e) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
         }
     }

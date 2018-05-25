@@ -11,6 +11,9 @@ import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.config.PortConfig;
+import ru.babobka.nodemasterserver.server.config.SecurityConfig;
+import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
@@ -42,10 +45,13 @@ public class NodeBenchmarkTest {
 
     @Before
     public void setUp() {
-        config = mock(MasterServerConfig.class);
+        config = new MasterServerConfig();
         PortConfig portConfig = new PortConfig();
         portConfig.setClientListenerPort(port);
-        when(config.getPorts()).thenReturn(portConfig);
+        config.setPorts(portConfig);
+        SecurityConfig securityConfig = new SecurityConfig();
+        securityConfig.setRsaConfig(RSAConfigFactory.create(128));
+        config.setSecurity(securityConfig);
         Container.getInstance().put(config);
         client = mock(Client.class);
         masterServer = mock(MasterServer.class);
@@ -65,7 +71,7 @@ public class NodeBenchmarkTest {
         PowerMockito.mockStatic(SlaveServerRunner.class);
         BDDMockito.given(MasterServerRunner.runMasterServer()).willReturn(masterServer);
         BDDMockito.given(MasterServerRunner.init()).willReturn(null);
-        BDDMockito.given(SlaveServerRunner.init()).willReturn(null);
+        BDDMockito.given(SlaveServerRunner.init(any(RSAPublicKey.class))).willReturn(null);
     }
 
     @Test(expected = IllegalArgumentException.class)

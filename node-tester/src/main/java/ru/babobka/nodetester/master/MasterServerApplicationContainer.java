@@ -6,6 +6,7 @@ import ru.babobka.nodemasterserver.server.config.*;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.config.SrpConfig;
+import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
@@ -14,7 +15,8 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -36,13 +38,13 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
             container.put(config);
             container.put(new SecurityApplicationContainer());
             container.put(createSrpConfig(config));
-            container.putIfNotExists(SimpleLogger.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
+            container.putIfNotExists(SimpleLoggerFactory.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
             container.put(new NodeTaskApplicationContainer());
             container.put(new NodeBusinessApplicationContainer());
             container.put(new NodeWebApplicationContainer());
             container.put(new MasterServerApplicationSubContainer());
-            SimpleLogger logger = container.get(SimpleLogger.class);
-            logger.debug("container was successfully created");
+            NodeLogger nodeLogger = container.get(NodeLogger.class);
+            nodeLogger.debug("container was successfully created");
         } catch (Exception e) {
             throw new ContainerException(e);
         }
@@ -77,6 +79,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setBigSafePrime(SafePrime.random((128)));
         securityConfig.setChallengeBytes(16);
+        securityConfig.setRsaConfig(RSAConfigFactory.create(128));
         config.setSecurity(securityConfig);
         return config;
     }

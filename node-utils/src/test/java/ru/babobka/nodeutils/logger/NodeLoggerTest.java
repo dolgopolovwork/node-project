@@ -11,51 +11,51 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by 123 on 01.09.2017.
  */
-public class SimpleLoggerTest {
+public class NodeLoggerTest {
 
     private final Logger logger = mock(Logger.class);
 
-    private final SimpleLogger simpleLogger = new SimpleLogger(logger);
+    private final NodeLogger nodeLogger = new SimpleLogger(logger);
 
     @Test
     public void testInfo() {
         String message = "abc";
-        simpleLogger.info(message);
+        nodeLogger.info(message);
         verify(logger).info(message);
     }
 
     @Test
     public void testInfoObject() {
         Object object = new Object();
-        simpleLogger.info(object);
+        nodeLogger.info(object);
         verify(logger).info(object.toString());
     }
 
     @Test
     public void testWarning() {
         String message = "abc";
-        simpleLogger.warning(message);
+        nodeLogger.warning(message);
         verify(logger).warning(message);
     }
 
     @Test
     public void testWarningException() {
         Exception exception = new Exception("test exception");
-        simpleLogger.warning(exception);
+        nodeLogger.warning(exception);
         verify(logger).warning(TextUtil.getStringFromException(exception));
     }
 
     @Test
     public void testError() {
         String message = "abc";
-        simpleLogger.error(message);
+        nodeLogger.error(message);
         verify(logger).severe(message);
     }
 
     @Test
     public void testErrorException() {
         Exception exception = new Exception("test exception");
-        simpleLogger.error(exception);
+        nodeLogger.error(exception);
         verify(logger).severe(TextUtil.getStringFromException(exception));
     }
 }

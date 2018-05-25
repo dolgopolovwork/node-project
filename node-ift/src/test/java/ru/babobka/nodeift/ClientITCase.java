@@ -6,6 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
@@ -15,7 +16,9 @@ import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -39,9 +42,11 @@ public class ClientITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(ClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLoggerFactory.debugLogger(ClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 

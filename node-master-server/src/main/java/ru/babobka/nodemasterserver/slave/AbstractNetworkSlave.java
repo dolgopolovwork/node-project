@@ -13,7 +13,7 @@ import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     protected final NodeConnection connection;
 
     AbstractNetworkSlave(NodeConnection connection) {
@@ -42,7 +42,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
 
     @Override
     public void run() {
-        logger.debug("slave " + this.getSlaveId() + " is running");
+        nodeLogger.debug("slave " + this.getSlaveId() + " is running");
         try {
             while (!isInterrupted()) {
                 connection.setReadTimeOut(masterServerConfig.getTimeouts().getRequestTimeOutMillis());
@@ -54,14 +54,14 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         } catch (IOException | RuntimeException e) {
             e.printStackTrace();
             if (!isInterrupted() && !connection.isClosed()) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
         } finally {
-            logger.info("removing connection " + connection);
+            nodeLogger.info("removing connection " + connection);
             synchronized (AbstractSlave.class) {
                 onExit();
             }
-            logger.info("slave " + getSlaveId() + " was disconnected");
+            nodeLogger.info("slave " + getSlaveId() + " was disconnected");
         }
     }
 
@@ -86,19 +86,19 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     }
 
     public synchronized void executeTask(NodeRequest request) throws IOException {
-        logger.info("send request " + request + " to slave " + getSlaveId());
+        nodeLogger.info("send request " + request + " to slave " + getSlaveId());
         boolean closedConnection = getConnection().isClosed();
         if (closedConnection) {
-            logger.warning("connection of slave " + getSlaveId() + " was closed");
+            nodeLogger.warning("connection of slave " + getSlaveId() + " was closed");
             throw new IOException("closed connection");
         } else if (hasRequest(request)) {
-            logger.warning("slave " + getSlaveId() + " already has request with id " + request.getId());
+            nodeLogger.warning("slave " + getSlaveId() + " already has request with id " + request.getId());
         } else if (!(request.getRequestStatus() == RequestStatus.RACE && hasTask(request.getTaskId()))) {
             addTask(request);
             getConnection().send(request);
-            logger.info(request + " was sent by slave " + getSlaveId());
+            nodeLogger.info(request + " was sent by slave " + getSlaveId());
         } else {
-            logger.info("request  " + request + " was ignored due to race style");
+            nodeLogger.info("request  " + request + " was ignored due to race style");
             responseStorage.get(request.getTaskId()).add(NodeResponse.dummy(request));
         }
     }

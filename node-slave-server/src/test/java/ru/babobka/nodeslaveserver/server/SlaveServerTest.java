@@ -5,13 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.data.SecureDataFactory;
-import ru.babobka.nodesecurity.service.SecurityService;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodesecurity.service.SRPService;
+import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  */
 public class SlaveServerTest {
     private SlaveAuthService authService;
-    private SimpleLogger simpleLogger;
+    private NodeLogger nodeLogger;
     private TaskPool taskPool;
     private NodeConnectionFactory nodeConnectionFactory;
 
@@ -34,17 +34,16 @@ public class SlaveServerTest {
     public void setUp() {
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
         authService = mock(SlaveAuthService.class);
-        simpleLogger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         taskPool = mock(TaskPool.class);
         Container.getInstance().put(container -> {
             container.put(authService);
-            container.put(simpleLogger);
+            container.put(nodeLogger);
             container.put(nodeConnectionFactory);
             container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
-            container.put(mock(SecurityService.class));
+            container.put(mock(SRPService.class));
             container.put(mock(SecureDataFactory.class));
         });
-
     }
 
     @After
@@ -52,11 +51,22 @@ public class SlaveServerTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = SlaveAuthFailException.class)
+    @Test(expected = AuthFailException.class)
     public void testAuthFail() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.fail());
+        when(authService.authClient(eq(connection), anyString(), anyString())).thenReturn(AuthResult.fail());
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        new SlaveServer(mock(Socket.class), "abc", "xyz");
+    }
+
+    @Test(expected = AuthFailException.class)
+    public void testAuthServerAuthFail() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
+        when(authService.authClient(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(connection.receive()).thenReturn(true);
+        when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        when(authService.authServer(connection)).thenReturn(false);
         new SlaveServer(mock(Socket.class), "abc", "xyz");
     }
 
@@ -64,23 +74,24 @@ public class SlaveServerTest {
     public void testAuthSuccess() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(authService.authClient(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
         when(connection.receive()).thenReturn(true);
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        when(authService.authServer(connection)).thenReturn(true);
         new SlaveServer(mock(Socket.class), "abc", "xyz");
-        verify(simpleLogger).info("auth success");
+        verify(nodeLogger).info("authClient success");
         verify(connection).send(anySet());
     }
 
-    @Test(expected = SlaveAuthFailException.class)
+    @Test(expected = AuthFailException.class)
     public void testFailedSessions() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(authService.authClient(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
         when(connection.receive()).thenReturn(true, false);
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
         new SlaveServer(mock(Socket.class), "abc", "xyz");
-        verify(simpleLogger).info("auth success");
+        verify(nodeLogger).info("authClient success");
         verify(connection).send(anySet());
     }
 
@@ -88,9 +99,10 @@ public class SlaveServerTest {
     public void testClear() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        when(authService.auth(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(authService.authClient(eq(connection), anyString(), anyString())).thenReturn(AuthResult.success("abc", new byte[]{0}));
         when(connection.receive()).thenReturn(true);
         when(nodeConnectionFactory.create(any(Socket.class))).thenReturn(connection);
+        when(authService.authServer(connection)).thenReturn(true);
         SlaveServer slaveServer = new SlaveServer(mock(Socket.class), "abc", "xyz");
         slaveServer.clear();
         verify(connection).close();

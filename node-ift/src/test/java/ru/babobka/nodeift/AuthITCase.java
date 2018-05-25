@@ -4,13 +4,20 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodesecurity.rsa.RSAConfig;
+import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
+import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -30,9 +37,11 @@ public class AuthITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(AuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLoggerFactory.debugLogger(AuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -43,8 +52,7 @@ public class AuthITCase {
         Container.getInstance().clear();
     }
 
-
-    @Test(expected = SlaveAuthFailException.class)
+    @Test(expected = AuthFailException.class)
     public void testAuthFail() throws IOException {
         SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", "bad password");
         interruptAndJoin(slaveServer);
@@ -107,9 +115,24 @@ public class AuthITCase {
                 SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
                 interruptAndJoin(slaveServer);
                 fail();
-            } catch (SlaveAuthFailException e) {
+            } catch (AuthFailException e) {
                 //that's ok
             }
+        }
+    }
+
+    @Test(expected = AuthFailException.class)
+    public void testServerAuthFail() throws IOException {
+        SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
+        try {
+            RSAConfig rsaConfig = RSAConfigFactory.create(128);
+            slaveServerConfig.setServerPublicKey(rsaConfig.getPublicKey());
+            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+            interruptAndJoin(slaveServer);
+        } finally {
+            //возвращаем публичный ключ обратно
+            MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+            slaveServerConfig.setServerPublicKey(masterServerConfig.getSecurity().getRsaConfig().getPublicKey());
         }
     }
 

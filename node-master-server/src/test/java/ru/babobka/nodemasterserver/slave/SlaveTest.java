@@ -13,7 +13,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  */
 public class SlaveTest {
     private MasterServerConfig masterServerConfig;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
     private ResponseStorage responseStorage;
     private SlavesStorage slavesStorage;
     private DistributionService distributionService;
@@ -37,12 +37,12 @@ public class SlaveTest {
     @Before
     public void setUp() {
         masterServerConfig = mock(MasterServerConfig.class);
-        logger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         responseStorage = mock(ResponseStorage.class);
         slavesStorage = mock(SlavesStorage.class);
         distributionService = mock(DistributionService.class);
         Container.getInstance().put(masterServerConfig);
-        Container.getInstance().put(logger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(responseStorage);
         Container.getInstance().put(distributionService);
         Container.getInstance().put(slavesStorage);

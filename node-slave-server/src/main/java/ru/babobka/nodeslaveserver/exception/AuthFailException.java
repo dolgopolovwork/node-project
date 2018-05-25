@@ -2,26 +2,26 @@ package ru.babobka.nodeslaveserver.exception;
 
 import java.io.IOException;
 
-public class SlaveAuthFailException extends IOException {
+public class AuthFailException extends IOException {
 
     /**
      *
      */
     private static final long serialVersionUID = -3603894271678084823L;
 
-    public SlaveAuthFailException() {
+    public AuthFailException() {
         super();
     }
 
-    public SlaveAuthFailException(String message) {
+    public AuthFailException(String message) {
         super(message);
     }
 
-    public SlaveAuthFailException(String message, Throwable cause) {
+    public AuthFailException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SlaveAuthFailException(Throwable cause) {
+    public AuthFailException(Throwable cause) {
         super(cause);
     }
 }

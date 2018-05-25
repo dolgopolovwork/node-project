@@ -3,7 +3,7 @@ package ru.babobka.nodebusiness.mapper;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Mapper;
 import ru.babobka.nodeutils.util.HashUtil;
@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class UserDTOMapper extends Mapper<UserDTO, User> {
     private static final int SALT_SIZE = 8;
-    private final SecurityService securityService = Container.getInstance().get(SecurityService.class);
+    private final SRPService SRPService = Container.getInstance().get(SRPService.class);
     private final SrpConfig srpConfig = Container.getInstance().get(SrpConfig.class);
 
     @Override
@@ -27,7 +27,7 @@ public class UserDTOMapper extends Mapper<UserDTO, User> {
             byte[] salt = new byte[SALT_SIZE];
             user.setSalt(salt);
             byte[] hashedPassword = HashUtil.hexStringToByteArray(userDTO.getHashedPassword());
-            byte[] secret = securityService.secretBuilder(hashedPassword, salt, srpConfig);
+            byte[] secret = SRPService.secretBuilder(hashedPassword, salt, srpConfig);
             user.setSecret(secret);
         }
         if (userDTO.getEmail() != null)

@@ -3,9 +3,13 @@ package ru.babobka.nodeslaveserver.service;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodesecurity.auth.AuthResult;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.rsa.RSAConfig;
+import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
+import ru.babobka.nodesecurity.service.RSAService;
+import ru.babobka.nodesecurity.service.SRPService;
+import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -18,16 +22,24 @@ import static org.mockito.Mockito.*;
  */
 public class SlaveAuthServiceTest {
     private SlaveAuthService slaveAuthService;
-    private SimpleLogger simpleLogger;
-    private SecurityService securityService;
+    private NodeLogger nodeLogger;
+    private SRPService srpService;
+    private SlaveServerConfig slaveServerConfig;
+    private RSAService rsaService;
 
     @Before
     public void setUp() {
-        simpleLogger = mock(SimpleLogger.class);
-        securityService = mock(SecurityService.class);
+        slaveServerConfig = new SlaveServerConfig();
+        RSAConfig rsaConfig = RSAConfigFactory.create(128);
+        slaveServerConfig.setServerPublicKey(rsaConfig.getPublicKey());
+        rsaService = mock(RSAService.class);
+        nodeLogger = mock(NodeLogger.class);
+        srpService = mock(SRPService.class);
         Container.getInstance().put(container -> {
-            container.put(simpleLogger);
-            container.put(securityService);
+            container.put(nodeLogger);
+            container.put(srpService);
+            container.put(rsaService);
+            container.put(slaveServerConfig);
         });
         slaveAuthService = spy(new SlaveAuthService());
     }
@@ -38,7 +50,7 @@ public class SlaveAuthServiceTest {
         String password = "xyz";
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(false);
-        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        AuthResult authResult = slaveAuthService.authClient(connection, login, password);
         assertFalse(authResult.isSuccess());
         verify(connection).send(login);
     }
@@ -50,7 +62,7 @@ public class SlaveAuthServiceTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(true);
         doReturn(AuthResult.fail()).when(slaveAuthService).srpUserAuth(connection, login, password);
-        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        AuthResult authResult = slaveAuthService.authClient(connection, login, password);
         assertFalse(authResult.isSuccess());
         verify(connection).send(login);
     }
@@ -62,7 +74,7 @@ public class SlaveAuthServiceTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(true);
         doReturn(AuthResult.success(login, new byte[]{1, 2, 3})).when(slaveAuthService).srpUserAuth(connection, login, password);
-        AuthResult authResult = slaveAuthService.auth(connection, login, password);
+        AuthResult authResult = slaveAuthService.authClient(connection, login, password);
         assertTrue(authResult.isSuccess());
         assertEquals(authResult.getUserName(), login);
         verify(connection).send(login);

@@ -3,13 +3,13 @@ package ru.babobka.nodeslaveserver.server;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeslaveserver.controller.SocketController;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 public class SlaveServer extends Thread {
 
     private final SlaveAuthService authService = Container.getInstance().get(SlaveAuthService.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final NodeConnection connection;
@@ -28,22 +28,27 @@ public class SlaveServer extends Thread {
 
     public SlaveServer(Socket socket, String login, String password) throws IOException {
         NodeConnection connection = nodeConnectionFactory.create(socket);
-        AuthResult authResult = authService.auth(connection, login, password);
+        AuthResult authResult = authService.authClient(connection, login, password);
         if (!authResult.isSuccess()) {
             connection.close();
-            throw new SlaveAuthFailException("auth fail");
+            throw new AuthFailException("authClient fail");
         }
-        logger.info("auth success");
+        nodeLogger.info("authClient success");
         connection.send(taskPool.getTaskNames());
         boolean haveCommonTasks = connection.receive();
         if (!haveCommonTasks) {
             connection.close();
-            throw new SlaveAuthFailException("no common tasks with master server");
+            throw new AuthFailException("no common tasks with master server");
+        }
+        boolean serverAuthSuccess = authService.authServer(connection);
+        if (!serverAuthSuccess) {
+            connection.close();
+            throw new AuthFailException("server auth fail");
         }
         boolean sessionWasCreated = connection.receive();
         if (!sessionWasCreated) {
             connection.close();
-            throw new SlaveAuthFailException("cannot create session");
+            throw new AuthFailException("cannot create session");
         }
         tasksStorage = new TasksStorage();
         this.connection = new SecureNodeConnection(connection, authResult.getSecretKey());
@@ -60,9 +65,9 @@ public class SlaveServer extends Thread {
         } catch (IOException | RuntimeException e) {
             e.printStackTrace();
             if (!isInterrupted()) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
-            logger.info("exiting slave server");
+            nodeLogger.info("exiting slave server");
         } finally {
             clear();
         }

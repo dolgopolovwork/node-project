@@ -3,7 +3,7 @@ package ru.babobka.nodemasterserver.validation.config.rule;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.config.SecurityConfig;
-import ru.babobka.nodemasterserver.validation.config.rule.SecurityConfigValidationRule;
+import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodeutils.math.SafePrime;
 
 /**
@@ -59,12 +59,35 @@ public class SecurityConfigValidationRuleTest {
         securityConfigValidationRule.validate(config);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testValidateRsaConfigWasNotSet() {
+        MasterServerConfig config = new MasterServerConfig();
+        SecurityConfig securityConfig = new SecurityConfig();
+        securityConfig.setChallengeBytes(8);
+        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setRsaConfig(null);
+        config.setSecurity(securityConfig);
+        securityConfigValidationRule.validate(config);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testValidateTooWeakRsaConfig() {
+        MasterServerConfig config = new MasterServerConfig();
+        SecurityConfig securityConfig = new SecurityConfig();
+        securityConfig.setChallengeBytes(8);
+        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setRsaConfig(RSAConfigFactory.create(8));
+        config.setSecurity(securityConfig);
+        securityConfigValidationRule.validate(config);
+    }
+
     @Test
     public void testValidate() {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(8);
         securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setRsaConfig(RSAConfigFactory.create(128));
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
     }

@@ -7,7 +7,7 @@ import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class RequestHandlerRunnable implements Runnable {
     private final NodeConnection connection;
     private final NodeRequest request;
     private final SubTask subTask;
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final TaskRunnerService taskRunnerService = Container.getInstance().get(TaskRunnerService.class);
     private final TasksStorage tasksStorage;
     private NodeResponse lastResponse;
@@ -39,20 +39,20 @@ public class RequestHandlerRunnable implements Runnable {
             lastResponse = response;
             if (response.getStatus() != ResponseStatus.STOPPED) {
                 connection.send(response);
-                logger.info("response was sent " + response);
+                nodeLogger.info("response was sent " + response);
             } else {
-                logger.warning("response was stopped " + response);
+                nodeLogger.warning("response was stopped " + response);
             }
         } catch (RuntimeException e) {
-            logger.error(e);
+            nodeLogger.error(e);
             try {
                 connection.send(NodeResponse.failed(request));
             } catch (IOException e1) {
-                logger.error(e1);
+                nodeLogger.error(e1);
             }
 
         } catch (IOException e) {
-            logger.error("response wasn't sent " + lastResponse, e);
+            nodeLogger.error("response wasn't sent " + lastResponse, e);
         }
     }
 }

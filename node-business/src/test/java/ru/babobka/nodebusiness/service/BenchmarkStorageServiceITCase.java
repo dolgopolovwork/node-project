@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodebusiness.StorageApplicationContainer;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class BenchmarkStorageServiceITCase {
     @BeforeClass
     public static void setUp() {
         Container.getInstance().clear();
-        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(NodeLogger.class));
         Container.getInstance().put(new StreamUtil());
         Container.getInstance().put(new StorageApplicationContainer());
         benchmarkStorageService = Container.getInstance().get(BenchmarkStorageService.class);

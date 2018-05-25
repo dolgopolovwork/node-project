@@ -1,6 +1,7 @@
 package ru.babobka.nodetester.slave;
 
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
@@ -15,7 +16,9 @@ import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.key.UtilKey;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
@@ -23,6 +26,16 @@ import ru.babobka.nodeutils.thread.ThreadPoolService;
  * Created by 123 on 05.11.2017.
  */
 public class SlaveServerApplicationContainer implements ApplicationContainer {
+
+    private final RSAPublicKey rsaPublicKey;
+
+    public SlaveServerApplicationContainer(RSAPublicKey rsaPublicKey) {
+        if (rsaPublicKey == null) {
+            throw new IllegalArgumentException("rsaPublicKey is null");
+        }
+        this.rsaPublicKey = rsaPublicKey;
+    }
+
     @Override
     public void contain(Container container) {
         try {
@@ -33,7 +46,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);
             container.put(config);
-            container.putIfNotExists(SimpleLogger.defaultLogger("slave-server", config.getLoggerFolder()));
+            container.putIfNotExists(SimpleLoggerFactory.defaultLogger("slave-server", config.getLoggerFolder()));
             Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool());
             container.put(new NodeTaskApplicationContainer());
             container.put(new TaskRunnerService());
@@ -52,6 +65,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
         config.setRequestTimeoutMillis(15000);
         config.setServerHost("localhost");
         config.setServerPort(9090);
+        config.setServerPublicKey(rsaPublicKey);
         return config;
     }
 }

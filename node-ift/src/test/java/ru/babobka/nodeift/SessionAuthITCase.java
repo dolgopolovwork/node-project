@@ -7,13 +7,16 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -35,10 +38,12 @@ public class SessionAuthITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(SessionAuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLoggerFactory.debugLogger(SessionAuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
         Container.getInstance().get(MasterServerConfig.class).getModes().setSingleSessionMode(true);
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -66,7 +71,7 @@ public class SessionAuthITCase {
             try {
                 slaveServer2 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
                 fail();
-            } catch (SlaveAuthFailException expected) {
+            } catch (AuthFailException expected) {
                 //that's ok
             }
         } finally {

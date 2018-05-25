@@ -11,7 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
 import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
 import ru.babobka.vsjws.validator.request.RequestValidator;
@@ -40,7 +40,7 @@ public class WebServerITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(NodeLogger.class));
         Container.getInstance().put(new WebServerConfigValidator());
         Container.getInstance().put(new JSONWebControllerMapper());
         Container.getInstance().put(new RequestValidator());

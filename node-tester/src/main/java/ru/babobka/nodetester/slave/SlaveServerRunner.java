@@ -1,5 +1,6 @@
 package ru.babobka.nodetester.slave;
 
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
@@ -11,8 +12,8 @@ import java.net.Socket;
  * Created by 123 on 05.11.2017.
  */
 public class SlaveServerRunner {
-    public static SlaveServerApplicationContainer init() {
-        SlaveServerApplicationContainer container = new SlaveServerApplicationContainer();
+    public static SlaveServerApplicationContainer init(RSAPublicKey publicKey) {
+        SlaveServerApplicationContainer container = new SlaveServerApplicationContainer(publicKey);
         Container.getInstance().put(container);
         return container;
     }

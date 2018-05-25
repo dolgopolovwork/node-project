@@ -16,6 +16,7 @@ public class SlaveServerConfigValidator extends Validator<SlaveServerConfig> {
                 new AuthTimeoutMillisValidationRule(),
                 new LoggerFolderValidationRule(),
                 new RequestTimeoutMillisValidationRule(),
-                new TasksFolderValidationRule()));
+                new TasksFolderValidationRule(),
+                new ServerPublicKeyValidationRule()));
     }
 }

@@ -25,7 +25,7 @@ import java.util.Arrays;
 /**
  * Created by 123 on 24.04.2018.
  */
-public class SecurityService {
+public class SRPService {
 
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     private final SecureRandom secureRandom = new SecureRandom();
@@ -102,6 +102,29 @@ public class SecurityService {
         return gen.pow(secret.getNumber()).getNumber().toByteArray();
     }
 
+    public byte[] buildHash(NodeData nodeData) {
+        byte[] metaHash = HashUtil.sha2(
+                HashUtil.safeHashCode(nodeData.getId()),
+                HashUtil.safeHashCode(nodeData.getTaskId()),
+                HashUtil.safeHashCode(nodeData.getTaskName()),
+                (int) nodeData.getTimeStamp());
+        byte[] dataHash = HashUtil.sha2(nodeData.getData());
+        byte[] mainHash = HashUtil.sha2(dataHash, metaHash);
+        if (nodeData instanceof NodeResponse) {
+            NodeResponse nodeResponse = (NodeResponse) nodeData;
+            return buildHash(nodeResponse, mainHash);
+        }
+        return mainHash;
+    }
+
+    private byte[] buildHash(NodeResponse nodeResponse, byte[] mainHash) {
+        byte[] smallHash = HashUtil.sha2(
+                nodeResponse.getStatus().ordinal(),
+                HashUtil.safeHashCode(nodeResponse.getMessage()),
+                (int) nodeResponse.getTimeTakes());
+        return HashUtil.sha2(mainHash, smallHash);
+    }
+
     public byte[] buildMac(NodeData data, byte[] secretKey) {
         if (data == null) {
             throw new IllegalArgumentException("cannot build mac of null data");
@@ -112,7 +135,7 @@ public class SecurityService {
             SecretKeySpec signingKey = new SecretKeySpec(secretKey, HMAC_SHA1_ALGORITHM);
             Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
             mac.init(signingKey);
-            return mac.doFinal(data.getHash());
+            return mac.doFinal(buildHash(data));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new IllegalArgumentException(e);
         }

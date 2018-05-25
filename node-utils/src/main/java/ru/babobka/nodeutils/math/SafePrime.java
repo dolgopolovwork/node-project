@@ -4,6 +4,7 @@ import ru.babobka.nodeutils.util.MathUtil;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -33,11 +34,18 @@ public class SafePrime implements Serializable {
     }
 
     public static SafePrime random(int bits) {
+        return random(bits, new Random());
+    }
+
+    public static SafePrime secureRandom(int bits) {
+        return random(bits, new SecureRandom());
+    }
+
+    private static SafePrime random(int bits, Random random) {
         if (bits < 2) {
             throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
         }
         BigInteger sophieNumber = null;
-        Random random = new Random();
         BigInteger prime = BigInteger.ONE;
         while (!MathUtil.isPrime(prime)) {
             sophieNumber = BigInteger.probablePrime(bits, random);

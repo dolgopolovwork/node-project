@@ -10,7 +10,9 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.ApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -28,7 +30,7 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
     public void contain(Container container) {
         try {
             MasterServerConfig config = container.get(MasterServerConfig.class);
-            container.put(SimpleLogger.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
+            container.put(SimpleLoggerFactory.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
             container.put(new SecurityApplicationContainer());
             container.put(createSrpConfig(config));
             container.put(new NodeConnectionFactory());

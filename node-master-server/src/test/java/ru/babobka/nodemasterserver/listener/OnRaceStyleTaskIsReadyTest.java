@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,17 +22,17 @@ import static org.mockito.Mockito.*;
  */
 public class OnRaceStyleTaskIsReadyTest {
     private DistributionService distributionService;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
     private SlavesStorage slavesStorage;
     private OnRaceStyleTaskIsReady onRaceStyleTaskIsReady;
 
     @Before
     public void setUp() {
         distributionService = mock(DistributionService.class);
-        logger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         slavesStorage = mock(SlavesStorage.class);
         Container.getInstance().put(distributionService);
-        Container.getInstance().put(logger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(slavesStorage);
         onRaceStyleTaskIsReady = new OnRaceStyleTaskIsReady();
     }

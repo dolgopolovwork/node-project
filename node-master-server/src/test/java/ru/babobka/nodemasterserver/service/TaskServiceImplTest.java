@@ -21,7 +21,7 @@ import ru.babobka.nodetask.model.DataValidators;
 import ru.babobka.nodetask.model.RequestDistributor;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 public class TaskServiceImplTest {
     private TaskPool taskPool;
     private SlavesStorage slavesStorage;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
     private ResponseStorage responseStorage;
     private DistributionService distributionService;
     private TaskServiceImpl taskService;
@@ -48,13 +48,13 @@ public class TaskServiceImplTest {
         taskMonitoringService = mock(TaskMonitoringService.class);
         taskPool = mock(TaskPool.class);
         slavesStorage = mock(SlavesStorage.class);
-        logger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         responseStorage = mock(ResponseStorage.class);
         distributionService = mock(DistributionService.class);
         Container.getInstance().put(container -> {
             container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, taskPool);
             container.put(slavesStorage);
-            container.put(logger);
+            container.put(nodeLogger);
             container.put(taskMonitoringService);
             container.put(responseStorage);
             container.put(distributionService);

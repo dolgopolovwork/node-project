@@ -6,6 +6,7 @@ import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.benchmark.mapper.BenchmarkMapper;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -66,7 +67,9 @@ public abstract class NodeBenchmark {
             throw new IllegalArgumentException("Both slaves and serviceThreads must be at least 1");
         }
         MasterServerRunner.init();
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         startMonitoring();
         Container.getInstance().put(UtilKey.SERVICE_THREADS_NUM, serviceThreads);
         MasterServer masterServer = MasterServerRunner.runMasterServer();

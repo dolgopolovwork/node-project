@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server.config;
 
+import ru.babobka.nodesecurity.rsa.RSAConfig;
 import ru.babobka.nodeutils.math.SafePrime;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public class SecurityConfig implements Serializable {
     private static final long serialVersionUID = -1315130732356373527L;
     private SafePrime bigSafePrime;
+    private RSAConfig rsaConfig;
     private int challengeBytes;
 
     public SafePrime getBigSafePrime() {
@@ -26,5 +28,13 @@ public class SecurityConfig implements Serializable {
 
     public void setChallengeBytes(int challengeBytes) {
         this.challengeBytes = challengeBytes;
+    }
+
+    public RSAConfig getRsaConfig() {
+        return rsaConfig;
+    }
+
+    public void setRsaConfig(RSAConfig rsaConfig) {
+        this.rsaConfig = rsaConfig;
     }
 }
