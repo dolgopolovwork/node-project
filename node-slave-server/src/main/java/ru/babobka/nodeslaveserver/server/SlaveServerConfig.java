@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.server;
 
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ public class SlaveServerConfig implements Serializable {
     private static final long serialVersionUID = 9130829367317179440L;
     private int serverPort;
     private String serverHost;
+    private RSAPublicKey serverPublicKey;
     private int requestTimeoutMillis;
     private int authTimeoutMillis;
     private String loggerFolder;
@@ -80,17 +82,11 @@ public class SlaveServerConfig implements Serializable {
         this.tasksFolderEnv = tasksFolderEnv;
     }
 
-    @Override
-    public String toString() {
-        return "SlaveServerConfig{" +
-                "serverPort=" + serverPort +
-                ", serverHost='" + serverHost + '\'' +
-                ", requestTimeoutMillis=" + requestTimeoutMillis +
-                ", authTimeoutMillis=" + authTimeoutMillis +
-                ", loggerFolder='" + loggerFolder + '\'' +
-                ", tasksFolder='" + tasksFolder + '\'' +
-                ", loggerFolderEnv='" + loggerFolderEnv + '\'' +
-                ", tasksFolderEnv='" + tasksFolderEnv + '\'' +
-                '}';
+    public RSAPublicKey getServerPublicKey() {
+        return serverPublicKey;
+    }
+
+    public void setServerPublicKey(RSAPublicKey serverPublicKey) {
+        this.serverPublicKey = serverPublicKey;
     }
 }

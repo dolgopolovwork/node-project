@@ -2,7 +2,7 @@ package ru.babobka.nodesecurity.network;
 
 import ru.babobka.nodesecurity.data.SecureDataFactory;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class SecureNodeConnection implements NodeConnection {
 
     private final SecureDataFactory secureDataFactory = Container.getInstance().get(SecureDataFactory.class);
-    private final SecurityService securityService = Container.getInstance().get(SecurityService.class);
+    private final SRPService SRPService = Container.getInstance().get(SRPService.class);
     private final byte[] secretKey;
     private final NodeConnection connection;
 
@@ -43,7 +43,7 @@ public class SecureNodeConnection implements NodeConnection {
     @Override
     public <T> T receive() throws IOException {
         T object = connection.receive();
-        if (securityService.isSecure(object, secretKey)) {
+        if (SRPService.isSecure(object, secretKey)) {
             return object;
         }
         close();

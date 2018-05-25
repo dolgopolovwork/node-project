@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class SlavesStorageTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put(mock(SimpleLogger.class));
+        Container.getInstance().put(mock(NodeLogger.class));
         slavesStorage = new SlavesStorage();
     }
 

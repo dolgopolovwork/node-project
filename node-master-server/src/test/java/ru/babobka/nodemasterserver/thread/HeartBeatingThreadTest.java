@@ -7,7 +7,7 @@ import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ public class HeartBeatingThreadTest {
 
     private HeartBeatingThread heartBeatingThread;
     private MasterServerConfig masterServerConfig;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
     private SlavesStorage slavesStorage;
     private ClientStorage clientStorage;
 
@@ -29,11 +29,11 @@ public class HeartBeatingThreadTest {
     public void setUp() {
         slavesStorage = mock(SlavesStorage.class);
         masterServerConfig = mock(MasterServerConfig.class);
-        logger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         clientStorage = mock(ClientStorage.class);
         Container.getInstance().put(slavesStorage);
         Container.getInstance().put(masterServerConfig);
-        Container.getInstance().put(logger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(clientStorage);
         heartBeatingThread = new HeartBeatingThread();
     }

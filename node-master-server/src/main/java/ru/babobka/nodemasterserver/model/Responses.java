@@ -7,7 +7,7 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException;
 public class Responses {
 
     private static final int HOUR_MILLIS = 1000 * 60 * 60;
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final OnResponseListener taskIsReadyListener = Container.getInstance().get(OnTaskIsReady.class);
     private final OnResponseListener raceStyleTaskIsReadyListener = Container.getInstance().get(OnRaceStyleTaskIsReady.class);
     private final int maxSize;
@@ -121,7 +121,7 @@ public class Responses {
             resultingResponses.addAll(this.responsesList);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error(e);
+            nodeLogger.error(e);
         }
         if (!completed && !Thread.currentThread().isInterrupted()) {
             throw new TimeoutException();

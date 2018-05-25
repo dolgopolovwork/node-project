@@ -10,7 +10,7 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -25,18 +25,18 @@ public class ClientTest {
 
     private ClientStorage clientStorage;
     private MasterServerConfig config;
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
     private TaskService taskService;
 
     @Before
     public void setUp() {
         clientStorage = mock(ClientStorage.class);
         config = mock(MasterServerConfig.class);
-        logger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         taskService = mock(TaskService.class);
         Container.getInstance().put(clientStorage);
         Container.getInstance().put(config);
-        Container.getInstance().put(logger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(taskService);
     }
 

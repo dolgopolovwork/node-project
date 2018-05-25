@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.client;
 
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ClientStorage {
 
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final List<Client> clients = new ArrayList<>();
 
     public synchronized void add(Client client) {
@@ -39,7 +39,7 @@ public class ClientStorage {
             try {
                 client.close();
             } catch (RuntimeException e) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
         }
         clients.clear();
@@ -61,7 +61,7 @@ public class ClientStorage {
         try {
             client.sendHeartBeating();
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 

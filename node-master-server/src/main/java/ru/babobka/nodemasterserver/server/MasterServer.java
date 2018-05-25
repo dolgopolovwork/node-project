@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.vsjws.webserver.WebServer;
 
 import javax.management.MBeanServer;
@@ -28,7 +28,7 @@ public class MasterServer extends Thread {
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
     private final WebServer webServer = Container.getInstance().get(WebServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
@@ -44,7 +44,7 @@ public class MasterServer extends Thread {
             webServer.start();
         } catch (RuntimeException e) {
             e.printStackTrace();
-            logger.error(e);
+            nodeLogger.error(e);
             clear();
         }
     }
@@ -73,7 +73,7 @@ public class MasterServer extends Thread {
         try {
             thread.join();
         } catch (InterruptedException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 

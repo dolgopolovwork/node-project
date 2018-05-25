@@ -10,7 +10,7 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.Closeable;
@@ -22,7 +22,7 @@ public class SocketController extends Controller<NodeConnection> implements Clos
 
     private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final ExecutorService threadPool;
     private final TasksStorage tasksStorage;
 
@@ -46,18 +46,18 @@ public class SocketController extends Controller<NodeConnection> implements Clos
         if (request.getRequestStatus() == RequestStatus.HEART_BEAT) {
             connection.send(NodeResponse.heartBeat());
         } else if (request.getRequestStatus() == RequestStatus.STOP) {
-            logger.info("stopping request " + request);
+            nodeLogger.info("stopping request " + request);
             tasksStorage.stopTask(request);
         } else if (request.getRequestStatus() == RequestStatus.RACE && tasksStorage.exists(request.getTaskId())) {
-            logger.warning(request.getTaskName() + " is race style task. repeated request was not handled.");
+            nodeLogger.warning(request.getTaskName() + " is race style task. repeated request was not handled.");
         } else if (!tasksStorage.wasStopped(request)) {
-            logger.info("new request " + request);
+            nodeLogger.info("new request " + request);
             SubTask subTask = taskPool.get(request.getTaskName());
             tasksStorage.put(request, subTask);
             try {
                 threadPool.submit(new RequestHandlerRunnable(connection, tasksStorage, request, subTask));
             } catch (RejectedExecutionException e) {
-                logger.warning("new request was rejected", e);
+                nodeLogger.warning("new request was rejected", e);
             }
         }
     }

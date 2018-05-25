@@ -7,7 +7,7 @@ import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
 
 import java.util.Arrays;
@@ -26,19 +26,19 @@ public class NodeUsersServiceImplTest {
     private UserDTOMapper userDTOMapper;
     private NodeUsersService nodeUsersService;
     private SrpConfig srpConfig;
-    private SecurityService securityService;
+    private SRPService SRPService;
 
     @Before
     public void setUp() {
         nodeUsersDAO = mock(NodeUsersDAO.class);
         userDTOMapper = mock(UserDTOMapper.class);
         srpConfig = mock(SrpConfig.class);
-        securityService = mock(SecurityService.class);
+        SRPService = mock(SRPService.class);
         Container.getInstance().put(container -> {
             container.put(nodeUsersDAO);
             container.put(userDTOMapper);
             container.put(srpConfig);
-            container.put(securityService);
+            container.put(SRPService);
         });
 
         nodeUsersService = new NodeUsersServiceImpl();

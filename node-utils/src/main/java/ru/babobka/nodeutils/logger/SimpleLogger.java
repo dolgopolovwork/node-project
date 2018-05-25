@@ -5,8 +5,10 @@ import ru.babobka.nodeutils.util.TextUtil;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-public class SimpleLogger {
-
+/**
+ * Created by 123 on 25.05.2018.
+ */
+public class SimpleLogger implements NodeLogger {
     private final Logger logger;
     private final boolean debugMode;
 
@@ -22,18 +24,6 @@ public class SimpleLogger {
             logger = LogBuilder.buildNoConsole(loggerName, runningFolder, debugMode);
         }
         this.debugMode = debugMode;
-    }
-
-    public static SimpleLogger defaultLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, false, true);
-    }
-
-    public static SimpleLogger debugLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, true, true);
-    }
-
-    public static SimpleLogger silentLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, false, false);
     }
 
     public void info(Object o) {
@@ -73,5 +63,4 @@ public class SimpleLogger {
     public void error(String message, Exception e) {
         logger.severe(message + "\t" + TextUtil.getStringFromException(e));
     }
-
 }

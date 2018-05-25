@@ -5,7 +5,7 @@ import org.junit.Test;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.HashUtil;
 
@@ -22,15 +22,15 @@ import static org.mockito.Mockito.when;
 public class UserDTOMapperTest {
 
     private UserDTOMapper userDTOMapper;
-    private SecurityService securityService;
+    private SRPService SRPService;
     private SrpConfig srpConfig;
 
     @Before
     public void setUp() {
-        securityService = mock(SecurityService.class);
+        SRPService = mock(SRPService.class);
         srpConfig = mock(SrpConfig.class);
         Container.getInstance().put(container -> {
-            container.put(securityService);
+            container.put(SRPService);
             container.put(srpConfig);
         });
         userDTOMapper = new UserDTOMapper();
@@ -49,7 +49,7 @@ public class UserDTOMapperTest {
         userDTO.setEmail("abc@xyz.ru");
         userDTO.setHashedPassword(HashUtil.hexSha2(password));
         byte[] secret = {1, 2, 3};
-        when(securityService.secretBuilder(eq(HashUtil.hexStringToByteArray(userDTO.getHashedPassword())), any(), eq(srpConfig))).thenReturn(secret);
+        when(SRPService.secretBuilder(eq(HashUtil.hexStringToByteArray(userDTO.getHashedPassword())), any(), eq(srpConfig))).thenReturn(secret);
         User user = userDTOMapper.map(userDTO);
         assertEquals(userDTO.getName(), user.getName());
         assertArrayEquals(user.getSecret(), secret);

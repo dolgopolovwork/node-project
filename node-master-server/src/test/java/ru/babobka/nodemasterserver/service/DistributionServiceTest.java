@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,15 +21,15 @@ import static org.mockito.Mockito.*;
  * Created by 123 on 05.09.2017.
  */
 public class DistributionServiceTest {
-    private SimpleLogger simpleLogger;
+    private NodeLogger nodeLogger;
     private SlavesStorage slavesStorage;
     private DistributionService distributionService;
 
     @Before
     public void setUp() {
-        simpleLogger = mock(SimpleLogger.class);
+        nodeLogger = mock(NodeLogger.class);
         slavesStorage = mock(SlavesStorage.class);
-        Container.getInstance().put(simpleLogger);
+        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(slavesStorage);
         distributionService = spy(DistributionService.class);
     }
@@ -99,7 +99,7 @@ public class DistributionServiceTest {
         doThrow(new IOException()).when(slave).stopTask(any(UUID.class));
         List<Slave> slaves = Arrays.asList(slave, slave, slave);
         distributionService.broadcastStopRequests(slaves, UUID.randomUUID());
-        verify(simpleLogger, times(slaves.size())).error(any(Exception.class));
+        verify(nodeLogger, times(slaves.size())).error(any(Exception.class));
     }
 
     @Test(expected = IllegalArgumentException.class)

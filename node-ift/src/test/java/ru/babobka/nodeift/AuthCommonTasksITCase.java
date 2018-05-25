@@ -6,14 +6,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodeslaveserver.exception.SlaveAuthFailException;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -32,9 +36,11 @@ public class AuthCommonTasksITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(AuthCommonTasksITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLoggerFactory.debugLogger(AuthCommonTasksITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         MasterServerRunner.init();
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -51,13 +57,13 @@ public class AuthCommonTasksITCase {
         Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
     }
 
-    @Test(expected = SlaveAuthFailException.class)
+    @Test(expected = AuthFailException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
         SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
     }
 
-    @Test(expected = SlaveAuthFailException.class)
+    @Test(expected = AuthFailException.class)
     public void testNoCommonTasks() throws IOException {
         Set<String> availableTasks = new HashSet<>();
         availableTasks.add("abc");

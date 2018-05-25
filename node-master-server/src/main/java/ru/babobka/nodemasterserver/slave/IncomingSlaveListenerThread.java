@@ -7,7 +7,7 @@ import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.CyclicThread;
@@ -25,7 +25,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final ServerSocket serverSocket;
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final SlaveFactory slaveFactory = Container.getInstance().get(SlaveFactory.class);
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final MasterAuthService authService = Container.getInstance().get(MasterAuthService.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
@@ -48,39 +48,44 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             Socket socket = serverSocket.accept();
             connection = nodeConnectionFactory.create(socket);
             connection.setReadTimeOut(config.getTimeouts().getAuthTimeOutMillis());
-            logger.info("new connection");
-            AuthResult authResult = authService.auth(connection);
+            nodeLogger.info("new connection");
+            AuthResult authResult = authService.authClient(connection);
             if (!authResult.isSuccess()) {
-                logger.warning("auth fail");
+                nodeLogger.warning("auth fail");
                 connection.close();
                 return;
             }
-            logger.info("new slave was successfully authenticated");
+            nodeLogger.info("new slave was successfully authenticated");
             Set<String> availableTasks = connection.receive();
             boolean containsAnyOfTask = taskPool.containsAnyOfTask(availableTasks);
             if (!containsAnyOfTask) {
-                logger.error("new slave doesn't have any common tasks with master");
+                nodeLogger.error("new slave doesn't have any common tasks with master");
                 fail(connection);
                 return;
-            } else {
-                success(connection);
+            }
+            success(connection);
+            if (!authService.authServer(connection)) {
+                nodeLogger.error("server authentication fail");
+                connection.close();
+                return;
             }
             if (!isAbleToRunNewSlave(authResult)) {
+                nodeLogger.error("not able to create session for user " + authResult.getUserName());
                 fail(connection);
-                logger.error("not able to create session for user " + authResult.getUserName());
                 return;
             }
             SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, authResult.getSecretKey());
-            if (runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
-                connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
-                success(connection);
-            } else {
+            if (!runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
+                nodeLogger.warning("cannot run slave");
                 sessions.remove(authResult.getUserName());
                 fail(connection);
+                return;
             }
+            connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
+            success(connection);
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
             if (connection != null) {
                 connection.close();
@@ -103,7 +108,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             slave.start();
             return true;
         } catch (RuntimeException e) {
-            logger.error("cannot run new slave");
+            nodeLogger.error("cannot run new slave");
             return false;
         }
     }
@@ -125,9 +130,9 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
-        logger.debug(this.getClass().getSimpleName() + " is done");
+        nodeLogger.debug(this.getClass().getSimpleName() + " is done");
     }
 
     @Override
@@ -136,7 +141,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 }

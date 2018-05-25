@@ -6,7 +6,7 @@ import ru.babobka.nodesecurity.data.SecureDataFactory;
 import ru.babobka.nodesecurity.data.SecureNodeRequest;
 import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
-import ru.babobka.nodesecurity.service.SecurityService;
+import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
@@ -25,15 +25,15 @@ import static org.mockito.Mockito.*;
 public class SecureNodeConnectionTest {
 
     private SecureDataFactory secureDataFactory;
-    private SecurityService securityService;
+    private SRPService SRPService;
 
     @Before
     public void setUp() {
         secureDataFactory = mock(SecureDataFactory.class);
-        securityService = mock(SecurityService.class);
+        SRPService = mock(SRPService.class);
         Container.getInstance().put(container -> {
             container.put(secureDataFactory);
-            container.put(securityService);
+            container.put(SRPService);
         });
     }
 
@@ -129,7 +129,7 @@ public class SecureNodeConnectionTest {
     public void testReceiveInsecure() throws IOException {
         NodeRequest insecureRequest = mock(NodeRequest.class);
         byte[] secretKey = {1, 2, 3};
-        when(securityService.isSecure(insecureRequest, secretKey)).thenReturn(false);
+        when(SRPService.isSecure(insecureRequest, secretKey)).thenReturn(false);
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(insecureRequest);
         when(connection.isClosed()).thenReturn(false);
@@ -147,7 +147,7 @@ public class SecureNodeConnectionTest {
     public void testReceive() throws IOException {
         NodeRequest request = mock(NodeRequest.class);
         byte[] secretKey = {1, 2, 3};
-        when(securityService.isSecure(request, secretKey)).thenReturn(true);
+        when(SRPService.isSecure(request, secretKey)).thenReturn(true);
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
         when(connection.isClosed()).thenReturn(false);

@@ -2,12 +2,15 @@ package ru.babobka.nodeift.lags;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -19,10 +22,12 @@ public class LagClientITCase extends ru.babobka.nodeift.ClientITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLogger.debugLogger(LagClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        Container.getInstance().put(SimpleLoggerFactory.debugLogger(LagClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();
-        SlaveServerRunner.init();
+        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
+        SlaveServerRunner.init(publicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 

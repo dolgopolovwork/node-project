@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.slave;
 
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,21 +16,21 @@ import java.util.UUID;
  */
 public class SlavesStorage {
 
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final List<Slave> slaves = new ArrayList<>();
     private final UUID storageId = UUID.randomUUID();
 
     public SlavesStorage() {
-        logger.debug("slave storage " + storageId + " was created");
+        nodeLogger.debug("slave storage " + storageId + " was created");
     }
 
     synchronized void remove(Slave slave) {
-        logger.info("remove slave " + slave + " from storage " + storageId);
+        nodeLogger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);
     }
 
     synchronized void add(Slave slave) {
-        logger.info("add new slave " + slave + " to storage " + storageId);
+        nodeLogger.info("add new slave " + slave + " to storage " + storageId);
         slaves.add(slave);
     }
 
@@ -96,7 +96,7 @@ public class SlavesStorage {
         try {
             slave.sendHeartBeating();
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 
@@ -121,7 +121,7 @@ public class SlavesStorage {
     }
 
     public synchronized void clear() {
-        logger.debug("clear storage " + storageId);
+        nodeLogger.debug("clear storage " + storageId);
         if (!isEmpty()) {
             interruptAll();
             slaves.clear();

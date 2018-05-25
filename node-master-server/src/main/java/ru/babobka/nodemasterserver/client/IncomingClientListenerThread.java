@@ -3,7 +3,7 @@ package ru.babobka.nodemasterserver.client;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class IncomingClientListenerThread extends Thread {
 
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final ExecutorService executorService = Container.getInstance().get(MasterServerKey.CLIENTS_THREAD_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final ServerSocket serverSocket;
@@ -38,7 +38,7 @@ public class IncomingClientListenerThread extends Thread {
             }
         } finally {
             onExit();
-            logger.debug(this.getClass().getSimpleName() + " is done");
+            nodeLogger.debug(this.getClass().getSimpleName() + " is done");
         }
     }
 
@@ -46,7 +46,7 @@ public class IncomingClientListenerThread extends Thread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
         executorService.shutdownNow();
     }
@@ -68,7 +68,7 @@ public class IncomingClientListenerThread extends Thread {
             NodeRequest request = nodeConnection.receive();
             handleRequest(nodeConnection, request);
         } catch (IOException e) {
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 
@@ -79,12 +79,12 @@ public class IncomingClientListenerThread extends Thread {
                 try {
                     executorService.submit(createClientExecutor(nodeConnection, request));
                 } catch (RuntimeException e) {
-                    logger.error("errror occurred while handling request " + request, e);
+                    nodeLogger.error("errror occurred while handling request " + request, e);
                 }
                 return;
             }
             default: {
-                logger.warning("cannot handle request " + request);
+                nodeLogger.warning("cannot handle request " + request);
             }
         }
     }

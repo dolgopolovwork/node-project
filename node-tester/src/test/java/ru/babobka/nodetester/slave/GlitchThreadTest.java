@@ -9,7 +9,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ import static org.mockito.Mockito.*;
 @PrepareForTest(SlaveServerRunner.class)
 public class GlitchThreadTest {
 
-    private SimpleLogger logger;
+    private NodeLogger nodeLogger;
 
     @Before
     public void setUp() throws IOException {
-        logger = mock(SimpleLogger.class);
-        Container.getInstance().put(logger);
+        nodeLogger = mock(NodeLogger.class);
+        Container.getInstance().put(nodeLogger);
         PowerMockito.mockStatic(SlaveServerRunner.class);
         BDDMockito.given(SlaveServerRunner.runSlaveServer(anyString(), anyString())).willReturn(null);
     }

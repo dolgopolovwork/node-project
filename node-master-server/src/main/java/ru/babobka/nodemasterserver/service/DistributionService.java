@@ -6,7 +6,7 @@ import ru.babobka.nodemasterserver.slave.Slave;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLogger;
+import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +17,7 @@ public class DistributionService {
 
     private static final int MAX_RETRY = 10;
 
-    private final SimpleLogger logger = Container.getInstance().get(SimpleLogger.class);
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
 
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
@@ -27,13 +27,13 @@ public class DistributionService {
         } else if (slave.isNoTasks()) {
             return;
         }
-        logger.debug("redistribution");
+        nodeLogger.debug("redistribution");
         Map<String, List<NodeRequest>> groupedTasks = slave.getRequestsGroupedByTasks();
         for (Map.Entry<String, List<NodeRequest>> requestByUriEntry : groupedTasks.entrySet()) {
             try {
                 broadcastRequests(requestByUriEntry.getKey(), requestByUriEntry.getValue());
             } catch (Exception e) {
-                logger.error("redistribution failed");
+                nodeLogger.error("redistribution failed");
                 throw new DistributionException(e);
             }
         }
@@ -51,14 +51,14 @@ public class DistributionService {
         } else if (requests == null) {
             throw new IllegalArgumentException("requests is null");
         }
-        logger.debug("requests to broadcast " + requests);
+        nodeLogger.debug("requests to broadcast " + requests);
         int lastRequestId = -1;
         try {
             List<Slave> slaves = slavesStorage.getList(taskName);
             if (slaves.isEmpty()) {
                 throw new IOException("cluster is empty");
             }
-            logger.debug("slaves to broadcast " + slaves);
+            nodeLogger.debug("slaves to broadcast " + slaves);
             for (NodeRequest request : requests) {
                 lastRequestId++;
                 slaves.get(lastRequestId % slaves.size()).executeTask(request);
@@ -66,8 +66,8 @@ public class DistributionService {
         } catch (IOException e) {
             if (retry < maxRetry) {
                 waitForGoodTimes();
-                logger.debug("broadcast retry " + retry);
-                logger.error(e);
+                nodeLogger.debug("broadcast retry " + retry);
+                nodeLogger.error(e);
                 broadcastRequests(taskName, requests.subList(Math.max(lastRequestId, 0), requests.size()), retry + 1, maxRetry);
             } else {
                 throw new DistributionException(e);
@@ -80,20 +80,20 @@ public class DistributionService {
             Thread.sleep(200L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error(e);
+            nodeLogger.error(e);
         }
     }
 
     public boolean broadcastStopRequests(List<Slave> slaves, UUID taskId) {
         if (slaves == null || slaves.isEmpty()) {
-            logger.debug("no slaves to broadcast");
+            nodeLogger.debug("no slaves to broadcast");
             return false;
         }
         for (Slave slave : slaves) {
             try {
                 slave.stopTask(taskId);
             } catch (IOException e) {
-                logger.error(e);
+                nodeLogger.error(e);
             }
         }
         return true;

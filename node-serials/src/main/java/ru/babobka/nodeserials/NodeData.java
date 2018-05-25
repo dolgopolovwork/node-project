@@ -1,7 +1,5 @@
 package ru.babobka.nodeserials;
 
-import ru.babobka.nodeutils.util.HashUtil;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,9 +15,8 @@ public class NodeData implements Serializable {
     private final String taskName;
     private final long timeStamp;
     private final Map<String, Serializable> data = new TreeMap<>();
-    private byte[] hash;
 
-    NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Map<String, Serializable> data) {
+    public NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Map<String, Serializable> data) {
         this.id = id;
         this.taskId = taskId;
         this.taskName = taskName;
@@ -64,19 +61,6 @@ public class NodeData implements Serializable {
     public String getStringDataValue(String key) {
         Serializable value = getDataValue(key, "");
         return value.toString();
-    }
-
-    public synchronized byte[] getHash() {
-        if (hash == null) {
-            byte[] metaHash = HashUtil.sha2(
-                    HashUtil.safeHashCode(id),
-                    HashUtil.safeHashCode(taskId),
-                    HashUtil.safeHashCode(taskName),
-                    (int) timeStamp);
-            byte[] dataHash = HashUtil.sha2(data);
-            hash = HashUtil.sha2(dataHash, metaHash);
-        }
-        return hash.clone();
     }
 
     @Override
