@@ -77,12 +77,13 @@ public class MasterServerTest {
 
     @Test
     public void testRunException() throws IOException {
+        ModeConfig modeConfig = new ModeConfig();
+        when(masterServerConfig.getModes()).thenReturn(modeConfig);
         doThrow(new RuntimeException()).when(slaveListenerThread).start();
         masterServer.run();
         verify(nodeLogger).error(any(RuntimeException.class));
         verify(masterServer).clear();
     }
-
 
     @Test
     public void testClear() throws IOException {

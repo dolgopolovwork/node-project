@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.listener;
 
+import lombok.NonNull;
 import ru.babobka.nodebusiness.service.ResponseCacheService;
 import ru.babobka.nodemasterserver.model.CacheEntry;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
@@ -14,10 +15,7 @@ public class CacheRequestListener implements AfterRequestListener<TaskExecutionR
     private final ResponseCacheService responseCacheService = Container.getInstance().get(ResponseCacheService.class);
 
     @Override
-    public TaskExecutionResult onRequest(NodeRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("request is null");
-        }
+    public TaskExecutionResult onRequest(@NonNull NodeRequest request) {
         CacheEntry cacheEntry = responseCacheService.get(request.cacheKey());
         if (cacheEntry == null) {
             return null;
@@ -29,13 +27,8 @@ public class CacheRequestListener implements AfterRequestListener<TaskExecutionR
     }
 
     @Override
-    public void afterRequest(NodeRequest request, TaskExecutionResult result) {
-        if (request == null) {
-            throw new IllegalArgumentException("request is null");
-        } else if (result == null) {
-            throw new IllegalArgumentException("result is null");
-        }
-        if (!result.isWasStopped()) {
+    public void afterRequest(@NonNull NodeRequest request, @NonNull TaskExecutionResult result) {
+        if (!result.wasStopped()) {
             CacheEntry cacheEntry = new CacheEntry(request.getTaskName(), request.getData(), result);
             responseCacheService.put(request.cacheKey(), cacheEntry);
         }

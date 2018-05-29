@@ -2,11 +2,11 @@ package ru.babobka.dummy;
 
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -26,7 +26,7 @@ public class DummyTask extends SubTask {
             protected List<NodeRequest> distributeImpl(NodeRequest request, int nodes) {
                 List<NodeRequest> requests = new ArrayList<>();
                 for (int i = 0; i < nodes; i++) {
-                    requests.add(NodeRequest.regular(request.getTaskId(), request.getTaskName(), new HashMap<>()));
+                    requests.add(NodeRequest.regular(request.getTaskId(), request.getTaskName(), new Data()));
                 }
                 return requests;
             }
@@ -37,8 +37,8 @@ public class DummyTask extends SubTask {
     public Reducer getReducer() {
         return new Reducer() {
             @Override
-            protected ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException {
-                return new ReducingResult();
+            protected Data reduceImpl(List<NodeResponse> responses) throws ReducingException {
+                return new Data();
             }
         };
     }
@@ -48,7 +48,7 @@ public class DummyTask extends SubTask {
         return new TaskExecutor() {
             @Override
             protected ExecutionResult executeImpl(NodeRequest request) {
-                return ExecutionResult.ok(new HashMap<>());
+                return ExecutionResult.ok(new Data());
             }
 
             @Override

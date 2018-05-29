@@ -45,12 +45,12 @@ public class ClientTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullConnection() {
         new Client(null, mock(NodeRequest.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullRequest() {
         new Client(mock(NodeConnection.class), null);
     }
@@ -112,7 +112,7 @@ public class ClientTest {
         NodeRequest request = mock(NodeRequest.class);
         NodeConnection connection = mock(NodeConnection.class);
         TaskExecutionResult taskExecutionResult = mock(TaskExecutionResult.class);
-        when(taskExecutionResult.isWasStopped()).thenReturn(true);
+        when(taskExecutionResult.wasStopped()).thenReturn(true);
         when(taskService.executeTask(request)).thenReturn(taskExecutionResult);
         Client client = spy(new Client(connection, request));
         client.executeTask();

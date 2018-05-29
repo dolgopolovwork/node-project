@@ -2,7 +2,7 @@ package ru.babobka.vsjws.mapper;
 
 import ru.babobka.vsjws.model.http.HttpRequest;
 import ru.babobka.vsjws.model.http.HttpResponse;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
 import ru.babobka.vsjws.webcontroller.JSONWebController;
 import ru.babobka.vsjws.webcontroller.JSONWebFilter;

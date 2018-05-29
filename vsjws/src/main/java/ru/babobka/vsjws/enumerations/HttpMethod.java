@@ -1,5 +1,7 @@
 package ru.babobka.vsjws.enumerations;
 
+import ru.babobka.nodeutils.util.TextUtil;
+
 /**
  * Created by dolgopolov.a on 30.12.15.
  */
@@ -8,7 +10,7 @@ public enum HttpMethod {
     GET, POST, PUT, DELETE, HEAD, PATCH;
 
     public static boolean isValidMethod(String inputMethod) {
-        if (inputMethod == null || inputMethod.isEmpty()) {
+        if (TextUtil.isEmpty(inputMethod)) {
             return false;
         }
         for (HttpMethod method : HttpMethod.values()) {

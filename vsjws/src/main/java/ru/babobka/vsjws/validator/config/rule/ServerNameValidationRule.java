@@ -1,5 +1,6 @@
 package ru.babobka.vsjws.validator.config.rule;
 
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodeutils.validation.ValidationRule;
 import ru.babobka.vsjws.enumerations.RegularExpressions;
 import ru.babobka.vsjws.webserver.WebServerConfig;
@@ -10,7 +11,7 @@ import ru.babobka.vsjws.webserver.WebServerConfig;
 public class ServerNameValidationRule implements ValidationRule<WebServerConfig> {
     @Override
     public void validate(WebServerConfig config) {
-        if (config.getServerName() == null || config.getServerName().isEmpty()) {
+        if (TextUtil.isEmpty(config.getServerName())) {
             throw new IllegalArgumentException("Web server name was no set");
         } else if (!config.getServerName().matches(RegularExpressions.FILE_NAME_PATTERN.toString())) {
             throw new IllegalArgumentException("Web server name must contain letters,numbers and spaces only");

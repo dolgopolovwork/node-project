@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
@@ -58,35 +59,23 @@ public abstract class AbstractSlave extends Thread {
         }
     }
 
-    public void removeTask(NodeData nodeData) {
-        if (nodeData == null) {
-            throw new IllegalArgumentException("nodeData is null");
-        }
+    public void removeTask(@NonNull NodeData nodeData) {
         removeTask(nodeData.getId());
     }
 
-    public void removeTask(UUID requestId) {
-        if (requestId == null) {
-            throw new IllegalArgumentException("requestId is null");
-        }
+    public void removeTask(@NonNull UUID requestId) {
         synchronized (tasks) {
             tasks.remove(requestId);
         }
     }
 
-    void addTask(NodeRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("request is null");
-        }
+    void addTask(@NonNull NodeRequest request) {
         synchronized (tasks) {
             tasks.put(request.getId(), request);
         }
     }
 
-    void addTasks(List<NodeRequest> requests) {
-        if (requests == null) {
-            throw new IllegalArgumentException("requests is null");
-        }
+    void addTasks(@NonNull List<NodeRequest> requests) {
         synchronized (tasks) {
             for (NodeRequest request : requests) {
                 addTask(request);

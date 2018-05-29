@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.model;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnResponseListener;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
@@ -9,11 +10,9 @@ import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -31,18 +30,14 @@ public class Responses {
     private final List<NodeResponse> responsesList = new LinkedList<>();
     private final CountDownLatch countDownLatch;
     private final SubTask task;
-    private final long startTime;
 
-    public Responses(int maxSize, SubTask task, Map<String, Serializable> params) {
+    public Responses(int maxSize, @NonNull SubTask task) {
         if (maxSize < 1) {
             throw new IllegalArgumentException("maxSize must be at least 1");
-        } else if (task == null) {
-            throw new IllegalArgumentException("task is null");
         }
         this.maxSize = maxSize;
         this.countDownLatch = new CountDownLatch(maxSize);
         this.task = task;
-        this.startTime = System.currentTimeMillis();
     }
 
     synchronized boolean isComplete() {
@@ -129,9 +124,6 @@ public class Responses {
         return resultingResponses;
     }
 
-    public long getStartTime() {
-        return startTime;
-    }
 
     @Override
     public String toString() {

@@ -107,16 +107,18 @@ public interface HttpUtil {
     }
 
     static Set<Param> getParams(String paramText) {
+        if (paramText == null || paramText.isEmpty()) {
+            return new LinkedHashSet<>();
+        }
         Set<Param> params = new LinkedHashSet<>();
-        if (paramText != null && !paramText.isEmpty()) {
-            String[] paramsArray = paramText.split("&");
-            for (String param : paramsArray) {
-                String[] keyValue = param.split("=");
-                if (keyValue.length > 1) {
-                    params.add(new Param(keyValue[0], keyValue[1]));
-                }
+        String[] paramsArray = paramText.split("&");
+        for (String param : paramsArray) {
+            String[] keyValue = param.split("=");
+            if (keyValue.length > 1) {
+                params.add(new Param(keyValue[0], keyValue[1]));
             }
         }
         return params;
     }
+
 }

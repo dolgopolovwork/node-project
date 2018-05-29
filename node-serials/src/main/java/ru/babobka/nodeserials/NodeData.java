@@ -1,8 +1,8 @@
 package ru.babobka.nodeserials;
 
+import ru.babobka.nodeserials.data.Data;
+
 import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -14,15 +14,15 @@ public class NodeData implements Serializable {
     private final UUID taskId;
     private final String taskName;
     private final long timeStamp;
-    private final Map<String, Serializable> data = new TreeMap<>();
+    private final Data data = new Data();
 
-    public NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Map<String, Serializable> data) {
+    public NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Data data) {
         this.id = id;
         this.taskId = taskId;
         this.taskName = taskName;
         this.timeStamp = timeStamp;
         if (data != null) {
-            this.data.putAll(data);
+            this.data.put(data);
         }
     }
 
@@ -38,7 +38,7 @@ public class NodeData implements Serializable {
         return timeStamp;
     }
 
-    public Map<String, Serializable> getData() {
+    public Data getData() {
         return data;
     }
 
@@ -56,11 +56,6 @@ public class NodeData implements Serializable {
             return defaultValue;
         }
         return (T) value;
-    }
-
-    public String getStringDataValue(String key) {
-        Serializable value = getDataValue(key, "");
-        return value.toString();
     }
 
     @Override

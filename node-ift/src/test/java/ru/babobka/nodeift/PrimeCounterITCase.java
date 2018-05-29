@@ -10,20 +10,17 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -62,7 +59,7 @@ public class PrimeCounterITCase {
     }
 
     private static NodeRequest createPrimeCounterRequest(long begin, long end) {
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put("begin", begin);
         data.put("end", end);
         return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, data);
@@ -94,7 +91,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
     }
 
@@ -104,7 +101,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
         }
     }
 
@@ -115,7 +112,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
         }
     }
@@ -127,7 +124,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
         }
     }
@@ -139,7 +136,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
         }
     }
@@ -151,7 +148,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
         }
     }
@@ -166,7 +163,7 @@ public class PrimeCounterITCase {
                 nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
                 TaskExecutionResult result = taskService.executeTask(request);
                 nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
             }
         }
     }
@@ -186,7 +183,7 @@ public class PrimeCounterITCase {
                             nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
                             TaskExecutionResult result = taskService.executeTask(request);
                             nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
+                            if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
                                 nodeLogger.warning("Tested request task id [" + request.getTaskId() + "] was failed");
                                 failedTest.incrementAndGet();
                                 break;
@@ -222,7 +219,7 @@ public class PrimeCounterITCase {
                             nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
                             TaskExecutionResult result = taskService.executeTask(request);
                             nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
+                            if (!result.getData().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
                                 failedTest.incrementAndGet();
                                 break;
                             }
@@ -252,7 +249,7 @@ public class PrimeCounterITCase {
                 nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
                 TaskExecutionResult result = taskService.executeTask(request);
                 nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER);
             }
         }
     }
@@ -264,7 +261,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
             }
         }
     }
@@ -276,7 +273,7 @@ public class PrimeCounterITCase {
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
             }
         }
     }
@@ -305,7 +302,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getMediumRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_MEDIUM_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_MEDIUM_RANGE_ANSWER);
         }
     }
 
@@ -315,7 +312,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
     }
 
@@ -325,7 +322,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
     }
 
@@ -346,7 +343,7 @@ public class PrimeCounterITCase {
             Thread taskServiceThread = new Thread(() -> {
                 try {
                     TaskExecutionResult result = taskService.executeTask(request);
-                    if (!result.isWasStopped()) {
+                    if (!result.wasStopped()) {
                         taskFail.set(true);
                     }
                 } catch (TaskExecutionException e) {
@@ -371,7 +368,7 @@ public class PrimeCounterITCase {
             Thread taskServiceThread = new Thread(() -> {
                 try {
                     TaskExecutionResult result = taskService.executeTask(request);
-                    if (!result.isWasStopped()) {
+                    if (!result.wasStopped()) {
                         taskFail.set(true);
                     }
                 } catch (TaskExecutionException e) {
@@ -397,7 +394,7 @@ public class PrimeCounterITCase {
                 Thread taskServiceThread = new Thread(() -> {
                     try {
                         TaskExecutionResult result = taskService.executeTask(request);
-                        if (!result.isWasStopped()) {
+                        if (!result.wasStopped()) {
                             taskFail.set(true);
                         }
                     } catch (TaskExecutionException e) {
@@ -424,7 +421,7 @@ public class PrimeCounterITCase {
                 Thread taskServiceThread = new Thread(() -> {
                     try {
                         TaskExecutionResult result = taskService.executeTask(request);
-                        if (!result.isWasStopped()) {
+                        if (!result.wasStopped()) {
                             taskFail.set(true);
                         }
                     } catch (TaskExecutionException e) {
@@ -453,7 +450,7 @@ public class PrimeCounterITCase {
                         for (int i1 = 0; i1 < 5; i1++) {
                             NodeRequest request = getLargeRangeRequest();
                             TaskExecutionResult result = taskService.executeTask(request);
-                            if (!result.getResult().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
+                            if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
                                 failedTests.incrementAndGet();
                             }
                         }
@@ -478,7 +475,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
         }
     }
 
@@ -488,7 +485,7 @@ public class PrimeCounterITCase {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
     }
 

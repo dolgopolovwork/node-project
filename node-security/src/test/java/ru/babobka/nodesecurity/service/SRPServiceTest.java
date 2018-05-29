@@ -9,6 +9,7 @@ import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
@@ -16,11 +17,8 @@ import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -262,8 +260,8 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        NodeData nodeData = new NodeData(id, taskId, taskName, timeStamp, map);
+        Data data = new Data();
+        NodeData nodeData = new NodeData(id, taskId, taskName, timeStamp, data);
         assertArrayEquals(srpService.buildHash(nodeData), srpService.buildHash(nodeData));
     }
 
@@ -273,10 +271,10 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        map.put("xyz", "test");
-        NodeData nodeData = new NodeData(id, taskId, taskName, timeStamp, map);
+        Data data = new Data();
+        data.put("abc", 123);
+        data.put("xyz", "test");
+        NodeData nodeData = new NodeData(id, taskId, taskName, timeStamp, data);
         assertArrayEquals(srpService.buildHash(nodeData), srpService.buildHash(nodeData));
     }
 
@@ -287,11 +285,11 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        map.put("xyz", "test");
-        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, map);
-        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, map);
+        Data data = new Data();
+        data.put("abc", 123);
+        data.put("xyz", "test");
+        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, data);
+        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, data);
         assertArrayEquals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2));
     }
 
@@ -301,11 +299,11 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        map.put("xyz", "test");
-        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, map);
-        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp + 1, map);
+        Data data = new Data();
+        data.put("abc", 123);
+        data.put("xyz", "test");
+        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, data);
+        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp + 1, data);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 
@@ -315,14 +313,14 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map1 = new HashMap<>();
-        map1.put("abc", 123);
-        map1.put("xyz", "test");
-        Map<String, Serializable> map2 = new HashMap<>();
-        map1.put("abc", 456);
-        map1.put("xyz", "test");
-        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, map1);
-        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, map2);
+        Data data1 = new Data();
+        data1.put("abc", 123);
+        data1.put("xyz", "test");
+        Data data2 = new Data();
+        data2.put("abc", 456);
+        data2.put("xyz", "test");
+        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, data1);
+        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, data2);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 
@@ -332,14 +330,14 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map1 = new HashMap<>();
-        map1.put("abc", 123);
-        map1.put("xyz", "test");
-        Map<String, Serializable> map2 = new HashMap<>();
-        map2.put("abc", 123);
-        map2.put("xyz", "test");
-        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, map1);
-        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, map2);
+        Data data1 = new Data();
+        data1.put("abc", 123);
+        data1.put("xyz", "test");
+        Data data2 = new Data();
+        data2.put("abc", 123);
+        data2.put("xyz", "test");
+        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, data1);
+        NodeData nodeData2 = new NodeData(id, taskId, taskName, timeStamp, data2);
         assertArrayEquals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2));
     }
 
@@ -349,9 +347,9 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, map);
-        NodeData nodeData2 = new NodeData(id, taskId, taskName + "test", timeStamp, map);
+        Data data = new Data();
+        NodeData nodeData1 = new NodeData(id, taskId, taskName, timeStamp, data);
+        NodeData nodeData2 = new NodeData(id, taskId, taskName + "test", timeStamp, data);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 
@@ -360,9 +358,9 @@ public class SRPServiceTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "testTask";
         long timeStamp = 0;
-        Map<String, Serializable> map = new HashMap<>();
-        NodeData nodeData1 = new NodeData(UUID.randomUUID(), taskId, taskName, timeStamp, map);
-        NodeData nodeData2 = new NodeData(UUID.randomUUID(), taskId, taskName, timeStamp, map);
+        Data data = new Data();
+        NodeData nodeData1 = new NodeData(UUID.randomUUID(), taskId, taskName, timeStamp, data);
+        NodeData nodeData2 = new NodeData(UUID.randomUUID(), taskId, taskName, timeStamp, data);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 
@@ -372,9 +370,9 @@ public class SRPServiceTest {
         UUID id = UUID.randomUUID();
         String taskName = "testTask";
         String message = "abc";
-        Map<String, Serializable> map = new HashMap<>();
-        NodeResponse nodeData1 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, map, taskName, 0);
-        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.FAILED, message, map, taskName, 0);
+        Data data = new Data();
+        NodeResponse nodeData1 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, data, taskName, 0);
+        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.FAILED, message, data, taskName, 0);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 
@@ -384,9 +382,9 @@ public class SRPServiceTest {
         UUID id = UUID.randomUUID();
         String taskName = "testTask";
         String message = "abc";
-        Map<String, Serializable> map = new HashMap<>();
-        NodeResponse nodeData1 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, map, taskName, 0);
-        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, map, taskName, 0);
+        Data data = new Data();
+        NodeResponse nodeData1 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, data, taskName, 0);
+        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, data, taskName, 0);
         assertArrayEquals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2));
     }
 }

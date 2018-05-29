@@ -1,7 +1,7 @@
 package ru.babobka.vsjws.model;
 
 import ru.babobka.vsjws.enumerations.HttpMethod;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.util.HttpUtil;
 
 import java.io.Serializable;
@@ -43,20 +43,12 @@ public abstract class Request<B> {
         return null;
     }
 
-    private Map<String, Serializable> getSession() {
+    public Map<String, Serializable> getSession() {
         String sessionId = getCookies().get(SESSION_ID_HEADER);
         if (sessionId == null) {
             return null;
         }
         return httpSession.getData(sessionId);
-    }
-
-    public Map<String, Serializable> getSessionCopy() {
-        Map<String, Serializable> session = getSession();
-        if (session != null) {
-            return new HashMap<>(session);
-        }
-        return null;
     }
 
     protected abstract B getBody();

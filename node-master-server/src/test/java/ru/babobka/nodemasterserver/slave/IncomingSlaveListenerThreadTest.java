@@ -76,7 +76,7 @@ public class IncomingSlaveListenerThreadTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorNullServerSocket() {
         new IncomingSlaveListenerThread(null);
     }

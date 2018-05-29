@@ -49,22 +49,22 @@ public class ResponsesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testBadMaxSize() {
-        new Responses(0, task, null);
+        new Responses(0, task);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullTaskContext() {
-        new Responses(1, null, null);
+        new Responses(1, null);
     }
 
     @Test
     public void testIsCompleteFalse() {
-        assertFalse(new Responses(1, task, null).isComplete());
+        assertFalse(new Responses(1, task).isComplete());
     }
 
     @Test
     public void testIsCompleteTrue() {
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         responses.add(NodeResponse.dummy(UUID.randomUUID()));
         assertTrue(responses.isComplete());
     }
@@ -72,7 +72,7 @@ public class ResponsesTest {
     @Test
     public void testAdd() {
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         assertTrue(responses.add(response));
         verify(taskIsReadyListener).onResponse(response);
     }
@@ -84,7 +84,7 @@ public class ResponsesTest {
         when(dataValidators.isValidResponse(any(NodeResponse.class))).thenReturn(true);
         when(task.getDataValidators()).thenReturn(dataValidators);
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         assertTrue(responses.add(response));
         verify(raceStyleTaskIsReadyListener).onResponse(response);
     }
@@ -92,7 +92,7 @@ public class ResponsesTest {
     @Test
     public void testAddIsComplete() {
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         assertTrue(responses.add(response));
         assertFalse(responses.add(response));
     }
@@ -100,7 +100,7 @@ public class ResponsesTest {
     @Test
     public void testFillComplete() {
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         responses.add(response);
         assertFalse(responses.fill(response));
     }
@@ -108,7 +108,7 @@ public class ResponsesTest {
     @Test
     public void testFillNotComplete() {
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         responses.add(response);
         assertTrue(responses.fill(response));
         verify(taskIsReadyListener).onResponse(response);
@@ -116,7 +116,7 @@ public class ResponsesTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetResponseListBadTimeout() throws TimeoutException {
-        new Responses(1, task, null).getResponseList(0);
+        new Responses(1, task).getResponseList(0);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class ResponsesTest {
         NodeResponse response1 = NodeResponse.dummy(UUID.randomUUID());
         NodeResponse response2 = NodeResponse.dummy(UUID.randomUUID());
         List<NodeResponse> nodeResponses = Arrays.asList(response1, response2);
-        Responses responses = new Responses(nodeResponses.size(), task, null);
+        Responses responses = new Responses(nodeResponses.size(), task);
         for (NodeResponse nodeResponse : nodeResponses) {
             responses.add(nodeResponse);
         }
@@ -137,7 +137,7 @@ public class ResponsesTest {
         NodeResponse response1 = NodeResponse.dummy(UUID.randomUUID());
         NodeResponse response2 = NodeResponse.dummy(UUID.randomUUID());
         List<NodeResponse> nodeResponses = Arrays.asList(response1, response2);
-        final Responses responses = new Responses(nodeResponses.size(), task, null);
+        final Responses responses = new Responses(nodeResponses.size(), task);
         new Thread(() -> {
             try {
                 Thread.sleep(1000L);
@@ -153,19 +153,19 @@ public class ResponsesTest {
 
     @Test(expected = TimeoutException.class)
     public void testGetResponseListTimeout() throws TimeoutException {
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         responses.getResponseList(100L);
     }
 
     @Test
     public void testAlreadyHasResponseEmpty() {
-        Responses responses = new Responses(1, task, null);
+        Responses responses = new Responses(1, task);
         assertFalse(responses.alreadyHasResponse(mock(NodeResponse.class)));
     }
 
     @Test
     public void testAlreadyHasResponseNoDuplicate() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         NodeResponse response1 = mock(NodeResponse.class);
@@ -178,7 +178,7 @@ public class ResponsesTest {
 
     @Test
     public void testAlreadyHasResponse() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         NodeResponse response1 = mock(NodeResponse.class);
@@ -192,13 +192,13 @@ public class ResponsesTest {
 
     @Test
     public void testIsStoppedEmpty() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         assertFalse(responses.isStopped());
     }
 
     @Test
     public void testIsStoppedNoStopped() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         NodeResponse response1 = mock(NodeResponse.class);
@@ -212,7 +212,7 @@ public class ResponsesTest {
 
     @Test
     public void testIsStoppedNotAll() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         NodeResponse response1 = mock(NodeResponse.class);
@@ -227,7 +227,7 @@ public class ResponsesTest {
 
     @Test
     public void testIsStopped() {
-        Responses responses = new Responses(2, task, null);
+        Responses responses = new Responses(2, task);
         UUID id1 = UUID.randomUUID();
         UUID id2 = UUID.randomUUID();
         NodeResponse response1 = mock(NodeResponse.class);

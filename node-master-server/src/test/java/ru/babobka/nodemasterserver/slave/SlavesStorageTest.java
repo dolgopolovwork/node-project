@@ -110,12 +110,12 @@ public class SlavesStorageTest {
         assertEquals(slavesStorage.getClusterSize(taskName), 1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testGetListByTaskIdNullTaskId() {
         slavesStorage.getListByTaskId((UUID) null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testGetListByTaskIdNullNodeData() {
         slavesStorage.getListByTaskId((NodeData) null);
     }

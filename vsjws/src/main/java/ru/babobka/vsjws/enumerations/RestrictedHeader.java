@@ -5,7 +5,10 @@ package ru.babobka.vsjws.enumerations;
  */
 public enum RestrictedHeader {
 
-    SERVER("Server"), CONTENT_TYPE("Content-Type"), CONTENT_LENGTH("Content-Length"), CONNECTION("Connection");
+    SERVER("Server"),
+    CONTENT_TYPE("Content-Type"),
+    CONTENT_LENGTH("Content-Length"),
+    CONNECTION("Connection");
 
     private final String text;
 

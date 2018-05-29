@@ -50,7 +50,7 @@ public class EllipticCurveFactorTaskExecutorTest {
     @Test
     public void testExecuteNullResult() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getStringDataValue(Params.NUMBER.getValue())).thenReturn("123");
+        when(request.getDataValue(Params.NUMBER.getValue())).thenReturn(new BigInteger("123"));
         when(service.execute(any(BigInteger.class))).thenReturn(null);
         ExecutionResult result = executor.execute(request);
         assertTrue(result.isStopped());
@@ -60,13 +60,13 @@ public class EllipticCurveFactorTaskExecutorTest {
     @Test
     public void testExecute() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getStringDataValue(Params.NUMBER.getValue())).thenReturn("123");
+        when(request.getDataValue(Params.NUMBER.getValue())).thenReturn(new BigInteger("123"));
         BigInteger factor = BigInteger.TEN;
         FactoringResult factoringResult = new FactoringResult(factor, EllipticCurvePoint.generateRandomPoint(BigInteger.TEN));
         when(service.execute(any(BigInteger.class))).thenReturn(factoringResult);
         ExecutionResult result = executor.execute(request);
         assertFalse(result.isStopped());
-        assertEquals(result.getResultMap().get(Params.FACTOR.getValue()), factor);
+        assertEquals(result.getData().get(Params.FACTOR.getValue()), factor);
         verify(service).stop();
     }
 }

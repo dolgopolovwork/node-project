@@ -15,10 +15,6 @@ public class DistributionException extends Exception {
         super(message);
     }
 
-    public DistributionException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
     public DistributionException(Throwable cause) {
         super(cause);
     }

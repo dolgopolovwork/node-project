@@ -2,7 +2,7 @@ package ru.babobka.vsjws.mapper;
 
 import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.vsjws.model.http.HttpRequest;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.model.json.JSONRequest;
 
 public class JSONRequestMapper {

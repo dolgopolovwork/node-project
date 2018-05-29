@@ -5,7 +5,7 @@ import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.Param;
 import ru.babobka.vsjws.model.Request;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 
 import java.net.InetAddress;
 import java.util.List;

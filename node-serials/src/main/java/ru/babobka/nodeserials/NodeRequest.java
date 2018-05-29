@@ -1,9 +1,8 @@
 package ru.babobka.nodeserials;
 
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -15,20 +14,20 @@ public class NodeRequest extends NodeData {
     private static final long serialVersionUID = -7966050005036288334L;
     private final RequestStatus requestStatus;
 
-    protected NodeRequest(UUID id, UUID taskId, String taskName, Map<String, Serializable> data, RequestStatus requestStatus, long timeStamp) {
+    protected NodeRequest(UUID id, UUID taskId, String taskName, Data data, RequestStatus requestStatus, long timeStamp) {
         super(id, taskId, taskName, timeStamp, data);
         this.requestStatus = requestStatus;
     }
 
-    public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data) {
+    public static NodeRequest regular(UUID taskId, String taskName, Data data) {
         return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.NORMAL, System.currentTimeMillis());
     }
 
-    public static NodeRequest regular(UUID taskId, String taskName, Map<String, Serializable> data, long timeStamp) {
+    public static NodeRequest regular(UUID taskId, String taskName, Data data, long timeStamp) {
         return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.NORMAL, timeStamp);
     }
 
-    public static NodeRequest race(UUID taskId, String taskName, Map<String, Serializable> data) {
+    public static NodeRequest race(UUID taskId, String taskName, Data data) {
         return new NodeRequest(UUID.randomUUID(), taskId, taskName, data, RequestStatus.RACE, System.currentTimeMillis());
     }
 

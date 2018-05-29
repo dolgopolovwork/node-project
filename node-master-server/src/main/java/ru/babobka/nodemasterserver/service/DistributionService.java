@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.slave.AbstractNetworkSlave;
 import ru.babobka.nodemasterserver.slave.Slave;
@@ -16,15 +17,11 @@ import java.util.UUID;
 public class DistributionService {
 
     private static final int MAX_RETRY = 10;
-
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
-
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
 
-    public void redistribute(AbstractNetworkSlave slave) throws DistributionException {
-        if (slave == null) {
-            throw new IllegalArgumentException("slave is null");
-        } else if (slave.isNoTasks()) {
+    public void redistribute(@NonNull AbstractNetworkSlave slave) throws DistributionException {
+        if (slave.isNoTasks()) {
             return;
         }
         nodeLogger.debug("redistribution");
@@ -44,12 +41,10 @@ public class DistributionService {
         broadcastRequests(taskFactoryName, requests, 0, MAX_RETRY);
     }
 
-    void broadcastRequests(String taskName, List<NodeRequest> requests, int retry, int maxRetry)
+    void broadcastRequests(@NonNull String taskName, @NonNull List<NodeRequest> requests, int retry, int maxRetry)
             throws DistributionException {
         if (maxRetry < 0) {
             throw new IllegalArgumentException("maxRetry cannot be negative");
-        } else if (requests == null) {
-            throw new IllegalArgumentException("requests is null");
         }
         nodeLogger.debug("requests to broadcast " + requests);
         int lastRequestId = -1;
@@ -84,7 +79,7 @@ public class DistributionService {
         }
     }
 
-    public boolean broadcastStopRequests(List<Slave> slaves, UUID taskId) {
+    public boolean broadcastStopRequests(List<Slave> slaves, @NonNull UUID taskId) {
         if (slaves == null || slaves.isEmpty()) {
             nodeLogger.debug("no slaves to broadcast");
             return false;

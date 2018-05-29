@@ -6,15 +6,11 @@ package ru.babobka.vsjws.enumerations;
 public enum ContentType {
 
     HTML("text/html;"),
-
     JSON("application/json;"),
-
     PLAIN("text/plain;"),
-
     XML("text/xml;");
 
     private final String type;
-
     ContentType(String type) {
         this.type = type + "charset=UTF-8";
     }

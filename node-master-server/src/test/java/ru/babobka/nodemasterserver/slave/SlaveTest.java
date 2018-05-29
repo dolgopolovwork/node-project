@@ -53,12 +53,12 @@ public class SlaveTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorNullAvailableTasks() {
         new Slave(null, mock(NodeConnection.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorNullNodeConnection() {
         new Slave(new HashSet<>(), null);
     }

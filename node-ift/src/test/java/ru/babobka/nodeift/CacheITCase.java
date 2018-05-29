@@ -20,8 +20,6 @@ import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -73,7 +71,7 @@ public class CacheITCase {
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < getTests(); i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
             }
         }
         assertEquals(monitoringService.getCacheHitCount(), 0);
@@ -87,7 +85,7 @@ public class CacheITCase {
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < requests; i++) {
                 TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
             }
         }
         assertEquals(monitoringService.getCacheHitCount(), requests - 1);
@@ -100,11 +98,11 @@ public class CacheITCase {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
         for (int i = 0; i < requests - 1; i++) {
             TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals(result.getResult().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
         assertEquals(monitoringService.getCacheHitCount(), requests - 1);
     }

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.http.HttpRequest;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.model.json.JSONRequest;
 
 import java.net.InetAddress;

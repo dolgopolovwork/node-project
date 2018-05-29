@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.task;
 
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.io.Serializable;
@@ -10,19 +11,19 @@ public class TaskExecutionResult implements Serializable {
 
     private static final long serialVersionUID = -1759840716137209250L;
     private final long timeTakes;
-    private final Map<String, Serializable> result = new HashMap<>();
+    private final Data data = new Data();
     private final boolean wasStopped;
 
-    TaskExecutionResult(long timeTakes, Map<String, Serializable> result, boolean wasStopped) {
+    TaskExecutionResult(long timeTakes,Data data, boolean wasStopped) {
         this.timeTakes = timeTakes;
-        if (result != null) {
-            this.result.putAll(result);
+        if (data != null) {
+            this.data.put(data);
         }
         this.wasStopped = wasStopped;
     }
 
-    public static TaskExecutionResult normal(Timer timer, Map<String, Serializable> result) {
-        return new TaskExecutionResult(timer.getTimePassed(), result, false);
+    public static TaskExecutionResult normal(Timer timer,Data data) {
+        return new TaskExecutionResult(timer.getTimePassed(), data, false);
     }
 
     public static TaskExecutionResult stopped() {
@@ -33,11 +34,11 @@ public class TaskExecutionResult implements Serializable {
         return timeTakes;
     }
 
-    public Map<String, Serializable> getResult() {
-        return result;
+    public boolean wasStopped() {
+        return wasStopped;
     }
 
-    public boolean isWasStopped() {
-        return wasStopped;
+    public Data getData() {
+        return data;
     }
 }

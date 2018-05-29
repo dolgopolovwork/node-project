@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
-import ru.babobka.nodetask.model.ReducingResult;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.task.Params;
 
@@ -31,7 +31,6 @@ public class PrimeCounterReducerTest {
         primeCounterReducer = new PrimeCounterReducer();
     }
 
-
     @After
     public void tearDown() {
         Container.getInstance().clear();
@@ -48,7 +47,7 @@ public class PrimeCounterReducerTest {
         NodeResponse response = mock(NodeResponse.class);
         when(response.getDataValue(Params.PRIME_COUNT.getValue())).thenReturn(10);
         when(primeCounterDataValidators.isValidResponse(any(NodeResponse.class))).thenReturn(true);
-        ReducingResult reducingResult = primeCounterReducer.reduce(Arrays.asList(response, response));
-        assertEquals(reducingResult.get(Params.PRIME_COUNT.getValue()), 20);
+        Data reducingResult = primeCounterReducer.reduce(Arrays.asList(response, response));
+        assertEquals((int)reducingResult.get(Params.PRIME_COUNT.getValue()), 20);
     }
 }

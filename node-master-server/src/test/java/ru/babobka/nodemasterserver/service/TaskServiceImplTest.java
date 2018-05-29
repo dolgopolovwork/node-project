@@ -71,7 +71,7 @@ public class TaskServiceImplTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testCancelTaskNullTaskId() throws TaskExecutionException {
         taskService.cancelTask(null);
     }

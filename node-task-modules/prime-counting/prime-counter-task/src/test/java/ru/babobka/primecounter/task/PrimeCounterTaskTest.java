@@ -40,16 +40,16 @@ public class PrimeCounterTaskTest {
     @Test
     public void testIsRequestDataTooSmallBigRange() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getStringDataValue(Params.BEGIN.getValue())).thenReturn("0");
-        when(request.getStringDataValue(Params.END.getValue())).thenReturn("1000000");
+        when(request.getDataValue(Params.BEGIN.getValue())).thenReturn(0L);
+        when(request.getDataValue(Params.END.getValue())).thenReturn(1000000L);
         assertFalse(primeCounterTask.isRequestDataTooSmall(request));
     }
 
     @Test
     public void testIsRequestDataTooSmall() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getStringDataValue(Params.BEGIN.getValue())).thenReturn("0");
-        when(request.getStringDataValue(Params.END.getValue())).thenReturn("1000");
+        when(request.getDataValue(Params.BEGIN.getValue())).thenReturn(0L);
+        when(request.getDataValue(Params.END.getValue())).thenReturn(1000L);
         assertTrue(primeCounterTask.isRequestDataTooSmall(request));
     }
 }

@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.applyer.CancelAllTasksApplyer;
 import ru.babobka.nodemasterserver.applyer.GroupTaskApplyer;
 import ru.babobka.nodemasterserver.applyer.StopTaskApplyer;
@@ -31,10 +32,8 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     protected final NodeConnection connection;
 
-    AbstractNetworkSlave(NodeConnection connection) {
-        if (connection == null) {
-            throw new IllegalArgumentException("connection is null");
-        } else if (connection.isClosed()) {
+    AbstractNetworkSlave(@NonNull NodeConnection connection) {
+        if (connection.isClosed()) {
             throw new IllegalArgumentException("connection is closed");
         }
         this.connection = connection;

@@ -40,11 +40,11 @@ public class PrimeCounterTaskExecutorTest {
     public void testExecute() {
         NodeRequest request = mock(NodeRequest.class);
         int result = 10;
-        when(request.getStringDataValue(Params.BEGIN.getValue())).thenReturn("0");
-        when(request.getStringDataValue(Params.END.getValue())).thenReturn("100");
+        when(request.getDataValue(Params.BEGIN.getValue())).thenReturn(0L);
+        when(request.getDataValue(Params.END.getValue())).thenReturn(100L);
         when(primeCounterTaskService.execute(any(Range.class))).thenReturn(result);
         ExecutionResult executionResult = primeCounterTaskExecutor.execute(request);
-        assertEquals(executionResult.getResultMap().get(Params.PRIME_COUNT.getValue()), result);
+        assertEquals((int) executionResult.getData().get(Params.PRIME_COUNT.getValue()), result);
         assertEquals(executionResult.isStopped(), primeCounterTaskService.isStopped());
     }
 

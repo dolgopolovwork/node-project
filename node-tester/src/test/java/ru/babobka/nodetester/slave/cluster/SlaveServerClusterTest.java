@@ -13,8 +13,6 @@ import ru.babobka.nodetester.slave.SlaveServerRunner;
 
 import java.io.IOException;
 
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**

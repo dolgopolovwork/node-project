@@ -75,7 +75,7 @@ public class Client extends AbstractClient {
     }
 
     void sendNormal(TaskExecutionResult result) throws IOException {
-        connection.send(NodeResponse.normal(result.getResult(), request, result.getTimeTakes()));
+        connection.send(NodeResponse.normal(result.getData(), request, result.getTimeTakes()));
     }
 
     void sendStopped() throws IOException {
@@ -93,7 +93,7 @@ public class Client extends AbstractClient {
     void executeTask() throws IOException {
         try {
             TaskExecutionResult result = taskService.executeTask(request);
-            if (result.isWasStopped()) {
+            if (result.wasStopped()) {
                 sendStopped();
             } else {
                 sendNormal(result);

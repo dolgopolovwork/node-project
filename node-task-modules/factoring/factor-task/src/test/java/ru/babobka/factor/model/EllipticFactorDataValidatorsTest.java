@@ -6,13 +6,11 @@ import org.junit.Test;
 import ru.babobka.factor.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -68,19 +66,19 @@ public class EllipticFactorDataValidatorsTest {
 
     @Test
     public void testValidResponseBadFactor() {
-        Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(3));
-        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
-        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeat(), 10L);
+        Data data = new Data();
+        data.put(Params.FACTOR.getValue(), BigInteger.valueOf(3));
+        data.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
+        NodeResponse nodeResponse = NodeResponse.normal(data, NodeRequest.heartBeat(), 10L);
         assertFalse(ellipticFactorDataValidators.isValidResponse(nodeResponse));
     }
 
     @Test
     public void testValidResponseOk() {
-        Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
-        dataMap.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
-        NodeResponse nodeResponse = NodeResponse.normal(dataMap, NodeRequest.heartBeat(), 10L);
+        Data data = new Data();
+        data.put(Params.FACTOR.getValue(), BigInteger.valueOf(2));
+        data.put(Params.NUMBER.getValue(), BigInteger.valueOf(1024));
+        NodeResponse nodeResponse = NodeResponse.normal(data, NodeRequest.heartBeat(), 10L);
         assertTrue(ellipticFactorDataValidators.isValidResponse(nodeResponse));
     }
 }

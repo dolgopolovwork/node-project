@@ -33,11 +33,6 @@ public class ClientStorageTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testValidateClient() {
-        clientStorage.validateClient(null);
-    }
-
     @Test
     public void testHeartBeatAllClients() throws IOException {
         Client client = mock(Client.class);
@@ -72,7 +67,7 @@ public class ClientStorageTest {
         assertEquals(clientStorage.getSize(), 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testAddAllNull() {
         clientStorage.addAll(null);
     }
