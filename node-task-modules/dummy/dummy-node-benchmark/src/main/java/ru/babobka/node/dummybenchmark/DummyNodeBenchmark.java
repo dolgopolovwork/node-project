@@ -3,6 +3,7 @@ package ru.babobka.node.dummybenchmark;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodeutils.time.Timer;
@@ -46,6 +47,6 @@ public class DummyNodeBenchmark extends NodeBenchmark {
     }
 
     private static NodeRequest createDummyRequest() {
-        return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, new HashMap<>());
+        return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, new Data());
     }
 }

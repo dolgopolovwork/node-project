@@ -5,6 +5,7 @@ import ru.babobka.nodeutils.validation.ValidationRule;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.exception.BadProtocolSpecifiedException;
 import ru.babobka.vsjws.exception.InvalidContentLengthException;
+import ru.babobka.vsjws.model.http.HttpFirstLine;
 import ru.babobka.vsjws.model.http.HttpRequest;
 import ru.babobka.vsjws.model.http.RawHttpRequest;
 
@@ -22,7 +23,7 @@ public class RawHttpRequestValidationRule implements ValidationRule<RawHttpReque
         } else if (!rawHttpRequest.getHeaders().containsKey("Host")) {
             throw new IllegalArgumentException("header 'Host' was not set");
         }
-        RawHttpRequest.FirstLine firstLine = rawHttpRequest.getFirstLine();
+        HttpFirstLine firstLine = rawHttpRequest.getFirstLine();
         String method = firstLine.getMethod();
         int contentLength = TextUtil.tryParseInt(rawHttpRequest.getHeaders().get(HttpRequest.CONTENT_LENGTH_HEADER), -1);
         if (method == null) {
@@ -31,8 +32,8 @@ public class RawHttpRequestValidationRule implements ValidationRule<RawHttpReque
             throw new IllegalArgumentException("HTTP method is invalid");
         } else if (isMethodWithContent(method) && contentLength == -1) {
             throw new InvalidContentLengthException();
-        } else if (!firstLine.getProtocol().equals(HttpRequest.PROTOCOL)) {
-            throw new BadProtocolSpecifiedException();
+        } else if (!HttpRequest.PROTOCOL.equals(firstLine.getProtocol())) {
+            throw new BadProtocolSpecifiedException("Bad protocol " + firstLine.getProtocol());
         }
     }
 }

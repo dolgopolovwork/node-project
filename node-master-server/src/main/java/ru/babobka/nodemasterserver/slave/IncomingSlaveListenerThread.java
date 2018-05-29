@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.MasterAuthService;
@@ -32,10 +33,8 @@ public class IncomingSlaveListenerThread extends CyclicThread {
     private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
     private final Sessions sessions = Container.getInstance().get(Sessions.class);
 
-    public IncomingSlaveListenerThread(ServerSocket serverSocket) {
-        if (serverSocket == null) {
-            throw new IllegalArgumentException("serverSocket is null");
-        } else if (serverSocket.isClosed()) {
+    public IncomingSlaveListenerThread(@NonNull ServerSocket serverSocket) {
+        if (serverSocket.isClosed()) {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;

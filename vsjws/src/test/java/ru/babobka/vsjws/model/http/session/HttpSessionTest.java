@@ -1,7 +1,8 @@
-package ru.babobka.vsjws.model.http;
+package ru.babobka.vsjws.model.http.session;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.vsjws.model.http.HttpRequest;
 
 import java.net.InetAddress;
 import java.util.UUID;

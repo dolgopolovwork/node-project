@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
@@ -27,11 +28,8 @@ public class Slave extends AbstractNetworkSlave {
         this(availableTasks, connection, null);
     }
 
-    public Slave(Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {
+    public Slave(@NonNull Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {
         super(connection);
-        if (availableTasks == null) {
-            throw new IllegalArgumentException("available tasks must be set");
-        }
         this.availableTasks.addAll(availableTasks);
         this.onSlaveExitListener = onSlaveExitListener;
     }
@@ -78,7 +76,6 @@ public class Slave extends AbstractNetworkSlave {
             nodeLogger.error("cannot execute exit listener", e);
         }
     }
-
 
     public boolean taskIsAvailable(String taskName) {
         return availableTasks.contains(taskName);

@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.client;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
@@ -21,10 +22,8 @@ public class IncomingClientListenerThread extends Thread {
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final ServerSocket serverSocket;
 
-    public IncomingClientListenerThread(ServerSocket serverSocket) {
-        if (serverSocket == null) {
-            throw new IllegalArgumentException("serverSocket is null");
-        } else if (serverSocket.isClosed()) {
+    public IncomingClientListenerThread(@NonNull ServerSocket serverSocket) {
+        if (serverSocket.isClosed()) {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;
@@ -57,10 +56,8 @@ public class IncomingClientListenerThread extends Thread {
         super.interrupt();
     }
 
-    void processConnection(ServerSocket serverSocket) {
-        if (serverSocket == null) {
-            throw new IllegalArgumentException("serverSocket is null");
-        } else if (serverSocket.isClosed()) {
+    void processConnection(@NonNull ServerSocket serverSocket) {
+        if (serverSocket.isClosed()) {
             throw new IllegalStateException("serverSocket is closed");
         }
         try {
@@ -93,10 +90,7 @@ public class IncomingClientListenerThread extends Thread {
         return new Client(connection, request);
     }
 
-    boolean isDone(ServerSocket serverSocket) {
-        if (serverSocket == null) {
-            throw new IllegalArgumentException("serverSocket is null");
-        }
+    boolean isDone(@NonNull ServerSocket serverSocket) {
         return serverSocket.isClosed() || Thread.currentThread().isInterrupted();
     }
 

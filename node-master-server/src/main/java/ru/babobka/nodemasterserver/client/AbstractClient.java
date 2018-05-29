@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.client;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.network.NodeConnection;
 
@@ -15,13 +16,9 @@ public abstract class AbstractClient implements Runnable {
     protected final NodeRequest request;
     private final UUID id = UUID.randomUUID();
 
-    AbstractClient(NodeConnection connection, NodeRequest request) {
-        if (connection == null) {
-            throw new IllegalArgumentException("connection is null");
-        } else if (connection.isClosed()) {
+    AbstractClient(@NonNull NodeConnection connection, @NonNull NodeRequest request) {
+        if (connection.isClosed()) {
             throw new IllegalArgumentException("connection is closed");
-        } else if (request == null) {
-            throw new IllegalArgumentException("cannot process null request");
         }
         this.connection = connection;
         this.request = request;

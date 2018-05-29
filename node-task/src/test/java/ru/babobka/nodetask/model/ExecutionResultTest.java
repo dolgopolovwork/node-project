@@ -1,11 +1,9 @@
 package ru.babobka.nodetask.model;
 
 import org.junit.Test;
+import ru.babobka.nodeserials.data.Data;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -16,22 +14,22 @@ public class ExecutionResultTest {
     @Test
     public void testNullMap() {
         ExecutionResult executionResult = new ExecutionResult(false, null);
-        assertTrue(executionResult.getResultMap().isEmpty());
+        assertTrue(executionResult.getData().isEmpty());
     }
 
     @Test
     public void testStopped() {
         ExecutionResult executionResult = ExecutionResult.stopped();
         assertTrue(executionResult.isStopped());
-        assertTrue(executionResult.getResultMap().isEmpty());
+        assertTrue(executionResult.getData().isEmpty());
     }
 
     @Test
     public void testMap() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        ExecutionResult executionResult = new ExecutionResult(false, map);
-        assertTrue(executionResult.getResultMap().containsKey("abc"));
+        Data data = new Data();
+        data.put("abc", 123);
+        ExecutionResult executionResult = new ExecutionResult(false, data);
+        assertNotNull(executionResult.getData().get("abc"));
     }
 
 }

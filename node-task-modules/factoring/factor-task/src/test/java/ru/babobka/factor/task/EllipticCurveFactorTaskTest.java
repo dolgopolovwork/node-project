@@ -8,14 +8,12 @@ import ru.babobka.factor.model.EllipticFactorDistributor;
 import ru.babobka.factor.model.EllipticFactorReducer;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -44,15 +42,15 @@ public class EllipticCurveFactorTaskTest {
 
     @Test
     public void testIsRequestDataTooSmallLittleNumber() {
-        Map<String, Serializable> data = new HashMap<>();
-        data.put(Params.NUMBER.getValue(), "123");
+        Data data = new Data();
+        data.put(Params.NUMBER.getValue(), new BigInteger("123"));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
         assertTrue(task.isRequestDataTooSmall(request));
     }
 
     @Test
     public void testIsRequestDataTooSmallBigNumber() {
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put(Params.NUMBER.getValue(), BigInteger.probablePrime(100, new Random()));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
         assertFalse(task.isRequestDataTooSmall(request));

@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -47,15 +48,14 @@ public class HashUtil {
         return object.hashCode();
     }
 
-    public static byte[] sha2(Map<String, Serializable> data) {
-        if (data == null) {
+    public static byte[] sha2(Iterator<Map.Entry<String, Serializable>> iterator) {
+        if (iterator == null) {
             throw new IllegalArgumentException("cannot hash null data");
-        } else if (data.isEmpty()) {
-            return new byte[]{};
         }
         try {
             MessageDigest sha256 = getSHA256MessageDigest();
-            for (Map.Entry<String, Serializable> entry : data.entrySet()) {
+            while (iterator.hasNext()) {
+                Map.Entry<String, Serializable> entry = iterator.next();
                 sha256.update(entry.getKey().getBytes(TextUtil.CHARSET));
                 sha256.update(toByteArray(entry.getValue()));
             }

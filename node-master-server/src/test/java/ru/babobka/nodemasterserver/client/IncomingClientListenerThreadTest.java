@@ -60,7 +60,7 @@ public class IncomingClientListenerThreadTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullArg() {
         new IncomingClientListenerThread(null);
     }
@@ -86,7 +86,7 @@ public class IncomingClientListenerThreadTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testProcessConnectionNullConnection() {
         incomingClientsThread.processConnection(null);
     }
@@ -98,7 +98,7 @@ public class IncomingClientListenerThreadTest {
         incomingClientsThread.processConnection(serverSocket);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testIsDoneNullServerSocket() {
         incomingClientsThread.isDone(null);
     }

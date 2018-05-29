@@ -1,11 +1,9 @@
 package ru.babobka.nodeserials;
 
 import org.junit.Test;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -42,17 +40,17 @@ public class NodeResponseTest {
 
     @Test
     public void testGetValue() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeat(), 0);
+        Data data = new Data();
+        data.put("abc", 123);
+        NodeResponse nodeResponse = NodeResponse.normal(data, NodeRequest.heartBeat(), 0);
         assertEquals((int) nodeResponse.getDataValue("abc"), 123);
     }
 
     @Test
     public void testGetValueDefault() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        NodeResponse nodeResponse = NodeResponse.normal(map, NodeRequest.heartBeat(), 0);
+        Data data = new Data();
+        data.put("abc", 123);
+        NodeResponse nodeResponse = NodeResponse.normal(data, NodeRequest.heartBeat(), 0);
         assertEquals((int) nodeResponse.getDataValue("abc", -1), 123);
         assertEquals((int) nodeResponse.getDataValue("xyz", -1), -1);
     }

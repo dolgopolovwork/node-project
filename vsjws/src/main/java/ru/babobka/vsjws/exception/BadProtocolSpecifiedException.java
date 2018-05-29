@@ -10,9 +10,4 @@ public class BadProtocolSpecifiedException extends RuntimeException {
     public BadProtocolSpecifiedException(String message) {
         super(message);
     }
-
-    public BadProtocolSpecifiedException() {
-        super();
-    }
-
 }

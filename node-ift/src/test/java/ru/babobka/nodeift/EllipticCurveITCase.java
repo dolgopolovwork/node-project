@@ -10,21 +10,17 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -62,12 +58,12 @@ public class EllipticCurveITCase {
         BigInteger q = BigInteger.probablePrime(primeBitLength, new Random());
         NodeRequest request = createFactorRequest(p.multiply(q));
         TaskExecutionResult result = taskService.executeTask(request);
-        BigInteger factor = (BigInteger) result.getResult().get("factor");
+        BigInteger factor = result.getData().get("factor");
         assertTrue(factor.equals(p) || factor.equals(q));
     }
 
     private static NodeRequest createFactorRequest(BigInteger number) {
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put("number", number);
         return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, data);
     }

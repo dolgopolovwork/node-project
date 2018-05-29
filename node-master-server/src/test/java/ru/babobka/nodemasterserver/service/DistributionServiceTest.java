@@ -58,7 +58,7 @@ public class DistributionServiceTest {
         verify(slave, times(slaveList.size())).stopTask(taskID);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testRedistributeNullSlaves() throws DistributionException {
         distributionService.redistribute(null);
     }
@@ -108,7 +108,7 @@ public class DistributionServiceTest {
         distributionService.broadcastRequests("taskName", nodeRequests, 0, -1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testBroadcastRequestsNullRequests() throws DistributionException {
         distributionService.broadcastRequests("taskName", null, 0, 5);
     }

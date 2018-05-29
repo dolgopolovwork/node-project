@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
@@ -23,15 +24,12 @@ public class TaskServiceCacheProxy implements TaskService {
     private final CacheRequestListener cacheRequestListener = Container.getInstance().get(CacheRequestListener.class);
     private final TaskMonitoringService taskMonitoringService = Container.getInstance().get(TaskMonitoringService.class);
 
-    public TaskServiceCacheProxy(TaskService taskService) {
-        if (taskService == null) {
-            throw new IllegalArgumentException("taskService is null");
-        }
+    public TaskServiceCacheProxy(@NonNull TaskService taskService) {
         this.taskService = taskService;
     }
 
     @Override
-    public TaskExecutionResult executeTask(NodeRequest request, int maxNodes) throws TaskExecutionException {
+    public TaskExecutionResult executeTask(@NonNull NodeRequest request, int maxNodes) throws TaskExecutionException {
         boolean canBeCached = canBeCached(request);
         if (canBeCached) {
             TaskExecutionResult cachedResult = cacheRequestListener.onRequest(request);
@@ -64,7 +62,7 @@ public class TaskServiceCacheProxy implements TaskService {
     }
 
     @Override
-    public boolean cancelTask(UUID taskId) throws TaskExecutionException {
+    public boolean cancelTask(@NonNull UUID taskId) throws TaskExecutionException {
         return taskService.cancelTask(taskId);
     }
 }

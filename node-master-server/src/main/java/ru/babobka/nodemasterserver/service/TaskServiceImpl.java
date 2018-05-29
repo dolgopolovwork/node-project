@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
@@ -36,9 +37,7 @@ public class TaskServiceImpl implements TaskService {
     private final ResponsesMapper responsesMapper = Container.getInstance().get(ResponsesMapper.class);
 
     @Override
-    public boolean cancelTask(UUID taskId) throws TaskExecutionException {
-        if (taskId == null)
-            throw new IllegalArgumentException("taskId is null");
+    public boolean cancelTask(@NonNull UUID taskId) throws TaskExecutionException {
         try {
             nodeLogger.debug("trying to cancel task " + taskId);
             Responses responses = responseStorage.get(taskId);
@@ -107,7 +106,7 @@ public class TaskServiceImpl implements TaskService {
             return;
         }
         nodeLogger.debug("cluster size is " + clusterSize);
-        responseStorage.create(taskId, new Responses(clusterSize, task, request.getData()));
+        responseStorage.create(taskId, new Responses(clusterSize, task));
         List<NodeRequest> requests = task.getDistributor().distribute(request, clusterSize);
         nodeLogger.debug("requests to distribute " + requests);
         distributionService.broadcastRequests(request.getTaskName(), requests);

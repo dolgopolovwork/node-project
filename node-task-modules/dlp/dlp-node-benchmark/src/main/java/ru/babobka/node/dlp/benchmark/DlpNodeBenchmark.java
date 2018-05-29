@@ -3,6 +3,7 @@ package ru.babobka.node.dlp.benchmark;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodeutils.math.SafePrime;
@@ -10,10 +11,7 @@ import ru.babobka.nodeutils.time.Timer;
 import ru.babobka.nodeutils.util.MathUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -46,7 +44,7 @@ public class DlpNodeBenchmark extends NodeBenchmark {
     }
 
     private static NodeRequest createDlpRequest(BigInteger x, BigInteger y, BigInteger mod) {
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put("x", x);
         data.put("y", y);
         data.put("mod", mod);

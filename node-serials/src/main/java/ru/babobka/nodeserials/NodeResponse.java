@@ -1,10 +1,8 @@
 package ru.babobka.nodeserials;
 
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
-import ru.babobka.nodeutils.util.HashUtil;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.UUID;
 
 public class NodeResponse extends NodeData {
@@ -16,7 +14,7 @@ public class NodeResponse extends NodeData {
     private volatile ResponseStatus status;
 
     public NodeResponse(UUID id, UUID taskId, long timeTakes, ResponseStatus status, String message,
-                        Map<String, Serializable> data, String taskName, long timeStamp) {
+                        Data data, String taskName, long timeStamp) {
         super(id, taskId, taskName, timeStamp, data);
         this.timeTakes = timeTakes;
         this.status = status;
@@ -66,7 +64,7 @@ public class NodeResponse extends NodeData {
         return new NodeResponse(taskId, ResponseStatus.STOPPED);
     }
 
-    public static NodeResponse normal(Map<String, Serializable> result, NodeRequest request, long timePassed) {
+    public static NodeResponse normal(Data result, NodeRequest request, long timePassed) {
         return new NodeResponse(request.getId(), request.getTaskId(), timePassed, ResponseStatus.NORMAL,
                 null, result, request.getTaskName(), System.currentTimeMillis());
     }

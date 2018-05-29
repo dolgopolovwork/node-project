@@ -3,9 +3,8 @@ package ru.babobka.vsjws.webserver;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.util.TextUtil;
-import ru.babobka.vsjws.listener.OnServerStartListener;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
-import ru.babobka.vsjws.model.http.HttpSession;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.runnable.SocketProcessorRunnable;
 import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
@@ -24,33 +23,28 @@ import java.util.concurrent.Executors;
  */
 public class WebServer extends Thread {
 
+    private static final int SOCKET_READ_TIMEOUT_MILLIS = 2000;
     private final WebServerConfigValidator configValidator = Container.getInstance().get(WebServerConfigValidator.class);
     private final JSONWebControllerMapper jsonWebControllerMapper = Container.getInstance().get(JSONWebControllerMapper.class);
-    private static final int SOCKET_READ_TIMEOUT_MILLIS = 2000;
-    private static final int THREAD_POOL_SIZE = 10;
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final Map<String, HttpWebController> controllerMap = new ConcurrentHashMap<>();
-    private final String name;
+    private final WebServerConfig webServerConfig;
     private final ServerSocket serverSocket;
     private final HttpSession httpSession;
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final ExecutorService threadPool;
-    private final int port;
-    private volatile OnServerStartListener onServerStartListener;
 
     public WebServer(WebServerConfig config)
             throws IOException {
         setDaemon(true);
         configValidator.validate(config);
-        this.name = config.getServerName();
-        this.port = config.getPort();
+        this.webServerConfig = config;
         this.httpSession = new HttpSession(config.getSessionTimeoutSeconds());
-        nodeLogger.debug("debug mode is on");
-        threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE, r -> {
+        threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
             return t;
         });
-        this.serverSocket = new ServerSocket(port);
+        this.serverSocket = new ServerSocket(webServerConfig.getPort());
     }
 
     public HttpWebController addController(String uri, HttpWebController httpWebController) {
@@ -69,19 +63,13 @@ public class WebServer extends Thread {
     public void run() {
         try {
             nodeLogger.info("run web-server " + getFullName());
-            OnServerStartListener listener = onServerStartListener;
-            if (listener != null) {
-                listener.onStart(name, port);
-            }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Socket s = serverSocket.accept();
-                    s.setSoTimeout(SOCKET_READ_TIMEOUT_MILLIS);
-                    threadPool.execute(new SocketProcessorRunnable(s, controllerMap, httpSession));
+                    Socket socket = serverSocket.accept();
+                    socket.setSoTimeout(SOCKET_READ_TIMEOUT_MILLIS);
+                    threadPool.execute(new SocketProcessorRunnable(httpSession, socket, controllerMap));
                 } catch (IOException e) {
-                    if (!serverSocket.isClosed()) {
-                        nodeLogger.error(e);
-                    }
+                    nodeLogger.error(e);
                 }
             }
         } finally {
@@ -107,12 +95,8 @@ public class WebServer extends Thread {
         super.interrupt();
     }
 
-    public void setOnServerStartListener(OnServerStartListener onServerStartListener) {
-        this.onServerStartListener = onServerStartListener;
-    }
-
     private String getFullName() {
-        return TextUtil.beautifyServerName(name, port);
+        return TextUtil.beautifyServerName(webServerConfig.getServerName(), webServerConfig.getPort());
     }
 
 

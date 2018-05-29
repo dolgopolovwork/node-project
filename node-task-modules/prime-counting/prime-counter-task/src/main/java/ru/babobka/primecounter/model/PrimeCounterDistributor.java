@@ -1,14 +1,12 @@
 package ru.babobka.primecounter.model;
 
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.model.RequestDistributor;
 import ru.babobka.primecounter.task.Params;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dolgopolov.a on 31.07.15.
@@ -22,10 +20,10 @@ public class PrimeCounterDistributor extends RequestDistributor {
         List<Range> ranges = Range.getRanges(begin, end, nodes);
         List<NodeRequest> requests = new ArrayList<>(nodes);
         for (Range range : ranges) {
-            Map<String, Serializable> localArguments = new HashMap<>();
-            localArguments.put(Params.BEGIN.getValue(), range.getBegin());
-            localArguments.put(Params.END.getValue(), range.getEnd());
-            requests.add(NodeRequest.regular(request.getTaskId(), request.getTaskName(), localArguments));
+            Data data = new Data();
+            data.put(Params.BEGIN.getValue(), range.getBegin());
+            data.put(Params.END.getValue(), range.getEnd());
+            requests.add(NodeRequest.regular(request.getTaskId(), request.getTaskName(), data));
         }
         return requests;
     }

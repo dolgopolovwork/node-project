@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeData;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
@@ -64,17 +65,11 @@ public class SlavesStorage {
         return groupedSlaves;
     }
 
-    public synchronized List<Slave> getListByTaskId(NodeData nodeData) {
-        if (nodeData == null) {
-            throw new IllegalArgumentException("nodeData is null");
-        }
+    public synchronized List<Slave> getListByTaskId(@NonNull NodeData nodeData) {
         return getListByTaskId(nodeData.getTaskId());
     }
 
-    public synchronized List<Slave> getListByTaskId(UUID taskId) {
-        if (taskId == null) {
-            throw new IllegalArgumentException("taskId is null");
-        }
+    public synchronized List<Slave> getListByTaskId(@NonNull UUID taskId) {
         List<Slave> groupedSlaves = new ArrayList<>();
         for (Slave slave : getFullList()) {
             if (!slave.isInterrupted() && slave.hasTask(taskId)) {

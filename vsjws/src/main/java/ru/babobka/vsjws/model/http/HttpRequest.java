@@ -3,6 +3,7 @@ package ru.babobka.vsjws.model.http;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.model.Param;
 import ru.babobka.vsjws.model.Request;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 import ru.babobka.vsjws.util.HttpUtil;
 
 import java.net.InetAddress;
@@ -20,7 +21,7 @@ public class HttpRequest extends Request<String> {
 
     public HttpRequest(HttpSession httpSession, InetAddress address, RawHttpRequest rawHttpRequest) {
         super(httpSession);
-        RawHttpRequest.FirstLine firstLine = rawHttpRequest.getFirstLine();
+        HttpFirstLine firstLine = rawHttpRequest.getFirstLine();
         String method = firstLine.getMethod();
         getHeaders().putAll(rawHttpRequest.getHeaders());
         setUri(firstLine.getUri());

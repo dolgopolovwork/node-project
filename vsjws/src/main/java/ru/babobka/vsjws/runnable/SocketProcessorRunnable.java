@@ -7,7 +7,12 @@ import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.exception.BadProtocolSpecifiedException;
 import ru.babobka.vsjws.exception.InvalidContentLengthException;
 import ru.babobka.vsjws.model.Request;
-import ru.babobka.vsjws.model.http.*;
+import ru.babobka.vsjws.model.http.HttpRequest;
+import ru.babobka.vsjws.model.http.HttpResponse;
+import ru.babobka.vsjws.model.http.RawHttpRequest;
+import ru.babobka.vsjws.model.http.ResponseFactory;
+import ru.babobka.vsjws.model.http.session.HttpSession;
+import ru.babobka.vsjws.model.http.session.Session;
 import ru.babobka.vsjws.util.HttpUtil;
 import ru.babobka.vsjws.validator.request.RequestValidator;
 import ru.babobka.vsjws.webcontroller.HttpWebController;
@@ -23,14 +28,14 @@ import java.util.Map;
  */
 public class SocketProcessorRunnable implements Runnable {
 
+    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private final RequestValidator requestValidator = Container.getInstance().get(RequestValidator.class);
     private final Socket socket;
     private final HttpSession httpSession;
     private final Map<String, HttpWebController> controllerMap;
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final StaticResourcesController staticResourcesController = new StaticResourcesController();
-    private final RequestValidator requestValidator = Container.getInstance().get(RequestValidator.class);
 
-    public SocketProcessorRunnable(Socket socket, Map<String, HttpWebController> controllerMap, HttpSession httpSession) {
+    public SocketProcessorRunnable(HttpSession httpSession, Socket socket, Map<String, HttpWebController> controllerMap) {
         this.socket = socket;
         this.httpSession = httpSession;
         this.controllerMap = controllerMap;
@@ -55,9 +60,8 @@ public class SocketProcessorRunnable implements Runnable {
                 sessionId = HttpUtil.generateSessionId();
                 response.addCookie(Request.SESSION_ID_HEADER, sessionId);
             }
-            if (!httpSession.exists(sessionId)) {
-                httpSession.create(sessionId, request);
-            } else if (!httpSession.get(sessionId).getInfo().getCreatorAddress().equals(request.getAddress())) {
+            Session session = httpSession.getOrCreate(sessionId, request);
+            if (!session.getAddress().equals(request.getAddress())) {
                 nodeLogger.warning("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
                 response = ResponseFactory.code(ResponseCode.FORBIDDEN);
                 return;

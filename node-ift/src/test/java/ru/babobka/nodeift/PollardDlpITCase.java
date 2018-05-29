@@ -10,23 +10,19 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLogger;
 import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.util.MathUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -61,17 +57,17 @@ public class PollardDlpITCase {
     private static void createDlpTest(int modBitLength, TaskService taskService) throws TaskExecutionException {
         NodeRequest request = createDlpRequest(modBitLength);
         TaskExecutionResult result = taskService.executeTask(request);
-        BigInteger x = (BigInteger) result.getResult().get("x");
-        BigInteger y = (BigInteger) result.getResult().get("y");
-        BigInteger mod = (BigInteger) result.getResult().get("mod");
-        BigInteger exp = (BigInteger) result.getResult().get("exp");
+        BigInteger x = result.getData().get("x");
+        BigInteger y = result.getData().get("y");
+        BigInteger mod = result.getData().get("mod");
+        BigInteger exp = result.getData().get("exp");
         assertEquals(x.modPow(exp, mod), y);
     }
 
     private static NodeRequest createDlpRequest(int modBitLength) {
         SafePrime safePrime = SafePrime.random(modBitLength);
         BigInteger gen = MathUtil.getGenerator(safePrime);
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put("x", gen);
         data.put("y", BigInteger.valueOf(32));
         data.put("mod", safePrime.getPrime());

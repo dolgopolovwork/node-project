@@ -2,6 +2,7 @@ package ru.babobka.vsjws.model.http;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.vsjws.model.http.session.HttpSession;
 
 import java.util.HashMap;
 import java.util.Map;

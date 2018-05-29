@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.client;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 
@@ -15,22 +16,17 @@ public class ClientStorage {
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final List<Client> clients = new ArrayList<>();
 
-    public synchronized void add(Client client) {
-        validateClient(client);
+    public synchronized void add(@NonNull Client client) {
         clients.add(client);
     }
 
-    public synchronized void addAll(List<Client> clients) {
-        if (clients == null) {
-            throw new IllegalArgumentException("cannot add null clients");
-        }
+    public synchronized void addAll(@NonNull List<Client> clients) {
         for (Client client : clients) {
             add(client);
         }
     }
 
-    public synchronized void remove(Client client) {
-        validateClient(client);
+    public synchronized void remove(@NonNull Client client) {
         clients.remove(client);
     }
 
@@ -57,7 +53,7 @@ public class ClientStorage {
         return clients.size();
     }
 
-    void sendHeartBeating(Client client) {
+    void sendHeartBeating(@NonNull Client client) {
         try {
             client.sendHeartBeating();
         } catch (IOException e) {
@@ -65,16 +61,10 @@ public class ClientStorage {
         }
     }
 
-    boolean contains(Client client) {
-        validateClient(client);
+    boolean contains(@NonNull Client client) {
         return clients.contains(client);
     }
 
-    void validateClient(Client client) {
-        if (client == null) {
-            throw new IllegalArgumentException("client is null");
-        }
-    }
 
     boolean isEmpty() {
         return clients.isEmpty();

@@ -1,6 +1,7 @@
 package ru.babobka.nodetask.model;
 
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public abstract class Reducer {
 
-    public ReducingResult reduce(List<NodeResponse> responses) throws ReducingException {
+    public Data reduce(List<NodeResponse> responses) throws ReducingException {
         if (responses == null) {
             throw new IllegalArgumentException("cannot reduce null responses");
         }
@@ -21,5 +22,5 @@ public abstract class Reducer {
         }
     }
 
-    protected abstract ReducingResult reduceImpl(List<NodeResponse> responses) throws ReducingException;
+    protected abstract Data reduceImpl(List<NodeResponse> responses) throws ReducingException;
 }

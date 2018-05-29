@@ -21,7 +21,7 @@ public class TaskRunnerService {
             ExecutionResult result = subTask.getTaskExecutor().execute(request);
             if (result.isStopped())
                 return NodeResponse.stopped(request);
-            return NodeResponse.normal(result.getResultMap(), request, timer.getTimePassed());
+            return NodeResponse.normal(result.getData(), request, timer.getTimePassed());
         } finally {
             tasksStorage.removeRequest(request);
         }

@@ -7,9 +7,8 @@ import ru.babobka.nodebusiness.service.ResponseCacheService;
 import ru.babobka.nodemasterserver.model.CacheEntry;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.container.Container;
-
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -36,7 +35,7 @@ public class CacheRequestListenerTest {
         Container.getInstance().clear();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testOnRequestNullRequest() {
         cacheRequestListener.onRequest(null);
     }
@@ -44,7 +43,7 @@ public class CacheRequestListenerTest {
     @Test
     public void testOnRequestNoCachedData() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getData()).thenReturn(new HashMap<>());
+        when(request.getData()).thenReturn(new Data());
         when(request.getTaskName()).thenReturn("abc");
         when(responseCacheService.get(anyInt())).thenReturn(null);
         assertNull(cacheRequestListener.onRequest(request));
@@ -53,9 +52,9 @@ public class CacheRequestListenerTest {
     @Test
     public void testOnRequestCollisionCachedData() {
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getData()).thenReturn(new HashMap<>());
+        when(request.getData()).thenReturn(new Data());
         when(request.getTaskName()).thenReturn("abc");
-        CacheEntry cacheEntry = new CacheEntry("xyz", new HashMap<>(), mock(TaskExecutionResult.class));
+        CacheEntry cacheEntry = new CacheEntry("xyz", new Data(), mock(TaskExecutionResult.class));
         when(responseCacheService.get(anyInt())).thenReturn(cacheEntry);
         assertNull(cacheRequestListener.onRequest(request));
     }
@@ -64,20 +63,20 @@ public class CacheRequestListenerTest {
     public void testOnRequestCachedData() {
         String taskName = "abc";
         NodeRequest request = mock(NodeRequest.class);
-        when(request.getData()).thenReturn(new HashMap<>());
+        when(request.getData()).thenReturn(new Data());
         when(request.getTaskName()).thenReturn(taskName);
         TaskExecutionResult taskExecutionResult = mock(TaskExecutionResult.class);
-        CacheEntry cacheEntry = new CacheEntry(taskName, new HashMap<>(), taskExecutionResult);
+        CacheEntry cacheEntry = new CacheEntry(taskName, new Data(), taskExecutionResult);
         when(responseCacheService.get(anyInt())).thenReturn(cacheEntry);
         assertEquals(cacheRequestListener.onRequest(request), taskExecutionResult);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testAfterRequestNullRequest() {
         cacheRequestListener.afterRequest(null, mock(TaskExecutionResult.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testAfterRequestNullTaskResult() {
         cacheRequestListener.afterRequest(mock(NodeRequest.class), null);
     }
@@ -86,7 +85,7 @@ public class CacheRequestListenerTest {
     public void testAfterRequestWasStopped() {
         NodeRequest request = mock(NodeRequest.class);
         TaskExecutionResult result = mock(TaskExecutionResult.class);
-        when(result.isWasStopped()).thenReturn(true);
+        when(result.wasStopped()).thenReturn(true);
         cacheRequestListener.afterRequest(request, result);
         verify(responseCacheService, never()).put(anyInt(), any(CacheEntry.class));
     }
@@ -95,9 +94,9 @@ public class CacheRequestListenerTest {
     public void testAfterRequestWasNotStopped() {
         NodeRequest request = mock(NodeRequest.class);
         TaskExecutionResult result = mock(TaskExecutionResult.class);
-        when(result.isWasStopped()).thenReturn(false);
+        when(result.wasStopped()).thenReturn(false);
         when(request.getTaskName()).thenReturn("abc");
-        when(request.getData()).thenReturn(new HashMap<>());
+        when(request.getData()).thenReturn(new Data());
         cacheRequestListener.afterRequest(request, result);
         verify(responseCacheService).put(anyInt(), any(CacheEntry.class));
     }

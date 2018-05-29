@@ -1,10 +1,7 @@
 package ru.babobka.nodeserials;
 
 import org.junit.Test;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import ru.babobka.nodeserials.data.Data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,20 +19,20 @@ public class NodeDataTest {
 
     @Test
     public void testData() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", "xyz");
-        map.put("qwe", "rty");
-        NodeData nodeData = new NodeData(null, null, null, 0, map);
-        assertEquals(map, nodeData.getData());
+        Data data = new Data();
+        data.put("abc", "xyz");
+        data.put("qwe", "rty");
+        NodeData nodeData = new NodeData(null, null, null, 0, data);
+        assertEquals(data, nodeData.getData());
     }
 
     @Test
     public void testGetDataValue() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", "xyz");
-        map.put("qwe", "rty");
-        NodeData nodeData = new NodeData(null, null, null, 0, map);
-        assertEquals(nodeData.getDataValue("abc"), map.get("abc"));
+        Data data = new Data();
+        data.put("abc", "xyz");
+        data.put("qwe", "rty");
+        NodeData nodeData = new NodeData(null, null, null, 0, data);
+        assertEquals((String) nodeData.getDataValue("abc"), (String) data.get("abc"));
     }
 
     @Test
@@ -43,21 +40,6 @@ public class NodeDataTest {
         String defaultValue = "default";
         NodeData nodeData = new NodeData(null, null, null, 0, null);
         assertEquals(nodeData.getDataValue("abc", defaultValue), defaultValue);
-    }
-
-    @Test
-    public void testGetStringDataValue() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put("abc", 123);
-        map.put("qwe", 456);
-        NodeData nodeData = new NodeData(null, null, null, 0, map);
-        assertEquals(nodeData.getStringDataValue("abc"), String.valueOf(map.get("abc")));
-    }
-
-    @Test
-    public void testGetStringDataValueEmpty() {
-        NodeData nodeData = new NodeData(null, null, null, 0, null);
-        assertEquals(nodeData.getStringDataValue("abc"), "");
     }
 
 }

@@ -9,16 +9,14 @@ import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeclient.ClientApplicationContainer;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.time.Timer;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -109,7 +107,7 @@ public class MainApplication extends CLI {
     }
 
     private static NodeRequest createDlpRequest(BigInteger x, BigInteger y, BigInteger mod) {
-        Map<String, Serializable> data = new HashMap<>();
+        Data data = new Data();
         data.put("x", x);
         data.put("y", y);
         data.put("mod", mod);

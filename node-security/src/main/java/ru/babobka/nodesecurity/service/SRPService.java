@@ -108,7 +108,7 @@ public class SRPService {
                 HashUtil.safeHashCode(nodeData.getTaskId()),
                 HashUtil.safeHashCode(nodeData.getTaskName()),
                 (int) nodeData.getTimeStamp());
-        byte[] dataHash = HashUtil.sha2(nodeData.getData());
+        byte[] dataHash = HashUtil.sha2(nodeData.getData().getIterator());
         byte[] mainHash = HashUtil.sha2(dataHash, metaHash);
         if (nodeData instanceof NodeResponse) {
             NodeResponse nodeResponse = (NodeResponse) nodeData;

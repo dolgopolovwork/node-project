@@ -4,14 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
-import ru.babobka.nodetask.model.ReducingResult;
 import ru.babobka.nodeutils.container.Container;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -46,14 +43,14 @@ public class EllipticFactorReducerTest {
     @Test
     public void testReduce() throws ReducingException {
         NodeResponse response = mock(NodeResponse.class);
-        Map<String, Serializable> dataMap = new HashMap<>();
-        dataMap.put("abc", 123);
-        when(response.getData()).thenReturn(dataMap);
+        Data data = new Data();
+        data.put("abc", 123);
+        when(response.getData()).thenReturn(data);
         NodeResponse badResponse = mock(NodeResponse.class);
         when(ellipticFactorDataValidators.isValidResponse(response)).thenReturn(true);
         when(ellipticFactorDataValidators.isValidResponse(badResponse)).thenReturn(false);
-        ReducingResult result = reducer.reduce(Arrays.asList(badResponse, badResponse, response));
-        assertEquals(result.get("abc"), dataMap.get("abc"));
+        Data result = reducer.reduce(Arrays.asList(badResponse, badResponse, response));
+        assertEquals((int) result.get("abc"), (int) data.get("abc"));
     }
 
 }
