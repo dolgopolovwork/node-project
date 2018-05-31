@@ -8,9 +8,11 @@ import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.Responses;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodemasterserver.server.config.TimeoutConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
 import ru.babobka.nodeutils.logger.NodeLogger;
@@ -22,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -41,11 +45,13 @@ public class SlaveTest {
         responseStorage = mock(ResponseStorage.class);
         slavesStorage = mock(SlavesStorage.class);
         distributionService = mock(DistributionService.class);
-        Container.getInstance().put(masterServerConfig);
-        Container.getInstance().put(nodeLogger);
-        Container.getInstance().put(responseStorage);
-        Container.getInstance().put(distributionService);
-        Container.getInstance().put(slavesStorage);
+        Container.getInstance().put(container -> {
+            container.put(masterServerConfig);
+            container.put(nodeLogger);
+            container.put(responseStorage);
+            container.put(distributionService);
+            container.put(slavesStorage);
+        });
     }
 
     @After
@@ -84,6 +90,49 @@ public class SlaveTest {
         Slave slave = new Slave(new HashSet<>(), connection);
         slave.sendHeartBeating();
         verify(connection).send(any(NodeRequest.class));
+    }
+
+    @Test
+    public void testProcessConnectionDeath() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        NodeResponse response = mock(NodeResponse.class);
+        when(response.getStatus()).thenReturn(ResponseStatus.DEATH);
+        when(connection.receive()).thenReturn(response);
+        assertFalse(slave.processConnection());
+        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(slave, never()).onReceive(response);
+    }
+
+    @Test
+    public void testProcessConnectionHearhBeating() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        NodeResponse response = mock(NodeResponse.class);
+        when(response.getStatus()).thenReturn(ResponseStatus.HEART_BEAT);
+        when(connection.receive()).thenReturn(response);
+        assertTrue(slave.processConnection());
+        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(slave, never()).onReceive(response);
+    }
+
+    @Test
+    public void testProcessConnection() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        NodeResponse response = mock(NodeResponse.class);
+        when(response.getStatus()).thenReturn(ResponseStatus.NORMAL);
+        when(connection.receive()).thenReturn(response);
+        doNothing().when(slave).onReceive(response);
+        assertTrue(slave.processConnection());
+        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(slave).onReceive(response);
     }
 
     @Test

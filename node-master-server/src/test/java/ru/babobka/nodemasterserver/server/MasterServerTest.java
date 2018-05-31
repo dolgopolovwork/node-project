@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
+import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.config.ModeConfig;
@@ -34,9 +35,11 @@ public class MasterServerTest {
     private NodeUsersService nodeUsersService;
     private NodeLogger nodeLogger;
     private CacheDAO cacheDAO;
+    private ClientStorage clientStorage;
 
     @Before
     public void setUp() {
+        clientStorage = mock(ClientStorage.class);
         nodeUsersService = mock(NodeUsersService.class);
         masterServerConfig = mock(MasterServerConfig.class);
         heartBeatingThread = mock(HeartBeatingThread.class);
@@ -55,6 +58,7 @@ public class MasterServerTest {
             container.put(webServer);
             container.put(nodeLogger);
             container.put(slavesStorage);
+            container.put(clientStorage);
             container.put(cacheDAO);
         });
         masterServer = spy(new MasterServer());
@@ -89,6 +93,8 @@ public class MasterServerTest {
     public void testClear() throws IOException {
         masterServer.clear();
         verify(cacheDAO).close();
+        verify(clientStorage).clear();
+        verify(slavesStorage).clear();
     }
 
     @Test

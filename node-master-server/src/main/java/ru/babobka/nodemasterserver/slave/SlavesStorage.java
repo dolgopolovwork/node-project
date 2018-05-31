@@ -20,9 +20,14 @@ public class SlavesStorage {
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final List<Slave> slaves = new ArrayList<>();
     private final UUID storageId = UUID.randomUUID();
+    private boolean closed;
 
     public SlavesStorage() {
         nodeLogger.debug("slave storage " + storageId + " was created");
+    }
+
+    public synchronized void closeStorage() {
+        this.closed = true;
     }
 
     synchronized void remove(Slave slave) {
@@ -30,9 +35,15 @@ public class SlavesStorage {
         slaves.remove(slave);
     }
 
-    synchronized void add(Slave slave) {
-        nodeLogger.info("add new slave " + slave + " to storage " + storageId);
-        slaves.add(slave);
+    synchronized boolean add(Slave slave) {
+        if (!isClosed()) {
+            nodeLogger.info("add new slave " + slave + " to slave storage " + storageId);
+            slaves.add(slave);
+            return true;
+        } else {
+            nodeLogger.info("slave " + slave + " was not added to slave storage " + storageId + " due to closed storage status");
+            return false;
+        }
     }
 
     public synchronized List<Slave> getFullList() {
@@ -121,6 +132,10 @@ public class SlavesStorage {
             interruptAll();
             slaves.clear();
         }
+    }
+
+    private synchronized boolean isClosed() {
+        return closed;
     }
 
     public synchronized boolean isEmpty() {

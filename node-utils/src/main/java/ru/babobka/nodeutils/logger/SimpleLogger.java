@@ -39,11 +39,11 @@ public class SimpleLogger implements NodeLogger {
     }
 
     public void warning(Exception e) {
-        logger.warning(TextUtil.getStringFromException(e));
+        logger.warning(TextUtil.getStringFromExceptionOneLine(e));
     }
 
     public void warning(String message, Exception e) {
-        logger.warning(message + "\t" + TextUtil.getStringFromException(e));
+        logger.warning(message + "\t" + TextUtil.getStringFromExceptionOneLine(e));
     }
 
     public void debug(String message) {
@@ -57,10 +57,10 @@ public class SimpleLogger implements NodeLogger {
     }
 
     public void error(Exception e) {
-        logger.severe(TextUtil.getStringFromException(e));
+        logger.severe(TextUtil.getStringFromExceptionOneLine(e));
     }
 
     public void error(String message, Exception e) {
-        logger.severe(message + "\t" + TextUtil.getStringFromException(e));
+        logger.severe(message + "\t" + TextUtil.getStringFromExceptionOneLine(e));
     }
 }

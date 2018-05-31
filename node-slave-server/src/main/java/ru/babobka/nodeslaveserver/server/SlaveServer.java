@@ -2,6 +2,7 @@ package ru.babobka.nodeslaveserver.server;
 
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.controller.SocketController;
 import ru.babobka.nodeslaveserver.exception.AuthFailException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
@@ -63,12 +64,9 @@ public class SlaveServer extends Thread {
                 controller.control(connection);
             }
         } catch (IOException | RuntimeException e) {
-            e.printStackTrace();
-            if (!isInterrupted()) {
-                nodeLogger.error(e);
-            }
-            nodeLogger.info("exiting slave server");
+            nodeLogger.error(e);
         } finally {
+            nodeLogger.info("exiting slave server");
             clear();
         }
     }
@@ -76,6 +74,11 @@ public class SlaveServer extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
+        try {
+            connection.send(NodeResponse.death());
+        } catch (IOException e) {
+            nodeLogger.warning("cannot send death message", e);
+        }
         clear();
     }
 

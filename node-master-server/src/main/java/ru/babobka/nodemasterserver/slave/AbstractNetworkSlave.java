@@ -44,17 +44,12 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         nodeLogger.debug("slave " + this.getSlaveId() + " is running");
         try {
             while (!isInterrupted()) {
-                connection.setReadTimeOut(masterServerConfig.getTimeouts().getRequestTimeOutMillis());
-                NodeResponse response = connection.receive();
-                if (response.getStatus() != ResponseStatus.HEART_BEAT) {
-                    onReceive(response);
+                if (!processConnection()) {
+                    break;
                 }
             }
         } catch (IOException | RuntimeException e) {
-            e.printStackTrace();
-            if (!isInterrupted() && !connection.isClosed()) {
-                nodeLogger.error(e);
-            }
+            nodeLogger.error(e);
         } finally {
             nodeLogger.info("removing connection " + connection);
             synchronized (AbstractSlave.class) {
@@ -62,6 +57,18 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
             }
             nodeLogger.info("slave " + getSlaveId() + " was disconnected");
         }
+    }
+
+    boolean processConnection() throws IOException {
+        connection.setReadTimeOut(masterServerConfig.getTimeouts().getRequestTimeOutMillis());
+        NodeResponse response = connection.receive();
+        if (response.getStatus() == ResponseStatus.DEATH) {
+            nodeLogger.info("slave " + this.getSlaveId() + " gently asked to be killed");
+            return false;
+        } else if (response.getStatus() != ResponseStatus.HEART_BEAT) {
+            onReceive(response);
+        }
+        return true;
     }
 
     @Override

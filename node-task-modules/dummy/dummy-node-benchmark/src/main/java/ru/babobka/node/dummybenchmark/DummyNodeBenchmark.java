@@ -9,7 +9,6 @@ import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

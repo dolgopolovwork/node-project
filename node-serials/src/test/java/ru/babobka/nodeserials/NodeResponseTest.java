@@ -31,6 +31,11 @@ public class NodeResponseTest {
         assertEquals(nodeResponse.getStatus(), ResponseStatus.NORMAL);
     }
 
+    @Test
+    public void testDeath() {
+        NodeResponse nodeResponse = NodeResponse.death();
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.DEATH);
+    }
 
     @Test
     public void testHeartBeat() {

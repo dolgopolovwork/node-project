@@ -15,9 +15,23 @@ public class ClientStorage {
 
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final List<Client> clients = new ArrayList<>();
+    private boolean closed;
+
+    private synchronized boolean isClosed() {
+        return closed;
+    }
+
+    public synchronized void closeStorage() {
+        this.closed = true;
+    }
 
     public synchronized void add(@NonNull Client client) {
-        clients.add(client);
+        if (!isClosed()) {
+            nodeLogger.info("add new client " + client + " to client storage");
+            clients.add(client);
+        } else {
+            nodeLogger.info("new client was not added to client client storage due to closed storage status");
+        }
     }
 
     public synchronized void addAll(@NonNull List<Client> clients) {
