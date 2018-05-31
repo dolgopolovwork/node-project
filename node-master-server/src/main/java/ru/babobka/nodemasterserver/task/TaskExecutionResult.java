@@ -4,8 +4,6 @@ import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TaskExecutionResult implements Serializable {
 

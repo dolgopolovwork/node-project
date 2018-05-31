@@ -13,7 +13,8 @@ import java.util.logging.LogRecord;
 
 final class LogFormatter extends Formatter {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final String NEW_FIELD = "\t|\t";
     private final boolean debugMode;
 
     public LogFormatter(boolean debugMode) {
@@ -43,15 +44,22 @@ final class LogFormatter extends Formatter {
     private StringBuilder debugFormat(LogRecord record) {
         StringBuilder sb = new StringBuilder();
         return sb.append(new Date(record.getMillis()))
-                .append(" ").append(record.getLevel().getLocalizedName())
-                .append(" thread ").append(Thread.currentThread().getId()).append(" : ")
-                .append(formatMessage(record)).append(LINE_SEPARATOR);
+                .append(NEW_FIELD)
+                .append(record.getLevel().getLocalizedName())
+                .append(NEW_FIELD)
+                .append("thread ").append(Thread.currentThread().getId())
+                .append(NEW_FIELD)
+                .append(formatMessage(record))
+                .append(NEW_LINE);
     }
 
     private StringBuilder regularFormat(LogRecord record) {
         StringBuilder sb = new StringBuilder();
         return sb.append(new Date(record.getMillis()))
-                .append(" ").append(record.getLevel().getLocalizedName()).append(" ")
-                .append(formatMessage(record)).append(LINE_SEPARATOR);
+                .append(NEW_FIELD)
+                .append(record.getLevel().getLocalizedName())
+                .append(NEW_FIELD)
+                .append(formatMessage(record))
+                .append(NEW_LINE);
     }
 }

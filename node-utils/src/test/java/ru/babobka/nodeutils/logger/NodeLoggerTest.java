@@ -42,7 +42,7 @@ public class NodeLoggerTest {
     public void testWarningException() {
         Exception exception = new Exception("test exception");
         nodeLogger.warning(exception);
-        verify(logger).warning(TextUtil.getStringFromException(exception));
+        verify(logger).warning(TextUtil.getStringFromExceptionOneLine(exception));
     }
 
     @Test
@@ -56,6 +56,6 @@ public class NodeLoggerTest {
     public void testErrorException() {
         Exception exception = new Exception("test exception");
         nodeLogger.error(exception);
-        verify(logger).severe(TextUtil.getStringFromException(exception));
+        verify(logger).severe(TextUtil.getStringFromExceptionOneLine(exception));
     }
 }

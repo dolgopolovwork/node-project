@@ -96,23 +96,25 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         return config.getModes().isSingleSessionMode() ? sessions.put(authResult.getUserName()) : true;
     }
 
-    private boolean runNewSlave(Set<String> availableTasks, String userName, SecureNodeConnection secureNodeConnection) {
+    boolean runNewSlave(Set<String> availableTasks, String userName, SecureNodeConnection secureNodeConnection) {
         try {
             Slave slave = slaveFactory.create(availableTasks, secureNodeConnection, () -> {
                 if (config.getModes().isSingleSessionMode()) {
                     sessions.remove(userName);
                 }
             });
-            slavesStorage.add(slave);
-            slave.start();
-            return true;
+            if (slavesStorage.add(slave)) {
+                slave.start();
+                return true;
+            }
+            return false;
         } catch (RuntimeException e) {
             nodeLogger.error("cannot run new slave");
             return false;
         }
     }
 
-    private void fail(NodeConnection connection) throws IOException {
+    void fail(NodeConnection connection) throws IOException {
         try {
             connection.send(false);
         } finally {
@@ -120,7 +122,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         }
     }
 
-    private void success(NodeConnection connection) throws IOException {
+    void success(NodeConnection connection) throws IOException {
         connection.send(true);
     }
 

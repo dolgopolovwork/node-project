@@ -60,6 +60,11 @@ public class NodeResponse extends NodeData {
                 null, System.currentTimeMillis());
     }
 
+    public static NodeResponse death() {
+        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, ResponseStatus.DEATH, null, null,
+                null, System.currentTimeMillis());
+    }
+
     public static NodeResponse stopped(UUID taskId) {
         return new NodeResponse(taskId, ResponseStatus.STOPPED);
     }

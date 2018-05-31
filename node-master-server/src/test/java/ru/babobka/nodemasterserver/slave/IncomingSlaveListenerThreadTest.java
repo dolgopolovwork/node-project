@@ -102,6 +102,7 @@ public class IncomingSlaveListenerThreadTest {
 
     @Test
     public void testOnAwake() throws IOException {
+        String userName = "abc";
         Socket socket = mock(Socket.class);
         TimeoutConfig timeoutConfig = new TimeoutConfig();
         when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
@@ -111,15 +112,41 @@ public class IncomingSlaveListenerThreadTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         when(authService.authServer(connection)).thenReturn(true);
-        when(authService.authClient(connection)).thenReturn(AuthResult.success("abc", new byte[]{0}));
+        when(authService.authClient(connection)).thenReturn(AuthResult.success(userName, new byte[]{0}));
         Slave slave = mock(Slave.class);
         Set<String> availableTasks = new HashSet<>();
         when(connection.receive()).thenReturn(availableTasks);
         when(slaveFactory.create(eq(availableTasks), any(SecureNodeConnection.class), any(OnSlaveExitListener.class))).thenReturn(slave);
         when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
+        doReturn(true).when(incomingSlaveListenerThread).runNewSlave(eq(availableTasks), eq(userName), any(SecureNodeConnection.class));
         incomingSlaveListenerThread.onCycle();
-        verify(slavesStorage).add(slave);
-        verify(slave).start();
+        verify(incomingSlaveListenerThread, times(2)).success(any(NodeConnection.class));
+        verify(sessions, never()).remove(userName);
+    }
+
+    @Test
+    public void testOnAwakeFailedSlaveRun() throws IOException {
+        String userName = "abc";
+        Socket socket = mock(Socket.class);
+        TimeoutConfig timeoutConfig = new TimeoutConfig();
+        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        ModeConfig modeConfig = new ModeConfig();
+        when(masterServerConfig.getModes()).thenReturn(modeConfig);
+        when(serverSocket.accept()).thenReturn(socket);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(nodeConnectionFactory.create(socket)).thenReturn(connection);
+        when(authService.authServer(connection)).thenReturn(true);
+        when(authService.authClient(connection)).thenReturn(AuthResult.success(userName, new byte[]{0}));
+        Slave slave = mock(Slave.class);
+        Set<String> availableTasks = new HashSet<>();
+        when(connection.receive()).thenReturn(availableTasks);
+        when(slaveFactory.create(eq(availableTasks), any(SecureNodeConnection.class), any(OnSlaveExitListener.class))).thenReturn(slave);
+        when(taskPool.containsAnyOfTask(any(Set.class))).thenReturn(true);
+        doReturn(false).when(incomingSlaveListenerThread).runNewSlave(eq(availableTasks), eq(userName), any(SecureNodeConnection.class));
+        incomingSlaveListenerThread.onCycle();
+        verify(incomingSlaveListenerThread).success(any(NodeConnection.class));
+        verify(incomingSlaveListenerThread).fail(any(NodeConnection.class));
+        verify(sessions).remove(userName);
     }
 
     @Test

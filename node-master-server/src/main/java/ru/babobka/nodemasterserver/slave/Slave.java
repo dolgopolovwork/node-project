@@ -32,6 +32,7 @@ public class Slave extends AbstractNetworkSlave {
         super(connection);
         this.availableTasks.addAll(availableTasks);
         this.onSlaveExitListener = onSlaveExitListener;
+
     }
 
     @Override

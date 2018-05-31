@@ -2,6 +2,7 @@ package ru.babobka.nodemasterserver.server;
 
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
+import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
@@ -28,6 +29,7 @@ public class MasterServer extends Thread {
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
     private final WebServer webServer = Container.getInstance().get(WebServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
+    private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
@@ -43,7 +45,6 @@ public class MasterServer extends Thread {
             heartBeatingThread.start();
             webServer.start();
         } catch (RuntimeException e) {
-            e.printStackTrace();
             nodeLogger.error(e);
             clear();
         }
@@ -52,8 +53,12 @@ public class MasterServer extends Thread {
     @Override
     public void interrupt() {
         super.interrupt();
+        slavesStorage.closeStorage();
+        clientStorage.closeStorage();
         interruptAndJoin(incomingClientsThread);
         interruptAndJoin(incomingSlavesThread);
+        interruptAndJoin(webServer);
+        interruptAndJoin(heartBeatingThread);
         clear();
     }
 
@@ -61,17 +66,20 @@ public class MasterServer extends Thread {
         try {
             Container.getInstance().get(CacheDAO.class).close();
         } catch (IOException e) {
-            e.printStackTrace();
+            nodeLogger.error("can not close cache", e);
         }
         if (slavesStorage != null) {
             slavesStorage.clear();
+        }
+        if (clientStorage != null) {
+            clientStorage.clear();
         }
     }
 
     void interruptAndJoin(Thread thread) {
         thread.interrupt();
         try {
-            thread.join();
+            thread.join(10_000);
         } catch (InterruptedException e) {
             nodeLogger.error(e);
         }

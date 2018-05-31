@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-
 /**
  * Created by dolgopolov.a on 08.07.15.
  */
@@ -95,6 +94,5 @@ public class StreamUtil {
             throw new IOException(e);
         }
     }
-
 
 }
