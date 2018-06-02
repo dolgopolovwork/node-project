@@ -60,7 +60,7 @@ public class MathUtil {
 
     public static boolean isPrime(long a) {
         if (a < 0) {
-            return isPrime(-a);
+            a = -a;
         }
         if (a < 2 || (a > 2 && a % 2 == 0)) {
             return false;
@@ -76,7 +76,7 @@ public class MathUtil {
 
     public static boolean isPrime(int a) {
         if (a < 0) {
-            return isPrime(-a);
+            a = -a;
         }
         if (a < 2 || (a > 2 && a % 2 == 0)) {
             return false;
@@ -163,10 +163,10 @@ public class MathUtil {
         }
         SecureRandom random = new SecureRandom();
         BigInteger relativePrime = BigInteger.probablePrime(n.bitLength(), random);
-        if (relativePrime.gcd(n).equals(BigInteger.ONE)) {
-            return relativePrime;
+        while (!relativePrime.gcd(n).equals(BigInteger.ONE)) {
+            relativePrime = BigInteger.probablePrime(n.bitLength(), random);
         }
-        return getRelativePrime(n);
+        return relativePrime;
     }
 
     public static BigInteger createNonce(int bits) {
@@ -174,12 +174,11 @@ public class MathUtil {
             throw new IllegalArgumentException("must be at least " + MIN_NONCE_BITS + " bits to create nonce");
         }
         SecureRandom random = new SecureRandom();
-        int nonceBits = random.nextInt(bits);
-        BigInteger nonce = new BigInteger(nonceBits, random);
-        if (nonce.compareTo(BigInteger.ONE) > 0) {
-            return nonce;
+        BigInteger nonce = new BigInteger(random.nextInt(bits), random);
+        while (nonce.compareTo(BigInteger.ONE) <= 0) {
+            nonce = new BigInteger(random.nextInt(bits), random);
         }
-        return createNonce(bits);
+        return nonce;
     }
 
     public static class BigIntEuclidean {
