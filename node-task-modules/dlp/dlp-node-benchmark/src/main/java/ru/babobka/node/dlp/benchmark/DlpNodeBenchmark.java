@@ -37,8 +37,8 @@ public class DlpNodeBenchmark extends NodeBenchmark {
 
     private BigInteger createNumber(BigInteger mod) {
         BigInteger number = BigInteger.valueOf(RAND.nextInt()).mod(mod);
-        if (number.equals(BigInteger.ZERO)) {
-            return createNumber(mod);
+        while (number.equals(BigInteger.ZERO)) {
+            number = BigInteger.valueOf(RAND.nextInt()).mod(mod);
         }
         return number;
     }

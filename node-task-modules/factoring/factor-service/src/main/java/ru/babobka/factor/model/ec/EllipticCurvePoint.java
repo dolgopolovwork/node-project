@@ -34,19 +34,29 @@ public class EllipticCurvePoint implements Serializable {
     }
 
     public static EllipticCurvePoint generateRandomPoint(BigInteger n) {
+        EllipticCurvePoint ellipticCurvePoint = null;
+        while (ellipticCurvePoint == null) {
+            ellipticCurvePoint = createGoodRandomPoint(n);
+        }
+        return ellipticCurvePoint;
+    }
+
+    private static EllipticCurvePoint createGoodRandomPoint(BigInteger n) {
         int randomBits = Math.max(n.bitLength() - 1, n.bitLength() / 2);
         Fp x = Fp.random(n, randomBits);
         Fp y = Fp.random(n, randomBits);
         Fp a = Fp.random(n, randomBits);
-        // This b should fit Weierstrass equation y^2=x^3+ax+b, where
+        // This b must fit Weierstrass equation y^2=x^3+ax+b, where
         // b=y^2-x^3-ax
         Fp b = y.square().subtract(x.qube()).subtract(a.mult(x));
         EllipticCurve curve = new EllipticCurve(a, b, n);
         if (curve.getDiscriminant().isAddNeutral()) {
-            return generateRandomPoint(n);
+            //not good point
+            return null;
         }
         return new EllipticCurvePoint(x, y, Fp.multNeutral(n), curve);
     }
+
 
     public EllipticCurvePoint doublePoint() {
     /*
