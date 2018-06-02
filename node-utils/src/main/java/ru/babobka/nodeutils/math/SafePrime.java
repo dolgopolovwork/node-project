@@ -16,18 +16,15 @@ public class SafePrime implements Serializable {
     private final BigInteger sophieNumber;
     private final BigInteger prime;
 
-    public SafePrime(BigInteger sophieNumber, BigInteger prime) {
+    public SafePrime(BigInteger sophieNumber) {
         if (sophieNumber == null) {
             throw new IllegalArgumentException("sophieNumber is null");
-        } else if (prime == null) {
-            throw new IllegalArgumentException("prime is null");
-        } else if (!prime.equals(sophieNumber.multiply(TWO).add(BigInteger.ONE))) {
-            throw new IllegalArgumentException("invalid safe parameters");
-        } else if (!MathUtil.isPrime(prime)) {
-            throw new IllegalArgumentException(prime + " is not prime");
         } else if (!MathUtil.isPrime(sophieNumber)) {
-            throw new IllegalArgumentException(sophieNumber + " is not prime");
-
+            throw new IllegalArgumentException("sophie number " + sophieNumber + " is not prime");
+        }
+        BigInteger prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
+        if (!MathUtil.isPrime(prime)) {
+            throw new IllegalArgumentException("created number " + prime + " is not prime");
         }
         this.sophieNumber = sophieNumber;
         this.prime = prime;
@@ -51,7 +48,7 @@ public class SafePrime implements Serializable {
             sophieNumber = BigInteger.probablePrime(bits, random);
             prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
         }
-        return new SafePrime(sophieNumber, prime);
+        return new SafePrime(sophieNumber);
     }
 
     public BigInteger getSophieNumber() {

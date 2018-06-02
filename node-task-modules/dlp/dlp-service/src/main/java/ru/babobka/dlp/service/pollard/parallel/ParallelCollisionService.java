@@ -5,7 +5,6 @@ import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.dlp.service.pollard.ClassicPollardFunction;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
-import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.util.Map;
 
@@ -17,7 +16,9 @@ public abstract class ParallelCollisionService {
     private final Map<Fp, PollardEntity> collisions;
 
     public ParallelCollisionService(Map<Fp, PollardEntity> collisions) {
-        ArrayUtil.validateNonNull(collisions);
+        if (collisions == null) {
+            throw new IllegalArgumentException("collisions is null");
+        }
         this.collisions = collisions;
     }
 

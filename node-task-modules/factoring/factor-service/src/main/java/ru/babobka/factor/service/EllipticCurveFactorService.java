@@ -52,9 +52,8 @@ public class EllipticCurveFactorService extends ThreadPoolService<BigInteger, Fa
     private FactoringResult ellipticFactorParallel(BigInteger n) {
         List<Future<FactoringResult>> futures = submit(EllipticCurveProjectiveFactorCallable.createCalls(done, n, getCores()));
         for (Future<FactoringResult> future : futures) {
-            FactoringResult result;
             try {
-                result = future.get();
+                FactoringResult result = future.get();
                 if (result != null) {
                     return result;
                 }

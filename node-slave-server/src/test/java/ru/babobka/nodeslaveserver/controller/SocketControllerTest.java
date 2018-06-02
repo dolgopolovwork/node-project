@@ -65,6 +65,11 @@ public class SocketControllerTest {
         verify(executorService, never()).submit(any(Runnable.class));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testControlNull() throws IOException {
+        socketController.control(null);
+    }
+
     @Test
     public void testControlStop() throws IOException {
         UUID uuid = UUID.randomUUID();

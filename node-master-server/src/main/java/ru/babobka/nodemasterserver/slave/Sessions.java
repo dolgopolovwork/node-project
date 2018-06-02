@@ -7,7 +7,7 @@ import java.util.Set;
  * Created by 123 on 16.05.2018.
  */
 public class Sessions {
-    private Set<String> activeSessions = new HashSet<>();
+    private final Set<String> activeSessions = new HashSet<>();
 
     public synchronized boolean put(String userName) {
         if (activeSessions.contains(userName)) {

@@ -1,6 +1,6 @@
 package ru.babobka.nodetester.slave.cluster;
 
-import ru.babobka.nodeutils.util.ArrayUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -13,7 +13,11 @@ public abstract class AbstractCluster implements Closeable {
     private boolean started;
 
     public AbstractCluster(String login, String password, int slaves) {
-        ArrayUtil.validateNonNull(login, password);
+        if (TextUtil.isEmpty(login)) {
+            throw new IllegalArgumentException("login was not set");
+        } else if (TextUtil.isEmpty(password)) {
+            throw new IllegalArgumentException("password was not set");
+        }
         if (slaves < 1) {
             throw new IllegalArgumentException("There must be at least one slave in cluster");
         }

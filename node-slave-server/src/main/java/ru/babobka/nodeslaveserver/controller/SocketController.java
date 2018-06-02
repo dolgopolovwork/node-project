@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.controller;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
@@ -18,7 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
-public class SocketController extends Controller<NodeConnection> implements Closeable {
+public class SocketController implements Closeable {
 
     private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
@@ -26,13 +27,13 @@ public class SocketController extends Controller<NodeConnection> implements Clos
     private final ExecutorService threadPool;
     private final TasksStorage tasksStorage;
 
-    public SocketController(ExecutorService threadPool, TasksStorage tasksStorage) {
+    public SocketController(@NonNull ExecutorService threadPool,
+                            @NonNull TasksStorage tasksStorage) {
         this.threadPool = threadPool;
         this.tasksStorage = tasksStorage;
     }
 
-    @Override
-    protected void controlImpl(NodeConnection connection) {
+    public void control(@NonNull NodeConnection connection) {
         try {
             doControl(connection);
         } catch (IOException e) {

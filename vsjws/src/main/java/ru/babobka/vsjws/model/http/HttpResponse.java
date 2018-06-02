@@ -12,6 +12,7 @@ public class HttpResponse extends Response<byte[]> {
     private final File file;
     private final long contentLength;
     private ResponseCode responseCode;
+    private static final byte[] EMPTY_ARRAY = {};
 
     HttpResponse(ResponseCode code, String contentType, byte[] content, File file, long contentLength) {
         setResponseCode(code);
@@ -28,7 +29,7 @@ public class HttpResponse extends Response<byte[]> {
     public byte[] getContent() {
         if (content != null)
             return content.clone();
-        return new byte[0];
+        return EMPTY_ARRAY;
     }
 
     public long getContentLength() {

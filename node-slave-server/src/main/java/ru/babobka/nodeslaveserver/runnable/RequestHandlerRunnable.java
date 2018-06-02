@@ -25,7 +25,10 @@ public class RequestHandlerRunnable implements Runnable {
     private final TasksStorage tasksStorage;
     private NodeResponse lastResponse;
 
-    public RequestHandlerRunnable(NodeConnection connection, TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
+    public RequestHandlerRunnable(NodeConnection connection,
+                                  TasksStorage tasksStorage,
+                                  NodeRequest request,
+                                  SubTask subTask) {
         this.connection = connection;
         this.request = request;
         this.subTask = subTask;

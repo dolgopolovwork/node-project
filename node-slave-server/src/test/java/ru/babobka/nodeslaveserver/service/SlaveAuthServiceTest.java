@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.rsa.RSAConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
+import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
@@ -13,6 +14,7 @@ import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -78,5 +80,33 @@ public class SlaveAuthServiceTest {
         assertTrue(authResult.isSuccess());
         assertEquals(authResult.getUserName(), login);
         verify(connection).send(login);
+    }
+
+    @Test
+    public void testAuthServerFail() throws IOException {
+        BigInteger nonce = BigInteger.TEN;
+        BigInteger encryptedNonce = BigInteger.ONE;
+        RSAPublicKey publicKey = slaveServerConfig.getServerPublicKey();
+        when(slaveAuthService.getNonce(publicKey)).thenReturn(nonce);
+        when(rsaService.encrypt(nonce, publicKey)).thenReturn(encryptedNonce);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.receive()).thenReturn(BigInteger.ZERO);
+        assertFalse(slaveAuthService.authServer(connection));
+        verify(connection).send(encryptedNonce);
+        verify(connection).send(false);
+    }
+
+    @Test
+    public void testAuthServerSuccess() throws IOException {
+        BigInteger nonce = BigInteger.TEN;
+        BigInteger encryptedNonce = BigInteger.ONE;
+        RSAPublicKey publicKey = slaveServerConfig.getServerPublicKey();
+        when(slaveAuthService.getNonce(publicKey)).thenReturn(nonce);
+        when(rsaService.encrypt(nonce, publicKey)).thenReturn(encryptedNonce);
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.receive()).thenReturn(nonce);
+        assertTrue(slaveAuthService.authServer(connection));
+        verify(connection).send(encryptedNonce);
+        verify(connection).send(true);
     }
 }

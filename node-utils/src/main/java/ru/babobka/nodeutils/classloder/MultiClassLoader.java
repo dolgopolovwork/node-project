@@ -54,7 +54,7 @@ abstract class MultiClassLoader extends ClassLoader {
 
         // ----- Check with the primordial class loader
         try {
-            result = super.findSystemClass(className);
+            result = findSystemClass(className);
             return result;
         } catch (ClassNotFoundException expected) {
             // this is ok

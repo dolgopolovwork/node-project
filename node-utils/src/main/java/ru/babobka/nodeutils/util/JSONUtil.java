@@ -20,7 +20,7 @@ public class JSONUtil {
     }
 
     public static boolean isJSONValid(String json) {
-        if (json == null || json.isEmpty() || !validBraces(json)) {
+        if (TextUtil.isEmpty(json) || !validBraces(json)) {
             return false;
         }
         try {
@@ -37,7 +37,7 @@ public class JSONUtil {
     }
 
     public static JSONObject toJsonDefault(String body) {
-        if (body == null || body.isEmpty()) {
+        if (TextUtil.isEmpty(body)) {
             return new JSONObject("{}");
         }
         return new JSONObject(body);

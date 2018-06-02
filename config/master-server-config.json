@@ -21,8 +21,7 @@
   },
   "security": {
     "bigSafePrime": {
-      "sophieNumber": 237727875013823482469555423741567754821,
-      "prime": 475455750027646964939110847483135509643
+      "sophieNumber": 237727875013823482469555423741567754821
     },
     "challengeBytes": 16,
     "rsaConfig": {

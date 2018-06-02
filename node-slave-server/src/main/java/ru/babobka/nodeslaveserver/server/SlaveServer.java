@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.server;
 
+import lombok.NonNull;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeserials.NodeResponse;
@@ -27,7 +28,9 @@ public class SlaveServer extends Thread {
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
 
-    public SlaveServer(Socket socket, String login, String password) throws IOException {
+    public SlaveServer(@NonNull Socket socket,
+                       @NonNull String login,
+                       @NonNull String password) throws IOException {
         NodeConnection connection = nodeConnectionFactory.create(socket);
         AuthResult authResult = authService.authClient(connection, login, password);
         if (!authResult.isSuccess()) {
