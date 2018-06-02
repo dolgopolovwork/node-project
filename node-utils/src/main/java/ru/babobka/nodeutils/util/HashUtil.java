@@ -31,14 +31,12 @@ public class HashUtil {
         if (ArrayUtil.isEmpty(hashCodes)) {
             throw new IllegalArgumentException("hashCodes is empty");
         }
-
         MessageDigest sha256 = getSHA256MessageDigest();
         for (int hashCode : hashCodes) {
             byte[] bytes = ByteBuffer.allocate(4).putInt(hashCode).array();
             sha256.update(bytes);
         }
         return sha256.digest();
-
     }
 
     public static int safeHashCode(Object object) {
@@ -91,10 +89,12 @@ public class HashUtil {
         }
         MessageDigest sha256 = getSHA256MessageDigest();
         return sha256.digest(message);
-
     }
 
     public static String hexSha2(String message) {
+        if (message == null) {
+            throw new IllegalArgumentException("message is null");
+        }
         byte[] hash = sha2(message);
         StringBuilder hexString = new StringBuilder();
         for (byte hashCode : hash) {

@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.service;
 
+import lombok.NonNull;
 import ru.babobka.nodesecurity.auth.AbstractAuth;
 import ru.babobka.nodesecurity.auth.AuthData;
 import ru.babobka.nodesecurity.auth.AuthResult;
@@ -27,7 +28,9 @@ public class SlaveAuthService extends AbstractAuth {
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
     private final RSAService rsaService = Container.getInstance().get(RSAService.class);
 
-    public AuthResult authClient(NodeConnection connection, String login, String password) throws IOException {
+    public AuthResult authClient(@NonNull NodeConnection connection,
+                                 @NonNull String login,
+                                 @NonNull String password) throws IOException {
         connection.send(login);
         boolean ableToLogin = connection.receive();
         if (!ableToLogin) {
@@ -37,9 +40,9 @@ public class SlaveAuthService extends AbstractAuth {
         return srpUserAuth(connection, login, password);
     }
 
-    public boolean authServer(NodeConnection connection) throws IOException {
+    public boolean authServer(@NonNull NodeConnection connection) throws IOException {
         RSAPublicKey publicKey = slaveServerConfig.getServerPublicKey();
-        BigInteger nonce = MathUtil.createNonce(publicKey.getN().bitLength());
+        BigInteger nonce = getNonce(publicKey);
         BigInteger encryptedNonce = rsaService.encrypt(nonce, publicKey);
         connection.send(encryptedNonce);
         BigInteger decryptedNonce = connection.receive();
@@ -48,7 +51,13 @@ public class SlaveAuthService extends AbstractAuth {
         return success;
     }
 
-    AuthResult srpUserAuth(NodeConnection connection, String login, String password) throws IOException {
+    BigInteger getNonce(RSAPublicKey publicKey) {
+        return MathUtil.createNonce(publicKey.getN().bitLength());
+    }
+
+    AuthResult srpUserAuth(@NonNull NodeConnection connection,
+                           @NonNull String login,
+                           @NonNull String password) throws IOException {
         AuthData authData = connection.receive();
         SrpConfig srpConfig = authData.getSrpConfig();
         Fp a = new Fp(srpService.generatePrivateKey(authData.getSrpConfig()), srpConfig.getG().getMod());

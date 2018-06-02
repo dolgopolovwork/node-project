@@ -45,7 +45,5 @@ public class JSONWebControllerMapper {
                 return controller.onHead(requestMapper.map(httpSession, request));
             }
         }.addWebFilter(jsonWEbFilter);
-
     }
-
 }

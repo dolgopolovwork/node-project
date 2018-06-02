@@ -11,11 +11,13 @@ import java.util.UUID;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 6569577055168857214L;
+    private static final byte[] EMPTY_ARRAY = {};
     private String name;
     private byte[] secret;
     private byte[] salt;
     private String email;
     private UUID id;
+
 
     public String getEmail() {
         return email;
@@ -28,7 +30,7 @@ public class User implements Serializable {
     public byte[] getSecret() {
         if (secret != null)
             return secret.clone();
-        return new byte[]{};
+        return EMPTY_ARRAY;
     }
 
     public void setSecret(byte[] secret) {
@@ -39,7 +41,7 @@ public class User implements Serializable {
     public byte[] getSalt() {
         if (salt != null)
             return salt.clone();
-        return new byte[]{};
+        return EMPTY_ARRAY;
     }
 
     public void setSalt(byte[] salt) {

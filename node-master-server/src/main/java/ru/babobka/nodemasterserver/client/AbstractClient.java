@@ -42,4 +42,12 @@ public abstract class AbstractClient implements Runnable {
     public int hashCode() {
         return id.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "AbstractClient{" +
+                "connection=" + connection +
+                ", id=" + id +
+                '}';
+    }
 }

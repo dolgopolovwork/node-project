@@ -94,14 +94,13 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
                 }
             }
         }
-
         return null;
     }
 
     @Override
     public FactoringResult call() {
         FactoringResult result = null;
-        for (int i = 0; i < n.bitLength() * 2; i++) {
+        for (int i = 0; i < n.bitLength() << 1; i++) {
             result = factor();
             if (done.get()) {
                 return result;

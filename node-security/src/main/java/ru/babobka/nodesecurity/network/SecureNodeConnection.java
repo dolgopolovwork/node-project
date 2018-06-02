@@ -82,7 +82,6 @@ public class SecureNodeConnection implements NodeConnection {
 
     @Override
     public void close() {
-      //  throw new RuntimeException("close");
         connection.close();
     }
 

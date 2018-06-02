@@ -3,7 +3,6 @@ package ru.babobka.dlp.service.pollard.parallel;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
-import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,11 @@ public class PollardWalk implements Callable<Pair<PollardEntity>> {
     }
 
     PollardWalk(ParallelCollisionService collisionService, DlpTask dlpTask) {
-        ArrayUtil.validateNonNull(dlpTask, collisionService);
+        if (collisionService == null) {
+            throw new IllegalArgumentException("collisionService is null");
+        } else if (dlpTask == null) {
+            throw new IllegalArgumentException("dlpTask is null");
+        }
         this.collisionService = collisionService;
         this.dlpTask = dlpTask;
     }

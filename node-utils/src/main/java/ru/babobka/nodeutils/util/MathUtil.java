@@ -21,6 +21,9 @@ public class MathUtil {
     }
 
     public static BigInteger cbrt(BigInteger n) {
+        if (n == null) {
+            throw new IllegalArgumentException("n is null");
+        }
         BigDecimal m = new BigDecimal(n); // BigDecimal copy
         BigInteger r = BigInteger.ZERO.setBit(n.bitLength() / 3); // initial
         // estimate
@@ -41,11 +44,17 @@ public class MathUtil {
         return (long) (Math.log(number) / Math.log(stage));
     }
 
-    public static boolean isPrime(BigInteger a) {
-        if (a.bitLength() < 50) {
-            return isPrime(a.longValue());
+    public static boolean isPrime(BigInteger number) {
+        if (number == null) {
+            throw new IllegalArgumentException("number is null");
+        }
+        if (number.bitLength() < 64) {
+            if (number.bitLength() < 32) {
+                return isPrime(number.intValue());
+            }
+            return isPrime(number.longValue());
         } else {
-            return a.isProbablePrime(100);
+            return number.isProbablePrime(100);
         }
     }
 

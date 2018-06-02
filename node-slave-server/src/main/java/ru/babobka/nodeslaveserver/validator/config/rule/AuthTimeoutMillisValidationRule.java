@@ -10,7 +10,7 @@ public class AuthTimeoutMillisValidationRule implements ValidationRule<SlaveServ
     @Override
     public void validate(SlaveServerConfig data) {
         if (data.getAuthTimeoutMillis() <= 0) {
-            throw new IllegalArgumentException("'authTimeoutMillis' value must be positive");
+            throw new IllegalArgumentException("'authTimeoutMillis' value must be natural number");
         }
     }
 }

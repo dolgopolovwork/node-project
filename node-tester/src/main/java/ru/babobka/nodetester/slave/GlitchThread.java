@@ -4,7 +4,7 @@ import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.thread.CyclicThread;
-import ru.babobka.nodeutils.util.ArrayUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.util.List;
 import java.util.Random;
@@ -19,7 +19,13 @@ public class GlitchThread extends CyclicThread {
     private final String password;
 
     public GlitchThread(String login, String password, List<SlaveServer> slaveServerList) {
-        ArrayUtil.validateNonNull(login, password, slaveServerList);
+        if (TextUtil.isEmpty(login)) {
+            throw new IllegalArgumentException("login was not set");
+        } else if (TextUtil.isEmpty(password)) {
+            throw new IllegalArgumentException("password was not set");
+        } else if (slaveServerList == null) {
+            throw new IllegalArgumentException("slaveServerList was not set");
+        }
         this.login = login;
         this.password = password;
         this.slaveServerList = slaveServerList;

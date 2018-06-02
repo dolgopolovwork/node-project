@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
@@ -42,7 +43,7 @@ public class RequestHandlerRunnableTest {
     public void testRunRegular() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        NodeRequest request = NodeRequest.heartBeat();
+        NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(taskRunnerService).runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class));
@@ -50,10 +51,23 @@ public class RequestHandlerRunnableTest {
     }
 
     @Test
+    public void testRunStopped() throws IOException {
+        SubTask task = mock(SubTask.class);
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeResponse response = mock(NodeResponse.class);
+        when(response.getStatus()).thenReturn(ResponseStatus.STOPPED);
+        NodeRequest request = mock(NodeRequest.class);
+        when(taskRunnerService.runTask(any(TasksStorage.class), eq(request), eq(task))).thenReturn(response);
+        new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, task).run();
+        verify(taskRunnerService).runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class));
+        verify(connection, never()).send(response);
+    }
+
+    @Test
     public void testRunIOException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
-        NodeRequest request = NodeRequest.heartBeat();
+        NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         doThrow(new IOException()).when(connection).send(any(NodeResponse.class));
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
@@ -63,7 +77,7 @@ public class RequestHandlerRunnableTest {
     @Test
     public void testRunRuntimeException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        NodeRequest request = NodeRequest.heartBeat();
+        NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenThrow(new RuntimeException());
         new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(nodeLogger).error(any(Exception.class));

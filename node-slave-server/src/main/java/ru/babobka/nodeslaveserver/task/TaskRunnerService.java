@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.task;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.TasksStorage;
@@ -12,7 +13,9 @@ import ru.babobka.nodeutils.time.Timer;
  */
 public class TaskRunnerService {
 
-    public NodeResponse runTask(TasksStorage tasksStorage, NodeRequest request, SubTask subTask) {
+    public NodeResponse runTask(@NonNull TasksStorage tasksStorage,
+                                @NonNull NodeRequest request,
+                                @NonNull SubTask subTask) {
         try {
             if (!subTask.getDataValidators().isValidRequest(request)) {
                 return NodeResponse.failed(request, "Failed validation");

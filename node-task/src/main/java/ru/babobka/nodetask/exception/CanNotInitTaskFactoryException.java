@@ -7,10 +7,6 @@ public class CanNotInitTaskFactoryException extends RuntimeException {
      */
     private static final long serialVersionUID = 471658253997347795L;
 
-    public CanNotInitTaskFactoryException() {
-        super();
-    }
-
     public CanNotInitTaskFactoryException(String message) {
         super(message);
     }

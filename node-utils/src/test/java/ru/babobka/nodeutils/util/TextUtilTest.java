@@ -120,6 +120,30 @@ public class TextUtilTest {
         assertArrayEquals(TextUtil.getLongestRepeats("1011101101", '1'), new int[]{1, 0, 1, 2, 3, 0, 1, 2, 0, 1});
     }
 
+    @Test
+    public void testGetFirstNonNullNull() {
+        assertNull(TextUtil.getFirstNonNull(null));
+    }
+
+    @Test
+    public void testGetFirstNonNullEmpty() {
+        assertNull(TextUtil.getFirstNonNull());
+    }
+
+    @Test
+    public void testGetFirstNonNullAllNulls() {
+        assertNull(TextUtil.getFirstNonNull(null, null, null));
+    }
+
+    @Test
+    public void testGetFirstNonNullFirst() {
+        String[] strings = {"abc", "xyz", "qwe"};
+        for (int i = 0; i < strings.length; i++) {
+            assertEquals(strings[i], TextUtil.getFirstNonNull(strings));
+            strings[i] = null;
+        }
+    }
+
     private static int getMaxElement(int[] array) {
         int max = array[0];
         for (int i = 1; i < array.length; i++) {
