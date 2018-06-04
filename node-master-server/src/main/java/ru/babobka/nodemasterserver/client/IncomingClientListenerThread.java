@@ -27,6 +27,7 @@ public class IncomingClientListenerThread extends Thread {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;
+        setName("incoming client listener thread");
     }
 
     @Override

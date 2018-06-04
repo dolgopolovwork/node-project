@@ -3,7 +3,6 @@ package ru.babobka.factor.model.ec;
 import ru.babobka.factor.model.ec.multprovider.MultiplicationProvider;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
-import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -24,8 +23,14 @@ public class EllipticCurvePoint implements Serializable {
     private final EllipticCurve curve;
 
     private EllipticCurvePoint(Fp x, Fp y, Fp z, EllipticCurve curve) {
-        if (ArrayUtil.isNull(x, y, z, curve)) {
-            throw new IllegalArgumentException("all the arguments must be non null");
+        if (x == null) {
+            throw new IllegalArgumentException("x is null");
+        } else if (y == null) {
+            throw new IllegalArgumentException("y is null");
+        } else if (z == null) {
+            throw new IllegalArgumentException("z is null");
+        } else if (curve == null) {
+            throw new IllegalArgumentException("curve is null");
         }
         this.x = x;
         this.y = y;

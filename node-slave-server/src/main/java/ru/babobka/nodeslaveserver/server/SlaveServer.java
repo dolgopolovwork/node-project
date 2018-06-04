@@ -56,12 +56,18 @@ public class SlaveServer extends Thread {
         }
         tasksStorage = new TasksStorage();
         this.connection = new SecureNodeConnection(connection, authResult.getSecretKey());
+        setName("slave server thread");
     }
 
     @Override
     public void run() {
         try (SocketController controller = new SocketController(
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()),
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
+                    Thread thread = Executors.defaultThreadFactory().newThread(r);
+                    thread.setName("socket controller thread pool");
+                    thread.setDaemon(true);
+                    return thread;
+                }),
                 tasksStorage)) {
             while (!isInterrupted() && !connection.isClosed()) {
                 controller.control(connection);

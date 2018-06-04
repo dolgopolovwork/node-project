@@ -5,7 +5,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
+import ru.babobka.nodeslaveserver.thread.RequestHandlerThread;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
@@ -56,7 +56,7 @@ public class SocketController implements Closeable {
             SubTask subTask = taskPool.get(request.getTaskName());
             tasksStorage.put(request, subTask);
             try {
-                threadPool.submit(new RequestHandlerRunnable(connection, tasksStorage, request, subTask));
+                threadPool.submit(new RequestHandlerThread(connection, tasksStorage, request, subTask));
             } catch (RejectedExecutionException e) {
                 nodeLogger.warning("new request was rejected", e);
             }

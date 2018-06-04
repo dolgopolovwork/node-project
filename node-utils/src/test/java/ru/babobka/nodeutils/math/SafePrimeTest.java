@@ -29,7 +29,7 @@ public class SafePrimeTest {
     public void testNotSophiePrime() {
         for (int i = 0; i < 100; i++) {
             try {
-                new SafePrime(createNonSophieNumber());
+                new SafePrime(createNonSafeNumber());
                 fail();
             } catch (IllegalArgumentException expected) {
                 //it's ok
@@ -54,11 +54,11 @@ public class SafePrimeTest {
         SafePrime.random(1);
     }
 
-    private BigInteger createNonSophieNumber() {
+    private BigInteger createNonSafeNumber() {
         int bits = 8 + random.nextInt(32);
         BigInteger prime = BigInteger.probablePrime(bits, random);
-        if (MathUtil.isPrime(prime.multiply(BigInteger.valueOf(2)).add(BigInteger.ONE))) {
-            return createNonSophieNumber();
+        if (MathUtil.isPrime(prime.subtract(BigInteger.ONE).divide(BigInteger.valueOf(2L)))) {
+            return createNonSafeNumber();
         }
         return prime;
     }

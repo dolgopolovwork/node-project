@@ -16,17 +16,13 @@ public class SafePrime implements Serializable {
     private final BigInteger sophieNumber;
     private final BigInteger prime;
 
-    public SafePrime(BigInteger sophieNumber) {
-        if (sophieNumber == null) {
-            throw new IllegalArgumentException("sophieNumber is null");
-        } else if (!MathUtil.isPrime(sophieNumber)) {
-            throw new IllegalArgumentException("sophie number " + sophieNumber + " is not prime");
+    public SafePrime(BigInteger prime) {
+        if (prime == null) {
+            throw new IllegalArgumentException("prime is null");
+        } else if (!MathUtil.isSafePrime(prime)) {
+            throw new IllegalArgumentException("number " + prime + " is not safe prime");
         }
-        BigInteger prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
-        if (!MathUtil.isPrime(prime)) {
-            throw new IllegalArgumentException("created number " + prime + " is not prime");
-        }
-        this.sophieNumber = sophieNumber;
+        this.sophieNumber = prime.subtract(BigInteger.ONE).divide(TWO);
         this.prime = prime;
     }
 
@@ -42,13 +38,13 @@ public class SafePrime implements Serializable {
         if (bits < 2) {
             throw new IllegalArgumentException("There must be at least 2 bits to construct safe prime");
         }
-        BigInteger sophieNumber = null;
+        BigInteger sophieNumber;
         BigInteger prime = BigInteger.ONE;
         while (!MathUtil.isPrime(prime)) {
             sophieNumber = BigInteger.probablePrime(bits, random);
             prime = sophieNumber.multiply(TWO).add(BigInteger.ONE);
         }
-        return new SafePrime(sophieNumber);
+        return new SafePrime(prime);
     }
 
     public BigInteger getSophieNumber() {
@@ -66,4 +62,5 @@ public class SafePrime implements Serializable {
                 ", prime=" + prime +
                 '}';
     }
+
 }

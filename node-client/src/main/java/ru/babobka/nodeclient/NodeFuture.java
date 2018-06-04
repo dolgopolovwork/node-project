@@ -1,7 +1,6 @@
 package ru.babobka.nodeclient;
 
 import ru.babobka.nodeutils.network.NodeConnection;
-import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -17,8 +16,10 @@ public class NodeFuture<V> implements Future<V> {
     private final Future<V> future;
 
     public NodeFuture(NodeConnection connection, Future<V> future) {
-        if (ArrayUtil.isNull(connection, future)) {
-            throw new IllegalArgumentException("All the values must be set");
+        if (connection == null) {
+            throw new IllegalArgumentException("connection is null");
+        } else if (future == null) {
+            throw new IllegalArgumentException("future is null");
         }
         this.connection = connection;
         this.future = future;

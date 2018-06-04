@@ -11,8 +11,6 @@ import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
 import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.model.http.HttpResponse;
 import ru.babobka.vsjws.model.json.JSONRequest;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +28,6 @@ public class NodeUsersCRUDWebControllerTest {
     private static final AddUserValidator addUserValidator = mock(AddUserValidator.class);
     private static final UpdateUserValidator updateUserValidator = mock(UpdateUserValidator.class);
     private static NodeUsersCRUDWebController nodeUsersCRUDWebController;
-    private final PodamFactory podamFactory = new PodamFactoryImpl();
 
     @BeforeClass
     public static void setUp() {
@@ -45,7 +42,7 @@ public class NodeUsersCRUDWebControllerTest {
         UUID uuid = UUID.randomUUID();
         JSONRequest request = mock(JSONRequest.class);
         when(request.getUrlParam("id")).thenReturn(uuid.toString());
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = new User();
         when(nodeUsersService.get(uuid)).thenReturn(user);
         HttpResponse response = nodeUsersCRUDWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
@@ -66,7 +63,7 @@ public class NodeUsersCRUDWebControllerTest {
     @Test
     public void testOnGetUserList() {
         JSONRequest request = mock(JSONRequest.class);
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = new User();
         ArrayList<User> users = new ArrayList<>(Arrays.asList(user, user, user));
         when(request.getUrlParam("id")).thenReturn("");
         when(nodeUsersService.getList()).thenReturn(users);

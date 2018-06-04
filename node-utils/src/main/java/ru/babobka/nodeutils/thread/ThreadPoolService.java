@@ -80,8 +80,15 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
     }
 
     public static ExecutorService createDaemonPool(int threads) {
+        return createDaemonPool(null, threads);
+    }
+
+    public static ExecutorService createDaemonPool(String name, int threads) {
         return Executors.newFixedThreadPool(threads, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
+            if (name != null) {
+                t.setName(name);
+            }
             t.setPriority(Thread.MAX_PRIORITY);
             t.setDaemon(true);
             return t;
@@ -90,6 +97,10 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
 
     public static ExecutorService createDaemonPool() {
         return createDaemonPool((int) (Runtime.getRuntime().availableProcessors() * 1.5));
+    }
+
+    public static ExecutorService createDaemonPool(String threadsName) {
+        return createDaemonPool(threadsName, (int) (Runtime.getRuntime().availableProcessors() * 1.5));
     }
 
 }

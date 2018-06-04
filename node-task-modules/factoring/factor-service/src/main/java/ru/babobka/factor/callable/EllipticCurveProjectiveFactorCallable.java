@@ -2,7 +2,6 @@ package ru.babobka.factor.callable;
 
 import ru.babobka.factor.model.FactoringResult;
 import ru.babobka.factor.model.ec.EllipticCurvePoint;
-import ru.babobka.nodeutils.util.ArrayUtil;
 import ru.babobka.nodeutils.util.MathUtil;
 
 import java.math.BigInteger;
@@ -25,8 +24,10 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
     private long border;
 
     public EllipticCurveProjectiveFactorCallable(AtomicBoolean done, BigInteger n) {
-        if (ArrayUtil.isNull(done, n)) {
-            throw new IllegalArgumentException("all the values must be non null");
+        if (done == null) {
+            throw new IllegalArgumentException("done is null");
+        } else if (n == null) {
+            throw new IllegalArgumentException("n is null");
         }
         this.done = done;
         this.n = n;
@@ -53,7 +54,7 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         if (border <= lastMaxBorder) {
             return;
         }
-        for (long i = lastMaxBorder+1; i <= border; i++) {
+        for (long i = lastMaxBorder + 1; i <= border; i++) {
             if (MathUtil.isPrime(i)) {
                 primes.add(i);
             }

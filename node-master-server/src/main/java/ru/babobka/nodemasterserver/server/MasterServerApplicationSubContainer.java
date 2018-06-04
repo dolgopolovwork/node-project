@@ -62,7 +62,12 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new StoppedTasks());
             container.put(new SlaveFactory());
             container.put(MasterServerKey.CLIENTS_THREAD_POOL,
-                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
+                        Thread thread = Executors.defaultThreadFactory().newThread(r);
+                        thread.setName("client thread pool");
+                        thread.setDaemon(true);
+                        return thread;
+                    }));
             container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
                     config.getPorts().getClientListenerPort(), true)));
             container.put(new HeartBeatingThread());
@@ -71,16 +76,16 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
                     config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMachineMode())));
             container.put(new OnTaskIsReady());
             container.put(new OnRaceStyleTaskIsReady());
-            container.put(createWebServer(config));
+            container.put(createWebServer(container, config));
         } catch (RuntimeException | IOException e) {
             throw new ContainerException(e);
         }
     }
 
-    private WebServer createWebServer(MasterServerConfig config) throws IOException {
-        Container.getInstance().put(new RequestValidator());
-        Container.getInstance().put(new WebServerConfigValidator());
-        Container.getInstance().put(new JSONWebControllerMapper());
+    private static WebServer createWebServer(Container container, MasterServerConfig config) throws IOException {
+        container.put(new RequestValidator());
+        container.put(new WebServerConfigValidator());
+        container.put(new JSONWebControllerMapper());
         WebServerConfig webServerConfig = new WebServerConfig();
         webServerConfig.setServerName("node web server");
         webServerConfig.setPort(config.getPorts().getWebListenerPort());
@@ -90,4 +95,5 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
         webServer.addController("users", new NodeUsersCRUDWebController());
         return webServer;
     }
+
 }

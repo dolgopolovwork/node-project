@@ -24,7 +24,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(10);
-        securityConfig.setBigSafePrime(SafePrime.random(16));
+        securityConfig.setBigSafePrime(SafePrime.random(16).getPrime());
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
     }
@@ -34,7 +34,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(1);
-        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setBigSafePrime(SafePrime.random(64).getPrime());
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
     }
@@ -44,7 +44,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(128);
-        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setBigSafePrime(SafePrime.random(64).getPrime());
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
     }
@@ -64,7 +64,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(8);
-        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setBigSafePrime(SafePrime.random(64).getPrime());
         securityConfig.setRsaConfig(null);
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
@@ -75,7 +75,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(8);
-        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setBigSafePrime(SafePrime.random(64).getPrime());
         securityConfig.setRsaConfig(RSAConfigFactory.create(8));
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);
@@ -86,7 +86,7 @@ public class SecurityConfigValidationRuleTest {
         MasterServerConfig config = new MasterServerConfig();
         SecurityConfig securityConfig = new SecurityConfig();
         securityConfig.setChallengeBytes(8);
-        securityConfig.setBigSafePrime(SafePrime.random(64));
+        securityConfig.setBigSafePrime(SafePrime.random(64).getPrime());
         securityConfig.setRsaConfig(RSAConfigFactory.create(128));
         config.setSecurity(securityConfig);
         securityConfigValidationRule.validate(config);

@@ -2,7 +2,6 @@ package ru.babobka.factor.model.ec;
 
 
 import ru.babobka.nodeutils.math.Fp;
-import ru.babobka.nodeutils.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -20,8 +19,12 @@ public class EllipticCurve implements Serializable {
     private final Fp twentySeven;
 
     EllipticCurve(Fp a, Fp b, BigInteger n) {
-        if (ArrayUtil.isNull(a, b, n)) {
-            throw new IllegalArgumentException("all the arguments must be non null");
+        if (a == null) {
+            throw new IllegalArgumentException("a is null");
+        } else if (b == null) {
+            throw new IllegalArgumentException("b is null");
+        } else if (n == null) {
+            throw new IllegalArgumentException("n is null");
         } else if (n.compareTo(BigInteger.ONE) < 1) {
             throw new IllegalArgumentException(n + " is too small to be mod");
         }

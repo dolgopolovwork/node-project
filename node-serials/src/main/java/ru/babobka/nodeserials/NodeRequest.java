@@ -36,7 +36,7 @@ public class NodeRequest extends NodeData {
     }
 
     public static NodeRequest heartBeat() {
-        return new NodeRequest(UUID.randomUUID(), UUID.randomUUID(), null, null, RequestStatus.HEART_BEAT, System.currentTimeMillis());
+        return new NodeRequest(DUMMY_UUID, DUMMY_UUID, null, null, RequestStatus.HEART_BEAT, System.currentTimeMillis());
     }
 
     public RequestStatus getRequestStatus() {
