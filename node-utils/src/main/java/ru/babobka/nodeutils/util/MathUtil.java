@@ -114,6 +114,23 @@ public class MathUtil {
         return gen;
     }
 
+    public static boolean isSafePrime(BigInteger number) {
+        if (number == null) {
+            throw new IllegalArgumentException("number is null");
+        } else if (!isPrime(number)) {
+            return false;
+        }
+        BigInteger sophieNumber = number.subtract(BigInteger.ONE).divide(TWO_BIG);
+        return isPrime(sophieNumber);
+    }
+
+    public static boolean inRange(int number, int begin, int end) {
+        if (begin >= end) {
+            throw new IllegalArgumentException("end must be bigger than begin [" + begin + ":" + end + "]");
+        }
+        return number >= begin && number <= end;
+    }
+
     public static BigIntEuclidean eea(BigInteger a, BigInteger b) {
         BigInteger x = BigInteger.ZERO;
         BigInteger lastX = BigInteger.ONE;

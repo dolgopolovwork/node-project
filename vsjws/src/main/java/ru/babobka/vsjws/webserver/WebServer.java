@@ -40,11 +40,13 @@ public class WebServer extends Thread {
         this.webServerConfig = config;
         this.httpSession = new HttpSession(config.getSessionTimeoutSeconds());
         threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
-            Thread t = Executors.defaultThreadFactory().newThread(r);
-            t.setDaemon(true);
-            return t;
+            Thread thread = Executors.defaultThreadFactory().newThread(r);
+            thread.setName("vsjws request executor thread pool");
+            thread.setDaemon(true);
+            return thread;
         });
         this.serverSocket = new ServerSocket(webServerConfig.getPort());
+        setName("vsjws thread");
     }
 
     public HttpWebController addController(String uri, HttpWebController httpWebController) {

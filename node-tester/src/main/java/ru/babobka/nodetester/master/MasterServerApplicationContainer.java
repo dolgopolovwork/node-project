@@ -77,17 +77,17 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         config.setPorts(portConfig);
 
         SecurityConfig securityConfig = new SecurityConfig();
-        securityConfig.setBigSafePrime(SafePrime.random((128)));
+        securityConfig.setBigSafePrime(SafePrime.random((128)).getPrime());
         securityConfig.setChallengeBytes(16);
         securityConfig.setRsaConfig(RSAConfigFactory.create(128));
         config.setSecurity(securityConfig);
         return config;
     }
 
-    private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
+    private static SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
         SecurityConfig securityConfig = masterServerConfig.getSecurity();
-        SafePrime bigSafePrime = securityConfig.getBigSafePrime();
-        Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
+        SafePrime safePrime = new SafePrime(securityConfig.getBigSafePrime());
+        Fp gen = new Fp(MathUtil.getGenerator(safePrime), safePrime.getPrime());
         return new SrpConfig(gen, securityConfig.getChallengeBytes());
     }
 }

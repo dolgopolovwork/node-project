@@ -1,4 +1,4 @@
-package ru.babobka.nodeslaveserver.runnable;
+package ru.babobka.nodeslaveserver.thread;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by 123 on 02.09.2017.
  */
-public class RequestHandlerRunnableTest {
+public class RequestHandlerThreadTest {
 
     private NodeLogger nodeLogger;
     private TaskRunnerService taskRunnerService;
@@ -45,7 +45,7 @@ public class RequestHandlerRunnableTest {
         NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
         NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
-        new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
+        new RequestHandlerThread(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(taskRunnerService).runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class));
         verify(connection).send(response);
     }
@@ -58,7 +58,7 @@ public class RequestHandlerRunnableTest {
         when(response.getStatus()).thenReturn(ResponseStatus.STOPPED);
         NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), eq(request), eq(task))).thenReturn(response);
-        new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, task).run();
+        new RequestHandlerThread(connection, mock(TasksStorage.class), request, task).run();
         verify(taskRunnerService).runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class));
         verify(connection, never()).send(response);
     }
@@ -70,7 +70,7 @@ public class RequestHandlerRunnableTest {
         NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         doThrow(new IOException()).when(connection).send(any(NodeResponse.class));
-        new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
+        new RequestHandlerThread(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(nodeLogger).error(anyString(), any(Exception.class));
     }
 
@@ -79,7 +79,7 @@ public class RequestHandlerRunnableTest {
         NodeConnection connection = mock(NodeConnection.class);
         NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenThrow(new RuntimeException());
-        new RequestHandlerRunnable(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
+        new RequestHandlerThread(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
         verify(nodeLogger).error(any(Exception.class));
         verify(connection).send(any(NodeResponse.class));
     }

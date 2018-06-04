@@ -10,6 +10,7 @@ import java.util.UUID;
  */
 public class NodeData implements Serializable {
     private static final long serialVersionUID = 8L;
+    static final UUID DUMMY_UUID = new UUID(0, 0);
     private final UUID id;
     private final UUID taskId;
     private final String taskName;

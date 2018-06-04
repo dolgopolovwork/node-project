@@ -11,6 +11,7 @@ public class HeartBeatingThread extends CyclicThread {
 
     public HeartBeatingThread() {
         setDaemon(true);
+        setName("heart beating thread");
     }
 
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

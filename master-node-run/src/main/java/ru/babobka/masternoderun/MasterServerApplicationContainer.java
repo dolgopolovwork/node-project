@@ -42,8 +42,8 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         }
     }
 
-    private SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
-        SafePrime bigSafePrime = masterServerConfig.getSecurity().getBigSafePrime();
+    private static SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {
+        SafePrime bigSafePrime = new SafePrime(masterServerConfig.getSecurity().getBigSafePrime());
         Fp gen = new Fp(MathUtil.getGenerator(bigSafePrime), bigSafePrime.getPrime());
         return new SrpConfig(gen, masterServerConfig.getSecurity().getChallengeBytes());
     }

@@ -1,5 +1,6 @@
-package ru.babobka.nodeslaveserver.runnable;
+package ru.babobka.nodeslaveserver.thread;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
@@ -15,7 +16,7 @@ import java.io.IOException;
 /**
  * Created by dolgopolov.a on 27.07.15.
  */
-public class RequestHandlerRunnable implements Runnable {
+public class RequestHandlerThread extends Thread {
 
     private final NodeConnection connection;
     private final NodeRequest request;
@@ -25,14 +26,15 @@ public class RequestHandlerRunnable implements Runnable {
     private final TasksStorage tasksStorage;
     private NodeResponse lastResponse;
 
-    public RequestHandlerRunnable(NodeConnection connection,
-                                  TasksStorage tasksStorage,
-                                  NodeRequest request,
-                                  SubTask subTask) {
+    public RequestHandlerThread(@NonNull NodeConnection connection,
+                                @NonNull TasksStorage tasksStorage,
+                                @NonNull NodeRequest request,
+                                @NonNull SubTask subTask) {
         this.connection = connection;
         this.request = request;
         this.subTask = subTask;
         this.tasksStorage = tasksStorage;
+        setName("request handler thread");
     }
 
     @Override
@@ -50,12 +52,19 @@ public class RequestHandlerRunnable implements Runnable {
             nodeLogger.error(e);
             try {
                 connection.send(NodeResponse.failed(request));
-            } catch (IOException e1) {
-                nodeLogger.error(e1);
+            } catch (IOException ioException) {
+                nodeLogger.error(ioException);
             }
 
         } catch (IOException e) {
             nodeLogger.error("response wasn't sent " + lastResponse, e);
         }
     }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
+        subTask.stopProcess();
+    }
+
 }

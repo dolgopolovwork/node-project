@@ -3,8 +3,6 @@ package ru.babobka.nodebusiness.dao;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.model.User;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +17,12 @@ public class DebugNodeUsersDAOImplTest {
 
     private final UUID testUUID = UUID.randomUUID();
     private final String testLogin = "login";
-    private final PodamFactory podamFactory = new PodamFactoryImpl();
     private NodeUsersDAO nodeUsersDAO;
 
     @Before
     public void setUp() {
         Map<UUID, User> userMap = new HashMap<>();
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = new User();
         user.setName(testLogin);
         user.setId(testUUID);
         userMap.put(testUUID, user);
@@ -50,7 +47,7 @@ public class DebugNodeUsersDAOImplTest {
     @Test
     public void testAdd() {
         int oldSize = nodeUsersDAO.getList().size();
-        User user = podamFactory.manufacturePojo(User.class);
+        User user = new User();
         nodeUsersDAO.add(user);
         assertEquals(nodeUsersDAO.getList().size(), oldSize + 1);
     }

@@ -26,6 +26,7 @@ public class Slave extends AbstractNetworkSlave {
 
     public Slave(Set<String> availableTasks, NodeConnection connection) {
         this(availableTasks, connection, null);
+        setName("slave thread " + getSlaveId());
     }
 
     public Slave(@NonNull Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {

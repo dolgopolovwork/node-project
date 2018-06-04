@@ -6,9 +6,9 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.runnable.RequestHandlerRunnable;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
+import ru.babobka.nodeslaveserver.thread.RequestHandlerThread;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
@@ -79,7 +79,7 @@ public class SocketControllerTest {
         socketController.control(connection);
         verify(tasksStorage).stopTask(request);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerRunnable.class));
+        verify(executorService, never()).submit(any(RequestHandlerThread.class));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class SocketControllerTest {
         socketController.control(connection);
         verify(nodeLogger).warning(anyString());
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerRunnable.class));
+        verify(executorService, never()).submit(any(RequestHandlerThread.class));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class SocketControllerTest {
         socketController.control(connection);
         verify(tasksStorage).put(request, subTask);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService).submit(any(RequestHandlerRunnable.class));
+        verify(executorService).submit(any(RequestHandlerThread.class));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class SocketControllerTest {
         socketController.control(connection);
         verify(tasksStorage).put(request, subTask);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService).submit(any(RequestHandlerRunnable.class));
+        verify(executorService).submit(any(RequestHandlerThread.class));
     }
 
     @Test
@@ -137,6 +137,6 @@ public class SocketControllerTest {
         when(tasksStorage.wasStopped(request)).thenReturn(true);
         socketController.control(connection);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerRunnable.class));
+        verify(executorService, never()).submit(any(RequestHandlerThread.class));
     }
 }

@@ -38,6 +38,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;
+        setName("incoming slave listener thread");
     }
 
     @Override

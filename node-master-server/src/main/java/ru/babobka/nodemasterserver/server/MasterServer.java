@@ -34,6 +34,10 @@ public class MasterServer extends Thread {
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
+    public MasterServer() {
+        setName("master server thread");
+    }
+
     @Override
     public void run() {
         try {

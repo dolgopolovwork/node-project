@@ -255,7 +255,11 @@ public class SlaveTest {
 
     @Test
     public void testApplyToTasks() {
-        List<NodeRequest> requestList = Arrays.asList(NodeRequest.heartBeat(), NodeRequest.heartBeat(), NodeRequest.heartBeat());
+
+        List<NodeRequest> requestList = Arrays.asList(
+                NodeRequest.stop(UUID.randomUUID()),
+                NodeRequest.stop(UUID.randomUUID()),
+                NodeRequest.stop(UUID.randomUUID()));
         NodeConnection connection = mock(NodeConnection.class);
         Slave slave = spy(new Slave(new HashSet<>(), connection));
         slave.addTasks(requestList);

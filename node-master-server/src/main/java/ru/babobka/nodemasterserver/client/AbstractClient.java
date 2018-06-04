@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Created by 123 on 01.11.2017.
  */
-public abstract class AbstractClient implements Runnable {
+public abstract class AbstractClient extends Thread {
 
     protected final NodeConnection connection;
     protected final NodeRequest request;
