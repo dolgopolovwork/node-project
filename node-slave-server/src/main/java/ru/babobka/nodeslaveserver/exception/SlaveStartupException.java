@@ -2,14 +2,14 @@ package ru.babobka.nodeslaveserver.exception;
 
 import java.io.IOException;
 
-public class AuthFailException extends IOException {
+public class SlaveStartupException extends IOException {
 
     /**
      *
      */
     private static final long serialVersionUID = -3603894271678084823L;
 
-    public AuthFailException(String message) {
+    public SlaveStartupException(String message) {
         super(message);
     }
 

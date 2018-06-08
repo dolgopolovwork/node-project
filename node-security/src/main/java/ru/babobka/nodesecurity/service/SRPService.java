@@ -134,6 +134,7 @@ public class SRPService {
         try {
             SecretKeySpec signingKey = new SecretKeySpec(secretKey, HMAC_SHA1_ALGORITHM);
             Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+            //TODO иногда вылетает с StackOverflow
             mac.init(signingKey);
             return mac.doFinal(buildHash(data));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {

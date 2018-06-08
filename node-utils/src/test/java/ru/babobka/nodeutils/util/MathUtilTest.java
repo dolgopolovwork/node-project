@@ -87,39 +87,11 @@ public class MathUtilTest {
     }
 
     @Test
-    public void testIsPrimeComposite() {
-        for (long prime : LONG_PRIMES) {
-            assertFalse(MathUtil.isPrime(prime * prime));
-        }
-    }
-
-    @Test
     public void testLog() {
         for (int number = 2; number < 10; number++) {
             for (int exp = 2; exp < 5; exp++) {
                 assertEquals(exp, MathUtil.log(number, (int) Math.pow(number, exp)));
             }
-        }
-    }
-
-    @Test
-    public void testIsPrimeCompositeNegative() {
-        for (long prime : LONG_PRIMES) {
-            assertFalse(MathUtil.isPrime(-prime * prime));
-        }
-    }
-
-    @Test
-    public void testIsPrimeLong() {
-        for (long prime : LONG_PRIMES) {
-            assertTrue(MathUtil.isPrime(prime));
-        }
-    }
-
-    @Test
-    public void testIsPrimeLongNegative() {
-        for (long prime : LONG_PRIMES) {
-            assertTrue(MathUtil.isPrime(-prime));
         }
     }
 

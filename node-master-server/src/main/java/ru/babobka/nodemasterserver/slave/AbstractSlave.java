@@ -100,7 +100,6 @@ public abstract class AbstractSlave extends Thread {
         }
     }
 
-
     @Override
     public int hashCode() {
         return slaveId.hashCode();

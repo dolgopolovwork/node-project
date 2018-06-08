@@ -1,6 +1,6 @@
 package ru.babobka.slavenoderun;
 
-import ru.babobka.nodeslaveserver.exception.AuthFailException;
+import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 
@@ -42,7 +42,7 @@ public class ConnectionSafeSlaveRunner {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 return slaveServerFactory.create(pathToConfig, login, password);
-            } catch (AuthFailException e) {
+            } catch (SlaveAuthException e) {
                 return null;
             } catch (IOException e) {
                 e.printStackTrace();

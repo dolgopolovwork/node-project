@@ -68,11 +68,11 @@ public class SecureNodeConnectionTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
         SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});
-        secureNodeConnection.send(null);
+        secureNodeConnection.send((Object) null);
     }
 
     @Test(expected = NodeSecurityException.class)
-    public void testSendUnsecureObject() throws IOException {
+    public void testSendInsecureObject() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
         SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});

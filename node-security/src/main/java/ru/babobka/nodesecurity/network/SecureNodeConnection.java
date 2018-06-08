@@ -64,7 +64,7 @@ public class SecureNodeConnection implements NodeConnection {
         throw new NodeSecurityException("can not send insecure instance of class " + object.getClass().getCanonicalName());
     }
 
-    private void send(NodeRequest request) throws IOException {
+    protected void send(NodeRequest request) throws IOException {
         if (request.getRequestStatus() != RequestStatus.HEART_BEAT) {
             connection.send(secureDataFactory.create(request, secretKey));
         } else {
@@ -72,7 +72,7 @@ public class SecureNodeConnection implements NodeConnection {
         }
     }
 
-    private void send(NodeResponse response) throws IOException {
+    protected void send(NodeResponse response) throws IOException {
         if (response.getStatus() != ResponseStatus.HEART_BEAT) {
             connection.send(secureDataFactory.create(response, secretKey));
         } else {

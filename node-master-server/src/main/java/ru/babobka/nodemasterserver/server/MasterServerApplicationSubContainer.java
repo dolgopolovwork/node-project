@@ -18,6 +18,7 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
+import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.StoppedTasks;
@@ -48,6 +49,7 @@ public class MasterServerApplicationSubContainer implements ApplicationContainer
             container.put(new SlavesStorage());
             container.put(new DistributionService());
             container.put(new ResponseStorage());
+            container.put(new SlaveCreatingPipelineFactory());
             container.put(new ClientStorage());
             container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, new TaskPool(
                     config.getFolders().getTasksFolder()));

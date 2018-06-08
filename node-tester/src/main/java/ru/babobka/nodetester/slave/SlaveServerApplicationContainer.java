@@ -4,6 +4,7 @@ import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
@@ -47,6 +48,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             container.putIfNotExists(SimpleLoggerFactory.defaultLogger("slave-server", config.getLoggerFolder()));
             Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("service thread pool"));
             container.put(new NodeTaskApplicationContainer());
+            container.put(new SlavePipelineFactory());
             container.put(new TaskRunnerService());
             container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, new TaskPool(config.getTasksFolder()));
             container.put(new SlaveAuthService());

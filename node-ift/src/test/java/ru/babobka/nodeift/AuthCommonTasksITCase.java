@@ -8,7 +8,7 @@ import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
-import ru.babobka.nodeslaveserver.exception.AuthFailException;
+import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -55,13 +55,13 @@ public class AuthCommonTasksITCase {
         Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
     }
 
-    @Test(expected = AuthFailException.class)
+    @Test(expected = SlaveStartupException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
         SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
     }
 
-    @Test(expected = AuthFailException.class)
+    @Test(expected = SlaveStartupException.class)
     public void testNoCommonTasks() throws IOException {
         Set<String> availableTasks = new HashSet<>();
         availableTasks.add("abc");

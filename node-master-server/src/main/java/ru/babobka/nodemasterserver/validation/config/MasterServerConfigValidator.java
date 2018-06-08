@@ -4,7 +4,7 @@ import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.rule.FolderValidationRule;
 import ru.babobka.nodemasterserver.validation.config.rule.PortValidationRule;
 import ru.babobka.nodemasterserver.validation.config.rule.SecurityConfigValidationRule;
-import ru.babobka.nodemasterserver.validation.config.rule.TimeoutValidationRule;
+import ru.babobka.nodemasterserver.validation.config.rule.TimeValidationRule;
 import ru.babobka.nodeutils.validation.Validator;
 
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class MasterServerConfigValidator extends Validator<MasterServerConfig> {
         super(Arrays.asList(
                 new FolderValidationRule(),
                 new PortValidationRule(),
-                new TimeoutValidationRule(),
+                new TimeValidationRule(),
                 new SecurityConfigValidationRule()));
     }
 }

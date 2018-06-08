@@ -30,12 +30,12 @@ public class SlavesStorage {
         this.closed = true;
     }
 
-    synchronized void remove(Slave slave) {
+    public synchronized void remove(Slave slave) {
         nodeLogger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);
     }
 
-    synchronized boolean add(Slave slave) {
+    public synchronized boolean add(Slave slave) {
         if (!isClosed()) {
             nodeLogger.info("add new slave " + slave + " to slave storage " + storageId);
             slaves.add(slave);

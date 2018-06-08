@@ -3,6 +3,7 @@ package ru.babobka.slavenoderun;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
@@ -35,6 +36,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
             container.put(new NodeConnectionFactory());
             container.put(config);
             container.put(new NodeTaskApplicationContainer());
+            container.put(new SlavePipelineFactory());
             container.put(new TaskRunnerService());
             container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("service thread pool"));
             container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, new TaskPool(config.getTasksFolder()));

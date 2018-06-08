@@ -14,17 +14,17 @@ public class NodeData implements Serializable {
     private final UUID id;
     private final UUID taskId;
     private final String taskName;
-    private final long timeStamp;
+    private long timeStamp;
     private final Data data = new Data();
 
     public NodeData(UUID id, UUID taskId, String taskName, long timeStamp, Data data) {
         this.id = id;
         this.taskId = taskId;
         this.taskName = taskName;
-        this.timeStamp = timeStamp;
         if (data != null) {
             this.data.put(data);
         }
+        setTimeStamp(timeStamp);
     }
 
     public UUID getTaskId() {
@@ -35,8 +35,12 @@ public class NodeData implements Serializable {
         return taskName;
     }
 
-    public long getTimeStamp() {
+    public synchronized long getTimeStamp() {
         return timeStamp;
+    }
+
+    public synchronized void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public Data getData() {

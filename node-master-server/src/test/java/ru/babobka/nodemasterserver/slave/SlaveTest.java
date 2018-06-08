@@ -8,13 +8,14 @@ import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.model.Responses;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
-import ru.babobka.nodemasterserver.server.config.TimeoutConfig;
+import ru.babobka.nodemasterserver.server.config.TimeConfig;
 import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
+import ru.babobka.nodeutils.logger.DummyNodeLogger;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
@@ -41,7 +42,7 @@ public class SlaveTest {
     @Before
     public void setUp() {
         masterServerConfig = mock(MasterServerConfig.class);
-        nodeLogger = mock(NodeLogger.class);
+        nodeLogger = new DummyNodeLogger();
         responseStorage = mock(ResponseStorage.class);
         slavesStorage = mock(SlavesStorage.class);
         distributionService = mock(DistributionService.class);
@@ -96,42 +97,63 @@ public class SlaveTest {
     public void testProcessConnectionDeath() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         Slave slave = spy(new Slave(new HashSet<>(), connection));
-        TimeoutConfig timeoutConfig = new TimeoutConfig();
-        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        TimeConfig timeConfig = new TimeConfig();
+        timeConfig.setDataOutDateMillis(10_000);
+        when(masterServerConfig.getTime()).thenReturn(timeConfig);
         NodeResponse response = mock(NodeResponse.class);
+        when(response.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(response.getStatus()).thenReturn(ResponseStatus.DEATH);
         when(connection.receive()).thenReturn(response);
         assertFalse(slave.processConnection());
-        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(connection).setReadTimeOut(timeConfig.getRequestReadTimeOutMillis());
         verify(slave, never()).onReceive(response);
     }
 
     @Test
-    public void testProcessConnectionHearhBeating() throws IOException {
+    public void testProcessConnectionHeartBeating() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         Slave slave = spy(new Slave(new HashSet<>(), connection));
-        TimeoutConfig timeoutConfig = new TimeoutConfig();
-        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        TimeConfig timeConfig = new TimeConfig();
+        when(masterServerConfig.getTime()).thenReturn(timeConfig);
         NodeResponse response = mock(NodeResponse.class);
         when(response.getStatus()).thenReturn(ResponseStatus.HEART_BEAT);
         when(connection.receive()).thenReturn(response);
         assertTrue(slave.processConnection());
-        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(connection).setReadTimeOut(timeConfig.getRequestReadTimeOutMillis());
         verify(slave, never()).onReceive(response);
+    }
+
+    @Test
+    public void testProcessConnectionOutDated() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        TimeConfig timeConfig = new TimeConfig();
+        timeConfig.setDataOutDateMillis(0);
+        when(masterServerConfig.getTime()).thenReturn(timeConfig);
+        NodeResponse response = mock(NodeResponse.class);
+        when(response.getStatus()).thenReturn(ResponseStatus.NORMAL);
+        when(response.getTimeStamp()).thenReturn(0L);
+        when(connection.receive()).thenReturn(response);
+        doNothing().when(slave).onReceive(response);
+        assertTrue(slave.processConnection());
+        verify(connection).setReadTimeOut(timeConfig.getRequestReadTimeOutMillis());
+        verify(slave,never()).onReceive(response);
     }
 
     @Test
     public void testProcessConnection() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         Slave slave = spy(new Slave(new HashSet<>(), connection));
-        TimeoutConfig timeoutConfig = new TimeoutConfig();
-        when(masterServerConfig.getTimeouts()).thenReturn(timeoutConfig);
+        TimeConfig timeConfig = new TimeConfig();
+        timeConfig.setDataOutDateMillis(10_000);
+        when(masterServerConfig.getTime()).thenReturn(timeConfig);
         NodeResponse response = mock(NodeResponse.class);
         when(response.getStatus()).thenReturn(ResponseStatus.NORMAL);
+        when(response.getTimeStamp()).thenReturn(System.currentTimeMillis());
         when(connection.receive()).thenReturn(response);
         doNothing().when(slave).onReceive(response);
         assertTrue(slave.processConnection());
-        verify(connection).setReadTimeOut(timeoutConfig.getRequestTimeOutMillis());
+        verify(connection).setReadTimeOut(timeConfig.getRequestReadTimeOutMillis());
         verify(slave).onReceive(response);
     }
 

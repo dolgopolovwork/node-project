@@ -7,7 +7,7 @@ public class MasterServerConfig implements Serializable {
     private static final long serialVersionUID = 156081573106293600L;
     private ModeConfig modes;
     private PortConfig ports;
-    private TimeoutConfig timeouts;
+    private TimeConfig time;
     private SecurityConfig security;
     private FolderConfig folders;
 
@@ -27,12 +27,12 @@ public class MasterServerConfig implements Serializable {
         this.ports = ports;
     }
 
-    public TimeoutConfig getTimeouts() {
-        return timeouts;
+    public TimeConfig getTime() {
+        return time;
     }
 
-    public void setTimeouts(TimeoutConfig timeouts) {
-        this.timeouts = timeouts;
+    public void setTime(TimeConfig time) {
+        this.time = time;
     }
 
     public SecurityConfig getSecurity() {
