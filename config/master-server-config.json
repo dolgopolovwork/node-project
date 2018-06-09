@@ -9,10 +9,11 @@
     "loggerFolderEnv": "NODE_LOGS",
     "tasksFolderEnv": "NODE_TASKS"
   },
-  "timeouts": {
+  "time": {
     "authTimeOutMillis": 2000,
-    "requestTimeOutMillis": 15000,
-    "heartBeatTimeOutMillis": 5000
+    "requestReadTimeOutMillis": 15000,
+    "heartBeatCycleMillis": 5000,
+    "dataOutDateMillis": 900000
   },
   "ports": {
     "slaveListenerPort": 9090,

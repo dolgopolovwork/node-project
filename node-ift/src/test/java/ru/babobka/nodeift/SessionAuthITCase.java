@@ -8,7 +8,7 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
-import ru.babobka.nodeslaveserver.exception.AuthFailException;
+import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
@@ -69,7 +69,7 @@ public class SessionAuthITCase {
             try {
                 slaveServer2 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
                 fail();
-            } catch (AuthFailException expected) {
+            } catch (SlaveStartupException expected) {
                 //that's ok
             }
         } finally {

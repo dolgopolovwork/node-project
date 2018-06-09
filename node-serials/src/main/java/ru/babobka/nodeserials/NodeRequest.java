@@ -39,6 +39,10 @@ public class NodeRequest extends NodeData {
         return new NodeRequest(DUMMY_UUID, DUMMY_UUID, null, null, RequestStatus.HEART_BEAT, System.currentTimeMillis());
     }
 
+    public static NodeRequest time() {
+        return new NodeRequest(DUMMY_UUID, DUMMY_UUID, null, null, RequestStatus.TIME_SETTING, System.currentTimeMillis());
+    }
+
     public RequestStatus getRequestStatus() {
         return requestStatus;
     }

@@ -53,7 +53,7 @@ public class PollardEntity {
         if (doubleResult == null || doubleResult == this) {
             return false;
         }
-        return this.getX().equals(doubleResult.getX()) && !this.equals(doubleResult);
+        return x.equals(doubleResult.getX()) && !this.equals(doubleResult);
     }
 
     public Fp incValExp() {

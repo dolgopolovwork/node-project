@@ -15,5 +15,4 @@ public interface TaskService {
             throws TaskExecutionException;
 
     boolean cancelTask(UUID taskId) throws TaskExecutionException;
-
 }

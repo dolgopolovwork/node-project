@@ -47,7 +47,7 @@ public class Client extends AbstractClient {
         try {
             while (!isDone()) {
                 connection.receive();
-                connection.setReadTimeOut(config.getTimeouts().getRequestTimeOutMillis());
+                connection.setReadTimeOut(config.getTime().getRequestReadTimeOutMillis());
             }
         } catch (IOException e) {
             if (!isDone()) {

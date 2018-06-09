@@ -58,11 +58,13 @@ public class MasterServerApplicationContainer implements ApplicationContainer {
         folderConfig.setLoggerFolderEnv(Env.NODE_LOGS.name());
         config.setFolders(folderConfig);
 
-        TimeoutConfig timeoutConfig = new TimeoutConfig();
-        timeoutConfig.setAuthTimeOutMillis(2000);
-        timeoutConfig.setHeartBeatTimeOutMillis(5000);
-        timeoutConfig.setRequestTimeOutMillis(15000);
-        config.setTimeouts(timeoutConfig);
+        TimeConfig timeConfig = new TimeConfig();
+        timeConfig.setAuthTimeOutMillis(5000);
+        timeConfig.setHeartBeatCycleMillis(7000);
+        timeConfig.setRequestReadTimeOutMillis(15000);
+        //15 minutes
+        timeConfig.setDataOutDateMillis(1000 * 60 * 15);
+        config.setTime(timeConfig);
 
         ModeConfig modeConfig = new ModeConfig();
         modeConfig.setTestUserMode(true);

@@ -21,7 +21,7 @@ public class HeartBeatingThread extends CyclicThread {
 
     @Override
     public int sleepMillis() {
-        return masterServerConfig.getTimeouts().getHeartBeatTimeOutMillis();
+        return masterServerConfig.getTime().getHeartBeatCycleMillis();
     }
 
     @Override

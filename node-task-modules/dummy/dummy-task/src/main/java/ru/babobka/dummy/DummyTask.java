@@ -3,7 +3,6 @@ package ru.babobka.dummy;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
-import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.*;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class DummyTask extends SubTask {
     public Reducer getReducer() {
         return new Reducer() {
             @Override
-            protected Data reduceImpl(List<NodeResponse> responses) throws ReducingException {
+            protected Data reduceImpl(List<NodeResponse> responses) {
                 return new Data();
             }
         };

@@ -1,16 +1,17 @@
 package ru.babobka.nodeslaveserver.server;
 
 import lombok.NonNull;
-import ru.babobka.nodesecurity.auth.AuthResult;
-import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.auth.AuthCredentials;
+import ru.babobka.nodesecurity.network.ClientSecureNodeConnection;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.controller.SocketController;
-import ru.babobka.nodeslaveserver.exception.AuthFailException;
-import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.service.SlaveAuthService;
-import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
+import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
+import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
+import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.func.pipeline.Pipeline;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -21,42 +22,35 @@ import java.util.concurrent.Executors;
 
 public class SlaveServer extends Thread {
 
-    private final SlaveAuthService authService = Container.getInstance().get(SlaveAuthService.class);
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
-    private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
+    private final SlavePipelineFactory slavePipelineFactory = Container.getInstance().get(SlavePipelineFactory.class);
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
 
     public SlaveServer(@NonNull Socket socket,
                        @NonNull String login,
                        @NonNull String password) throws IOException {
+
         NodeConnection connection = nodeConnectionFactory.create(socket);
-        AuthResult authResult = authService.authClient(connection, login, password);
-        if (!authResult.isSuccess()) {
-            connection.close();
-            throw new AuthFailException("authClient fail");
+        AuthCredentials credentials = new AuthCredentials(login, password);
+        PipeContext pipeContext = new PipeContext(connection, credentials);
+        Pipeline<PipeContext> slaveCreationPipeline = slavePipelineFactory.create(pipeContext);
+        if (!slaveCreationPipeline.execute(pipeContext)) {
+            if (pipeContext.getAuthResult() != null && !pipeContext.getAuthResult().isSuccess()) {
+                throw new SlaveAuthException("slave authentication error");
+            }
+            throw new SlaveStartupException("cannot start slave due to pipeline failure");
         }
-        nodeLogger.info("authClient success");
-        connection.send(taskPool.getTaskNames());
-        boolean haveCommonTasks = connection.receive();
-        if (!haveCommonTasks) {
-            connection.close();
-            throw new AuthFailException("no common tasks with master server");
-        }
-        boolean serverAuthSuccess = authService.authServer(connection);
-        if (!serverAuthSuccess) {
-            connection.close();
-            throw new AuthFailException("server auth fail");
-        }
-        boolean sessionWasCreated = connection.receive();
-        if (!sessionWasCreated) {
-            connection.close();
-            throw new AuthFailException("cannot create session");
-        }
+        this.connection = createClientConnection(connection, pipeContext);
         tasksStorage = new TasksStorage();
-        this.connection = new SecureNodeConnection(connection, authResult.getSecretKey());
         setName("slave server thread");
+    }
+
+    static ClientSecureNodeConnection createClientConnection(NodeConnection connection, PipeContext pipeContext) {
+        return new ClientSecureNodeConnection(
+                pipeContext.getServerTime(), connection,
+                pipeContext.getAuthResult().getSecretKey());
     }
 
     @Override
@@ -92,11 +86,13 @@ public class SlaveServer extends Thread {
     }
 
 
+    NodeConnection getConnection() {
+        return connection;
+    }
+
     void clear() {
         tasksStorage.stopAllTheTasks();
-        if (connection != null) {
-            connection.close();
-        }
+        connection.close();
     }
 
 }

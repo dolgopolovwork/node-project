@@ -48,30 +48,15 @@ public class MathUtil {
         if (number == null) {
             throw new IllegalArgumentException("number is null");
         }
-        if (number.bitLength() < 64) {
-            if (number.bitLength() < 32) {
-                return isPrime(number.intValue());
-            }
-            return isPrime(number.longValue());
+        if (number.bitLength() < 32) {
+            return isPrime(number.intValue());
         } else {
             return number.isProbablePrime(100);
         }
     }
 
     public static boolean isPrime(long a) {
-        if (a < 0) {
-            a = -a;
-        }
-        if (a < 2 || (a > 2 && a % 2 == 0)) {
-            return false;
-        }
-        int sqr = (int) Math.sqrt(a);
-        for (int i = 3; i <= sqr; i += 2) {
-            if (a % i == 0) {
-                return false;
-            }
-        }
-        return true;
+        return isPrime(BigInteger.valueOf(a));
     }
 
     public static boolean isPrime(int a) {

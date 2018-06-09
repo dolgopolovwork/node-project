@@ -60,15 +60,22 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     }
 
     boolean processConnection() throws IOException {
-        connection.setReadTimeOut(masterServerConfig.getTimeouts().getRequestTimeOutMillis());
+        connection.setReadTimeOut(masterServerConfig.getTime().getRequestReadTimeOutMillis());
         NodeResponse response = connection.receive();
-        if (response.getStatus() == ResponseStatus.DEATH) {
+        if (isOutDated(response)) {
+            nodeLogger.warning("outdated response from slave " + getSlaveId() + ". response " + response);
+        } else if (response.getStatus() == ResponseStatus.DEATH) {
             nodeLogger.info("slave " + this.getSlaveId() + " gently asked to be killed");
             return false;
         } else if (response.getStatus() != ResponseStatus.HEART_BEAT) {
             onReceive(response);
         }
         return true;
+    }
+
+    private boolean isOutDated(NodeResponse response) {
+        long currentTime = System.currentTimeMillis();
+        return (currentTime - response.getTimeStamp()) > masterServerConfig.getTime().getDataOutDateMillis();
     }
 
     @Override

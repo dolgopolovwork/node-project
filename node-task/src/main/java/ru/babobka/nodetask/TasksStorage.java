@@ -19,10 +19,8 @@ public class TasksStorage {
     public synchronized void put(NodeRequest request, SubTask subTask) {
         if (!runningTasks.containsKey(request.getTaskId())) {
             runningTasks.put(request.getTaskId(), new HashMap<>());
-            runningTasks.get(request.getTaskId()).put(request.getId(), subTask);
-        } else {
-            runningTasks.get(request.getTaskId()).put(request.getId(), subTask);
         }
+        runningTasks.get(request.getTaskId()).put(request.getId(), subTask);
     }
 
     public synchronized boolean exists(UUID taskId) {

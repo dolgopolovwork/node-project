@@ -8,7 +8,7 @@ import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
-import ru.babobka.nodeslaveserver.exception.AuthFailException;
+import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -50,7 +50,7 @@ public class AuthITCase {
         Container.getInstance().clear();
     }
 
-    @Test(expected = AuthFailException.class)
+    @Test(expected = SlaveStartupException.class)
     public void testAuthFail() throws IOException {
         SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", "bad password");
         interruptAndJoin(slaveServer);
@@ -113,13 +113,13 @@ public class AuthITCase {
                 SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
                 interruptAndJoin(slaveServer);
                 fail();
-            } catch (AuthFailException e) {
+            } catch (SlaveStartupException e) {
                 //that's ok
             }
         }
     }
 
-    @Test(expected = AuthFailException.class)
+    @Test(expected = SlaveStartupException.class)
     public void testServerAuthFail() throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try {
