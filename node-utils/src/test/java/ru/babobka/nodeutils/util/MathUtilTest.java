@@ -40,6 +40,27 @@ public class MathUtilTest {
     }
 
     @Test
+    public void testIsPrimeLongNegative() {
+        for (long prime : LONG_PRIMES) {
+            assertTrue(MathUtil.isPrime(-prime));
+        }
+    }
+
+    @Test
+    public void testIsPrimeLong() {
+        for (long prime : LONG_PRIMES) {
+            assertTrue(MathUtil.isPrime(prime));
+        }
+    }
+
+    @Test
+    public void testIsPrimeLongComposites() {
+        for (int prime : PRIMES) {
+            assertFalse(MathUtil.isPrime((long) prime * prime));
+        }
+    }
+
+    @Test
     public void testIsNotPrime() {
         for (int prime : COMPOSITES) {
             assertFalse(MathUtil.isPrime(prime));
@@ -187,6 +208,27 @@ public class MathUtilTest {
             BigInteger number = new BigInteger(bigPrime);
             assertFalse(MathUtil.isPrime(number.multiply(number)));
         }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInRangeBadRange() {
+        MathUtil.inRange(3, 1, 0);
+    }
+
+    @Test
+    public void testInRange() {
+        assertTrue(MathUtil.inRange(10, 9, 11));
+    }
+
+    @Test
+    public void testInRangeBounds() {
+        assertTrue(MathUtil.inRange(9, 9, 11));
+        assertTrue(MathUtil.inRange(11, 9, 11));
+    }
+
+    @Test
+    public void testInRangeNotInRange() {
+        assertFalse(MathUtil.inRange(2, 9, 11));
     }
 
 }

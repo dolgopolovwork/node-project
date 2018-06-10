@@ -56,6 +56,9 @@ public class MathUtil {
     }
 
     public static boolean isPrime(long a) {
+        if (a < 0) {
+            a = -a;
+        }
         return isPrime(BigInteger.valueOf(a));
     }
 
