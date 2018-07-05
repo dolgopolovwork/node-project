@@ -11,7 +11,7 @@ import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
@@ -24,7 +24,7 @@ import ru.babobka.nodeutils.thread.ThreadPoolService;
 /**
  * Created by 123 on 05.11.2017.
  */
-public class SlaveServerApplicationContainer implements ApplicationContainer {
+public class SlaveServerApplicationContainer extends AbstractApplicationContainer {
 
     private final RSAPublicKey rsaPublicKey;
 
@@ -36,7 +36,7 @@ public class SlaveServerApplicationContainer implements ApplicationContainer {
     }
 
     @Override
-    public void contain(Container container) {
+    protected void containImpl(Container container) {
         try {
             Properties.put(UtilKey.SERVICE_THREADS_NUM, Runtime.getRuntime().availableProcessors());
             container.put(new NodeUtilsApplicationContainer());

@@ -5,7 +5,7 @@ import ru.babobka.dlp.model.PollardDlpDataValidators;
 import ru.babobka.dlp.model.PollardDlpDistributor;
 import ru.babobka.dlp.model.PollardDlpReducer;
 import ru.babobka.nodetask.model.TaskFactory;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 /**
@@ -23,14 +23,14 @@ public class PollardDlpTaskFactory extends TaskFactory<PollardDlpTask> {
     }
 
     @Override
-    public ApplicationContainer getApplicationContainer() {
+    public AbstractApplicationContainer getApplicationContainer() {
         return new PollardDlpTaskApplicationContainer();
     }
 
-    private static class PollardDlpTaskApplicationContainer implements ApplicationContainer {
+    private static class PollardDlpTaskApplicationContainer extends AbstractApplicationContainer {
 
         @Override
-        public void contain(Container container) {
+        protected void containImpl(Container container) {
             container.put(new DlpServiceApplicationContainer());
             container.put(new PollardDlpDistributor());
             container.put(new PollardDlpDataValidators());

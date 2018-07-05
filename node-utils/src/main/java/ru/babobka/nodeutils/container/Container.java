@@ -34,11 +34,18 @@ public class Container {
         return false;
     }
 
-    public synchronized void put(ApplicationContainer applicationContainer) {
-        if (applicationContainer == null) {
-            throw new IllegalArgumentException("applicationContainer is null");
+    public synchronized void put(AbstractApplicationContainer abstractApplicationContainer) {
+        if (abstractApplicationContainer == null) {
+            throw new IllegalArgumentException("abstractApplicationContainer is null");
         }
-        applicationContainer.contain(this);
+        abstractApplicationContainer.contain(this);
+    }
+
+    public synchronized void put(LambdaApplicationContainer lambdaApplicationContainer) {
+        if (lambdaApplicationContainer == null) {
+            throw new IllegalArgumentException("lambdaApplicationContainer is null");
+        }
+        lambdaApplicationContainer.contain(this);
     }
 
     public synchronized void put(Key key, Object object) {

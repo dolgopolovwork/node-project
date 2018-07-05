@@ -1,7 +1,7 @@
 package ru.babobka.primecounter.task;
 
 import ru.babobka.nodetask.model.TaskFactory;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.PrimeCounterServiceApplicationContainer;
 import ru.babobka.primecounter.model.PrimeCounterDataValidators;
@@ -23,14 +23,14 @@ public class PrimeCounterTaskFactory extends TaskFactory<PrimeCounterTask> {
     }
 
     @Override
-    public ApplicationContainer getApplicationContainer() {
+    public AbstractApplicationContainer getApplicationContainer() {
         return new PrimeCounterTaskFactoryApplicationContainer();
     }
 
-    private static class PrimeCounterTaskFactoryApplicationContainer implements ApplicationContainer {
+    private static class PrimeCounterTaskFactoryApplicationContainer extends AbstractApplicationContainer {
 
         @Override
-        public void contain(Container container) {
+        protected void containImpl(Container container) {
             container.put(new PrimeCounterServiceApplicationContainer());
             container.put(new PrimeCounterDataValidators());
             container.put(new PrimeCounterReducer());

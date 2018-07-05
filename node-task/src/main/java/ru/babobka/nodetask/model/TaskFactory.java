@@ -1,14 +1,18 @@
 package ru.babobka.nodetask.model;
 
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
+import ru.babobka.nodeutils.container.Container;
 
 /**
  * Created by 123 on 12.10.2017.
  */
 public abstract class TaskFactory<T extends SubTask> {
 
-    private static final ApplicationContainer DUMMY_CONTAINER = container -> {
-
+    private static final AbstractApplicationContainer DUMMY_CONTAINER = new AbstractApplicationContainer() {
+        @Override
+        protected void containImpl(Container container) throws Exception {
+            //do nothing. it's ok
+        }
     };
 
     private final Class<T> type;
@@ -22,7 +26,7 @@ public abstract class TaskFactory<T extends SubTask> {
 
     public abstract T createTask();
 
-    public ApplicationContainer getApplicationContainer() {
+    public AbstractApplicationContainer getApplicationContainer() {
         return DUMMY_CONTAINER;
     }
 

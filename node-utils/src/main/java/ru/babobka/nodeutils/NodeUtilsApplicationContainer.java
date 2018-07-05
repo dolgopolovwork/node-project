@@ -1,15 +1,15 @@
 package ru.babobka.nodeutils;
 
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 /**
  * Created by 123 on 04.11.2017.
  */
-public class NodeUtilsApplicationContainer implements ApplicationContainer {
+public class NodeUtilsApplicationContainer extends AbstractApplicationContainer {
     @Override
-    public void contain(Container container) {
+    protected void containImpl(Container container) {
         container.put(new StreamUtil());
     }
 }

@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodetask.exception.CanNotInitTaskFactoryException;
 import ru.babobka.nodetask.model.TaskFactory;
 import ru.babobka.nodetask.util.TasksUtil;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
 
@@ -43,8 +43,8 @@ public class TaskPoolTest {
     @Test
     public void testFillTasksMap() throws IOException {
         TaskFactory taskFactory = mock(TaskFactory.class);
-        ApplicationContainer applicationContainer = mock(ApplicationContainer.class);
-        when(taskFactory.getApplicationContainer()).thenReturn(applicationContainer);
+        AbstractApplicationContainer abstractApplicationContainer = mock(AbstractApplicationContainer.class);
+        when(taskFactory.getApplicationContainer()).thenReturn(abstractApplicationContainer);
         when(taskFactory.getTaskType()).thenReturn(Class.class);
         List<String> jars = Arrays.asList("abc", "xyz", "qwe");
         when(streamUtil.getJarFileListFromFolder(anyString())).thenReturn(jars);
@@ -52,7 +52,7 @@ public class TaskPoolTest {
         when(tasksUtil.getFactories(anyString())).thenReturn(taskFactories);
         TaskPool taskPool = new TaskPool("/");
         assertFalse(taskPool.isEmpty());
-        verify(applicationContainer, times(taskFactories.size() * jars.size())).contain(any(Container.class));
+        verify(abstractApplicationContainer, times(taskFactories.size() * jars.size())).contain(any(Container.class));
     }
 
     @Test(expected = CanNotInitTaskFactoryException.class)

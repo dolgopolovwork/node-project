@@ -17,9 +17,7 @@ import java.util.UUID;
 public class NodeUsersCRUDWebController extends JSONWebController {
 
     private final AddUserValidator addUserValidator = Container.getInstance().get(AddUserValidator.class);
-
     private final UpdateUserValidator updateUserValidator = Container.getInstance().get(UpdateUserValidator.class);
-
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     @Override
