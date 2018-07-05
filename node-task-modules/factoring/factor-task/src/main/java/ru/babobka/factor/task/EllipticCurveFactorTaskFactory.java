@@ -6,7 +6,7 @@ import ru.babobka.factor.model.EllipticFactorDistributor;
 import ru.babobka.factor.model.EllipticFactorReducer;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodetask.model.TaskFactory;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 /**
@@ -24,14 +24,14 @@ public class EllipticCurveFactorTaskFactory extends TaskFactory<EllipticCurveFac
     }
 
     @Override
-    public ApplicationContainer getApplicationContainer() {
+    public AbstractApplicationContainer getApplicationContainer() {
         return new EllipticCurveFactorTaskApplicationContainer();
     }
 
-    private static class EllipticCurveFactorTaskApplicationContainer implements ApplicationContainer {
+    private static class EllipticCurveFactorTaskApplicationContainer extends AbstractApplicationContainer {
 
         @Override
-        public void contain(Container container) {
+        protected void containImpl(Container container) {
             container.put(new FactorServiceApplicationContainer());
             container.put(new EllipticCurveFactorServiceFactory());
             container.put(new EllipticFactorDataValidators());

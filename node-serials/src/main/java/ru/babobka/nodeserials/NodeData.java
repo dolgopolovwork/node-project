@@ -64,20 +64,20 @@ public class NodeData implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public synchronized boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         NodeData nodeData = (NodeData) o;
 
-        if (timeStamp != nodeData.timeStamp) return false;
+        if (getTimeStamp() != nodeData.getTimeStamp()) return false;
         if (id != null ? !id.equals(nodeData.id) : nodeData.id != null) return false;
         if (taskId != null ? !taskId.equals(nodeData.taskId) : nodeData.taskId != null) return false;
         return (taskName != null ? taskName.equals(nodeData.taskName) : nodeData.taskName == null) && (data != null ? data.equals(nodeData.data) : nodeData.data == null);
     }
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
         result = 31 * result + (taskName != null ? taskName.hashCode() : 0);
@@ -87,7 +87,7 @@ public class NodeData implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return "NodeData{" +
                 "id=" + id +
                 ", taskId=" + taskId +

@@ -1,15 +1,15 @@
 package ru.babobka.primecounter;
 
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.primecounter.tester.DummyPrimeTester;
 
 /**
  * Created by 123 on 04.11.2017.
  */
-public class PrimeCounterServiceApplicationContainer implements ApplicationContainer {
+public class PrimeCounterServiceApplicationContainer extends AbstractApplicationContainer {
     @Override
-    public void contain(Container container) {
+    protected void containImpl(Container container) {
         container.put(new DummyPrimeTester());
     }
 }

@@ -37,9 +37,8 @@ public class ContainerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testPutNull() {
-        Container.getInstance().put(null);
+        Container.getInstance().put((AbstractApplicationContainer) null);
     }
-
     @Test
     public void testGetByKey() {
         assertEquals(Container.getInstance().get(TestKey.XYZ), Integer.valueOf(123));

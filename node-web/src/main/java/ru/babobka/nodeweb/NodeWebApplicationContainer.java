@@ -1,7 +1,7 @@
 package ru.babobka.nodeweb;
 
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.add.rule.EmailValidationRule;
@@ -15,9 +15,9 @@ import ru.babobka.nodeweb.validation.user.update.rule.NullablePasswordValidation
 /**
  * Created by 123 on 04.11.2017.
  */
-public class NodeWebApplicationContainer implements ApplicationContainer {
+public class NodeWebApplicationContainer extends AbstractApplicationContainer {
     @Override
-    public void contain(Container container) {
+    protected void containImpl(Container container) {
         container.put(new AddUserValidator(new EmailValidationRule(), new NameValidationRule(), new PasswordValidationRule()));
         container.put(new UpdateUserValidator(new NullableEmailValidationRule(), new NullableNameValidationRule(), new NullablePasswordValidationRule()));
         container.put(new NodeUsersServiceImpl());

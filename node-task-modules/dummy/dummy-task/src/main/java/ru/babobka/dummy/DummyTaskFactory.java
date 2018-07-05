@@ -1,7 +1,7 @@
 package ru.babobka.dummy;
 
 import ru.babobka.nodetask.model.TaskFactory;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 /**
@@ -18,14 +18,14 @@ public class DummyTaskFactory extends TaskFactory<DummyTask> {
     }
 
     @Override
-    public ApplicationContainer getApplicationContainer() {
+    public AbstractApplicationContainer getApplicationContainer() {
         return new PrimeCounterTaskFactoryApplicationContainer();
     }
 
-    private static class PrimeCounterTaskFactoryApplicationContainer implements ApplicationContainer {
+    private static class PrimeCounterTaskFactoryApplicationContainer extends AbstractApplicationContainer {
 
         @Override
-        public void contain(Container container) {
+        protected void containImpl(Container container) {
 
         }
     }

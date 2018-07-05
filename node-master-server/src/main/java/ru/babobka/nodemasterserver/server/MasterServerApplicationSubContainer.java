@@ -22,9 +22,8 @@ import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.StoppedTasks;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
@@ -39,49 +38,45 @@ import java.util.concurrent.Executors;
 /**
  * Created by 123 on 18.02.2018.
  */
-public class MasterServerApplicationSubContainer implements ApplicationContainer {
+public class MasterServerApplicationSubContainer extends AbstractApplicationContainer {
     @Override
-    public void contain(Container container) {
-        try {
-            StreamUtil streamUtil = container.get(StreamUtil.class);
-            MasterServerConfig config = container.get(MasterServerConfig.class);
-            container.put(new Sessions());
-            container.put(new SlavesStorage());
-            container.put(new DistributionService());
-            container.put(new ResponseStorage());
-            container.put(new SlaveCreatingPipelineFactory());
-            container.put(new ClientStorage());
-            container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, new TaskPool(
-                    config.getFolders().getTasksFolder()));
-            container.put(new TaskMonitoringService());
-            container.put(new ResponsesMapper());
-            if (config.getModes().isCacheMode()) {
-                container.put(new CacheRequestListener());
-                container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
-            } else {
-                container.put(new TaskServiceImpl());
-            }
-            container.put(new StoppedTasks());
-            container.put(new SlaveFactory());
-            container.put(MasterServerKey.CLIENTS_THREAD_POOL,
-                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
-                        Thread thread = Executors.defaultThreadFactory().newThread(r);
-                        thread.setName("client thread pool");
-                        thread.setDaemon(true);
-                        return thread;
-                    }));
-            container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
-                    config.getPorts().getClientListenerPort(), true)));
-            container.put(new HeartBeatingThread());
-            container.put(new MasterAuthService());
-            container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
-                    config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMachineMode())));
-            container.put(new OnTaskIsReady());
-            container.put(new OnRaceStyleTaskIsReady());
-            container.put(createWebServer(container, config));
-        } catch (RuntimeException | IOException e) {
-            throw new ContainerException(e);
+    protected void containImpl(Container container) throws Exception {
+        StreamUtil streamUtil = container.get(StreamUtil.class);
+        MasterServerConfig config = container.get(MasterServerConfig.class);
+        container.put(new Sessions());
+        container.put(new SlavesStorage());
+        container.put(new DistributionService());
+        container.put(new ResponseStorage());
+        container.put(new SlaveCreatingPipelineFactory());
+        container.put(new ClientStorage());
+        container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, new TaskPool(
+                config.getFolders().getTasksFolder()));
+        container.put(new TaskMonitoringService());
+        container.put(new ResponsesMapper());
+        if (config.getModes().isCacheMode()) {
+            container.put(new CacheRequestListener());
+            container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
+        } else {
+            container.put(new TaskServiceImpl());
         }
+        container.put(new StoppedTasks());
+        container.put(new SlaveFactory());
+        container.put(MasterServerKey.CLIENTS_THREAD_POOL,
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
+                    Thread thread = Executors.defaultThreadFactory().newThread(r);
+                    thread.setName("client thread pool");
+                    thread.setDaemon(true);
+                    return thread;
+                }));
+        container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
+                config.getPorts().getClientListenerPort(), true)));
+        container.put(new HeartBeatingThread());
+        container.put(new MasterAuthService());
+        container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
+                config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMachineMode())));
+        container.put(new OnTaskIsReady());
+        container.put(new OnRaceStyleTaskIsReady());
+        container.put(createWebServer(container, config));
     }
 
     private static WebServer createWebServer(Container container, MasterServerConfig config) throws IOException {

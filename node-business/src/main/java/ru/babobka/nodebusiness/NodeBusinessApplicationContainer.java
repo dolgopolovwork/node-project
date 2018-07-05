@@ -11,7 +11,7 @@ import ru.babobka.nodebusiness.dao.EHCacheDAOImpl;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodebusiness.service.ResponseCacheService;
-import ru.babobka.nodeutils.container.ApplicationContainer;
+import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.Serializable;
@@ -20,9 +20,9 @@ import java.util.HashMap;
 /**
  * Created by 123 on 04.11.2017.
  */
-public class NodeBusinessApplicationContainer implements ApplicationContainer {
+public class NodeBusinessApplicationContainer extends AbstractApplicationContainer {
     @Override
-    public void contain(Container container) {
+    protected void containImpl(Container container) {
         container.put(new UserDTOMapper());
         container.put(new DebugNodeUsersDAOImpl(new HashMap<>()));
         container.put(createCacheManager());
