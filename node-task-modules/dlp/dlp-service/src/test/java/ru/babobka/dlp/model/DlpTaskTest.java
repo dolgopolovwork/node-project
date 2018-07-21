@@ -1,6 +1,7 @@
 package ru.babobka.dlp.model;
 
 import org.junit.Test;
+import ru.babobka.dlp.model.regular.DlpTask;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

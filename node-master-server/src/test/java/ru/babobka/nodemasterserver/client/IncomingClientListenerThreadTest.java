@@ -16,6 +16,8 @@ import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.assertFalse;
@@ -123,8 +125,8 @@ public class IncomingClientListenerThreadTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getRequestStatus()).thenReturn(RequestStatus.RACE);
         Client client = mock(Client.class);
-        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, request);
-        incomingClientsThread.handleRequest(connection, request);
+        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, Arrays.asList(request));
+        incomingClientsThread.handleRequest(connection, Arrays.asList(request));
         verify(executorService).submit(any(Client.class));
     }
 
@@ -134,8 +136,8 @@ public class IncomingClientListenerThreadTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getRequestStatus()).thenReturn(RequestStatus.NORMAL);
         Client client = mock(Client.class);
-        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, request);
-        incomingClientsThread.handleRequest(connection, request);
+        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, Arrays.asList(request));
+        incomingClientsThread.handleRequest(connection, Arrays.asList(request));
         verify(executorService).submit(any(Client.class));
     }
 
@@ -145,8 +147,8 @@ public class IncomingClientListenerThreadTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getRequestStatus()).thenReturn(RequestStatus.HEART_BEAT);
         Client client = mock(Client.class);
-        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, request);
-        incomingClientsThread.handleRequest(connection, request);
+        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, Arrays.asList(request));
+        incomingClientsThread.handleRequest(connection, Arrays.asList(request));
         verify(executorService, never()).submit(any(Client.class));
     }
 
@@ -157,8 +159,8 @@ public class IncomingClientListenerThreadTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getRequestStatus()).thenReturn(RequestStatus.STOP);
         Client client = mock(Client.class);
-        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, request);
-        incomingClientsThread.handleRequest(connection, request);
+        doReturn(client).when(incomingClientsThread).createClientExecutor(connection, Arrays.asList(request));
+        incomingClientsThread.handleRequest(connection, Arrays.asList(request));
         verify(executorService, never()).submit(any(Client.class));
     }
 
@@ -170,10 +172,11 @@ public class IncomingClientListenerThreadTest {
         when(serverSocket.accept()).thenReturn(socket);
         doReturn(connection).when(nodeConnectionFactory).create(socket);
         NodeRequest request = mock(NodeRequest.class);
-        when(connection.receive()).thenReturn(request);
-        doNothing().when(incomingClientsThread).handleRequest(connection, request);
+        List<NodeRequest> requestList = Arrays.asList(request, request, request);
+        when(connection.receive()).thenReturn(requestList);
+        doNothing().when(incomingClientsThread).handleRequest(connection, requestList);
         incomingClientsThread.processConnection(serverSocket);
-        verify(incomingClientsThread).handleRequest(connection, request);
+        verify(incomingClientsThread).handleRequest(connection, requestList);
     }
 
     @Test

@@ -40,7 +40,7 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
         container.put(new NodeWebApplicationContainer());
-        container.put(new MasterServerApplicationSubContainer());
+        container.put(new MasterServerApplicationSubContainer(config));
         NodeLogger nodeLogger = container.get(NodeLogger.class);
         nodeLogger.debug("container was successfully created");
     }
@@ -54,9 +54,9 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         config.setFolders(folderConfig);
 
         TimeConfig timeConfig = new TimeConfig();
-        timeConfig.setAuthTimeOutMillis(5000);
-        timeConfig.setHeartBeatCycleMillis(7000);
-        timeConfig.setRequestReadTimeOutMillis(15000);
+        timeConfig.setAuthTimeOutMillis(5_000);
+        timeConfig.setHeartBeatCycleMillis(10_000);
+        timeConfig.setRequestReadTimeOutMillis(timeConfig.getHeartBeatCycleMillis() * 3);
         //15 minutes
         timeConfig.setDataOutDateMillis(1000 * 60 * 15);
         config.setTime(timeConfig);
@@ -87,4 +87,5 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         Fp gen = new Fp(MathUtil.getGenerator(safePrime), safePrime.getPrime());
         return new SrpConfig(gen, securityConfig.getChallengeBytes());
     }
+
 }

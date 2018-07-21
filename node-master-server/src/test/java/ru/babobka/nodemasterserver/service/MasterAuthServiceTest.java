@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.model.User;
@@ -60,6 +61,11 @@ public class MasterAuthServiceTest {
             container.put(rsaService);
         });
         masterAuthService = spy(new MasterAuthService());
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test

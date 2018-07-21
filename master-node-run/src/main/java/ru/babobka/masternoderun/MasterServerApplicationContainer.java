@@ -32,7 +32,7 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
         container.put(new NodeWebApplicationContainer());
-        container.put(new MasterServerApplicationSubContainer());
+        container.put(new MasterServerApplicationSubContainer(config));
     }
 
     private static SrpConfig createSrpConfig(MasterServerConfig masterServerConfig) {

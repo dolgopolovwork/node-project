@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.controller;
 
 import lombok.NonNull;
+import org.json.JSONObject;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
@@ -37,6 +38,7 @@ public class SocketController implements Closeable {
         try {
             doControl(connection);
         } catch (IOException e) {
+            //TODO пусть не пишет это говно, если всё
             throw new IllegalStateException("cannot control", e);
         }
     }

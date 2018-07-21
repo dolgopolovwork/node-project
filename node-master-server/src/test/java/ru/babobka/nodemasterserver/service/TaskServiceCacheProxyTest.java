@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.service;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
@@ -43,6 +44,11 @@ public class TaskServiceCacheProxyTest {
         taskServiceCacheProxy = spy(new TaskServiceCacheProxy(taskService));
     }
 
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
+    }
+
     @Test
     public void testCanNotBeCached() throws IOException, TaskExecutionException {
         SubTask task = mock(SubTask.class);
@@ -50,7 +56,7 @@ public class TaskServiceCacheProxyTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getTaskName()).thenReturn(taskName);
         when(taskPool.get(taskName)).thenReturn(task);
-        when(task.isRequestDataTooSmall(request)).thenReturn(true);
+        when(task.isSingleNodeTask(request)).thenReturn(true);
         assertFalse(taskServiceCacheProxy.canBeCached(request));
         verify(taskMonitoringService, never()).incrementCacheHitCount();
     }
@@ -58,11 +64,12 @@ public class TaskServiceCacheProxyTest {
     @Test
     public void testCanBeCached() throws IOException, TaskExecutionException {
         SubTask task = mock(SubTask.class);
+        when(task.enableCache()).thenReturn(true);
         String taskName = "abc";
         NodeRequest request = mock(NodeRequest.class);
         when(request.getTaskName()).thenReturn(taskName);
         when(taskPool.get(taskName)).thenReturn(task);
-        when(task.isRequestDataTooSmall(request)).thenReturn(false);
+        when(task.isSingleNodeTask(request)).thenReturn(false);
         assertTrue(taskServiceCacheProxy.canBeCached(request));
     }
 

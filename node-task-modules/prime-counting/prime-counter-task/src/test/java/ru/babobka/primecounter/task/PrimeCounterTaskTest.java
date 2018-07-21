@@ -42,7 +42,7 @@ public class PrimeCounterTaskTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getDataValue(Params.BEGIN.getValue())).thenReturn(0L);
         when(request.getDataValue(Params.END.getValue())).thenReturn(1000000L);
-        assertFalse(primeCounterTask.isRequestDataTooSmall(request));
+        assertFalse(primeCounterTask.isSingleNodeTask(request));
     }
 
     @Test
@@ -50,6 +50,6 @@ public class PrimeCounterTaskTest {
         NodeRequest request = mock(NodeRequest.class);
         when(request.getDataValue(Params.BEGIN.getValue())).thenReturn(0L);
         when(request.getDataValue(Params.END.getValue())).thenReturn(1000L);
-        assertTrue(primeCounterTask.isRequestDataTooSmall(request));
+        assertTrue(primeCounterTask.isSingleNodeTask(request));
     }
 }

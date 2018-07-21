@@ -122,7 +122,7 @@ public class TaskServiceImplTest {
         when(requestDistributor.distribute(eq(request), anyInt())).thenReturn(new LinkedList<>());
         when(task.getDistributor()).thenReturn(requestDistributor);
         when(request.getTaskId()).thenReturn(taskId);
-        when(task.isRequestDataTooSmall(request)).thenReturn(true);
+        when(task.isSingleNodeTask(request)).thenReturn(true);
         taskService.broadcastTask(request, task, 2);
         verify(responseStorage).create(eq(taskId), any(Responses.class));
         verify(requestDistributor).distribute(request, 1);
@@ -141,7 +141,7 @@ public class TaskServiceImplTest {
         when(requestDistributor.distribute(eq(request), anyInt())).thenReturn(new LinkedList<>());
         when(task.getDistributor()).thenReturn(requestDistributor);
         when(request.getTaskId()).thenReturn(taskId);
-        when(task.isRequestDataTooSmall(request)).thenReturn(false);
+        when(task.isSingleNodeTask(request)).thenReturn(false);
         taskService.broadcastTask(request, task, 0);
         verify(responseStorage).create(eq(taskId), any(Responses.class));
         verify(requestDistributor).distribute(request, actualClusterSize);
@@ -161,7 +161,7 @@ public class TaskServiceImplTest {
         when(requestDistributor.distribute(eq(request), anyInt())).thenReturn(new LinkedList<>());
         when(task.getDistributor()).thenReturn(requestDistributor);
         when(request.getTaskId()).thenReturn(taskId);
-        when(task.isRequestDataTooSmall(request)).thenReturn(false);
+        when(task.isSingleNodeTask(request)).thenReturn(false);
         taskService.broadcastTask(request, task, maxNodes);
         verify(responseStorage).create(eq(taskId), any(Responses.class));
         verify(requestDistributor).distribute(request, maxNodes);
@@ -181,7 +181,7 @@ public class TaskServiceImplTest {
         when(requestDistributor.distribute(eq(request), anyInt())).thenReturn(new LinkedList<>());
         when(task.getDistributor()).thenReturn(requestDistributor);
         when(request.getTaskId()).thenReturn(taskId);
-        when(task.isRequestDataTooSmall(request)).thenReturn(false);
+        when(task.isSingleNodeTask(request)).thenReturn(false);
         taskService.broadcastTask(request, task, maxNodes);
         verify(responseStorage).create(eq(taskId), any(Responses.class));
         verify(requestDistributor).distribute(request, actualClusterSize);

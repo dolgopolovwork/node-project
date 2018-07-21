@@ -7,14 +7,19 @@ import java.io.IOException;
  */
 public interface SimpleLoggerFactory {
     static SimpleLogger defaultLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, false, true);
+        return new SimpleLogger(LogBuilder.buildRegular(loggerName, runningFolder, false), false);
     }
 
     static SimpleLogger debugLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, true, true);
+        return new SimpleLogger(LogBuilder.buildRegular(loggerName, runningFolder, true), true);
     }
 
     static SimpleLogger silentLogger(String loggerName, String runningFolder) throws IOException {
-        return new SimpleLogger(loggerName, runningFolder, false, false);
+        return new SimpleLogger(LogBuilder.buildNoConsole(loggerName, runningFolder, true), true);
+    }
+
+    static SimpleLogger consoleLogger(String loggerName) throws IOException {
+        return new SimpleLogger(LogBuilder.buildConsole(loggerName), true);
+
     }
 }

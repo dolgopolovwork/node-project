@@ -8,8 +8,10 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.ArrayUtil;
 import ru.babobka.nodeutils.util.HashUtil;
 
@@ -29,6 +31,7 @@ public class SRPService {
 
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     private final SecureRandom secureRandom = new SecureRandom();
+    private final TimerInvoker timerInvoker = Container.getInstance().get(TimerInvoker.class);
 
     public boolean sendChallenge(NodeConnection connection, byte[] secretKey, SrpConfig srpConfig) throws IOException {
         if (connection == null) {
@@ -47,18 +50,20 @@ public class SRPService {
         return Arrays.equals(challengerSolution, solution);
     }
 
-    public boolean solveChallenge(NodeConnection connection, byte[] secretKey) throws IOException {
-        if (connection == null) {
-            throw new IllegalArgumentException("connection is null");
-        } else if (connection.isClosed()) {
-            throw new IllegalArgumentException("connection is closed");
-        } else if (ArrayUtil.isEmpty(secretKey)) {
-            throw new IllegalArgumentException("secretKey is empty");
-        }
-        byte[] clientChallenge = connection.receive();
-        byte[] clientSolution = HashUtil.sha2(secretKey, clientChallenge);
-        connection.send(clientSolution);
-        return connection.receive();
+    public boolean solveChallenge(NodeConnection connection, byte[] secretKey) {
+        return timerInvoker.invoke(() -> {
+            if (connection == null) {
+                throw new IllegalArgumentException("connection is null");
+            } else if (connection.isClosed()) {
+                throw new IllegalArgumentException("connection is closed");
+            } else if (ArrayUtil.isEmpty(secretKey)) {
+                throw new IllegalArgumentException("secretKey is empty");
+            }
+            byte[] clientChallenge = connection.receive();
+            byte[] clientSolution = HashUtil.sha2(secretKey, clientChallenge);
+            connection.send(clientSolution);
+            return connection.receive();
+        }, "solveChallenge(NodeConnection connection, byte[] secretKey)");
     }
 
     byte[] createChallenge(SrpConfig srpConfig) {
@@ -103,56 +108,64 @@ public class SRPService {
     }
 
     public byte[] buildHash(NodeData nodeData) {
-        byte[] metaHash = HashUtil.sha2(
-                HashUtil.safeHashCode(nodeData.getId()),
-                HashUtil.safeHashCode(nodeData.getTaskId()),
-                HashUtil.safeHashCode(nodeData.getTaskName()),
-                (int) nodeData.getTimeStamp());
-        byte[] dataHash = HashUtil.sha2(nodeData.getData().getIterator());
-        byte[] mainHash = HashUtil.sha2(dataHash, metaHash);
-        if (nodeData instanceof NodeResponse) {
-            NodeResponse nodeResponse = (NodeResponse) nodeData;
-            return buildHash(nodeResponse, mainHash);
-        }
-        return mainHash;
+        return timerInvoker.invoke(() -> {
+            byte[] metaHash = HashUtil.sha2(
+                    HashUtil.safeHashCode(nodeData.getId()),
+                    HashUtil.safeHashCode(nodeData.getTaskId()),
+                    HashUtil.safeHashCode(nodeData.getTaskName()),
+                    (int) nodeData.getTimeStamp());
+            byte[] dataHash = HashUtil.sha2(nodeData.getData().getIterator());
+            byte[] mainHash = HashUtil.sha2(dataHash, metaHash);
+            if (nodeData instanceof NodeResponse) {
+                NodeResponse nodeResponse = (NodeResponse) nodeData;
+                return buildHash(nodeResponse, mainHash);
+            }
+            return mainHash;
+        }, "buildHash(NodeData nodeData)");
     }
 
     private byte[] buildHash(NodeResponse nodeResponse, byte[] mainHash) {
-        byte[] smallHash = HashUtil.sha2(
-                nodeResponse.getStatus().ordinal(),
-                HashUtil.safeHashCode(nodeResponse.getMessage()),
-                (int) nodeResponse.getTimeTakes());
-        return HashUtil.sha2(mainHash, smallHash);
+        return timerInvoker.invoke(() -> {
+            byte[] smallHash = HashUtil.sha2(
+                    nodeResponse.getStatus().ordinal(),
+                    HashUtil.safeHashCode(nodeResponse.getMessage()),
+                    (int) nodeResponse.getTimeTakes());
+            return HashUtil.sha2(mainHash, smallHash);
+        }, "buildHash(NodeResponse nodeResponse, byte[] mainHash)");
     }
 
     public byte[] buildMac(NodeData data, byte[] secretKey) {
-        if (data == null) {
-            throw new IllegalArgumentException("cannot build mac of null data");
-        } else if (ArrayUtil.isEmpty(secretKey)) {
-            throw new IllegalArgumentException("secretKey was not set");
-        }
-        try {
-            SecretKeySpec signingKey = new SecretKeySpec(secretKey, HMAC_SHA1_ALGORITHM);
-            Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
-            //TODO иногда вылетает с StackOverflow
-            mac.init(signingKey);
-            return mac.doFinal(buildHash(data));
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return timerInvoker.invoke(() -> {
+            if (data == null) {
+                throw new IllegalArgumentException("cannot build mac of null data");
+            } else if (ArrayUtil.isEmpty(secretKey)) {
+                throw new IllegalArgumentException("secretKey was not set");
+            }
+            try {
+                SecretKeySpec signingKey = new SecretKeySpec(secretKey, HMAC_SHA1_ALGORITHM);
+                Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
+                //TODO иногда вылетает с StackOverflow
+                mac.init(signingKey);
+                return mac.doFinal(buildHash(data));
+            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }, "buildMac(NodeData data, byte[] secretKey)");
     }
 
     public boolean isSecure(Object object, byte[] secretKey) {
-        if (object == null) {
-            throw new IllegalArgumentException("object is null");
-        } else if (ArrayUtil.isEmpty(secretKey)) {
-            throw new IllegalArgumentException("secretKey is empty");
-        } else if (object instanceof NodeResponse) {
-            return isSecure((NodeResponse) object, secretKey);
-        } else if (object instanceof NodeRequest) {
-            return isSecure((NodeRequest) object, secretKey);
-        }
-        return false;
+        return timerInvoker.invoke(() -> {
+            if (object == null) {
+                throw new IllegalArgumentException("object is null");
+            } else if (ArrayUtil.isEmpty(secretKey)) {
+                throw new IllegalArgumentException("secretKey is empty");
+            } else if (object instanceof NodeResponse) {
+                return isSecure((NodeResponse) object, secretKey);
+            } else if (object instanceof NodeRequest) {
+                return isSecure((NodeRequest) object, secretKey);
+            }
+            return false;
+        }, "isSecure(Object object, byte[] secretKey)");
     }
 
     private boolean isSecure(NodeResponse response, byte[] secretKey) {

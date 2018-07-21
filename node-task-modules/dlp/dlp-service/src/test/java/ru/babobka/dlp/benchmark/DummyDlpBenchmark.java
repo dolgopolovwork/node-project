@@ -1,7 +1,7 @@
 package ru.babobka.dlp.benchmark;
 
-import ru.babobka.dlp.model.DlpTask;
-import ru.babobka.dlp.service.DlpService;
+import ru.babobka.dlp.model.regular.DlpTask;
+import ru.babobka.dlp.service.regular.DlpService;
 import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
 import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDLPServiceTestable;

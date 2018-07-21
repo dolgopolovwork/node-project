@@ -5,6 +5,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import ru.babobka.nodeclient.ClientApplicationContainer;
+import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodetester.benchmark.NodeBenchmarkCLI;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.TextUtil;
@@ -37,8 +38,8 @@ public class MainApplication extends NodeBenchmarkCLI {
 
     @Override
     protected void benchMarkRun(CommandLine cmd) {
-        int numberBitLength = Integer.parseInt(cmd.getOptionValue(ORDER_BIT_LENGTH_OPTION));
-        new DlpNodeBenchmark(getAppName(), getTests(cmd), numberBitLength).run(getSlaves(cmd), getServiceThreads(cmd));
+        int orderBitLength = Integer.parseInt(cmd.getOptionValue(ORDER_BIT_LENGTH_OPTION));
+        new NodeBenchmark(getAppName(), getTests(cmd)).run(getSlaves(cmd), getServiceThreads(cmd), new DlpNodeBenchmarkPerformer(orderBitLength));
     }
 
     @Override
@@ -47,6 +48,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     }
 
     public static void main(String[] args) {
+        args = new String[]{"-t", "15", "-b", "40", "-s", "4", "-st", "1"};
         new MainApplication().onMain(args);
     }
 }

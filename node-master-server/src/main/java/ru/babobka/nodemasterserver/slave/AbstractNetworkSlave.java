@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by 123 on 24.08.2017.
@@ -31,6 +32,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     protected final NodeConnection connection;
+    private final AtomicLong lastSendRequestTime = new AtomicLong(0);
 
     AbstractNetworkSlave(@NonNull NodeConnection connection) {
         if (connection.isClosed()) {
@@ -107,6 +109,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         } else if (hasRequest(request)) {
             nodeLogger.warning("slave " + getSlaveId() + " already has request with id " + request.getId());
         } else if (!(request.getRequestStatus() == RequestStatus.RACE && hasTask(request.getTaskId()))) {
+            lastSendRequestTime.set(System.currentTimeMillis());
             addTask(request);
             getConnection().send(request);
             nodeLogger.info(request + " was sent by slave " + getSlaveId());
@@ -142,4 +145,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
         }
     }
 
+    public long getLastSendRequestTime() {
+        return lastSendRequestTime.get();
+    }
 }

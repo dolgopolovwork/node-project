@@ -6,10 +6,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -49,10 +46,10 @@ public class SlavesStorage {
     public synchronized List<Slave> getFullList() {
         List<Slave> fullSlaveList = new ArrayList<>(this.slaves.size());
         for (Slave slave : slaves) {
-            if (!slave.isInterrupted())
+            if (!slave.isInterrupted()) {
                 fullSlaveList.add(slave);
+            }
         }
-        Collections.shuffle(fullSlaveList);
         return fullSlaveList;
     }
 
@@ -64,16 +61,16 @@ public class SlavesStorage {
         if (maxSlaves < 1) {
             return new ArrayList<>();
         }
+        Map<UUID, Long> slaveUsageMap = new HashMap<>();
         List<Slave> groupedSlaves = new ArrayList<>();
         for (Slave slave : getFullList()) {
             if (!slave.isInterrupted() && slave.taskIsAvailable(taskName)) {
+                slaveUsageMap.put(slave.getSlaveId(), slave.getLastSendRequestTime());
                 groupedSlaves.add(slave);
-                if (groupedSlaves.size() == maxSlaves) {
-                    break;
-                }
             }
         }
-        return groupedSlaves;
+        Collections.sort(groupedSlaves, (slave1, slave2) -> slaveUsageMap.get(slave1.getSlaveId()).compareTo(slaveUsageMap.get(slave2.getSlaveId())));
+        return groupedSlaves.subList(0, Math.min(maxSlaves, groupedSlaves.size()));
     }
 
     public synchronized List<Slave> getListByTaskId(@NonNull NodeData nodeData) {

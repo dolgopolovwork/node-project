@@ -3,6 +3,7 @@ package ru.babobka.nodeserials.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,6 +13,7 @@ import java.util.TreeMap;
  */
 public class Data implements Serializable {
     private static final long serialVersionUID = 5784960116404504151L;
+    private static final int MAX_SIZE_OF_COLLECTION_TO_BE_PRINTED = 10;
     private final Map<String, Serializable> dataCollection = new TreeMap<>();
 
     public Data put(String key, int value) {
@@ -69,6 +71,11 @@ public class Data implements Serializable {
         return this;
     }
 
+    public Data put(String key, List<Number> numbers) {
+        dataCollection.put(key, (Serializable) numbers);
+        return this;
+    }
+
     public Data put(Data data) {
         if (data != null) {
             dataCollection.putAll(data.dataCollection);
@@ -119,8 +126,22 @@ public class Data implements Serializable {
 
     @Override
     public String toString() {
+        StringBuilder dataCollectionBuilder = new StringBuilder();
+        String indent = "";
+        for (Map.Entry<String, Serializable> entry : dataCollection.entrySet()) {
+            dataCollectionBuilder.append(indent).append(entry.getKey()).append("=");
+            if (entry.getValue() instanceof Collection<?>) {
+                Collection<?> collection = (Collection<?>) entry.getValue();
+                if (collection.size() > MAX_SIZE_OF_COLLECTION_TO_BE_PRINTED) {
+                    dataCollectionBuilder.append("{...}");
+                }
+            } else {
+                dataCollectionBuilder.append("{").append(entry.getValue()).append("}");
+            }
+            indent = ", ";
+        }
         return "Data{" +
-                "dataCollection=" + dataCollection +
+                "dataCollection=" + dataCollectionBuilder.toString() +
                 '}';
     }
 }

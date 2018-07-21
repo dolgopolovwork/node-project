@@ -3,6 +3,7 @@ package ru.babobka.nodemasterserver.client;
 import lombok.NonNull;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -10,7 +11,11 @@ import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import static ru.babobka.nodeserials.enumerations.RequestStatus.NORMAL;
+import static ru.babobka.nodeserials.enumerations.RequestStatus.RACE;
 
 /**
  * Created by 123 on 28.10.2017.
@@ -63,32 +68,30 @@ public class IncomingClientListenerThread extends Thread {
         }
         try {
             NodeConnection nodeConnection = nodeConnectionFactory.create(serverSocket.accept());
-            NodeRequest request = nodeConnection.receive();
-            handleRequest(nodeConnection, request);
+            List<NodeRequest> requests = nodeConnection.receive();
+            handleRequest(nodeConnection, requests);
         } catch (IOException e) {
             nodeLogger.error(e);
         }
     }
 
-    void handleRequest(NodeConnection nodeConnection, NodeRequest request) {
-        switch (request.getRequestStatus()) {
-            case NORMAL:
-            case RACE: {
-                try {
-                    executorService.submit(createClientExecutor(nodeConnection, request));
-                } catch (RuntimeException e) {
-                    nodeLogger.error("errror occurred while handling request " + request, e);
-                }
+    void handleRequest(NodeConnection nodeConnection, List<NodeRequest> requests) {
+        for (NodeRequest request : requests) {
+            RequestStatus status = request.getRequestStatus();
+            if (!(status == NORMAL || status == RACE)) {
+                nodeLogger.warning("cannot handle request " + request);
                 return;
             }
-            default: {
-                nodeLogger.warning("cannot handle request " + request);
-            }
+        }
+        try {
+            executorService.submit(createClientExecutor(nodeConnection, requests));
+        } catch (RuntimeException e) {
+            nodeLogger.error("error occurred while handling requests " + requests, e);
         }
     }
 
-    Client createClientExecutor(NodeConnection connection, NodeRequest request) {
-        return new Client(connection, request);
+    Client createClientExecutor(NodeConnection connection, List<NodeRequest> requests) {
+        return new Client(connection, requests);
     }
 
     boolean isDone(@NonNull ServerSocket serverSocket) {

@@ -11,6 +11,8 @@ import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by 123 on 28.10.2017.
@@ -21,10 +23,11 @@ public class Client extends AbstractClient {
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
+    private final AtomicInteger processedRequests = new AtomicInteger(0);
     private volatile boolean done;
 
-    Client(NodeConnection connection, NodeRequest request) {
-        super(connection, request);
+    Client(NodeConnection connection, List<NodeRequest> requests) {
+        super(connection, requests);
     }
 
     @Override
@@ -40,7 +43,9 @@ public class Client extends AbstractClient {
     }
 
     void runExecution() {
-        new Thread(new ExecutionRunnable()).start();
+        for (NodeRequest request : requests) {
+            new Thread(new ExecutionRunnable(request)).start();
+        }
     }
 
     void processConnection() {
@@ -62,24 +67,30 @@ public class Client extends AbstractClient {
     }
 
     void cancelTask() {
-        try {
-            taskService.cancelTask(request.getTaskId());
-        } catch (TaskExecutionException e) {
-            nodeLogger.error(e);
+        for (NodeRequest request : requests) {
+            try {
+                taskService.cancelTask(request.getTaskId());
+            } catch (TaskExecutionException e) {
+                nodeLogger.error(e);
+            }
         }
         setDone();
     }
 
     void sendFailed() throws IOException {
-        connection.send(NodeResponse.failed(request));
+        for (NodeRequest request : requests) {
+            connection.send(NodeResponse.failed(request));
+        }
     }
 
-    void sendNormal(TaskExecutionResult result) throws IOException {
+    void sendNormal(TaskExecutionResult result, NodeRequest request) throws IOException {
         connection.send(NodeResponse.normal(result.getData(), request, result.getTimeTakes()));
     }
 
     void sendStopped() throws IOException {
-        connection.send(NodeResponse.stopped(request));
+        for (NodeRequest request : requests) {
+            connection.send(NodeResponse.stopped(request));
+        }
     }
 
     boolean isDone() {
@@ -90,15 +101,17 @@ public class Client extends AbstractClient {
         this.done = true;
     }
 
-    void executeTask() throws IOException {
+    void executeTask(NodeRequest request) throws IOException {
         try {
             TaskExecutionResult result = taskService.executeTask(request);
             if (result.wasStopped()) {
                 sendStopped();
             } else {
-                sendNormal(result);
+                sendNormal(result, request);
             }
-            setDone();
+            if (processedRequests.incrementAndGet() == requests.size()) {
+                setDone();
+            }
         } catch (TaskExecutionException e) {
             nodeLogger.error(e);
             sendFailed();
@@ -107,10 +120,16 @@ public class Client extends AbstractClient {
 
     private class ExecutionRunnable implements Runnable {
 
+        private final NodeRequest request;
+
+        public ExecutionRunnable(NodeRequest request) {
+            this.request = request;
+        }
+
         @Override
         public void run() {
             try {
-                executeTask();
+                executeTask(request);
             } catch (IOException e) {
                 nodeLogger.error(e);
             }

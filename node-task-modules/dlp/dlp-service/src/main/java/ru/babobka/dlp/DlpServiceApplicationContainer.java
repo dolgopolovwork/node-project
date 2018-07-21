@@ -1,6 +1,7 @@
 package ru.babobka.dlp;
 
-import ru.babobka.dlp.service.PollardDlpServiceFactory;
+import ru.babobka.dlp.service.dist.PollardDlpDistServiceFactory;
+import ru.babobka.dlp.service.regular.PollardDlpServiceFactory;
 import ru.babobka.dlp.service.pollard.ClassicPollardDlpService;
 import ru.babobka.dlp.service.pollard.PollardCollisionService;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
@@ -18,5 +19,6 @@ public class DlpServiceApplicationContainer extends AbstractApplicationContainer
         container.put(new ClassicPollardDlpService());
         container.put(new PrimeDistinguishable());
         container.put(new PollardDlpServiceFactory());
+        container.put(new PollardDlpDistServiceFactory());
     }
 }

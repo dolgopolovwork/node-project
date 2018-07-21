@@ -74,6 +74,7 @@ public class TaskServiceImpl implements TaskService {
             taskMonitoringService.incrementExecutedTasksCount();
             return result;
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
+            e.printStackTrace();
             taskMonitoringService.incrementFailedTasksCount();
             throw new TaskExecutionException(e);
         } finally {
@@ -99,13 +100,13 @@ public class TaskServiceImpl implements TaskService {
         if (clusterSize <= 0) {
             nodeLogger.debug("rebroadcast attempt " + attempt);
             if (attempt == MAX_ATTEMPTS) {
-                throw new DistributionException("cluster size is " + clusterSize);
+                throw new DistributionException("cannot broadcost more. system reached its max retry attempt.");
             }
             waitForGoodTimes();
             broadcastTask(request, task, maxNodes, attempt + 1);
             return;
         }
-        nodeLogger.debug("cluster size is " + clusterSize);
+        nodeLogger.debug("involved nodes " + clusterSize);
         responseStorage.create(taskId, new Responses(clusterSize, task));
         List<NodeRequest> requests = task.getDistributor().distribute(request, clusterSize);
         nodeLogger.debug("requests to distribute " + requests);
@@ -121,7 +122,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private int getClusterSize(NodeRequest request, SubTask task, int maxNodes) {
-        if (task.isRequestDataTooSmall(request))
+        if (task.isSingleNodeTask(request))
             return 1;
         int actualClusterSize = slavesStorage.getClusterSize(request.getTaskName());
         return maxNodes == 0 ? actualClusterSize : Math.min(maxNodes, actualClusterSize);

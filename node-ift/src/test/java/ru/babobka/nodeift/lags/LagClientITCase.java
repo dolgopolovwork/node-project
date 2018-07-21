@@ -12,17 +12,17 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.io.IOException;
-
 /**
  * Created by 123 on 12.12.2017.
  */
 public class LagClientITCase extends ru.babobka.nodeift.ClientITCase {
 
     @BeforeClass
-    public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(LagClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
-        Container.getInstance().put(new LaggyNodeConnectionFactory());
+    public static void setUp() {
+        Container.getInstance().put(container -> {
+            container.put(SimpleLoggerFactory.debugLogger(LagClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+            container.put(new LaggyNodeConnectionFactory());
+        });
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();

@@ -3,7 +3,7 @@ package ru.babobka.dlp.service.pollard;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.dlp.model.DlpTask;
+import ru.babobka.dlp.model.regular.DlpTask;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 

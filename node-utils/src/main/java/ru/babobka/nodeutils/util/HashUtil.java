@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 public class HashUtil {
 
     private static final String SHA_256 = "SHA-256";
+    private static final int MAX_COLLECTION_SIZE_TO_HASH = 25;
 
     private HashUtil() {
 
@@ -55,12 +57,22 @@ public class HashUtil {
             while (iterator.hasNext()) {
                 Map.Entry<String, Serializable> entry = iterator.next();
                 sha256.update(entry.getKey().getBytes(TextUtil.CHARSET));
-                sha256.update(toByteArray(entry.getValue()));
+                if (!isBigObject(entry.getValue())) {
+                    sha256.update(toByteArray(entry.getValue()));
+                }
             }
             return sha256.digest();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isBigObject(Object object) {
+        if (object instanceof Collection) {
+            Collection collection = (Collection) object;
+            return collection.size() > MAX_COLLECTION_SIZE_TO_HASH;
+        }
+        return false;
     }
 
     private static byte[] toByteArray(Object object) throws IOException {

@@ -45,7 +45,11 @@ public class Container {
         if (lambdaApplicationContainer == null) {
             throw new IllegalArgumentException("lambdaApplicationContainer is null");
         }
-        lambdaApplicationContainer.contain(this);
+        try {
+            lambdaApplicationContainer.contain(this);
+        } catch (Exception e) {
+            throw new ContainerException(e);
+        }
     }
 
     public synchronized void put(Key key, Object object) {
@@ -60,12 +64,16 @@ public class Container {
 
     @SuppressWarnings("unchecked")
     private <T> T getNoException(Class<T> clazz) {
+        T component = null;
         for (Map.Entry<Class<?>, Object> entry : containerMap.entrySet()) {
             if (clazz.isAssignableFrom(entry.getKey())) {
-                return (T) entry.getValue();
+                if (component != null) {
+                    throw new IllegalStateException("container has at least two objects of the class " + clazz.getSimpleName() + ". try use get(Key key)");
+                }
+                component = (T) entry.getValue();
             }
         }
-        return null;
+        return component;
     }
 
     @SuppressWarnings("unchecked")

@@ -1,7 +1,7 @@
 package ru.babobka.dlp.service.pollard;
 
 import org.junit.Test;
-import ru.babobka.dlp.model.PollardEntity;
+import ru.babobka.dlp.model.regular.PollardEntity;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;

@@ -1,8 +1,10 @@
 package ru.babobka.nodeutils.logger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodeutils.util.TextUtil;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import static org.mockito.Mockito.mock;
@@ -13,9 +15,14 @@ import static org.mockito.Mockito.verify;
  */
 public class NodeLoggerTest {
 
-    private final Logger logger = mock(Logger.class);
+    private static Logger logger = mock(Logger.class);
 
-    private final NodeLogger nodeLogger = new SimpleLogger(logger);
+    private static NodeLogger nodeLogger;
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        nodeLogger = new SimpleLogger(logger, true);
+    }
 
     @Test
     public void testInfo() {

@@ -1,6 +1,7 @@
 package ru.babobka.nodeutils.network;
 
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ public class NodeConnectionImpl implements NodeConnection {
 
     private final Socket socket;
     private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
+    private final TimerInvoker timerInvoker = Container.getInstance().get(TimerInvoker.class);
 
     public NodeConnectionImpl(Socket socket) {
         if (socket == null) {
@@ -39,9 +41,16 @@ public class NodeConnectionImpl implements NodeConnection {
     }
 
     public void send(Object object) throws IOException {
-        synchronized (socket) {
-            streamUtil.sendObject(object, socket);
-        }
+        timerInvoker.invoke(() -> {
+            synchronized (socket) {
+                try {
+                    streamUtil.sendObject(object, socket);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, "send(Object object)");
+
     }
 
     public void close() {
@@ -55,7 +64,6 @@ public class NodeConnectionImpl implements NodeConnection {
                 e.printStackTrace();
             }
         }
-
     }
 
     public boolean isClosed() {

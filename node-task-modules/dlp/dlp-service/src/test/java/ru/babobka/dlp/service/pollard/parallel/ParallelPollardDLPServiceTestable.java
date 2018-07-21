@@ -1,7 +1,8 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
-import ru.babobka.dlp.model.DlpTask;
-import ru.babobka.dlp.service.DlpService;
+import ru.babobka.dlp.model.regular.DlpTask;
+import ru.babobka.dlp.service.pollard.parallel.regular.ParallelPollardDlpService;
+import ru.babobka.dlp.service.regular.DlpService;
 
 import java.math.BigInteger;
 

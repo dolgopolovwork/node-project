@@ -3,7 +3,7 @@ package ru.babobka.slavenoderun;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import ru.babobka.nodeclient.CLI;
+import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;

@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave.pipeline.step;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
@@ -43,6 +44,11 @@ public class SlaveCreateStepTest {
             container.put(masterServerConfig);
         });
         slaveCreateStep = spy(new SlaveCreateStep());
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test

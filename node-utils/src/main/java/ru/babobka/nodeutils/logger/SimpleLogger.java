@@ -12,17 +12,8 @@ public class SimpleLogger implements NodeLogger {
     private final Logger logger;
     private final boolean debugMode;
 
-    SimpleLogger(Logger logger) {
+    public SimpleLogger(Logger logger, boolean debugMode) throws IOException {
         this.logger = logger;
-        this.debugMode = false;
-    }
-
-    public SimpleLogger(String loggerName, String runningFolder, boolean debugMode, boolean writeConsole) throws IOException {
-        if (writeConsole) {
-            logger = LogBuilder.buildRegular(loggerName, runningFolder, debugMode);
-        } else {
-            logger = LogBuilder.buildNoConsole(loggerName, runningFolder, debugMode);
-        }
         this.debugMode = debugMode;
     }
 

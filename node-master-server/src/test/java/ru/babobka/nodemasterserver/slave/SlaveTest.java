@@ -15,8 +15,8 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.Applyer;
-import ru.babobka.nodeutils.logger.DummyNodeLogger;
 import ru.babobka.nodeutils.logger.NodeLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -40,9 +40,9 @@ public class SlaveTest {
     private DistributionService distributionService;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         masterServerConfig = mock(MasterServerConfig.class);
-        nodeLogger = new DummyNodeLogger();
+        nodeLogger = SimpleLoggerFactory.consoleLogger("SlaveTest");
         responseStorage = mock(ResponseStorage.class);
         slavesStorage = mock(SlavesStorage.class);
         distributionService = mock(DistributionService.class);
@@ -137,7 +137,7 @@ public class SlaveTest {
         doNothing().when(slave).onReceive(response);
         assertTrue(slave.processConnection());
         verify(connection).setReadTimeOut(timeConfig.getRequestReadTimeOutMillis());
-        verify(slave,never()).onReceive(response);
+        verify(slave, never()).onReceive(response);
     }
 
     @Test
