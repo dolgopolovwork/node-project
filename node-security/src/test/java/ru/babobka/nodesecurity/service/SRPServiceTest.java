@@ -14,6 +14,7 @@ import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.IOException;
@@ -34,8 +35,13 @@ public class SRPServiceTest {
 
     @Before
     public void setUp() {
-        srpService = spy(new SRPService());
-        Container.getInstance().put(srpService);
+
+        Container.getInstance().put(container -> {
+            container.put(TimerInvoker.create(10_000));
+            srpService = spy(new SRPService());
+            container.put(srpService);
+        });
+
         secureDataFactory = new SecureDataFactory();
     }
 
@@ -46,12 +52,12 @@ public class SRPServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIsSecureNullObject() {
-        assertFalse(srpService.isSecure(null, secretKey));
+        srpService.isSecure(null, secretKey);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIsSecureNullSecretKey() {
-        assertFalse(srpService.isSecure("test", null));
+        srpService.isSecure("test", null);
     }
 
     @Test(expected = IllegalArgumentException.class)

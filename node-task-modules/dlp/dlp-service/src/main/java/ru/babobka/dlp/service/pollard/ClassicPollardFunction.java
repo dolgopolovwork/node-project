@@ -1,7 +1,6 @@
 package ru.babobka.dlp.service.pollard;
 
-import ru.babobka.dlp.model.regular.PollardEntity;
-import ru.babobka.dlp.service.pollard.func.PollardFunction;
+import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;
@@ -23,13 +22,13 @@ public class ClassicPollardFunction extends PollardFunction {
 
     @Override
     protected PollardEntity mixImpl(PollardEntity input) {
-        Fp x = input.getCollision();
+        Fp x = input.getX();
         if (x.getNumber().compareTo(thirdOfP) < 0) {
-            return new PollardEntity(x.mult(input.getG()), input.getY(), input.getG(), input.getValExp(), input.incGenExp());
+            return new PollardEntity(x.mult(input.getG()), input.getA(), input.getG(), input.getValExp(), input.incGenExp());
         } else if (x.getNumber().compareTo(twoThirdsOfP) < 0) {
-            return new PollardEntity(x.square(), input.getY(), input.getG(), input.doubleValExp(), input.doubleGenExp());
+            return new PollardEntity(x.square(), input.getA(), input.getG(), input.doubleValExp(), input.doubleGenExp());
         } else {
-            return new PollardEntity(x.mult(input.getY()), input.getY(), input.getG(), input.incValExp(), input.getGenExp());
+            return new PollardEntity(x.mult(input.getA()), input.getA(), input.getG(), input.incValExp(), input.getGenExp());
         }
     }
 

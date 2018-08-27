@@ -98,7 +98,7 @@ public abstract class NodeBenchmarkCLI extends CLI {
         Container container = Container.getInstance();
         try {
             TextUtil.hideWarnings("SLF4J");
-            container.put(SimpleLoggerFactory.debugLogger("silent-log", TextUtil.getEnv(Env.NODE_LOGS)));
+            container.put(SimpleLoggerFactory.silentLogger("silent-log", TextUtil.getEnv(Env.NODE_LOGS)));
             Properties.put(TesterKey.ENABLE_CACHE, cmd.hasOption(CACHE_OPTION));
             if (cmd.hasOption(PERMANENT_DRIVER_OPTION)) {
                 Properties.put(TesterKey.PERMANENT, true);

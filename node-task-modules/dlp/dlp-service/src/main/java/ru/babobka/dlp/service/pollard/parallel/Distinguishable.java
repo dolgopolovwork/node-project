@@ -7,7 +7,7 @@ import ru.babobka.nodeutils.math.Fp;
  */
 public abstract class Distinguishable {
 
-   public boolean isDistinguishable(Fp point) {
+    boolean isDistinguishable(Fp point) {
         if (point == null) {
             throw new IllegalArgumentException("point is null");
         }

@@ -1,7 +1,7 @@
 package ru.babobka.dlp.model.regular;
 
 import org.junit.Test;
-import ru.babobka.dlp.model.regular.PollardDlpDataValidators;
+import ru.babobka.dlp.model.PollardDlpDataValidators;
 import ru.babobka.dlp.task.Params;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;

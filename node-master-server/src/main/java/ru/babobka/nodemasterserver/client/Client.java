@@ -122,7 +122,7 @@ public class Client extends AbstractClient {
 
         private final NodeRequest request;
 
-        public ExecutionRunnable(NodeRequest request) {
+        ExecutionRunnable(NodeRequest request) {
             this.request = request;
         }
 

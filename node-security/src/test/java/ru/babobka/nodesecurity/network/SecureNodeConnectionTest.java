@@ -11,6 +11,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
+import ru.babobka.nodeutils.time.TimerInvoker;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -34,6 +35,7 @@ public class SecureNodeConnectionTest {
         Container.getInstance().put(container -> {
             container.put(secureDataFactory);
             container.put(SRPService);
+            container.put(TimerInvoker.create(10_000));
         });
     }
 

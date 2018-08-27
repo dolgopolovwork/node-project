@@ -1,6 +1,5 @@
 package ru.babobka.nodetester.benchmark;
 
-import org.json.JSONObject;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodebusiness.service.BenchmarkStorageService;
 import ru.babobka.nodeclient.console.CLI;

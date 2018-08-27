@@ -75,7 +75,7 @@ public class PollardDlpITCase {
         data.put("x", gen);
         data.put("y", BigInteger.valueOf(32));
         data.put("mod", safePrime.getPrime());
-        return NodeRequest.regular(UUID.randomUUID(), "ru.babobka.dlp.task.regular.PollardDlpTask", data);
+        return NodeRequest.regular(UUID.randomUUID(), "ru.babobka.dlp.task.PollardDlpTask", data);
     }
 
     @Test

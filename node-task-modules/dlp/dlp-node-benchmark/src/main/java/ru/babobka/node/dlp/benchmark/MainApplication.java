@@ -48,7 +48,6 @@ public class MainApplication extends NodeBenchmarkCLI {
     }
 
     public static void main(String[] args) {
-        args = new String[]{"-t", "15", "-b", "40", "-s", "4", "-st", "1"};
         new MainApplication().onMain(args);
     }
 }

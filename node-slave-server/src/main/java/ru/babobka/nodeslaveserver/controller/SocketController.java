@@ -1,7 +1,6 @@
 package ru.babobka.nodeslaveserver.controller;
 
 import lombok.NonNull;
-import org.json.JSONObject;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;

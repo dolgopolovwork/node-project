@@ -2,7 +2,7 @@ package ru.babobka.nodeutils.time;
 
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.time.exception.TimeInvokerException;
+import ru.babobka.nodeutils.time.exception.TimerInvokerException;
 import ru.babobka.nodeutils.time.inter.CallableInvoker;
 import ru.babobka.nodeutils.time.inter.RunnableInvoker;
 
@@ -29,7 +29,7 @@ public class TimerInvoker {
         try {
             runnable.run();
         } catch (Exception e) {
-            throw new TimeInvokerException(e);
+            throw new TimerInvokerException(e);
         } finally {
             printIfDelayed(timer);
         }
@@ -40,7 +40,7 @@ public class TimerInvoker {
         try {
             return callable.call();
         } catch (Exception e) {
-            throw new TimeInvokerException(e);
+            throw new TimerInvokerException(e);
         } finally {
             printIfDelayed(timer);
         }

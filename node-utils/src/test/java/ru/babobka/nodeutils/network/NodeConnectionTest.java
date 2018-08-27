@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.time.TimerInvoker;
+import ru.babobka.nodeutils.time.exception.TimerInvokerException;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
@@ -24,7 +26,10 @@ public class NodeConnectionTest {
     public void setUp() {
         socket = mock(Socket.class);
         streamUtil = mock(StreamUtil.class);
-        Container.getInstance().put(streamUtil);
+        Container.getInstance().put(container -> {
+            container.put(streamUtil);
+            container.put(TimerInvoker.create(10_000));
+        });
         connection = new NodeConnectionImpl(socket);
     }
 
@@ -35,7 +40,7 @@ public class NodeConnectionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNullSocket() {
-        new NodeConnectionImpl((Socket) null);
+        new NodeConnectionImpl(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -64,7 +69,7 @@ public class NodeConnectionTest {
         verify(streamUtil).sendObject(object, socket);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = TimerInvokerException.class)
     public void testSendException() throws IOException {
         doThrow(new IOException()).when(streamUtil).sendObject(any(Object.class), eq(socket));
         connection.send(new Object());

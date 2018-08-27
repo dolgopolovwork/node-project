@@ -7,11 +7,7 @@ public enum Params {
     EXP("exp"),
     X("x"),
     Y("y"),
-    MOD("mod"),
-    LOOPS("loops"),
-    COLLISIONS("collisions"),
-    GEN_EXP_LIST("genExpList"),
-    VAL_EXP_LIST("valExpList");
+    MOD("mod");
 
     private final String value;
 

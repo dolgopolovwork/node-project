@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>node-project</name>
-    <description>Node project is y little framework for building distributed lightweight applications.</description>
+    <description>Node project is a little framework for building distributed lightweight applications.</description>
     <modules>
         <module>node-master-server</module>
         <module>node-security</module>
@@ -38,9 +38,7 @@
         <!-- DLP -->
         <module>node-task-modules/dlp/dlp-service</module>
         <module>node-task-modules/dlp/dlp-task</module>
-        <module>node-task-modules/dlp/dlp-dist-client</module>
         <module>node-task-modules/dlp/dlp-node-benchmark</module>
-        <module>node-task-modules/dlp/dlp-dist-node-benchmark</module>
         <module>node-task-modules/dlp/dlp-benchmark</module>
         <module>node-task-modules/dlp/dlp</module>
         <module>vsjws</module>

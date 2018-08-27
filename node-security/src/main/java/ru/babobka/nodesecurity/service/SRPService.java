@@ -51,14 +51,14 @@ public class SRPService {
     }
 
     public boolean solveChallenge(NodeConnection connection, byte[] secretKey) {
+        if (connection == null) {
+            throw new IllegalArgumentException("connection is null");
+        } else if (connection.isClosed()) {
+            throw new IllegalArgumentException("connection is closed");
+        } else if (ArrayUtil.isEmpty(secretKey)) {
+            throw new IllegalArgumentException("secretKey is empty");
+        }
         return timerInvoker.invoke(() -> {
-            if (connection == null) {
-                throw new IllegalArgumentException("connection is null");
-            } else if (connection.isClosed()) {
-                throw new IllegalArgumentException("connection is closed");
-            } else if (ArrayUtil.isEmpty(secretKey)) {
-                throw new IllegalArgumentException("secretKey is empty");
-            }
             byte[] clientChallenge = connection.receive();
             byte[] clientSolution = HashUtil.sha2(secretKey, clientChallenge);
             connection.send(clientSolution);
@@ -135,12 +135,12 @@ public class SRPService {
     }
 
     public byte[] buildMac(NodeData data, byte[] secretKey) {
+        if (data == null) {
+            throw new IllegalArgumentException("cannot build mac of null data");
+        } else if (ArrayUtil.isEmpty(secretKey)) {
+            throw new IllegalArgumentException("secretKey was not set");
+        }
         return timerInvoker.invoke(() -> {
-            if (data == null) {
-                throw new IllegalArgumentException("cannot build mac of null data");
-            } else if (ArrayUtil.isEmpty(secretKey)) {
-                throw new IllegalArgumentException("secretKey was not set");
-            }
             try {
                 SecretKeySpec signingKey = new SecretKeySpec(secretKey, HMAC_SHA1_ALGORITHM);
                 Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
@@ -154,12 +154,13 @@ public class SRPService {
     }
 
     public boolean isSecure(Object object, byte[] secretKey) {
+        if (object == null) {
+            throw new IllegalArgumentException("object is null");
+        } else if (ArrayUtil.isEmpty(secretKey)) {
+            throw new IllegalArgumentException("secretKey is empty");
+        }
         return timerInvoker.invoke(() -> {
-            if (object == null) {
-                throw new IllegalArgumentException("object is null");
-            } else if (ArrayUtil.isEmpty(secretKey)) {
-                throw new IllegalArgumentException("secretKey is empty");
-            } else if (object instanceof NodeResponse) {
+            if (object instanceof NodeResponse) {
                 return isSecure((NodeResponse) object, secretKey);
             } else if (object instanceof NodeRequest) {
                 return isSecure((NodeRequest) object, secretKey);
