@@ -4,9 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import ru.babobka.nodeclient.CLI;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeclient.ClientApplicationContainer;
+import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
  * Created by 123 on 16.12.2017.
  */
 public class MainApplication extends CLI {
-    private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
+    private static final String TASK_NAME = "ru.babobka.dlp.task.regular.PollardDlpTask";
     private static final String HOST_OPTION = "host";
     private static final String HOST_OPT = "h";
     private static final String PORT_OPTION = "port";

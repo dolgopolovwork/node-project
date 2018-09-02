@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave.pipeline.step;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
@@ -39,6 +40,11 @@ public class CommonTasksStepTest {
             container.put(MASTER_SERVER_TASK_POOL, taskPool);
         });
         commonTasksStep = new CommonTasksStep();
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test

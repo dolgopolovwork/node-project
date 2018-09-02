@@ -62,7 +62,7 @@ public class SlaveServerApplicationContainer extends AbstractApplicationContaine
         config.setTasksFolderEnv(Env.NODE_TASKS.name());
         config.setLoggerFolderEnv(Env.NODE_LOGS.name());
         config.setAuthTimeoutMillis(15000);
-        config.setRequestTimeoutMillis(15000);
+        config.setRequestTimeoutMillis(30_000);
         config.setServerHost("localhost");
         config.setServerPort(9090);
         config.setServerPublicKey(rsaPublicKey);

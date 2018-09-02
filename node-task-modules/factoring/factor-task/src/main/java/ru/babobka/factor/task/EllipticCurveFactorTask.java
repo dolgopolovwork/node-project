@@ -44,7 +44,7 @@ public class EllipticCurveFactorTask extends SubTask {
     }
 
     @Override
-    public boolean isRequestDataTooSmall(NodeRequest request) {
+    public boolean isSingleNodeTask(NodeRequest request) {
         BigInteger number = request.getDataValue(Params.NUMBER.getValue());
         return number.bitLength() < 50;
     }

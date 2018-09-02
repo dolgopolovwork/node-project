@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodetester.benchmark.NodeBenchmarkCLI;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -49,7 +50,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     protected void benchMarkRun(CommandLine cmd) {
         int begin = Integer.parseInt(cmd.getOptionValue(BEGIN_OPTION));
         int end = Integer.parseInt(cmd.getOptionValue(END_OPTION));
-        new PrimeCounterNodeBenchmark(getAppName(), getTests(cmd), begin, end).run(getSlaves(cmd), getServiceThreads(cmd));
+        new NodeBenchmark(getAppName(), getTests(cmd)).run(getSlaves(cmd), getServiceThreads(cmd), new PrimeCounterBenchmarkPerformer(begin, end));
     }
 
     @Override

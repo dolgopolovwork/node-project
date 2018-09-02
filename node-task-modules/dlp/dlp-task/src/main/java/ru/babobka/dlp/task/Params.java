@@ -4,7 +4,6 @@ package ru.babobka.dlp.task;
  * Created by 123 on 20.06.2017.
  */
 public enum Params {
-
     EXP("exp"),
     X("x"),
     Y("y"),

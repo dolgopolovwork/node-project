@@ -26,15 +26,15 @@ import java.math.BigInteger;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Created by 123 on 28.01.2018.
  */
 public class PollardDlpITCase {
 
-    private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
     protected static MasterServer masterServer;
-    private static TaskService taskService;
+    protected static TaskService taskService;
 
     @BeforeClass
     public static void setUp() throws IOException {
@@ -54,24 +54,28 @@ public class PollardDlpITCase {
         Container.getInstance().clear();
     }
 
-    private static void createDlpTest(int modBitLength, TaskService taskService) throws TaskExecutionException {
+    private void createDlpTest(int modBitLength, TaskService taskService) throws TaskExecutionException {
         NodeRequest request = createDlpRequest(modBitLength);
         TaskExecutionResult result = taskService.executeTask(request);
         BigInteger x = result.getData().get("x");
         BigInteger y = result.getData().get("y");
         BigInteger mod = result.getData().get("mod");
         BigInteger exp = result.getData().get("exp");
+        if (exp == null) {
+            System.err.print("failed request "+request);
+            fail();
+        }
         assertEquals(x.modPow(exp, mod), y);
     }
 
-    private static NodeRequest createDlpRequest(int modBitLength) {
+    protected NodeRequest createDlpRequest(int modBitLength) {
         SafePrime safePrime = SafePrime.random(modBitLength);
         BigInteger gen = MathUtil.getGenerator(safePrime);
         Data data = new Data();
         data.put("x", gen);
         data.put("y", BigInteger.valueOf(32));
         data.put("mod", safePrime.getPrime());
-        return NodeRequest.regular(UUID.randomUUID(), TASK_NAME, data);
+        return NodeRequest.regular(UUID.randomUUID(), "ru.babobka.dlp.task.PollardDlpTask", data);
     }
 
     @Test
@@ -148,7 +152,7 @@ public class PollardDlpITCase {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             int bits = 32;
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < 135; i++) {
                 createDlpTest(bits, taskService);
             }
         }

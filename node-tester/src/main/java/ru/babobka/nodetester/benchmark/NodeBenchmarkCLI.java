@@ -5,7 +5,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import ru.babobka.nodebusiness.StorageApplicationContainer;
-import ru.babobka.nodeclient.CLI;
+import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;

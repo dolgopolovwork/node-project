@@ -28,7 +28,7 @@ public class PollardDlpDistributorTest {
         when(mainRequest.getDataValue(Params.X.getValue())).thenReturn(BigInteger.ONE);
         when(mainRequest.getDataValue(Params.Y.getValue())).thenReturn(BigInteger.ONE);
         when(mainRequest.getDataValue(Params.MOD.getValue())).thenReturn(BigInteger.ONE);
-        List<NodeRequest> requestList = dlpDistributor.distributeImpl(mainRequest, nodes);
+        List<NodeRequest> requestList = dlpDistributor.distribute(mainRequest, nodes);
         assertEquals(requestList.size(), nodes);
         for (NodeRequest request : requestList) {
             assertEquals(request.getTaskId(), taskId);

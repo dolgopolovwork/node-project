@@ -44,7 +44,7 @@ public class PrimeCounterTask extends SubTask {
     }
 
     @Override
-    public boolean isRequestDataTooSmall(NodeRequest request) {
+    public boolean isSingleNodeTask(NodeRequest request) {
         long begin = request.getDataValue(Params.BEGIN.getValue());
         long end = request.getDataValue((Params.END.getValue()));
         return (end - begin) <= MIN_RANGE_TO_PARALLEL;

@@ -21,30 +21,41 @@ public class LogBuilder {
     }
 
     public static Logger buildRegular(String loggerName, String runningFolder, boolean debugMode) throws IOException {
-        return build(loggerName, runningFolder, true, debugMode);
+        return build(loggerName, runningFolder, true, true, debugMode);
     }
 
     public static Logger buildNoConsole(String loggerName, String runningFolder, boolean debugMode) throws IOException {
-        return build(loggerName, runningFolder, false, debugMode);
+        return build(loggerName, runningFolder, false, true, debugMode);
     }
 
-    private static Logger build(String loggerName, String runningFolder, boolean writeConsole, boolean debugMode) throws IOException {
+    public static Logger buildConsole(String loggerName) throws IOException {
+        return build(loggerName, null, true, false, true);
+    }
+
+    private static Logger build(String loggerName,
+                                String runningFolder,
+                                boolean writeConsole,
+                                boolean writeFile,
+                                boolean debugMode) throws IOException {
         String uniqueLoggerName = loggerName + "_" + UUID.randomUUID();
         Logger logger = Logger.getLogger(uniqueLoggerName);
-        File folder = new File(runningFolder + File.separator);
-        if (!folder.exists() && !folder.mkdirs()) {
-            throw new IOException("cannot create folder " + folder);
-        }
-        String fileName = folder.getAbsolutePath() + File.separator + uniqueLoggerName + ".log";
-        FileHandler fileHandler = new FileHandler(fileName, LOG_FILE_LIMIT_BYTES, MAX_FILES_TO_CREATE);
+
         LogFormatter formatter = new LogFormatter(debugMode);
         if (writeConsole) {
             Handler consoleHandler = new ConsoleHandler();
             consoleHandler.setFormatter(formatter);
             logger.addHandler(consoleHandler);
         }
-        fileHandler.setFormatter(formatter);
-        logger.addHandler(fileHandler);
+        if (writeFile) {
+            File folder = new File(runningFolder + File.separator);
+            if (!folder.exists() && !folder.mkdirs()) {
+                throw new IOException("cannot create folder " + folder);
+            }
+            String fileName = folder.getAbsolutePath() + File.separator + uniqueLoggerName + ".log";
+            FileHandler fileHandler = new FileHandler(fileName, LOG_FILE_LIMIT_BYTES, MAX_FILES_TO_CREATE);
+            fileHandler.setFormatter(formatter);
+            logger.addHandler(fileHandler);
+        }
         logger.setUseParentHandlers(false);
         return logger;
     }

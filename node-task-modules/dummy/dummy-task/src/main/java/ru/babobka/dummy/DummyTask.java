@@ -73,7 +73,7 @@ public class DummyTask extends SubTask {
     }
 
     @Override
-    public boolean isRequestDataTooSmall(NodeRequest request) {
+    public boolean isSingleNodeTask(NodeRequest request) {
         return false;
     }
 

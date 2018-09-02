@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import lombok.NonNull;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
@@ -10,10 +11,7 @@ import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
-import ru.babobka.nodemasterserver.service.DistributionService;
-import ru.babobka.nodemasterserver.service.MasterAuthService;
-import ru.babobka.nodemasterserver.service.TaskServiceCacheProxy;
-import ru.babobka.nodemasterserver.service.TaskServiceImpl;
+import ru.babobka.nodemasterserver.service.*;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodemasterserver.slave.SlaveFactory;
@@ -25,11 +23,10 @@ import ru.babobka.nodetask.model.StoppedTasks;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeweb.webcontroller.NodeInfoWebController;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
-import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
-import ru.babobka.vsjws.validator.config.WebServerConfigValidator;
-import ru.babobka.vsjws.validator.request.RequestValidator;
 import ru.babobka.vsjws.webserver.WebServer;
+import ru.babobka.vsjws.webserver.WebServerApplicationContainer;
 import ru.babobka.vsjws.webserver.WebServerConfig;
 
 import java.io.IOException;
@@ -39,10 +36,15 @@ import java.util.concurrent.Executors;
  * Created by 123 on 18.02.2018.
  */
 public class MasterServerApplicationSubContainer extends AbstractApplicationContainer {
+    private final MasterServerConfig masterServerConfig;
+
+    public MasterServerApplicationSubContainer(@NonNull MasterServerConfig masterServerConfig) {
+        this.masterServerConfig = masterServerConfig;
+    }
+
     @Override
     protected void containImpl(Container container) throws Exception {
         StreamUtil streamUtil = container.get(StreamUtil.class);
-        MasterServerConfig config = container.get(MasterServerConfig.class);
         container.put(new Sessions());
         container.put(new SlavesStorage());
         container.put(new DistributionService());
@@ -50,10 +52,10 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         container.put(new SlaveCreatingPipelineFactory());
         container.put(new ClientStorage());
         container.put(MasterServerKey.MASTER_SERVER_TASK_POOL, new TaskPool(
-                config.getFolders().getTasksFolder()));
+                masterServerConfig.getFolders().getTasksFolder()));
         container.put(new TaskMonitoringService());
         container.put(new ResponsesMapper());
-        if (config.getModes().isCacheMode()) {
+        if (masterServerConfig.getModes().isCacheMode()) {
             container.put(new CacheRequestListener());
             container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
         } else {
@@ -69,20 +71,19 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
                     return thread;
                 }));
         container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
-                config.getPorts().getClientListenerPort(), true)));
+                masterServerConfig.getPorts().getClientListenerPort(), true)));
         container.put(new HeartBeatingThread());
         container.put(new MasterAuthService());
         container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
-                config.getPorts().getSlaveListenerPort(), config.getModes().isLocalMachineMode())));
+                masterServerConfig.getPorts().getSlaveListenerPort(), masterServerConfig.getModes().isLocalMachineMode())));
         container.put(new OnTaskIsReady());
         container.put(new OnRaceStyleTaskIsReady());
-        container.put(createWebServer(container, config));
+        container.put(createWebServer(container, masterServerConfig));
     }
 
     private static WebServer createWebServer(Container container, MasterServerConfig config) throws IOException {
-        container.put(new RequestValidator());
-        container.put(new WebServerConfigValidator());
-        container.put(new JSONWebControllerMapper());
+        container.put(new WebServerApplicationContainer());
+        container.put(new NodeMasterInfoServiceImpl());
         WebServerConfig webServerConfig = new WebServerConfig();
         webServerConfig.setServerName("node web server");
         webServerConfig.setPort(config.getPorts().getWebListenerPort());
@@ -90,6 +91,7 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         webServerConfig.setSessionTimeoutSeconds(15 * 60);
         WebServer webServer = new WebServer(webServerConfig);
         webServer.addController("users", new NodeUsersCRUDWebController());
+        webServer.addController("serverInfo", new NodeInfoWebController());
         return webServer;
     }
 

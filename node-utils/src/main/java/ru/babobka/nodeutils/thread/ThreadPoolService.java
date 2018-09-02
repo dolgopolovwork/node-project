@@ -89,7 +89,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
             if (name != null) {
                 t.setName(name);
             }
-            t.setPriority(Thread.MAX_PRIORITY);
+            t.setPriority(Thread.MIN_PRIORITY);
             t.setDaemon(true);
             return t;
         });

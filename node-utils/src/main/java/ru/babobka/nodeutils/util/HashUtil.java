@@ -11,7 +11,6 @@ import java.util.Map;
  * Created by 123 on 19.08.2017.
  */
 public class HashUtil {
-
     private static final String SHA_256 = "SHA-256";
 
     private HashUtil() {
@@ -50,17 +49,17 @@ public class HashUtil {
         if (iterator == null) {
             throw new IllegalArgumentException("cannot hash null data");
         }
+        MessageDigest sha256 = getSHA256MessageDigest();
         try {
-            MessageDigest sha256 = getSHA256MessageDigest();
             while (iterator.hasNext()) {
                 Map.Entry<String, Serializable> entry = iterator.next();
                 sha256.update(entry.getKey().getBytes(TextUtil.CHARSET));
                 sha256.update(toByteArray(entry.getValue()));
             }
-            return sha256.digest();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("cannot properly hash data map", e);
         }
+        return sha256.digest();
     }
 
     private static byte[] toByteArray(Object object) throws IOException {

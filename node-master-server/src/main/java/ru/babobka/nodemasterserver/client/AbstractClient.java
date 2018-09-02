@@ -5,6 +5,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -13,15 +14,15 @@ import java.util.UUID;
 public abstract class AbstractClient extends Thread {
 
     protected final NodeConnection connection;
-    protected final NodeRequest request;
+    protected final List<NodeRequest> requests;
     private final UUID id = UUID.randomUUID();
 
-    AbstractClient(@NonNull NodeConnection connection, @NonNull NodeRequest request) {
+    AbstractClient(@NonNull NodeConnection connection, @NonNull List<NodeRequest> requests) {
         if (connection.isClosed()) {
             throw new IllegalArgumentException("connection is closed");
         }
         this.connection = connection;
-        this.request = request;
+        this.requests = requests;
     }
 
     public void sendHeartBeating() throws IOException {

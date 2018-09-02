@@ -37,6 +37,7 @@ public class SocketController implements Closeable {
         try {
             doControl(connection);
         } catch (IOException e) {
+            //TODO пусть не пишет это говно, если всё
             throw new IllegalStateException("cannot control", e);
         }
     }

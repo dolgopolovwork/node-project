@@ -39,8 +39,10 @@ public class ClientITCase {
     protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(ClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+    public static void setUp() {
+        Container.getInstance().put(container -> {
+            container.put(SimpleLoggerFactory.debugLogger(ClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        });
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();

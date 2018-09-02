@@ -18,7 +18,7 @@ public abstract class SubTask {
 
     public abstract DataValidators getDataValidators();
 
-    public abstract boolean isRequestDataTooSmall(NodeRequest request);
+    public abstract boolean isSingleNodeTask(NodeRequest request);
 
     public boolean isRequestDataTooBig(NodeRequest request) {
         return false;
@@ -39,5 +39,10 @@ public abstract class SubTask {
     public boolean isStopped() {
         return stopped;
     }
+
+    public boolean enableCache() {
+        return true;
+    }
+
 
 }

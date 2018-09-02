@@ -1,4 +1,4 @@
-package ru.babobka.nodeclient;
+package ru.babobka.nodeclient.console;
 
 import org.apache.commons.cli.*;
 

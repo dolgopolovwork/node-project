@@ -45,7 +45,7 @@ public class EllipticCurveFactorTaskTest {
         Data data = new Data();
         data.put(Params.NUMBER.getValue(), new BigInteger("123"));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        assertTrue(task.isRequestDataTooSmall(request));
+        assertTrue(task.isSingleNodeTask(request));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class EllipticCurveFactorTaskTest {
         Data data = new Data();
         data.put(Params.NUMBER.getValue(), BigInteger.probablePrime(100, new Random()));
         NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", data);
-        assertFalse(task.isRequestDataTooSmall(request));
+        assertFalse(task.isSingleNodeTask(request));
     }
 
 }

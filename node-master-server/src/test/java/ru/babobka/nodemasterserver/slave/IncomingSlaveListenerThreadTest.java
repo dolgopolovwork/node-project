@@ -9,8 +9,8 @@ import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
-import ru.babobka.nodeutils.logger.DummyNodeLogger;
 import ru.babobka.nodeutils.logger.NodeLogger;
+import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -32,10 +32,10 @@ public class IncomingSlaveListenerThreadTest {
     private SlaveCreatingPipelineFactory pipelineFactory;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         masterServerConfig = mock(MasterServerConfig.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
-        nodeLogger = spy(new DummyNodeLogger());
+        nodeLogger = spy(SimpleLoggerFactory.consoleLogger("IncomingSlaveListenerThreadTest"));
         serverSocket = mock(ServerSocket.class);
         pipelineFactory = mock(SlaveCreatingPipelineFactory.class);
         Container.getInstance().put(container -> {

@@ -39,7 +39,7 @@ public class PollardDlpReducerTest {
         NodeResponse response = mock(NodeResponse.class);
         List<NodeResponse> responseList = Arrays.asList(response, response, response);
         when(pollardDlpDataValidators.isValidResponse(response)).thenReturn(false);
-        pollardDlpReducer.reduceImpl(responseList);
+        pollardDlpReducer.reduce(responseList);
     }
 
     @Test
@@ -47,6 +47,6 @@ public class PollardDlpReducerTest {
         NodeResponse response = mock(NodeResponse.class);
         List<NodeResponse> responseList = Arrays.asList(response, response, response);
         when(pollardDlpDataValidators.isValidResponse(response)).thenReturn(true);
-        assertNotNull(pollardDlpReducer.reduceImpl(responseList));
+        assertNotNull(pollardDlpReducer.reduce(responseList));
     }
 }

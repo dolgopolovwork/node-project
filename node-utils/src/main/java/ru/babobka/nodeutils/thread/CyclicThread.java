@@ -35,7 +35,7 @@ public abstract class CyclicThread extends Thread {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             interrupt();
-            nodeLogger.error(e);
+            nodeLogger.warning(e);
         }
     }
 

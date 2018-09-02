@@ -84,11 +84,6 @@ public class Data implements Serializable {
         dataCollection.remove(key);
     }
 
-    public Data putNumbers(String key, List<Number> value) {
-        dataCollection.put(key, (Serializable) value);
-        return this;
-    }
-
     public Data putString(String key, List<String> value) {
         dataCollection.put(key, (Serializable) value);
         return this;

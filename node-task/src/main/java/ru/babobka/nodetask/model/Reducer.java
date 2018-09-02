@@ -14,6 +14,8 @@ public abstract class Reducer {
     public Data reduce(List<NodeResponse> responses) throws ReducingException {
         if (responses == null) {
             throw new IllegalArgumentException("cannot reduce null responses");
+        } else if (responses.isEmpty()) {
+            throw new IllegalArgumentException("cannot reduce no responses");
         }
         try {
             return reduceImpl(responses);

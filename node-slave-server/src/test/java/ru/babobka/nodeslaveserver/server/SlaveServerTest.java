@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**

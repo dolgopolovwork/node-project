@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeData;
@@ -25,6 +26,11 @@ public class SlavesStorageTest {
     public void setUp() {
         Container.getInstance().put(mock(NodeLogger.class));
         slavesStorage = new SlavesStorage();
+    }
+
+    @After
+    public void tearDown() {
+        Container.getInstance().clear();
     }
 
     @Test
@@ -152,6 +158,31 @@ public class SlavesStorageTest {
         slavesStorage.add(badSlave);
         int maxSize = 2;
         assertEquals(slavesStorage.getList(taskName, maxSize).size(), maxSize);
+    }
+
+    @Test
+    public void testGetListByTaskNameOrderByTime() {
+        String taskName = "abc";
+        Slave slaveVeryUsed = mock(Slave.class);
+        when(slaveVeryUsed.getSlaveId()).thenReturn(UUID.randomUUID());
+        when(slaveVeryUsed.getLastSendRequestTime()).thenReturn(2L);
+        when(slaveVeryUsed.taskIsAvailable(taskName)).thenReturn(true);
+        Slave slaveSlightlyUsed = mock(Slave.class);
+        when(slaveSlightlyUsed.getSlaveId()).thenReturn(UUID.randomUUID());
+        when(slaveSlightlyUsed.getLastSendRequestTime()).thenReturn(1L);
+        when(slaveSlightlyUsed.taskIsAvailable(taskName)).thenReturn(true);
+        Slave slaveNotUsed = mock(Slave.class);
+        when(slaveNotUsed.getSlaveId()).thenReturn(UUID.randomUUID());
+        when(slaveNotUsed.getLastSendRequestTime()).thenReturn(0L);
+        when(slaveNotUsed.taskIsAvailable(taskName)).thenReturn(true);
+        slavesStorage.add(slaveVeryUsed);
+        slavesStorage.add(slaveSlightlyUsed);
+        slavesStorage.add(slaveNotUsed);
+        int maxSize = 2;
+        List<Slave> slaves = slavesStorage.getList(taskName, maxSize);
+        assertEquals(slaves.size(), maxSize);
+        assertEquals(slaves.get(0), slaveNotUsed);
+        assertEquals(slaves.get(1), slaveSlightlyUsed);
     }
 
     @Test

@@ -87,7 +87,7 @@
                                 <filter>
                                     <!--
                                         Shading signed JARs will fail without this.
-                                        http://stackoverflow.com/questions/999489/invalid-mac-file-when-attempting-to-run-a-jar
+                                        http://stackoverflow.com/questions/999489/invalid-mac-file-when-attempting-to-run-y-jar
                                     -->
                                     <artifact>*:*</artifact>
                                     <excludes>

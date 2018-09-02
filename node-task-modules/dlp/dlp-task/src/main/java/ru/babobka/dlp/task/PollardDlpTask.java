@@ -44,7 +44,7 @@ public class PollardDlpTask extends SubTask {
     }
 
     @Override
-    public boolean isRequestDataTooSmall(NodeRequest request) {
+    public boolean isSingleNodeTask(NodeRequest request) {
         BigInteger mod = request.getDataValue(Params.MOD.getValue());
         return mod.bitLength() < 32;
     }

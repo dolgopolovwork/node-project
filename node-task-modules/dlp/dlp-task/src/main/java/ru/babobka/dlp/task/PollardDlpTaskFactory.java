@@ -33,7 +33,7 @@ public class PollardDlpTaskFactory extends TaskFactory<PollardDlpTask> {
         protected void containImpl(Container container) {
             container.put(new DlpServiceApplicationContainer());
             container.put(new PollardDlpDistributor());
-            container.put(new PollardDlpDataValidators());
+            container.putIfNotExists(new PollardDlpDataValidators());
             container.put(new PollardDlpReducer());
         }
     }

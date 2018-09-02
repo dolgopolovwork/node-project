@@ -4,6 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodetester.benchmark.NodeBenchmarkCLI;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -33,7 +34,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     @Override
     protected void benchMarkRun(CommandLine cmd) {
         int numberBitLength = Integer.parseInt(cmd.getOptionValue(NUMBER_BIT_LENGTH_OPTION));
-        new FactorNodeBenchmark(getAppName(), getTests(cmd), numberBitLength).run(getSlaves(cmd), getServiceThreads(cmd));
+        new NodeBenchmark(getAppName(), getTests(cmd)).run(getSlaves(cmd), getServiceThreads(cmd), new FactorNodeBenchmarkPerformer(numberBitLength));
     }
 
     @Override

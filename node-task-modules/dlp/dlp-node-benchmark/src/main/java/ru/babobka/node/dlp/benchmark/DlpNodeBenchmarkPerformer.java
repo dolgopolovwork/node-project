@@ -5,7 +5,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
-import ru.babobka.nodetester.benchmark.NodeBenchmark;
+import ru.babobka.nodetester.benchmark.performer.ClientBenchmarkPerformer;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.time.Timer;
 import ru.babobka.nodeutils.util.MathUtil;
@@ -21,16 +21,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by 123 on 01.02.2018.
  */
-public class DlpNodeBenchmark extends NodeBenchmark {
+public class DlpNodeBenchmarkPerformer extends ClientBenchmarkPerformer {
     private static final Random RAND = new Random();
-    private static final String TASK_NAME = "ru.babobka.dlp.task.PollardDlpTask";
-    private final int orderBitLength;
+    private static final String TASK_NAME = "ru.babobka.dlp.task.regular.PollardDlpTask";
     private final SafePrime safePrime;
     private final BigInteger gen;
 
-    public DlpNodeBenchmark(String appName, int tests, int orderBitLength) {
-        super(appName, tests);
-        this.orderBitLength = orderBitLength;
+    public DlpNodeBenchmarkPerformer(int orderBitLength) {
         safePrime = SafePrime.random(orderBitLength - 1);
         gen = MathUtil.getGenerator(safePrime);
     }
@@ -52,16 +49,12 @@ public class DlpNodeBenchmark extends NodeBenchmark {
     }
 
     @Override
-    protected String getDescription() {
-        return "dlp in " + orderBitLength + " bit order group";
-    }
-
-    @Override
-    protected void onBenchmark(Client client, AtomicLong timerStorage) throws IOException, ExecutionException, InterruptedException {
-        Future<NodeResponse> future = client.executeTask(createDlpRequest(gen, createNumber(safePrime.getPrime()), safePrime.getPrime()));
+    protected void performBenchmark(Client client, AtomicLong timeStorage) throws IOException, ExecutionException, InterruptedException {
+        NodeRequest request = createDlpRequest(gen, createNumber(safePrime.getPrime()), safePrime.getPrime());
+        Future<NodeResponse> future = client.executeTask(request);
         Timer timer = new Timer();
         NodeResponse response = future.get();
-        timerStorage.addAndGet(timer.getTimePassed());
+        timeStorage.addAndGet(timer.getTimePassed());
         if (response.getStatus() != ResponseStatus.NORMAL) {
             String message = "cannot get the result. Response is " + response;
             throw new IOException(message);
