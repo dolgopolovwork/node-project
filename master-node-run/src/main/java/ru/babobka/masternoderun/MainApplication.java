@@ -70,6 +70,6 @@ public class MainApplication extends CLI {
     }
 
     public static void main(String[] args) {
-        new MainApplication().onMain(new String[]{"-configPath", "C:\\Users\\123\\Documents\\node-project\\config\\master-server-config.encrypted", "-configPassword", "123456"});
+        new MainApplication().onMain(args);
     }
 }
