@@ -34,5 +34,4 @@ public class SlaveServerFactory {
     private SlaveServerApplicationContainer createSlaveServerContainer() {
         return new SlaveServerApplicationContainer();
     }
-
 }

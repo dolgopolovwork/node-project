@@ -1,11 +1,10 @@
 package ru.babobka.nodeslaveserver.server;
 
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodeutils.config.NodeConfiguration;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.io.Serializable;
-
-public class SlaveServerConfig implements Serializable {
+public class SlaveServerConfig implements NodeConfiguration {
 
     private static final long serialVersionUID = 9130829367317179440L;
     private int serverPort;

@@ -98,5 +98,4 @@ public class MasterServer extends Thread {
             throw new RuntimeException(e);
         }
     }
-
 }
