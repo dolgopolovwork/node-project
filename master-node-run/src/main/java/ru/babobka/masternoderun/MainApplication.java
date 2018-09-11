@@ -5,8 +5,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
+import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
+import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -18,29 +20,35 @@ import java.io.IOException;
 public class MainApplication extends CLI {
 
     private static final String CONFIG_PATH_OPTION = "configPath";
-    private static final String CONFIG_PATH_OPT = "c";
+    private static final String CONFIG_PASSWORD_OPTION = "configPassword";
 
     static {
         Container.getInstance().put(container -> {
+            container.put(TimerInvoker.create(1_000));
             container.put(new StreamUtil());
             container.put(new MasterServerConfigValidator());
+            container.put(new SecurityApplicationContainer());
         });
     }
 
     @Override
     protected Options createOptions() {
         Options options = new Options();
-        Option configPath = Option.builder(CONFIG_PATH_OPT).longOpt(CONFIG_PATH_OPTION).hasArg().
+        Option configPath = Option.builder().longOpt(CONFIG_PATH_OPTION).hasArg().
                 desc("Defines path to configuration json file. May be omitted, if environment variable " + Env.NODE_MASTER_CONFIG + " is set.").build();
         options.addOption(configPath);
+        Option configPassword = Option.builder().longOpt(CONFIG_PASSWORD_OPTION).hasArg().
+                desc("Defines password for decryption of configuration file. Not used if configuration file is not encrypted.").build();
+        options.addOption(configPassword);
         return options;
     }
 
     @Override
     protected void run(CommandLine cmd) throws IOException {
         String pathToConfig = getPathToConfig(cmd);
+        String configPassword = cmd.getOptionValue(CONFIG_PASSWORD_OPTION);
         MasterServerRunner masterServerRunner = new MasterServerRunner();
-        masterServerRunner.run(pathToConfig);
+        masterServerRunner.run(pathToConfig, configPassword);
     }
 
     @Override
@@ -62,6 +70,6 @@ public class MainApplication extends CLI {
     }
 
     public static void main(String[] args) {
-        new MainApplication().onMain(args);
+        new MainApplication().onMain(new String[]{"-configPath", "C:\\Users\\123\\Documents\\node-project\\config\\master-server-config.encrypted", "-configPassword", "123456"});
     }
 }

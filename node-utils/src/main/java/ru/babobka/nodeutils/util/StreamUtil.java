@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -29,6 +30,25 @@ public class StreamUtil {
             throw new FileNotFoundException();
         }
         return is;
+    }
+
+    public void writeBytesToFile(byte[] bytes, String filePath) throws IOException {
+        if (ArrayUtil.isEmpty(bytes)) {
+            throw new IllegalArgumentException("cannot write empty byte array to a file");
+        } else if (TextUtil.isEmpty(filePath)) {
+            throw new IllegalArgumentException("file path was not set");
+        }
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(bytes);
+        }
+    }
+
+    public byte[] readBytesFromFile(String filePath) throws IOException {
+        if (TextUtil.isEmpty(filePath)) {
+            throw new IllegalArgumentException("file path was not set");
+        }
+        File file = new File(filePath);
+        return Files.readAllBytes(file.toPath());
     }
 
     public String readFile(InputStream is) {

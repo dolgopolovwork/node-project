@@ -3,9 +3,8 @@ package ru.babobka.masternoderun;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
+import ru.babobka.nodesecurity.service.ConfigProvider;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.JSONUtil;
-import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
 
@@ -14,12 +13,12 @@ import java.io.IOException;
  */
 public class MasterServerRunner {
 
-    private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
+    private final ConfigProvider configProvider = Container.getInstance().get(ConfigProvider.class);
     private final MasterServerConfigValidator configValidator = Container.getInstance().get(MasterServerConfigValidator.class);
 
-    public void run(String configPath) throws IOException {
+    public void run(String configPath, String configPassword) throws IOException {
         Container container = Container.getInstance();
-        MasterServerConfig config = JSONUtil.readJsonFile(streamUtil, configPath, MasterServerConfig.class);
+        MasterServerConfig config = configProvider.getConfig(configPath, MasterServerConfig.class, configPassword);
         configValidator.validate(config);
         container.put(config);
         container.put(createMasterServerContainer());
@@ -33,5 +32,4 @@ public class MasterServerRunner {
     MasterServerApplicationContainer createMasterServerContainer() {
         return new MasterServerApplicationContainer();
     }
-
 }

@@ -76,6 +76,41 @@ public class TextUtilTest {
     }
 
     @Test
+    public void testIsBadPasswordEmpty() {
+        assertTrue(TextUtil.isBadPassword(""));
+    }
+
+    @Test
+    public void testIsBadPasswordNull() {
+        assertTrue(TextUtil.isBadPassword(null));
+    }
+
+    @Test
+    public void testIsBadPasswordTooShort() {
+        assertTrue(TextUtil.isBadPassword("123"));
+    }
+
+    @Test
+    public void testIsBadPasswordOnlyDigits() {
+        assertTrue(TextUtil.isBadPassword("123456"));
+    }
+
+    @Test
+    public void testIsBadPasswordOnlyLetters() {
+        assertTrue(TextUtil.isBadPassword("qwerty"));
+    }
+
+    @Test
+    public void testIsBadPasswordJustBad() {
+        assertTrue(TextUtil.isBadPassword("qwe123"));
+    }
+
+    @Test
+    public void testIsBadPasswordBetterPassword() {
+        assertFalse(TextUtil.isBadPassword("qweRTY123"));
+    }
+
+    @Test
     public void testIsValidUUID() {
         assertTrue(TextUtil.isValidUUID(UUID.randomUUID().toString()));
     }

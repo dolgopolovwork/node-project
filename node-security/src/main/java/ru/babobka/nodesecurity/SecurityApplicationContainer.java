@@ -1,8 +1,7 @@
 package ru.babobka.nodesecurity;
 
 import ru.babobka.nodesecurity.data.SecureDataFactory;
-import ru.babobka.nodesecurity.service.RSAService;
-import ru.babobka.nodesecurity.service.SRPService;
+import ru.babobka.nodesecurity.service.*;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
@@ -15,5 +14,9 @@ public class SecurityApplicationContainer extends AbstractApplicationContainer {
         container.put(new SRPService());
         container.put(new SecureDataFactory());
         container.put(new RSAService());
+        container.put(new AESService());
+        container.put(new SecureJSONService());
+        container.put(new SecureConfigService());
+        container.put(new ConfigProvider());
     }
 }

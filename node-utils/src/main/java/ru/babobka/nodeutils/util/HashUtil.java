@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class HashUtil {
     private static final String SHA_256 = "SHA-256";
+    private static final String MD_5 = "MD5";
 
     private HashUtil() {
 
@@ -90,6 +91,14 @@ public class HashUtil {
         return sha256.digest(message);
     }
 
+    public static byte[] md5(byte[] message) {
+        if (ArrayUtil.isEmpty(message)) {
+            throw new IllegalArgumentException("message is empty");
+        }
+        MessageDigest md5 = getMD5MessageDigest();
+        return md5.digest(message);
+    }
+
     public static String hexSha2(String message) {
         if (message == null) {
             throw new IllegalArgumentException("message is null");
@@ -119,6 +128,15 @@ public class HashUtil {
     private static MessageDigest getSHA256MessageDigest() {
         try {
             return MessageDigest.getInstance(SHA_256);
+        } catch (NoSuchAlgorithmException e) {
+            //this will never happen
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static MessageDigest getMD5MessageDigest() {
+        try {
+            return MessageDigest.getInstance(MD_5);
         } catch (NoSuchAlgorithmException e) {
             //this will never happen
             throw new RuntimeException(e);

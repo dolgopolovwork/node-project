@@ -12,7 +12,9 @@ import java.util.Locale;
 
 public class TextUtil {
 
-    static final Charset CHARSET = StandardCharsets.UTF_8;
+    private static final int MIN_PASSWORD_LENGTH = 6;
+    private static final String BAD_PASSWORD_PATTERN = "^[0-9a-z]+$";
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
     private static final String UUID_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -42,6 +44,10 @@ public class TextUtil {
 
     public static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
+    }
+
+    public static boolean isBadPassword(String password) {
+        return (TextUtil.isEmpty(password) || password.length() < MIN_PASSWORD_LENGTH || password.matches(BAD_PASSWORD_PATTERN));
     }
 
     static long tryParseLong(String s, long defaultValue) {

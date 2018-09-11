@@ -1,8 +1,8 @@
 package ru.babobka.nodemasterserver.server.config;
 
-import java.io.Serializable;
+import ru.babobka.nodeutils.config.NodeConfiguration;
 
-public class MasterServerConfig implements Serializable {
+public class MasterServerConfig implements NodeConfiguration {
 
     private static final long serialVersionUID = 156081573106293600L;
     private ModeConfig modes;
