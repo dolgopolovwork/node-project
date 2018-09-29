@@ -1,9 +1,9 @@
 package ru.babobka.masternoderun;
 
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
-import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
-import ru.babobka.nodesecurity.service.ConfigProvider;
+import ru.babobka.nodeconfigs.service.ConfigProvider;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;

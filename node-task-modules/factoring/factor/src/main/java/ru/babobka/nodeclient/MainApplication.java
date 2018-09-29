@@ -49,7 +49,7 @@ public class MainApplication extends CLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "factor";
     }
 

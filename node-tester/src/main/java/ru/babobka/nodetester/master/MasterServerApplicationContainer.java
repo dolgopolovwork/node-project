@@ -1,9 +1,9 @@
 package ru.babobka.nodetester.master;
 
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
+import ru.babobka.nodeconfigs.master.*;
+import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
-import ru.babobka.nodemasterserver.server.config.*;
-import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
@@ -49,8 +49,8 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         MasterServerConfig config = new MasterServerConfig();
 
         FolderConfig folderConfig = new FolderConfig();
-        folderConfig.setTasksFolderEnv(Env.NODE_TASKS.name());
-        folderConfig.setLoggerFolderEnv(Env.NODE_LOGS.name());
+        folderConfig.setTasksFolder("$" + Env.NODE_TASKS.name());
+        folderConfig.setLoggerFolder("$" + Env.NODE_LOGS.name());
         config.setFolders(folderConfig);
 
         TimeConfig timeConfig = new TimeConfig();

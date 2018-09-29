@@ -63,6 +63,13 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.babobka.nodeconfigs</groupId>
+            <artifactId>node-configs</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>ru.babobka.nodeutils</groupId>
             <artifactId>node-utils</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -8,7 +8,7 @@ import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;

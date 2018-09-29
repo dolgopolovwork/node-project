@@ -4,7 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import ru.babobka.nodeclient.console.CLI;
-import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
+import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -51,7 +51,7 @@ public class MainApplication extends CLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "slave-node-run";
     }
 

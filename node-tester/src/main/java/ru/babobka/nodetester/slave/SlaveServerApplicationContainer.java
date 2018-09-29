@@ -1,13 +1,13 @@
 package ru.babobka.nodetester.slave;
 
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
+import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
-import ru.babobka.nodeslaveserver.validator.config.SlaveServerConfigValidator;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
@@ -59,9 +59,9 @@ public class SlaveServerApplicationContainer extends AbstractApplicationContaine
 
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setTasksFolderEnv(Env.NODE_TASKS.name());
-        config.setLoggerFolderEnv(Env.NODE_LOGS.name());
-        config.setAuthTimeoutMillis(15000);
+        config.setTasksFolder("$" + Env.NODE_TASKS.name());
+        config.setLoggerFolder("$" + Env.NODE_LOGS.name());
+        config.setAuthTimeOutMillis(15000);
         config.setRequestTimeoutMillis(30_000);
         config.setServerHost("localhost");
         config.setServerPort(9090);

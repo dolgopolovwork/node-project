@@ -2,7 +2,7 @@ package ru.babobka.slavenoderun;
 
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;

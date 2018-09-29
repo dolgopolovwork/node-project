@@ -3,9 +3,9 @@ package ru.babobka.nodeift;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
@@ -62,7 +62,7 @@ public class PollardDlpITCase {
         BigInteger mod = result.getData().get("mod");
         BigInteger exp = result.getData().get("exp");
         if (exp == null) {
-            System.err.print("failed request "+request);
+            System.err.print("failed request " + request);
             fail();
         }
         assertEquals(x.modPow(exp, mod), y);

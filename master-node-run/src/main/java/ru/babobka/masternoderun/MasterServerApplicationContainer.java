@@ -1,8 +1,8 @@
 package ru.babobka.masternoderun;
 
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;

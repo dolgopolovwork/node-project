@@ -54,7 +54,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "prime-counter-node-benchmark";
     }
 

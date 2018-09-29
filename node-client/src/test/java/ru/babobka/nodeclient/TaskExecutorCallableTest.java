@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -172,4 +171,104 @@ public class TaskExecutorCallableTest {
         verify(connection).close();
     }
 
+    @Test
+    public void testSendHeartBeat() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        taskExecutorCallable.sendHeartBeat();
+        verify(connection).setReadTimeOut(anyInt());
+        verify(connection).send(any(NodeResponse.class));
+    }
+
+    @Test
+    public void testReceiveResponseDone() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        when(doneFunc.isDone()).thenReturn(true);
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        assertNull(taskExecutorCallable.receiveResponse());
+    }
+
+    @Test
+    public void testReceiveResponseHeartBeat() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        when(doneFunc.isDone()).thenReturn(false, true);
+        when(connection.receive()).thenReturn(NodeRequest.heartBeat());
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        assertNull(taskExecutorCallable.receiveResponse());
+        verify(taskExecutorCallable).sendHeartBeat();
+    }
+
+    @Test
+    public void testReceiveResponse() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        NodeResponse response = mock(NodeResponse.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        when(doneFunc.isDone()).thenReturn(false, true);
+        when(connection.receive()).thenReturn(response);
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        assertEquals(response, taskExecutorCallable.receiveResponse());
+    }
+
+    @Test
+    public void testReceiveResponseTooLate() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        NodeResponse response = mock(NodeResponse.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        when(doneFunc.isDone()).thenReturn(false, false, true);
+        when(connection.receive()).thenReturn(NodeRequest.heartBeat(), NodeRequest.heartBeat(), response);
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        assertNull(taskExecutorCallable.receiveResponse());
+        verify(taskExecutorCallable, times(2)).sendHeartBeat();
+    }
+
+    @Test
+    public void testReceiveResponseRightInTime() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        NodeRequest request = mock(NodeRequest.class);
+        NodeResponse response = mock(NodeResponse.class);
+        List<NodeRequest> requestList = Arrays.asList(request, request);
+        DoneFunc doneFunc = mock(DoneFunc.class);
+        when(doneFunc.isDone()).thenReturn(false, false, false, true);
+        when(connection.receive()).thenReturn(NodeRequest.heartBeat(), NodeRequest.heartBeat(), response);
+        TaskExecutorCallable taskExecutorCallable = spy(new TaskExecutorCallable(
+                requestList,
+                connection,
+                null,
+                doneFunc));
+        assertEquals(response, taskExecutorCallable.receiveResponse());
+        verify(taskExecutorCallable, times(2)).sendHeartBeat();
+    }
 }

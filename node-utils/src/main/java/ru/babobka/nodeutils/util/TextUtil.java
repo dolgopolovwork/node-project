@@ -103,6 +103,18 @@ public class TextUtil {
         return repeats;
     }
 
+    public static boolean isValidPort(String port) {
+        if (isEmpty(port)) {
+            return false;
+        }
+        int defaultInvalidValue = -1;
+        int portNumber = tryParseInt(port, defaultInvalidValue);
+        if (portNumber == defaultInvalidValue) {
+            return false;
+        }
+        return isValidPort(portNumber);
+    }
+
     public static boolean isValidPort(int port) {
         return port > 0 && port <= 65535;
     }

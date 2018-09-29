@@ -77,7 +77,7 @@ public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
     }
 
     NodeResponse receiveResponse() throws IOException {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (!doneFunc.isDone() && !Thread.currentThread().isInterrupted()) {
             NodeData nodeData = connection.receive();
             if (nodeData instanceof NodeResponse) {
                 return (NodeResponse) nodeData;
@@ -87,7 +87,7 @@ public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
         return null;
     }
 
-    private void sendHeartBeat() {
+    void sendHeartBeat() {
         try {
             connection.setReadTimeOut(READ_TIMEOUT_MILLIS);
             connection.send(NodeResponse.heartBeat());
@@ -101,6 +101,5 @@ public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
         if (!(doneFunc.isDone() || connection.isClosed())) {
             e.printStackTrace();
         }
-
     }
 }

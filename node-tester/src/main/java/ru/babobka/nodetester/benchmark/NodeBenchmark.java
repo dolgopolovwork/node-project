@@ -3,9 +3,9 @@ package ru.babobka.nodetester.benchmark;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodebusiness.service.BenchmarkStorageService;
 import ru.babobka.nodeclient.console.CLI;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.PortConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
-import ru.babobka.nodemasterserver.server.config.PortConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.benchmark.mapper.BenchmarkMapper;
 import ru.babobka.nodetester.benchmark.performer.BenchmarkPerformer;
@@ -19,7 +19,6 @@ import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
-
 
 /**
  * Created by 123 on 30.01.2018.

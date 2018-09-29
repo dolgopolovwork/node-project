@@ -16,7 +16,5 @@ public class SecurityApplicationContainer extends AbstractApplicationContainer {
         container.put(new RSAService());
         container.put(new AESService());
         container.put(new SecureJSONService());
-        container.put(new SecureConfigService());
-        container.put(new ConfigProvider());
     }
 }
