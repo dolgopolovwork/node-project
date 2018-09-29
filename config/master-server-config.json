@@ -6,8 +6,8 @@
     "testUserMode": true
   },
   "folders": {
-    "loggerFolderEnv": "NODE_LOGS",
-    "tasksFolderEnv": "NODE_TASKS"
+    "loggerFolder": "$NODE_LOGS",
+    "tasksFolder": "$NODE_TASKS"
   },
   "time": {
     "authTimeOutMillis": 2000,

@@ -1,6 +1,7 @@
 package ru.babobka.nodetester.benchmark.performer;
 
-import ru.babobka.nodemasterserver.server.config.PortConfig;
+
+import ru.babobka.nodeconfigs.master.PortConfig;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;

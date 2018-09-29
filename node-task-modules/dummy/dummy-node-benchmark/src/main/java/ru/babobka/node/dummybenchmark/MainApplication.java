@@ -18,7 +18,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "dummy-node-benchmark";
     }
 

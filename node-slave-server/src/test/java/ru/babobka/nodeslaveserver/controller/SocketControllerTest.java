@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
-import ru.babobka.nodeslaveserver.server.SlaveServerConfig;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodeslaveserver.thread.RequestHandlerThread;
 import ru.babobka.nodetask.TaskPool;

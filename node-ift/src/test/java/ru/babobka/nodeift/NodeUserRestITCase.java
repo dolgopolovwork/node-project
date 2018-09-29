@@ -15,7 +15,7 @@ import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;

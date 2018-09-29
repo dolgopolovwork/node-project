@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.service;
 
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.auth.AbstractAuth;
 import ru.babobka.nodesecurity.auth.AuthData;

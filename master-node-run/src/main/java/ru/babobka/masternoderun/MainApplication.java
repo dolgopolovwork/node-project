@@ -4,7 +4,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import ru.babobka.nodeclient.console.CLI;
-import ru.babobka.nodemasterserver.validation.config.MasterServerConfigValidator;
+import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
+import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
@@ -24,10 +25,11 @@ public class MainApplication extends CLI {
 
     static {
         Container.getInstance().put(container -> {
-            container.put(TimerInvoker.create(1_000));
+            container.put(TimerInvoker.createMaxOneSecondDelay());
             container.put(new StreamUtil());
             container.put(new MasterServerConfigValidator());
             container.put(new SecurityApplicationContainer());
+            container.put(new ConfigsApplicationContainer());
         });
     }
 
@@ -52,7 +54,7 @@ public class MainApplication extends CLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "master-node-run";
     }
 

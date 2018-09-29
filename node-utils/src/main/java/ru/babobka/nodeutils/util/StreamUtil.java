@@ -43,6 +43,17 @@ public class StreamUtil {
         }
     }
 
+    public void writeTextToFile(String text, String filePath) throws IOException {
+        if (text == null) {
+            throw new IllegalArgumentException("cannot write null text to file");
+        } else if (TextUtil.isEmpty(filePath)) {
+            throw new IllegalArgumentException("file path was not set");
+        }
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(text.getBytes(TextUtil.CHARSET));
+        }
+    }
+
     public byte[] readBytesFromFile(String filePath) throws IOException {
         if (TextUtil.isEmpty(filePath)) {
             throw new IllegalArgumentException("file path was not set");

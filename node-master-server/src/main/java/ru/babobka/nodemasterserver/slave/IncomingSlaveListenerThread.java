@@ -1,7 +1,7 @@
 package ru.babobka.nodemasterserver.slave;
 
 import lombok.NonNull;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodeutils.container.Container;

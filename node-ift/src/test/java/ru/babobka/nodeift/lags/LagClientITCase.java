@@ -2,7 +2,7 @@ package ru.babobka.nodeift.lags;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;

@@ -24,6 +24,10 @@ public class TimerInvoker {
         return new TimerInvoker(maxDelayMillis);
     }
 
+    public static TimerInvoker createMaxOneSecondDelay() {
+        return new TimerInvoker(1_000);
+    }
+
     public void invoke(RunnableInvoker runnable, String operationName) {
         Timer timer = new Timer(operationName);
         try {

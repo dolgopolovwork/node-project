@@ -3,7 +3,7 @@ package ru.babobka.nodemasterserver.slave.pipeline.step;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodemasterserver.server.config.MasterServerConfig;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;

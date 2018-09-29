@@ -1,7 +1,7 @@
 package ru.babobka.nodetester.benchmark.performer;
 
 import ru.babobka.nodeclient.Client;
-import ru.babobka.nodemasterserver.server.config.PortConfig;
+import ru.babobka.nodeconfigs.master.PortConfig;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;

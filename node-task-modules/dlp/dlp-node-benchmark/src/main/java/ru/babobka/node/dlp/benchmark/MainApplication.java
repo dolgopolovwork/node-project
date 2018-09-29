@@ -43,7 +43,7 @@ public class MainApplication extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected String getAppName() {
+    public String getAppName() {
         return "dlp-node-benchmark";
     }
 
