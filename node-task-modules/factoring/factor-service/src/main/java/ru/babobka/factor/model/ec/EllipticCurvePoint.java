@@ -16,7 +16,7 @@ public class EllipticCurvePoint implements Serializable {
     private static final BigInteger THREE = BigInteger.valueOf(3);
     private static final BigInteger FOUR = BigInteger.valueOf(4);
     private static final BigInteger EIGHT = BigInteger.valueOf(8);
-    private static final MultiplicationProvider multiplicationProvider = Container.getInstance().get(MultiplicationProvider.class);
+    private static final MultiplicationProvider multiplicationProvider  = Container.getInstance().get(MultiplicationProvider.class);
     private final Fp x;
     private final Fp y;
     private final Fp z;
@@ -64,9 +64,9 @@ public class EllipticCurvePoint implements Serializable {
 
 
     public EllipticCurvePoint doublePoint() {
-    /*
-     * if (Y == 0) return POINT_AT_INFINITY
-	 */
+        /*
+         * if (Y == 0) return POINT_AT_INFINITY
+         */
         if (y.isAddNeutral()) {
             return getInfinityPoint();
         }
@@ -92,9 +92,9 @@ public class EllipticCurvePoint implements Serializable {
         if (ecp.isInfinityPoint()) {
             return this;
         }
-    /*
-     * if (ec.equals(this)) { return this.doublePoint(); }
-	 */
+        /*
+         * if (ec.equals(this)) { return this.doublePoint(); }
+         */
         // U1 = Y2*Z1
         Fp u1 = ecp.getY().mult(z);
         // U2 = Y1*Z2

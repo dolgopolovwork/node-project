@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static ru.babobka.nodeutils.util.TextUtil.getLongestRepeats;
 
 public class TextUtilTest {
 
@@ -132,27 +133,27 @@ public class TextUtilTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetLongestRepeatsNoText() {
-        TextUtil.getLongestRepeats("", '1');
+        getLongestRepeats("", '1');
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetLongestRepeatsNullText() {
-        TextUtil.getLongestRepeats(null, '1');
+        getLongestRepeats((String) null, '1');
     }
 
     @Test
     public void testGetLongestRepeatsNoSymbol() {
-        assertEquals(getMaxElement(TextUtil.getLongestRepeats("987654", '1')), 0);
+        assertEquals(getLongestRepeats("987654", '1'), 0);
     }
 
     @Test
     public void testGetLongestRepeatsFullMatch() {
-        assertEquals(getMaxElement(TextUtil.getLongestRepeats("111", '1')), 3);
+        assertEquals(getLongestRepeats("111", '1'), 3);
     }
 
     @Test
     public void testGetLongestRepeats() {
-        assertArrayEquals(TextUtil.getLongestRepeats("1011101101", '1'), new int[]{1, 0, 1, 2, 3, 0, 1, 2, 0, 1});
+        assertEquals(getLongestRepeats("1011101101", '1'), 3);
     }
 
     @Test
@@ -177,15 +178,5 @@ public class TextUtilTest {
             assertEquals(strings[i], TextUtil.getFirstNonNull(strings));
             strings[i] = null;
         }
-    }
-
-    private static int getMaxElement(int[] array) {
-        int max = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
-            }
-        }
-        return max;
     }
 }

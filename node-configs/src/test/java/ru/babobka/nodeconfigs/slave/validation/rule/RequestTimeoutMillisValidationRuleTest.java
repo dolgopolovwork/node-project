@@ -2,7 +2,6 @@ package ru.babobka.nodeconfigs.slave.validation.rule;
 
 import org.junit.Test;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
-import ru.babobka.nodeconfigs.slave.validation.rule.RequestTimeoutMillisValidationRule;
 
 /**
  * Created by 123 on 02.06.2018.

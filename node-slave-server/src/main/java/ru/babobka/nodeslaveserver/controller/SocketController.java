@@ -1,12 +1,12 @@
 package ru.babobka.nodeslaveserver.controller;
 
 import lombok.NonNull;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.thread.RequestHandlerThread;
-import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;

@@ -13,14 +13,14 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by 123 on 04.10.2017.
  */
-public class FastMultiplicationProviderTest {
+public class BinaryMultiplicationProviderTest {
 
-    private static final FastMultiplicationProvider fastMultiplicationProvider = new FastMultiplicationProvider();
+    private static final BinaryMultiplicationProvider BINARY_MULTIPLICATION_PROVIDER = new BinaryMultiplicationProvider();
     private static final DummyMultiplicationProvider dummyMultiplicationProvider = new DummyMultiplicationProvider();
 
     @BeforeClass
     public static void setUp() {
-        Container.getInstance().put(fastMultiplicationProvider);
+        Container.getInstance().put(BINARY_MULTIPLICATION_PROVIDER);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class FastMultiplicationProviderTest {
             EllipticCurvePoint point = EllipticCurvePoint
                     .generateRandomPoint(BigInteger.probablePrime(32, new Random()));
             int mult = random.nextInt(100) + 1;
-            assertEquals(dummyMultiplicationProvider.mult(point, mult), fastMultiplicationProvider.mult(point, mult));
+            assertEquals(dummyMultiplicationProvider.mult(point, mult), BINARY_MULTIPLICATION_PROVIDER.mult(point, mult));
         }
     }
 }

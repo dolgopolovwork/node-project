@@ -16,6 +16,8 @@ public abstract class MultiplicationProvider {
             return point;
         } else if (times == 0L) {
             return point.getInfinityPoint();
+        } else if (times == 2) {
+            return point.doublePoint();
         } else {
             return multImpl(point, times);
         }

@@ -41,16 +41,18 @@ public class NodeConnectionImpl implements NodeConnection {
     }
 
     public void send(Object object) throws IOException {
-        timerInvoker.invoke(() -> {
-            synchronized (socket) {
-                try {
+        try {
+            timerInvoker.invoke(() -> {
+                synchronized (socket) {
                     streamUtil.sendObject(object, socket);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
-            }
-        }, "send(Object object)");
-
+            }, "send(Object object)");
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            //Not going to happen
+            throw new IOException(e);
+        }
     }
 
     public void close() {

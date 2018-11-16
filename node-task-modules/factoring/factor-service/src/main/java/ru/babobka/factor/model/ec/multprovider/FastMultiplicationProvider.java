@@ -1,39 +1,20 @@
 package ru.babobka.factor.model.ec.multprovider;
 
 import ru.babobka.factor.model.ec.EllipticCurvePoint;
-
-import java.util.ArrayList;
-import java.util.List;
+import ru.babobka.nodeutils.util.MathUtil;
 
 /**
- * Created by 123 on 01.10.2017.
+ * Created by 123 on 20.10.2018.
  */
 public class FastMultiplicationProvider extends MultiplicationProvider {
+    private final MultiplicationProvider binaryMultiplicationProvider = new BinaryMultiplicationProvider();
+    private final MultiplicationProvider ternaryMultiplicationProvider = new TernaryMultiplicationProvider();
+
     @Override
     protected EllipticCurvePoint multImpl(EllipticCurvePoint point, long times) {
-        char[] binaryMult = Long.toBinaryString(times).toCharArray();
-        int biggestExp = binaryMult.length - 1;
-        List<EllipticCurvePoint> expPoints = new ArrayList<>();
-        expPoints.add(point);
-        for (int i = 1; i <= biggestExp; i++) {
-            expPoints.add(expPoints.get(i - 1).doublePoint());
+        if (MathUtil.makesSenseToUseTernary(times)) {
+            return ternaryMultiplicationProvider.mult(point, times);
         }
-        List<EllipticCurvePoint> pointsToAdd = new ArrayList<>();
-        for (int i = 0; i < binaryMult.length; i++) {
-            if (binaryMult[i] == '1') {
-                pointsToAdd.add(expPoints.get(binaryMult.length - i - 1));
-            }
-        }
-        return addPoints(pointsToAdd);
+        return binaryMultiplicationProvider.mult(point, times);
     }
-
-
-    private EllipticCurvePoint addPoints(List<EllipticCurvePoint> points) {
-        EllipticCurvePoint result = points.get(0);
-        for (int i = 1; i < points.size(); i++) {
-            result = result.add(points.get(i));
-        }
-        return result;
-    }
-
 }

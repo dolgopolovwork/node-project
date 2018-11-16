@@ -1,8 +1,8 @@
 package ru.babobka.nodetester.slave;
 
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;

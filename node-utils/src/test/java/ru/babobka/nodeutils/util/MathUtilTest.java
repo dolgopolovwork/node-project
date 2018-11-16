@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -227,8 +228,35 @@ public class MathUtilTest {
     }
 
     @Test
+    public void testTernaryTransformation() {
+        for (int i = 4; i < 10_000; i++) {
+            assertEquals(i, MathUtil.ternaryToDecimal(MathUtil.toTernary(i)));
+        }
+    }
+
+    @Test
+    public void testTernaryHasLessTerms() {
+        int binaryTerms;
+        int ternaryTerms;
+        for (int i = 10; i < 10_000; i++) {
+            binaryTerms = MathUtil.getBinaryTerms(MathUtil.toBinary(i));
+            ternaryTerms = MathUtil.getTernaryTerms(MathUtil.toTernary(i));
+            assertTrue(ternaryTerms <= binaryTerms);
+        }
+    }
+
+    @Test
+    public void testGetFirstBigTermsPrimes() {
+        int primesToGenerate = 1000;
+        List<Integer> bigTermsPrimes = MathUtil.getFirstBigTermsPrimes(primesToGenerate);
+        assertEquals(bigTermsPrimes.size(), primesToGenerate);
+        for (Integer bigTermsPrime : bigTermsPrimes) {
+            assertTrue(MathUtil.isPrime(bigTermsPrime));
+        }
+    }
+
+    @Test
     public void testInRangeNotInRange() {
         assertFalse(MathUtil.inRange(2, 9, 11));
     }
-
 }
