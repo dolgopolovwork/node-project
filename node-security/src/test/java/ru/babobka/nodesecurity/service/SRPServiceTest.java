@@ -378,7 +378,7 @@ public class SRPServiceTest {
         String message = "abc";
         Data data = new Data();
         NodeResponse nodeData1 = new NodeResponse(id, taskId, 0, ResponseStatus.NORMAL, message, data, taskName, 0);
-        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.FAILED, message, data, taskName, 0);
+        NodeResponse nodeData2 = new NodeResponse(id, taskId, 0, ResponseStatus.VALIDATION_ERROR, message, data, taskName, 0);
         assertFalse(Arrays.equals(srpService.buildHash(nodeData1), srpService.buildHash(nodeData2)));
     }
 

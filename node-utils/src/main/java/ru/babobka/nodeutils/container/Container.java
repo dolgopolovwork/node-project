@@ -61,7 +61,6 @@ public class Container {
         namedContainerMap.put(key.name(), object);
     }
 
-
     @SuppressWarnings("unchecked")
     private <T> T getNoException(Class<T> clazz) {
         T component = null;

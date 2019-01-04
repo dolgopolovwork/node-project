@@ -28,16 +28,34 @@ public class NodeResponse extends NodeData {
         this(UUID.randomUUID(), taskId, 0, status, null, null, taskName, System.currentTimeMillis());
     }
 
-    public static NodeResponse failed(NodeRequest request) {
-        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, null, null, request.getTaskName(), System.currentTimeMillis());
+    public static NodeResponse validationError(NodeRequest request) {
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.VALIDATION_ERROR, "Failed validation", null, request.getTaskName(), System.currentTimeMillis());
     }
 
-    public static NodeResponse failed(UUID taskId) {
-        return new NodeResponse(taskId, ResponseStatus.FAILED);
+    public static NodeResponse validationError(UUID taskId) {
+        return new NodeResponse(taskId, ResponseStatus.VALIDATION_ERROR);
     }
 
-    public static NodeResponse failed(NodeRequest request, String message) {
-        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.FAILED, message,
+    public static NodeResponse validationError(NodeRequest request, String message) {
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.VALIDATION_ERROR, message,
+                null, request.getTaskName(), System.currentTimeMillis());
+    }
+
+    public static NodeResponse noNodesError(NodeRequest request, String message) {
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.NO_NODES, message,
+                null, request.getTaskName(), System.currentTimeMillis());
+    }
+
+    public static NodeResponse systemError(NodeRequest request) {
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.SYSTEM_ERROR, null, null, request.getTaskName(), System.currentTimeMillis());
+    }
+
+    public static NodeResponse systemError(UUID taskId) {
+        return new NodeResponse(taskId, ResponseStatus.SYSTEM_ERROR);
+    }
+
+    public static NodeResponse systemError(NodeRequest request, String message) {
+        return new NodeResponse(request.getId(), request.getTaskId(), -1, ResponseStatus.SYSTEM_ERROR, message,
                 null, request.getTaskName(), System.currentTimeMillis());
     }
 

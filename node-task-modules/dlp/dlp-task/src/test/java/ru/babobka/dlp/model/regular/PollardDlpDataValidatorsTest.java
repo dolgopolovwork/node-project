@@ -24,7 +24,7 @@ public class PollardDlpDataValidatorsTest {
     @Test
     public void testIsValidResponseImplNotNormalStatus() {
         NodeResponse response = mock(NodeResponse.class);
-        when(response.getStatus()).thenReturn(ResponseStatus.FAILED);
+        when(response.getStatus()).thenReturn(ResponseStatus.VALIDATION_ERROR);
         assertFalse(pollardDlpDataValidators.isValidResponse(response));
     }
 

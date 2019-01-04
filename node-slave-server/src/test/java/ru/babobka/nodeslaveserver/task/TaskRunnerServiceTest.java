@@ -41,7 +41,7 @@ public class TaskRunnerServiceTest {
     public void testRunTaskBadValidation() {
         when(dataValidators.isValidRequest(any(NodeRequest.class))).thenReturn(false);
         NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-        assertEquals(response.getStatus(), ResponseStatus.FAILED);
+        assertEquals(response.getStatus(), ResponseStatus.VALIDATION_ERROR);
         verify(tasksStorage).removeRequest(request);
     }
 

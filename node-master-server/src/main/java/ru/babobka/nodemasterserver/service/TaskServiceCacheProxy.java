@@ -7,6 +7,7 @@ import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
@@ -50,7 +51,7 @@ public class TaskServiceCacheProxy implements TaskService {
         try {
             task = taskPool.get(request.getTaskName());
         } catch (IOException e) {
-            throw new TaskExecutionException(e);
+            throw new TaskExecutionException(ResponseStatus.SYSTEM_ERROR, e);
         }
         return task.enableCache() && !task.isSingleNodeTask(request);
     }

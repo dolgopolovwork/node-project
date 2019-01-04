@@ -12,6 +12,7 @@ import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodemasterserver.task.TaskStartResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.DataValidators;
@@ -49,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
             taskMonitoringService.incrementCanceledTasksCount();
             return distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
         } catch (RuntimeException e) {
-            throw new TaskExecutionException("cannot cancel task", e);
+            throw new TaskExecutionException("cannot cancel task", ResponseStatus.SYSTEM_ERROR, e);
         }
     }
 
@@ -60,23 +61,28 @@ public class TaskServiceImpl implements TaskService {
             taskMonitoringService.incrementStartedTasksCount();
             SubTask task = taskPool.get(request.getTaskName());
             TaskStartResult startResult = startTask(request, task, maxNodes);
-            if (startResult.isSystemError() || startResult.isFailed()) {
+            if (startResult.isSystemError() || startResult.isValidationError()) {
                 taskMonitoringService.incrementFailedTasksCount();
-                throw new TaskExecutionException(startResult.getMessage());
+                ResponseStatus taskExecutionStatus;
+                if (startResult.isSystemError()) {
+                    taskExecutionStatus = ResponseStatus.SYSTEM_ERROR;
+                } else {
+                    taskExecutionStatus = ResponseStatus.VALIDATION_ERROR;
+                }
+                throw new TaskExecutionException(startResult.getMessage(), taskExecutionStatus);
             }
             Timer timer = new Timer();
             Responses responses = responseStorage.get(request.getTaskId());
             if (responses == null) {
                 taskMonitoringService.incrementFailedTasksCount();
-                throw new TaskExecutionException("no such task with given id " + request.getTaskId());
+                throw new TaskExecutionException("no such task with given id " + request.getTaskId(), ResponseStatus.SYSTEM_ERROR);
             }
             TaskExecutionResult result = responsesMapper.map(responses, timer, task);
             taskMonitoringService.incrementExecutedTasksCount();
             return result;
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
-            e.printStackTrace();
             taskMonitoringService.incrementFailedTasksCount();
-            throw new TaskExecutionException(e);
+            throw new TaskExecutionException(ResponseStatus.SYSTEM_ERROR, e);
         } finally {
             responseStorage.remove(request.getTaskId());
         }
@@ -87,12 +93,12 @@ public class TaskServiceImpl implements TaskService {
         return executeTask(request, 0);
     }
 
-    void broadcastTask(NodeRequest request, SubTask task, int maxNodes) throws DistributionException {
+    void broadcastTask(NodeRequest request, SubTask task, int maxNodes) throws DistributionException, TaskExecutionException {
         broadcastTask(request, task, maxNodes, 0);
     }
 
     private void broadcastTask(NodeRequest request, SubTask task, int maxNodes, int attempt)
-            throws DistributionException {
+            throws DistributionException, TaskExecutionException {
         if (maxNodes < 0)
             throw new IllegalArgumentException("maxNodes must be at least 0");
         UUID taskId = request.getTaskId();
@@ -100,7 +106,7 @@ public class TaskServiceImpl implements TaskService {
         if (clusterSize <= 0) {
             nodeLogger.debug("rebroadcast attempt " + attempt);
             if (attempt == MAX_ATTEMPTS) {
-                throw new DistributionException("cannot broadcost more. system reached its max retry attempt.");
+                throw new TaskExecutionException("cannot broadcast no more. system reached its max retry attempt.", ResponseStatus.NO_NODES);
             }
             waitForGoodTimes();
             broadcastTask(request, task, maxNodes, attempt + 1);
@@ -128,13 +134,13 @@ public class TaskServiceImpl implements TaskService {
         return maxNodes == 0 ? actualClusterSize : Math.min(maxNodes, actualClusterSize);
     }
 
-    TaskStartResult startTask(NodeRequest request, SubTask task, int maxNodes) {
+    TaskStartResult startTask(NodeRequest request, SubTask task, int maxNodes) throws TaskExecutionException {
         UUID taskId = request.getTaskId();
         DataValidators dataValidators = task.getDataValidators();
         if (!dataValidators.isValidRequest(request)) {
-            return TaskStartResult.failed(taskId, "wrong arguments");
+            return TaskStartResult.validationError(taskId, "wrong arguments");
         } else if (task.isRequestDataTooBig(request)) {
-            return TaskStartResult.failed(taskId, "too big arguments");
+            return TaskStartResult.validationError(taskId, "too big arguments");
         }
         nodeLogger.debug("started task id is " + taskId);
         try {

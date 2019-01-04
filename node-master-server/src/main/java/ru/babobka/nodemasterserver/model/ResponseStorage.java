@@ -30,7 +30,7 @@ public class ResponseStorage {
     public synchronized boolean addBadResponse(UUID taskId) {
         Responses responses = responsesMap.get(taskId);
         return responses != null
-                && responses.add(NodeResponse.failed(taskId));
+                && responses.add(NodeResponse.systemError(taskId));
     }
 
     public synchronized void addBadResponse(NodeRequest request) {

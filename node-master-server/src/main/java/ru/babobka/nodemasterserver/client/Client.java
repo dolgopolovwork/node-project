@@ -6,6 +6,7 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -23,7 +24,7 @@ public class Client extends AbstractClient {
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
-    private final AtomicInteger processedRequests = new AtomicInteger(0);
+    private final AtomicInteger processedRequests = new AtomicInteger();
     private volatile boolean done;
 
     Client(NodeConnection connection, List<NodeRequest> requests) {
@@ -77,9 +78,16 @@ public class Client extends AbstractClient {
         setDone();
     }
 
-    void sendFailed() throws IOException {
+    void sendFailed(TaskExecutionException taskExecutionException) throws IOException {
         for (NodeRequest request : requests) {
-            connection.send(NodeResponse.failed(request));
+            String message = taskExecutionException.getMessage();
+            if (taskExecutionException.getExecutionStatus() == ResponseStatus.SYSTEM_ERROR) {
+                connection.send(NodeResponse.systemError(request, message));
+            } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.VALIDATION_ERROR) {
+                connection.send(NodeResponse.validationError(request, message));
+            } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.NO_NODES) {
+                connection.send(NodeResponse.noNodesError(request, message));
+            }
         }
     }
 
@@ -114,7 +122,7 @@ public class Client extends AbstractClient {
             }
         } catch (TaskExecutionException e) {
             nodeLogger.error(e);
-            sendFailed();
+            sendFailed(e);
         }
     }
 

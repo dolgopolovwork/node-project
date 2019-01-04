@@ -18,7 +18,7 @@ public class TaskRunnerService {
                                 @NonNull SubTask subTask) {
         try {
             if (!subTask.getDataValidators().isValidRequest(request)) {
-                return NodeResponse.failed(request, "Failed validation");
+                return NodeResponse.validationError(request);
             }
             Timer timer = new Timer();
             ExecutionResult result = subTask.getTaskExecutor().execute(request);

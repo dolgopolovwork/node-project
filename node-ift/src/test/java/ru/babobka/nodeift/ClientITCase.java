@@ -64,7 +64,7 @@ public class ClientITCase {
         try (Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
-            assertEquals(response.getStatus(), ResponseStatus.FAILED);
+            assertEquals(response.getStatus(), ResponseStatus.NO_NODES);
         }
     }
 
@@ -127,7 +127,7 @@ public class ClientITCase {
             NodeRequest request = createFactorTest(p, q);
             Future<NodeResponse> future = client.executeTask(request);
             NodeResponse response = future.get();
-            assertEquals(response.getStatus(), ResponseStatus.FAILED);
+            assertEquals(response.getStatus(), ResponseStatus.VALIDATION_ERROR);
         }
     }
 
