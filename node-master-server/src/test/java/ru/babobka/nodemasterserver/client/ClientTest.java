@@ -9,6 +9,7 @@ import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
@@ -91,7 +92,7 @@ public class ClientTest {
         when(request.getTaskId()).thenReturn(id);
         NodeConnection connection = mock(NodeConnection.class);
         Client client = spy(new Client(connection, Arrays.asList(request)));
-        doThrow(new TaskExecutionException()).when(taskService).cancelTask(id);
+        doThrow(new TaskExecutionException(ResponseStatus.SYSTEM_ERROR)).when(taskService).cancelTask(id);
         client.cancelTask();
         verify(client).setDone();
     }
@@ -125,10 +126,11 @@ public class ClientTest {
     public void testExecuteTaskException() throws TaskExecutionException, IOException {
         NodeRequest request = mock(NodeRequest.class);
         NodeConnection connection = mock(NodeConnection.class);
-        when(taskService.executeTask(request)).thenThrow(new TaskExecutionException());
+        TaskExecutionException taskExecutionException = new TaskExecutionException(ResponseStatus.SYSTEM_ERROR);
+        when(taskService.executeTask(request)).thenThrow(taskExecutionException);
         Client client = spy(new Client(connection, Arrays.asList(request)));
         client.executeTask(request);
-        verify(client).sendFailed();
+        verify(client).sendFailed(taskExecutionException);
         verify(client, never()).setDone();
     }
 
@@ -188,5 +190,4 @@ public class ClientTest {
         verify(clientStorage).remove(client);
         verify(client).close();
     }
-
 }

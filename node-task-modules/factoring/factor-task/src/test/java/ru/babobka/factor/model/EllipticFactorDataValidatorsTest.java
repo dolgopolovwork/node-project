@@ -56,7 +56,7 @@ public class EllipticFactorDataValidatorsTest {
 
     @Test
     public void testValidResponseBadStatus() {
-        assertFalse(ellipticFactorDataValidators.isValidResponse(NodeResponse.failed(UUID.randomUUID())));
+        assertFalse(ellipticFactorDataValidators.isValidResponse(NodeResponse.validationError(UUID.randomUUID())));
     }
 
     @Test

@@ -14,9 +14,15 @@ import static org.junit.Assert.assertEquals;
 public class NodeResponseTest {
 
     @Test
-    public void testFailed() {
-        NodeResponse nodeResponse = NodeResponse.failed(UUID.randomUUID());
-        assertEquals(nodeResponse.getStatus(), ResponseStatus.FAILED);
+    public void testValidationError() {
+        NodeResponse nodeResponse = NodeResponse.validationError(UUID.randomUUID());
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.VALIDATION_ERROR);
+    }
+
+    @Test
+    public void testSystemError() {
+        NodeResponse nodeResponse = NodeResponse.systemError(UUID.randomUUID());
+        assertEquals(nodeResponse.getStatus(), ResponseStatus.SYSTEM_ERROR);
     }
 
     @Test

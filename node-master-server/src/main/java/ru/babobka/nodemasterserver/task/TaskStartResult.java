@@ -6,15 +6,15 @@ public class TaskStartResult {
 
     private final UUID taskId;
 
-    private final boolean failed;
+    private final boolean validationError;
 
     private final boolean systemError;
 
     private final String message;
 
-    private TaskStartResult(UUID taskId, boolean failed, boolean systemError, String message) {
+    private TaskStartResult(UUID taskId, boolean validationError, boolean systemError, String message) {
         this.taskId = taskId;
-        this.failed = failed;
+        this.validationError = validationError;
         this.message = message;
         this.systemError = systemError;
     }
@@ -31,7 +31,7 @@ public class TaskStartResult {
         return new TaskStartResult(taskId, true, true, message);
     }
 
-    public static TaskStartResult failed(UUID taskId, String message) {
+    public static TaskStartResult validationError(UUID taskId, String message) {
         return new TaskStartResult(taskId, true, false, message);
     }
 
@@ -43,8 +43,8 @@ public class TaskStartResult {
         return taskId;
     }
 
-    public boolean isFailed() {
-        return failed;
+    public boolean isValidationError() {
+        return validationError;
     }
 
     public String getMessage() {

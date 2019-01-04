@@ -21,7 +21,7 @@ public class PrimeCounterDataValidatorsTest {
     @Test
     public void testValidResponseBadStatus() {
         NodeResponse response = mock(NodeResponse.class);
-        when(response.getStatus()).thenReturn(ResponseStatus.FAILED);
+        when(response.getStatus()).thenReturn(ResponseStatus.VALIDATION_ERROR);
         assertFalse(primeCounterDataValidators.isValidResponse(response));
     }
 

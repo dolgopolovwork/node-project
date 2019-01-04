@@ -108,12 +108,12 @@ public class TaskServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testBroadcastTaskBadNodes() throws DistributionException {
+    public void testBroadcastTaskBadNodes() throws DistributionException, TaskExecutionException {
         taskService.broadcastTask(mock(NodeRequest.class), mock(SubTask.class), -1);
     }
 
     @Test
-    public void testBroadcastTaskLittleRequest() throws DistributionException {
+    public void testBroadcastTaskLittleRequest() throws DistributionException, TaskExecutionException {
         RequestDistributor requestDistributor = mock(RequestDistributor.class);
         UUID taskId = UUID.randomUUID();
         SubTask task = mock(SubTask.class);
@@ -130,7 +130,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void testBroadcastTaskLittleRequestAllNodes() throws DistributionException {
+    public void testBroadcastTaskLittleRequestAllNodes() throws DistributionException, TaskExecutionException {
         int actualClusterSize = 10;
         when(slavesStorage.getClusterSize(anyString())).thenReturn(actualClusterSize);
         RequestDistributor requestDistributor = mock(RequestDistributor.class);
@@ -149,7 +149,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void testBroadcastTaskLittleRequestMaxNodesWasSet() throws DistributionException {
+    public void testBroadcastTaskLittleRequestMaxNodesWasSet() throws DistributionException, TaskExecutionException {
         int maxNodes = 5;
         int actualClusterSize = 10;
         when(slavesStorage.getClusterSize(anyString())).thenReturn(actualClusterSize);
@@ -169,7 +169,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void testBroadcastTaskLittleRequestMaxNodesIsBiggerThanActualClusterSize() throws DistributionException {
+    public void testBroadcastTaskLittleRequestMaxNodesIsBiggerThanActualClusterSize() throws DistributionException, TaskExecutionException {
         int maxNodes = 12;
         int actualClusterSize = 10;
         when(slavesStorage.getClusterSize(anyString())).thenReturn(actualClusterSize);
@@ -189,7 +189,7 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void testStartTaskNotValid() {
+    public void testStartTaskNotValid() throws TaskExecutionException {
         UUID taskId = UUID.randomUUID();
         NodeRequest request = mock(NodeRequest.class);
         when(request.getTaskId()).thenReturn(taskId);
@@ -198,12 +198,12 @@ public class TaskServiceImplTest {
         SubTask task = mock(SubTask.class);
         when(task.getDataValidators()).thenReturn(dataValidators);
         TaskStartResult taskStartResult = taskService.startTask(request, task, 1);
-        assertTrue(taskStartResult.isFailed());
+        assertTrue(taskStartResult.isValidationError());
         assertEquals(taskStartResult.getTaskId(), taskId);
     }
 
     @Test
-    public void testStartTaskTooBig() {
+    public void testStartTaskTooBig() throws TaskExecutionException {
         UUID taskId = UUID.randomUUID();
         NodeRequest request = mock(NodeRequest.class);
         when(request.getTaskId()).thenReturn(taskId);
@@ -213,13 +213,13 @@ public class TaskServiceImplTest {
         when(task.isRequestDataTooBig(request)).thenReturn(true);
         when(task.getDataValidators()).thenReturn(dataValidators);
         TaskStartResult taskStartResult = taskService.startTask(request, task, 1);
-        assertTrue(taskStartResult.isFailed());
+        assertTrue(taskStartResult.isValidationError());
         assertEquals(taskStartResult.getTaskId(), taskId);
     }
 
 
     @Test
-    public void testStartTask() throws DistributionException {
+    public void testStartTask() throws DistributionException, TaskExecutionException {
         int maxNodes = 1;
         UUID taskId = UUID.randomUUID();
         NodeRequest request = mock(NodeRequest.class);
@@ -231,14 +231,14 @@ public class TaskServiceImplTest {
         doNothing().when(taskService).broadcastTask(request, task, maxNodes);
         when(task.getDataValidators()).thenReturn(dataValidators);
         TaskStartResult taskStartResult = taskService.startTask(request, task, maxNodes);
-        assertFalse(taskStartResult.isFailed());
+        assertFalse(taskStartResult.isValidationError());
         assertFalse(taskStartResult.isSystemError());
         assertEquals(taskStartResult.getTaskId(), taskId);
         verify(taskService).broadcastTask(request, task, maxNodes);
     }
 
     @Test
-    public void testStartTaskDistributionException() throws DistributionException {
+    public void testStartTaskDistributionException() throws DistributionException, TaskExecutionException {
         int maxNodes = 1;
         UUID taskId = UUID.randomUUID();
         NodeRequest request = mock(NodeRequest.class);

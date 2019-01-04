@@ -51,7 +51,7 @@ public class RequestHandlerThread extends Thread {
         } catch (RuntimeException e) {
             nodeLogger.error(e);
             try {
-                connection.send(NodeResponse.failed(request));
+                connection.send(NodeResponse.systemError(request));
             } catch (IOException ioException) {
                 nodeLogger.error(ioException);
             }
@@ -66,5 +66,4 @@ public class RequestHandlerThread extends Thread {
         super.interrupt();
         subTask.stopProcess();
     }
-
 }

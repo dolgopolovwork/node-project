@@ -237,21 +237,6 @@ public class MathUtil {
         return 1;
     }
 
-    public static int countFirstPrimes(int primesBorder) {
-        int primesCount = 0;
-        if (primesBorder >= 2) {
-            primesCount++;
-        }
-        int probablePrime = 3;
-        while (probablePrime <= primesBorder) {
-            if (isPrime(probablePrime)) {
-                primesCount++;
-            }
-            probablePrime += 2;
-        }
-        return primesCount;
-    }
-
     public static List<Integer> getFirstBigTermsPrimes(int primesToGenerate) {
         if (primesToGenerate < 0) {
             throw new IllegalArgumentException("cannot create negative number of prime numbers");
