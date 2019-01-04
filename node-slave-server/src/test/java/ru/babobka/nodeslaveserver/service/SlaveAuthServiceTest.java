@@ -2,13 +2,13 @@ package ru.babobka.nodeslaveserver.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.rsa.RSAConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
-import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;

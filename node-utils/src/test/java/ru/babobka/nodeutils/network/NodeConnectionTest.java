@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.time.TimerInvoker;
-import ru.babobka.nodeutils.time.exception.TimerInvokerException;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
@@ -69,7 +68,7 @@ public class NodeConnectionTest {
         verify(streamUtil).sendObject(object, socket);
     }
 
-    @Test(expected = TimerInvokerException.class)
+    @Test(expected = IOException.class)
     public void testSendException() throws IOException {
         doThrow(new IOException()).when(streamUtil).sendObject(any(Object.class), eq(socket));
         connection.send(new Object());

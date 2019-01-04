@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by 123 on 20.08.2017.
@@ -17,7 +18,7 @@ import java.util.UUID;
 public abstract class AbstractSlave extends Thread {
 
     private final UUID slaveId;
-    private final Map<UUID, NodeRequest> tasks = new HashMap<>();
+    private final Map<UUID, NodeRequest> tasks = new ConcurrentHashMap<>();
 
     AbstractSlave() {
         this.slaveId = UUID.randomUUID();
@@ -26,6 +27,7 @@ public abstract class AbstractSlave extends Thread {
     void applyToTasks(Applyer<NodeRequest> applyer) {
         synchronized (tasks) {
             for (Map.Entry<UUID, NodeRequest> requestEntry : tasks.entrySet()) {
+                //There may be concurrent modification
                 applyer.apply(requestEntry.getValue());
             }
         }

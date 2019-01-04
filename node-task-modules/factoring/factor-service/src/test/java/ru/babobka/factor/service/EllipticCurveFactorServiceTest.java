@@ -3,7 +3,7 @@ package ru.babobka.factor.service;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.factor.model.FactoringResult;
-import ru.babobka.factor.model.ec.multprovider.FastMultiplicationProvider;
+import ru.babobka.factor.model.ec.multprovider.BinaryMultiplicationProvider;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
 import ru.babobka.nodeutils.logger.NodeLogger;
@@ -22,7 +22,7 @@ public class EllipticCurveFactorServiceTest {
         Container.getInstance().put(container -> {
             container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
             container.put(mock(NodeLogger.class));
-            container.put(new FastMultiplicationProvider());
+            container.put(new BinaryMultiplicationProvider());
         });
     }
 

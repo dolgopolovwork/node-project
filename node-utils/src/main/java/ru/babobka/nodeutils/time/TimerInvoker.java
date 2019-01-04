@@ -28,12 +28,10 @@ public class TimerInvoker {
         return new TimerInvoker(1_000);
     }
 
-    public void invoke(RunnableInvoker runnable, String operationName) {
+    public void invoke(RunnableInvoker runnable, String operationName) throws Exception {
         Timer timer = new Timer(operationName);
         try {
             runnable.run();
-        } catch (Exception e) {
-            throw new TimerInvokerException(e);
         } finally {
             printIfDelayed(timer);
         }

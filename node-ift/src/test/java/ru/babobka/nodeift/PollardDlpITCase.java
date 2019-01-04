@@ -152,7 +152,7 @@ public class PollardDlpITCase {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             int bits = 32;
-            for (int i = 0; i < 135; i++) {
+            for (int i = 0; i < 500; i++) {
                 createDlpTest(bits, taskService);
             }
         }

@@ -12,6 +12,7 @@ import java.util.Locale;
 
 public class TextUtil {
 
+    public static final String WELCOME_TEXT = "Welcome to node-project (´｡• ᵕ •｡`) ♡";
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final String BAD_PASSWORD_PATTERN = "^[0-9a-z]+$";
     public static final Charset CHARSET = StandardCharsets.UTF_8;
@@ -84,12 +85,18 @@ public class TextUtil {
         return false;
     }
 
-    public static int[] getLongestRepeats(String text, char repeatedChar) {
-        if (text == null || text.isEmpty()) {
+    public static int getLongestRepeats(String text, char repeatedChar) {
+        if (text == null) {
             throw new IllegalArgumentException("text must be set");
         }
-        int[] repeats = new int[text.length()];
-        char[] chars = text.toCharArray();
+        return getLongestRepeats(text.toCharArray(), repeatedChar);
+    }
+
+    public static int getLongestRepeats(char[] chars, char repeatedChar) {
+        if (chars == null || chars.length == 0) {
+            throw new IllegalArgumentException("chars must be set");
+        }
+        int[] repeats = new int[chars.length];
         for (int i = 0; i < chars.length; i++) {
             if (chars[i] != repeatedChar) {
                 continue;
@@ -100,7 +107,13 @@ public class TextUtil {
                 repeats[i] = repeats[i - 1] + 1;
             }
         }
-        return repeats;
+        int maxRepeat = 0;
+        for (int i = 0; i < repeats.length; i++) {
+            if (repeats[i] > maxRepeat) {
+                maxRepeat = repeats[i];
+            }
+        }
+        return maxRepeat;
     }
 
     public static boolean isValidPort(String port) {
@@ -174,5 +187,4 @@ public class TextUtil {
     public static String beautifyServerName(String serverName, int port) {
         return "'" + serverName + "':" + port;
     }
-
 }

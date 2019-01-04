@@ -35,7 +35,7 @@ import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 import ru.babobka.factor.model.FactoringResult;
-import ru.babobka.factor.model.ec.multprovider.FastMultiplicationProvider;
+import ru.babobka.factor.model.ec.multprovider.BinaryMultiplicationProvider;
 import ru.babobka.factor.service.EllipticCurveFactorService;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeutils.container.Container;
@@ -65,7 +65,7 @@ public class FactorBenchmark {
             Container.getInstance().put(container -> {
                 container.put(UtilKey.SERVICE_THREAD_POOL, executorService);
                 container.put(mock(NodeLogger.class));
-                container.put(new FastMultiplicationProvider());
+                container.put(new BinaryMultiplicationProvider());
             });
 
             ellipticCurveFactorService = new EllipticCurveFactorServiceFactory().get();

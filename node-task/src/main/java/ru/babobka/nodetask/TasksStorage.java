@@ -59,7 +59,6 @@ public class TasksStorage {
     }
 
     synchronized void stopTask(UUID taskId, long timeStamp) {
-        System.err.println("stopTask(UUID taskId, long timeStamp) " + taskId);
         stopTaskNoRemove(taskId, timeStamp);
         runningTasks.remove(taskId);
     }

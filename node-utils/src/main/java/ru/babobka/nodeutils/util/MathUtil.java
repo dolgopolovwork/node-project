@@ -5,6 +5,9 @@ import ru.babobka.nodeutils.math.SafePrime;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by dolgopolov.a on 23.11.15.
@@ -60,6 +63,78 @@ public class MathUtil {
             a = -a;
         }
         return isPrime(BigInteger.valueOf(a));
+    }
+
+    public static long ternaryToDecimal(List<Integer> ternary) {
+        long result = 0;
+        int curValue;
+        for (int i = 0; i < ternary.size(); i++) {
+            curValue = ternary.get(i);
+            if (curValue == 1) {
+                result += Math.pow(2, ternary.size() - i - 1);
+            } else if (curValue == -1) {
+                result -= Math.pow(2, ternary.size() - i - 1);
+            } else if (curValue != 0) {
+                throw new IllegalArgumentException("cannot transform from ternary to decimal due to invalid non-ternary value " + curValue);
+            }
+        }
+        return result;
+    }
+
+    public static char[] toBinary(long n) {
+        return Long.toBinaryString(n).toCharArray();
+    }
+
+    public static List<Integer> toTernary(long n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("cannot transform negative number to ternary");
+        }
+        LinkedList<Integer> ternary = new LinkedList<>();
+        if (n == 0) {
+            ternary.add(0);
+            return ternary;
+        }
+        char[] binary = toBinary(n);
+        int lastIndex = binary.length - 1;
+        while (true) {
+            lastIndex = toTernary(binary, lastIndex, ternary);
+            if (lastIndex < 0) {
+                break;
+            }
+        }
+        return ternary;
+    }
+
+    private static int toTernary(char[] binary, int beginIndex, LinkedList<Integer> ternary) {
+        if (beginIndex >= binary.length) {
+            throw new IllegalArgumentException("cannot transform binary to ternary. beginIndex " + beginIndex + " is bigger than binary array length");
+        } else if (beginIndex < 0) {
+            throw new IllegalArgumentException("cannot transform binary to ternary. beginIndex is negative");
+        }
+        int terms = 0;
+        int lastIndex = beginIndex;
+        for (; lastIndex >= 0; lastIndex--) {
+            if (binary[lastIndex] == '0') {
+                break;
+            }
+            terms++;
+        }
+        if (terms == 0) {
+            ternary.addFirst(0);
+        } else if (terms == 1) {
+            ternary.addFirst(1);
+            if (lastIndex > 0) {
+                ternary.addFirst(0);
+            }
+            return lastIndex - 1;
+        } else {
+            ternary.addFirst(-1);
+            for (int i = 0; i <= terms - 2; i++) {
+                ternary.addFirst(0);
+            }
+            ternary.addFirst(1);
+        }
+        return lastIndex - 1;
     }
 
     public static boolean isPrime(int a) {
@@ -162,6 +237,43 @@ public class MathUtil {
         return 1;
     }
 
+    public static int countFirstPrimes(int primesBorder) {
+        int primesCount = 0;
+        if (primesBorder >= 2) {
+            primesCount++;
+        }
+        int probablePrime = 3;
+        while (probablePrime <= primesBorder) {
+            if (isPrime(probablePrime)) {
+                primesCount++;
+            }
+            probablePrime += 2;
+        }
+        return primesCount;
+    }
+
+    public static List<Integer> getFirstBigTermsPrimes(int primesToGenerate) {
+        if (primesToGenerate < 0) {
+            throw new IllegalArgumentException("cannot create negative number of prime numbers");
+        }
+        List<Integer> primes = new ArrayList<>();
+        int probablePrime = 3;
+        while (primes.size() != primesToGenerate) {
+            if (isPrime(probablePrime)) {
+                char[] binary = toBinary(probablePrime);
+                if (TextUtil.getLongestRepeats(binary, '1') >= (binary.length / 3)) {
+                    primes.add(probablePrime);
+                }
+            }
+            probablePrime += 2;
+        }
+        return primes;
+    }
+
+    public static boolean makesSenseToUseTernary(long number) {
+        return number == 31 || number == 127 || number == 255 || number == 8191;
+    }
+
     public static BigInteger getRelativePrime(BigInteger n) {
         if (n == null) {
             throw new IllegalArgumentException("n is null");
@@ -218,4 +330,25 @@ public class MathUtil {
                     '}';
         }
     }
+
+    protected static int getBinaryTerms(char[] binary) {
+        int terms = 0;
+        for (char b : binary) {
+            if (b != '0') {
+                terms++;
+            }
+        }
+        return terms;
+    }
+
+    protected static int getTernaryTerms(List<Integer> ternary) {
+        int terms = 0;
+        for (Integer t : ternary) {
+            if (t != 0) {
+                terms++;
+            }
+        }
+        return terms;
+    }
+
 }

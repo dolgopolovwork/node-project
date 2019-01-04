@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.service;
 
 import lombok.NonNull;
+import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodesecurity.auth.AbstractAuth;
 import ru.babobka.nodesecurity.auth.AuthData;
 import ru.babobka.nodesecurity.auth.AuthResult;
@@ -8,7 +9,6 @@ import ru.babobka.nodesecurity.config.SrpConfig;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
-import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.math.Fp;

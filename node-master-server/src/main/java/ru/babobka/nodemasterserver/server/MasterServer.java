@@ -11,6 +11,7 @@ import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.logger.NodeLogger;
+import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.webserver.WebServer;
 
 import javax.management.MBeanServer;
@@ -48,6 +49,7 @@ public class MasterServer extends Thread {
             incomingSlavesThread.start();
             heartBeatingThread.start();
             webServer.start();
+            nodeLogger.info(TextUtil.WELCOME_TEXT);
         } catch (RuntimeException e) {
             nodeLogger.error(e);
             clear();
