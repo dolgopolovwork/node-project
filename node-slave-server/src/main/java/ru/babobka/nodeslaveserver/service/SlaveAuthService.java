@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.service;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodesecurity.auth.AbstractAuth;
 import ru.babobka.nodesecurity.auth.AuthData;
@@ -10,7 +11,6 @@ import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.util.HashUtil;
@@ -23,7 +23,7 @@ import java.math.BigInteger;
  * Created by 123 on 30.04.2018.
  */
 public class SlaveAuthService extends AbstractAuth {
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SlaveAuthService.class);
     private final SRPService srpService = Container.getInstance().get(SRPService.class);
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
     private final RSAService rsaService = Container.getInstance().get(RSAService.class);
@@ -34,7 +34,7 @@ public class SlaveAuthService extends AbstractAuth {
         connection.send(login);
         boolean ableToLogin = connection.receive();
         if (!ableToLogin) {
-            nodeLogger.debug("cannot login as " + login);
+            logger.debug("cannot login as " + login);
             return AuthResult.fail();
         }
         return srpUserAuth(connection, login, password);
@@ -65,15 +65,15 @@ public class SlaveAuthService extends AbstractAuth {
         connection.send(A);
         boolean validA = connection.receive();
         if (!validA) {
-            nodeLogger.debug("failed A validation from server: " + A);
+            logger.debug("failed A validation from server: " + A);
             return AuthResult.fail();
         }
         Fp B = connection.receive();
         if (!B.isSameMod(srpConfig.getG()) || B.isMultNeutral() || B.isAddNeutral()) {
-            nodeLogger.debug("invalid B :" + B);
+            logger.debug("invalid B :" + B);
             return fail(connection);
         }
-        nodeLogger.debug("server's B is fine");
+        logger.debug("server's B is fine");
         success(connection);
         Fp u = new Fp(new BigInteger(HashUtil.sha2(A.getNumber().toByteArray(), B.getNumber().toByteArray())), srpConfig.getG().getMod());
         byte[] hashedPassword = HashUtil.sha2(password);
@@ -91,12 +91,12 @@ public class SlaveAuthService extends AbstractAuth {
     private boolean checkSecretKeys(NodeConnection connection, byte[] secretKey, AuthData authData) throws IOException {
         boolean solvedChallenge = srpService.solveChallenge(connection, secretKey);
         if (!solvedChallenge) {
-            nodeLogger.debug("failed to solve challenge");
+            logger.debug("failed to solve challenge");
             return false;
         }
         boolean challengeResult = srpService.sendChallenge(connection, secretKey, authData.getSrpConfig());
         if (!challengeResult) {
-            nodeLogger.debug("server failed to solve challenge");
+            logger.debug("server failed to solve challenge");
             return false;
         }
         return true;

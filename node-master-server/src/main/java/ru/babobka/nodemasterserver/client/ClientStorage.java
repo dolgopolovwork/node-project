@@ -1,8 +1,7 @@
 package ru.babobka.nodemasterserver.client;
 
 import lombok.NonNull;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public class ClientStorage {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(ClientStorage.class);
     private final List<Client> clients = new ArrayList<>();
     private boolean closed;
 
@@ -27,10 +26,10 @@ public class ClientStorage {
 
     public synchronized void add(@NonNull Client client) {
         if (!isClosed()) {
-            nodeLogger.info("add new client " + client + " to client storage");
+            logger.info("add new client " + client + " to client storage");
             clients.add(client);
         } else {
-            nodeLogger.info("new client was not added to client client storage due to closed storage status");
+            logger.info("new client was not added to client client storage due to closed storage status");
         }
     }
 
@@ -49,7 +48,7 @@ public class ClientStorage {
             try {
                 client.close();
             } catch (RuntimeException e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
         clients.clear();
@@ -71,7 +70,7 @@ public class ClientStorage {
         try {
             client.sendHeartBeating();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
     }
 

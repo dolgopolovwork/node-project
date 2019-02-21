@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.server;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodesecurity.network.ClientSecureNodeConnection;
 import ru.babobka.nodeserials.NodeResponse;
@@ -12,7 +13,6 @@ import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 
 public class SlaveServer extends Thread {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SlaveServer.class);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final SlavePipelineFactory slavePipelineFactory = Container.getInstance().get(SlavePipelineFactory.class);
     private final NodeConnection connection;
@@ -67,9 +67,9 @@ public class SlaveServer extends Thread {
                 controller.control(connection);
             }
         } catch (IOException | RuntimeException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         } finally {
-            nodeLogger.info("exiting slave server");
+            logger.info("exiting slave server");
             clear();
         }
     }
@@ -80,7 +80,8 @@ public class SlaveServer extends Thread {
         try {
             connection.send(NodeResponse.death());
         } catch (IOException e) {
-            nodeLogger.warning("cannot send death message", e);
+            //TODO this shit produces StackOverflowError
+            logger.warn("cannot send death message", e);
         }
         clear();
     }

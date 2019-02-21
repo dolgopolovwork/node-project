@@ -1,9 +1,8 @@
 package ru.babobka.nodemasterserver.slave;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeserials.NodeData;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,13 +13,13 @@ import java.util.*;
  */
 public class SlavesStorage {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SlavesStorage.class);
     private final List<Slave> slaves = new ArrayList<>();
     private final UUID storageId = UUID.randomUUID();
     private boolean closed;
 
     public SlavesStorage() {
-        nodeLogger.debug("slave storage " + storageId + " was created");
+        logger.debug("slave storage " + storageId + " was created");
     }
 
     public synchronized void closeStorage() {
@@ -28,17 +27,17 @@ public class SlavesStorage {
     }
 
     public synchronized void remove(Slave slave) {
-        nodeLogger.info("remove slave " + slave + " from storage " + storageId);
+        logger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);
     }
 
     public synchronized boolean add(Slave slave) {
         if (!isClosed()) {
-            nodeLogger.info("add new slave " + slave + " to slave storage " + storageId);
+            logger.info("add new slave " + slave + " to slave storage " + storageId);
             slaves.add(slave);
             return true;
         } else {
-            nodeLogger.info("slave " + slave + " was not added to slave storage " + storageId + " due to closed storage status");
+            logger.info("slave " + slave + " was not added to slave storage " + storageId + " due to closed storage status");
             return false;
         }
     }
@@ -99,7 +98,7 @@ public class SlavesStorage {
         try {
             slave.sendHeartBeating();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
     }
 
@@ -124,7 +123,7 @@ public class SlavesStorage {
     }
 
     public synchronized void clear() {
-        nodeLogger.debug("clear storage " + storageId);
+        logger.debug("clear storage " + storageId);
         if (!isEmpty()) {
             interruptAll();
             slaves.clear();

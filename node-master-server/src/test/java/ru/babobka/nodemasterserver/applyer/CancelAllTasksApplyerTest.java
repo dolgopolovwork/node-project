@@ -8,7 +8,7 @@ import ru.babobka.nodemasterserver.service.DistributionService;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 
 import static org.mockito.Mockito.*;
 
@@ -17,17 +17,16 @@ import static org.mockito.Mockito.*;
  */
 public class CancelAllTasksApplyerTest {
 
-    private NodeLogger nodeLogger;
+
     private DistributionService distributionService;
     private SlavesStorage slavesStorage;
     private CancelAllTasksApplyer cancelAllTasksApplyer;
 
     @Before
     public void setUp() {
-        nodeLogger = mock(NodeLogger.class);
+
         distributionService = mock(DistributionService.class);
         slavesStorage = mock(SlavesStorage.class);
-        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(distributionService);
         Container.getInstance().put(slavesStorage);
         cancelAllTasksApplyer = new CancelAllTasksApplyer();

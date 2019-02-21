@@ -19,8 +19,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class ThreadPoolService<I extends Serializable, O extends Serializable> {
     private final int cores;
     private final Lock executionLock = new ReentrantLock();
-    private final ExecutorService threadPool = Container.getInstance().get(UtilKey.SERVICE_THREAD_POOL);
     private boolean stopped;
+
+    private static class LazyThreadPool {
+        private static final ExecutorService threadPool = Container.getInstance().get(UtilKey.SERVICE_THREAD_POOL);
+    }
 
     public ThreadPoolService(int cores) {
         if (cores < 1) {
@@ -63,9 +66,9 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
             throw new IllegalArgumentException("cannot submit null callables");
         }
         List<Future<T>> futures = new ArrayList<>(callables.size());
-        if (!threadPool.isShutdown()) {
+        if (!LazyThreadPool.threadPool.isShutdown()) {
             for (Callable<T> callable : callables) {
-                futures.add(threadPool.submit(callable));
+                futures.add(LazyThreadPool.threadPool.submit(callable));
             }
         }
         return futures;

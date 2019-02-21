@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.service.TaskService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -31,7 +31,7 @@ public class IncomingClientListenerThreadTest {
 
     private NodeConnectionFactory nodeConnectionFactory;
     private MasterServerConfig config;
-    private NodeLogger nodeLogger;
+
     private ExecutorService executorService;
     private TaskService taskService;
     private IncomingClientListenerThread incomingClientsThread;
@@ -42,12 +42,12 @@ public class IncomingClientListenerThreadTest {
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
         serverSocket = mock(ServerSocket.class);
         config = mock(MasterServerConfig.class);
-        nodeLogger = mock(NodeLogger.class);
+
         executorService = mock(ExecutorService.class);
         taskService = mock(TaskService.class);
         Container.getInstance().put(container -> {
             container.put(MasterServerKey.CLIENTS_THREAD_POOL, executorService);
-            container.put(nodeLogger);
+
             container.put(config);
             container.put(taskService);
             container.put(nodeConnectionFactory);

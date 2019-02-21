@@ -179,11 +179,6 @@ public class TextUtil {
         return errors.toString();
     }
 
-    public static String getStringFromExceptionOneLine(Exception ex) {
-        String message = getStringFromException(ex);
-        return message.replaceAll("[\r\n\t]+", "\\n");
-    }
-
     public static String beautifyServerName(String serverName, int port) {
         return "'" + serverName + "':" + port;
     }

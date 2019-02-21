@@ -14,8 +14,6 @@ import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -36,13 +34,10 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         container.put(config);
         container.put(new SecurityApplicationContainer());
         container.put(createSrpConfig(config));
-        container.putIfNotExists(SimpleLoggerFactory.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
         container.put(new NodeWebApplicationContainer());
         container.put(new MasterServerApplicationSubContainer(config));
-        NodeLogger nodeLogger = container.get(NodeLogger.class);
-        nodeLogger.debug("container was successfully created");
     }
 
     private static MasterServerConfig createTestConfig() {

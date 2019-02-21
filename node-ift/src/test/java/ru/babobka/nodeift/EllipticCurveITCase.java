@@ -16,7 +16,7 @@ import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class EllipticCurveITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(EllipticCurveITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), EllipticCurveITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();

@@ -48,6 +48,29 @@
             <version>2.2</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.jms/jms -->
+        <!-- I'M WITH STUPID ^ -->
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+        <!-- I'M WITH STUPID ALSO ^ -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -99,4 +122,11 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>repository.jboss.org-public</id>
+            <name>JBoss.org Maven repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
 </project>

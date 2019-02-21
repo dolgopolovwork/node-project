@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.controller;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
@@ -11,7 +12,6 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.Closeable;
@@ -23,7 +23,7 @@ public class SocketController implements Closeable {
 
     private final TaskPool taskPool = Container.getInstance().get(SlaveServerKey.SLAVE_SERVER_TASK_POOL);
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SocketController.class);
     private final ExecutorService threadPool;
     private final TasksStorage tasksStorage;
 
@@ -37,8 +37,9 @@ public class SocketController implements Closeable {
         try {
             doControl(connection);
         } catch (IOException e) {
-            //TODO пусть не пишет это говно, если всё
-            throw new IllegalStateException("cannot control", e);
+            if (!connection.isClosed()) {
+                throw new IllegalStateException("cannot control", e);
+            }
         }
     }
 
@@ -48,18 +49,18 @@ public class SocketController implements Closeable {
         if (request.getRequestStatus() == RequestStatus.HEART_BEAT) {
             connection.send(NodeResponse.heartBeat());
         } else if (request.getRequestStatus() == RequestStatus.STOP) {
-            nodeLogger.info("stopping request " + request);
+            logger.info("stopping request " + request);
             tasksStorage.stopTask(request);
         } else if (request.getRequestStatus() == RequestStatus.RACE && tasksStorage.exists(request.getTaskId())) {
-            nodeLogger.warning(request.getTaskName() + " is race style task. repeated request was not handled.");
+            logger.warn(request.getTaskName() + " is race style task. repeated request was not handled.");
         } else if (!tasksStorage.wasStopped(request)) {
-            nodeLogger.info("new request " + request);
+            logger.info("new request " + request);
             SubTask subTask = taskPool.get(request.getTaskName());
             tasksStorage.put(request, subTask);
             try {
                 threadPool.submit(new RequestHandlerThread(connection, tasksStorage, request, subTask));
             } catch (RejectedExecutionException e) {
-                nodeLogger.warning("new request was rejected", e);
+                logger.warn("new request was rejected", e);
             }
         }
     }

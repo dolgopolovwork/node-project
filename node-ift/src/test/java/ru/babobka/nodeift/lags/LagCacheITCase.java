@@ -14,7 +14,7 @@ import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class LagCacheITCase extends ru.babobka.nodeift.CacheITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(LagCacheITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagCacheITCase.class.getSimpleName());
         Properties.put(TesterKey.ENABLE_CACHE, true);
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();

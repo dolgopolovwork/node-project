@@ -1,12 +1,12 @@
 package ru.babobka.nodeslaveserver.server.pipeline.step;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class AuthStep implements Step<PipeContext> {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(AuthStep.class);
     private final SlaveAuthService authService = Container.getInstance().get(SlaveAuthService.class);
 
     @Override
@@ -27,13 +27,13 @@ public class AuthStep implements Step<PipeContext> {
             AuthResult authResult = authService.authClient(connection, credentials.getLogin(), credentials.getPassword());
             pipeContext.setAuthResult(authResult);
             if (!authResult.isSuccess()) {
-                nodeLogger.error("authentication fail");
+                logger.error("authentication fail");
                 return false;
             }
-            nodeLogger.info("authentication success");
+            logger.info("authentication success");
             return true;
         } catch (IOException e) {
-            nodeLogger.error("authentication fail due to network error");
+            logger.error("authentication fail due to network error");
             return false;
         }
     }

@@ -4,8 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -19,17 +17,15 @@ import static org.mockito.Mockito.when;
  * Created by 123 on 09.06.2018.
  */
 public class SessionCreatingStepTest {
-    private NodeLogger nodeLogger;
+
     private PipeContext pipeContext;
     private NodeConnection connection;
     private SessionCreatingStep sessionCreatingStep;
 
     @Before
     public void setUp() {
-        nodeLogger = mock(NodeLogger.class);
         connection = mock(NodeConnection.class);
         pipeContext = new PipeContext(connection, mock(AuthCredentials.class));
-        Container.getInstance().put(container -> container.put(nodeLogger));
         sessionCreatingStep = new SessionCreatingStep();
     }
 
@@ -50,5 +46,4 @@ public class SessionCreatingStepTest {
         when(connection.receive()).thenThrow(new IOException());
         assertFalse(sessionCreatingStep.execute(pipeContext));
     }
-
 }

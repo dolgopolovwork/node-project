@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static ru.babobka.nodemasterserver.key.MasterServerKey.MASTER_SERVER_TASK
  */
 public class CommonTasksStepTest {
 
-    private NodeLogger nodeLogger;
+
     private TaskPool taskPool;
     private PipeContext pipeContext;
     private CommonTasksStep commonTasksStep;
@@ -33,10 +33,10 @@ public class CommonTasksStepTest {
     public void setUp() {
         connection = mock(NodeConnection.class);
         pipeContext = new PipeContext(connection);
-        nodeLogger = mock(NodeLogger.class);
+
         taskPool = mock(TaskPool.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
+
             container.put(MASTER_SERVER_TASK_POOL, taskPool);
         });
         commonTasksStep = new CommonTasksStep();

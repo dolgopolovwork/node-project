@@ -1,9 +1,8 @@
 package ru.babobka.factor.service;
 
+import org.apache.log4j.Logger;
 import ru.babobka.factor.callable.EllipticCurveProjectiveFactorCallable;
 import ru.babobka.factor.model.FactoringResult;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.nodeutils.util.MathUtil;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EllipticCurveFactorService extends ThreadPoolService<BigInteger, FactoringResult> {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(EllipticCurveFactorService.class);
 
     private final AtomicBoolean done = new AtomicBoolean(false);
 
@@ -61,7 +60,7 @@ public class EllipticCurveFactorService extends ThreadPoolService<BigInteger, Fa
                 if (e instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
                 }
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
                 stop();
             }
         }

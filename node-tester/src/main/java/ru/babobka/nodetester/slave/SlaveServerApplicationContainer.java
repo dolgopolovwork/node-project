@@ -17,7 +17,6 @@ import ru.babobka.nodeutils.container.ContainerException;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.key.UtilKey;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
@@ -45,7 +44,6 @@ public class SlaveServerApplicationContainer extends AbstractApplicationContaine
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);
             container.put(config);
-            container.putIfNotExists(SimpleLoggerFactory.defaultLogger("slave-server", config.getLoggerFolder()));
             Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("service thread pool"));
             container.put(new NodeTaskApplicationContainer());
             container.put(new SlavePipelineFactory());

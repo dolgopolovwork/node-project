@@ -15,7 +15,6 @@ import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.*;
 @PrepareForTest(SlaveServer.class)
 public class SlaveServerTest {
 
-    private NodeLogger nodeLogger;
     private NodeConnectionFactory nodeConnectionFactory;
     private SlavePipelineFactory slavePipelineFactory;
     private ClientSecureNodeConnection clientSecureNodeConnection;
@@ -42,9 +40,7 @@ public class SlaveServerTest {
         clientSecureNodeConnection = mock(ClientSecureNodeConnection.class);
         slavePipelineFactory = mock(SlavePipelineFactory.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
-        nodeLogger = mock(NodeLogger.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
             container.put(nodeConnectionFactory);
             container.put(slavePipelineFactory);
         });

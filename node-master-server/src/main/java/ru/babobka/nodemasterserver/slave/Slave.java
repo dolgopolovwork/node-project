@@ -1,12 +1,12 @@
 package ru.babobka.nodemasterserver.slave;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.listener.OnSlaveExitListener;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.util.Set;
 public class Slave extends AbstractNetworkSlave {
 
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(Slave.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final Set<String> availableTasks = new HashSet<>();
     private final OnSlaveExitListener onSlaveExitListener;
@@ -38,11 +38,11 @@ public class Slave extends AbstractNetworkSlave {
 
     @Override
     protected synchronized void onReceive(NodeResponse response) {
-        nodeLogger.info("received " + response + " by slave " + getSlaveId());
+        logger.info("received " + response + " by slave " + getSlaveId());
         if (responseStorage.exists(response.getTaskId())) {
             responseStorage.get(response.getTaskId()).add(response);
         } else {
-            nodeLogger.warning("response was not created " + response + " for slave " + getSlaveId());
+            logger.warn("response was not created " + response + " for slave " + getSlaveId());
         }
         removeTask(response);
     }
@@ -51,11 +51,11 @@ public class Slave extends AbstractNetworkSlave {
     protected synchronized void onExit() {
         slavesStorage.remove(this);
         if (!isNoTasks()) {
-            nodeLogger.debug("slave " + getSlaveId() + " has a requests to redistribute " + getTasks());
+            logger.debug("slave " + getSlaveId() + " has a requests to redistribute " + getTasks());
             try {
                 redistributeTasks();
             } catch (IOException e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
                 Throwable cause = e.getCause();
                 setBadStatusForAllTasks();
                 if (cause != null && cause instanceof DistributionException) {
@@ -66,7 +66,7 @@ public class Slave extends AbstractNetworkSlave {
         }
         getConnection().close();
         executeExitListener();
-        nodeLogger.info("slave " + getSlaveId() + " closed connection");
+        logger.info("slave " + getSlaveId() + " closed connection");
     }
 
     private void executeExitListener() {
@@ -75,7 +75,7 @@ public class Slave extends AbstractNetworkSlave {
                 onSlaveExitListener.onExit();
             }
         } catch (RuntimeException e) {
-            nodeLogger.error("cannot execute exit listener", e);
+            logger.error("cannot execute exit listener", e);
         }
     }
 

@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
+import org.apache.log4j.Logger;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
@@ -20,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ParallelPollardDlpService extends ThreadPoolService<DlpTask, BigInteger> {
 
+    private static final Logger logger = Logger.getLogger(ParallelPollardDlpService.class);
     private final AtomicBoolean done = new AtomicBoolean();
 
     public ParallelPollardDlpService(int cores) {
@@ -56,7 +58,7 @@ public class ParallelPollardDlpService extends ThreadPoolService<DlpTask, BigInt
                 }
                 pollardCollision = futureCollision;
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                logger.error("exception thrown", e);
             }
         }
         if (pollardCollision == null) {

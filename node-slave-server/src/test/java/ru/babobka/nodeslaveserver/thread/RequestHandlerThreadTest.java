@@ -10,7 +10,6 @@ import ru.babobka.nodeslaveserver.task.TaskRunnerService;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -23,14 +22,11 @@ import static org.mockito.Mockito.*;
  */
 public class RequestHandlerThreadTest {
 
-    private NodeLogger nodeLogger;
     private TaskRunnerService taskRunnerService;
 
     @Before
     public void setUp() {
-        nodeLogger = mock(NodeLogger.class);
         taskRunnerService = mock(TaskRunnerService.class);
-        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(taskRunnerService);
     }
 
@@ -71,7 +67,6 @@ public class RequestHandlerThreadTest {
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenReturn(response);
         doThrow(new IOException()).when(connection).send(any(NodeResponse.class));
         new RequestHandlerThread(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
-        verify(nodeLogger).error(anyString(), any(Exception.class));
     }
 
     @Test
@@ -80,8 +75,6 @@ public class RequestHandlerThreadTest {
         NodeRequest request = mock(NodeRequest.class);
         when(taskRunnerService.runTask(any(TasksStorage.class), any(NodeRequest.class), any(SubTask.class))).thenThrow(new RuntimeException());
         new RequestHandlerThread(connection, mock(TasksStorage.class), request, mock(SubTask.class)).run();
-        verify(nodeLogger).error(any(Exception.class));
         verify(connection).send(any(NodeResponse.class));
     }
-
 }

@@ -7,7 +7,6 @@ import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -21,7 +20,6 @@ import static org.mockito.Mockito.when;
  * Created by 123 on 09.06.2018.
  */
 public class AuthStepTest {
-    private NodeLogger nodeLogger;
     private SlaveAuthService slaveAuthService;
     private AuthStep authStep;
     private PipeContext pipeContext;
@@ -33,10 +31,8 @@ public class AuthStepTest {
         connection = mock(NodeConnection.class);
         authCredentials = mock(AuthCredentials.class);
         pipeContext = new PipeContext(connection, authCredentials);
-        nodeLogger = mock(NodeLogger.class);
         slaveAuthService = mock(SlaveAuthService.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
             container.put(slaveAuthService);
         });
         authStep = new AuthStep();

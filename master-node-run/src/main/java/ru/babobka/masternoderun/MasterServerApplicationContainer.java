@@ -9,7 +9,6 @@ import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -24,7 +23,6 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
     @Override
     protected void containImpl(Container container) throws Exception {
         MasterServerConfig config = container.get(MasterServerConfig.class);
-        container.put(SimpleLoggerFactory.defaultLogger("master-server", config.getFolders().getLoggerFolder()));
         container.put(new SecurityApplicationContainer());
         container.put(createSrpConfig(config));
         container.put(new NodeConnectionFactory());

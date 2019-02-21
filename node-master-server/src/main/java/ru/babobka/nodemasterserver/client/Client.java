@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.client;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.service.TaskService;
@@ -8,7 +9,6 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class Client extends AbstractClient {
 
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(Client.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
     private final AtomicInteger processedRequests = new AtomicInteger();
     private volatile boolean done;
@@ -58,7 +58,7 @@ public class Client extends AbstractClient {
         } catch (IOException e) {
             if (!isDone()) {
                 cancelTask();
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
     }
@@ -72,7 +72,7 @@ public class Client extends AbstractClient {
             try {
                 taskService.cancelTask(request.getTaskId());
             } catch (TaskExecutionException e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
         setDone();
@@ -121,7 +121,7 @@ public class Client extends AbstractClient {
                 setDone();
             }
         } catch (TaskExecutionException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             sendFailed(e);
         }
     }
@@ -139,7 +139,7 @@ public class Client extends AbstractClient {
             try {
                 executeTask(request);
             } catch (IOException e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
     }

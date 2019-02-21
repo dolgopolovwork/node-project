@@ -9,7 +9,7 @@ import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 /**
@@ -19,8 +19,8 @@ public class LagClientITCase extends ru.babobka.nodeift.ClientITCase {
 
     @BeforeClass
     public static void setUp() {
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagClientITCase.class.getSimpleName());
         Container.getInstance().put(container -> {
-            container.put(SimpleLoggerFactory.debugLogger(LagClientITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
             container.put(new LaggyNodeConnectionFactory());
         });
         MasterServerRunner.init();

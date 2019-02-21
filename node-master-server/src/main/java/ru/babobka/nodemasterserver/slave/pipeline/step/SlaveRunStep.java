@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.slave.pipeline.step;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodemasterserver.slave.Slave;
@@ -11,7 +12,6 @@ import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.Set;
  * Created by 123 on 07.06.2018.
  */
 public class SlaveRunStep implements Step<PipeContext> {
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SlaveRunStep.class);
     private final Sessions sessions = Container.getInstance().get(Sessions.class);
     private final SlaveFactory slaveFactory = Container.getInstance().get(SlaveFactory.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
@@ -35,7 +35,7 @@ public class SlaveRunStep implements Step<PipeContext> {
         try {
             SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, authResult.getSecretKey());
             if (!runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
-                nodeLogger.warning("cannot run slave");
+                logger.warn("cannot run slave");
                 sessions.remove(authResult.getUserName());
                 connection.send(false);
                 return false;
@@ -44,7 +44,7 @@ public class SlaveRunStep implements Step<PipeContext> {
             secureNodeConnection.send(NodeRequest.time());
             return true;
         } catch (IOException e) {
-            nodeLogger.error("cannot run slave due to network error", e);
+            logger.error("cannot run slave due to network error", e);
             return false;
         }
     }
@@ -62,7 +62,7 @@ public class SlaveRunStep implements Step<PipeContext> {
             }
             return false;
         } catch (RuntimeException e) {
-            nodeLogger.error("cannot run new slave", e);
+            logger.error("cannot run new slave", e);
             return false;
         }
     }

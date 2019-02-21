@@ -11,7 +11,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 
 import java.math.BigInteger;
 import java.util.Random;
@@ -27,7 +27,6 @@ public class EllipticCurveFactorTaskTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put(mock(NodeLogger.class));
         Container.getInstance().put(mock(EllipticCurveFactorServiceFactory.class));
         Container.getInstance().put(mock(EllipticFactorDistributor.class));
         Container.getInstance().put(mock(EllipticFactorReducer.class));

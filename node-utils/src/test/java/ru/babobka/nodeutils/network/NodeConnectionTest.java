@@ -86,7 +86,6 @@ public class NodeConnectionTest {
         IOException exception = mock(IOException.class);
         doThrow(exception).when(socket).close();
         connection.close();
-        verify(exception).printStackTrace();
     }
 
     @Test
