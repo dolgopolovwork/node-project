@@ -1,5 +1,6 @@
 package ru.babobka.nodeutils.network;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
@@ -13,6 +14,7 @@ import java.net.SocketException;
  */
 public class NodeConnectionImpl implements NodeConnection {
 
+    private static final Logger logger = Logger.getLogger(NodeConnectionImpl.class);
     private final Socket socket;
     private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
     private final TimerInvoker timerInvoker = Container.getInstance().get(TimerInvoker.class);
@@ -63,7 +65,7 @@ public class NodeConnectionImpl implements NodeConnection {
             try {
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("exception thrown", e);
             }
         }
     }

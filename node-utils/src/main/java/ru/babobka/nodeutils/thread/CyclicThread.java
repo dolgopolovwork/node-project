@@ -1,14 +1,13 @@
 package ru.babobka.nodeutils.thread;
 
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+import org.apache.log4j.Logger;
 
 /**
  * Created by 123 on 18.09.2017.
  */
 public abstract class CyclicThread extends Thread {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static Logger logger = Logger.getLogger(CyclicThread.class);
 
     @Override
     public final void run() {
@@ -18,7 +17,7 @@ public abstract class CyclicThread extends Thread {
                     sleep(sleepMillis());
                     onCycle();
                 } catch (RuntimeException e) {
-                    nodeLogger.error(e);
+                    logger.error("exception thrown", e);
                 }
             }
         } finally {
@@ -35,7 +34,7 @@ public abstract class CyclicThread extends Thread {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             interrupt();
-            nodeLogger.warning(e);
+            logger.warn(e);
         }
     }
 

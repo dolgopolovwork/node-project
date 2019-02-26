@@ -10,7 +10,7 @@ import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.ClassLoaderUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -21,6 +21,11 @@ import java.io.IOException;
  * Created by 123 on 03.02.2018.
  */
 public abstract class NodeBenchmarkCLI extends CLI {
+
+    static {
+        LoggerInit.initPersistentNoConsoleLogger(TextUtil.getEnv(Env.NODE_LOGS), "benchmark");
+    }
+
     private static final String TESTS_OPTION = "tests";
     private static final String TESTS_OPT = "t";
     private static final String SLAVES_OPTION = "slaves";
@@ -97,8 +102,6 @@ public abstract class NodeBenchmarkCLI extends CLI {
     protected void run(CommandLine cmd) {
         Container container = Container.getInstance();
         try {
-            TextUtil.hideWarnings("SLF4J");
-            container.put(SimpleLoggerFactory.silentLogger("silent-log", TextUtil.getEnv(Env.NODE_LOGS)));
             Properties.put(TesterKey.ENABLE_CACHE, cmd.hasOption(CACHE_OPTION));
             if (cmd.hasOption(PERMANENT_DRIVER_OPTION)) {
                 Properties.put(TesterKey.PERMANENT, true);

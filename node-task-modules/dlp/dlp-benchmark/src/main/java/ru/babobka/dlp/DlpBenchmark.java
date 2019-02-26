@@ -40,7 +40,7 @@ import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDlpService;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
@@ -66,7 +66,6 @@ public class DlpBenchmark {
             executorService = ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors());
             Container.getInstance().put(container -> {
                 container.put(UtilKey.SERVICE_THREAD_POOL, executorService);
-                container.put(mock(NodeLogger.class));
                 container.put(new PollardCollisionService());
                 container.put(new PrimeDistinguishable());
             });

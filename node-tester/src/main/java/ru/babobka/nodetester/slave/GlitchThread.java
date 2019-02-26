@@ -1,8 +1,7 @@
 package ru.babobka.nodetester.slave;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.thread.CyclicThread;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -13,7 +12,7 @@ import java.util.Random;
  * Created by 123 on 19.11.2017.
  */
 public class GlitchThread extends CyclicThread {
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(GlitchThread.class);
     private final List<SlaveServer> slaveServerList;
     private final String login;
     private final String password;
@@ -42,14 +41,14 @@ public class GlitchThread extends CyclicThread {
             if (slaveServerList.isEmpty()) {
                 return;
             }
-            nodeLogger.debug("removing slave");
+            logger.debug("removing slave");
             removeRandomSlave(slaveServerList);
             try {
                 sleep(500);
                 SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(login, password);
                 slaveServerList.add(slaveServer);
             } catch (Exception e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
     }

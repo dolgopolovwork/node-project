@@ -1,7 +1,6 @@
 package ru.babobka.nodeutils.time;
 
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.time.exception.TimerInvokerException;
 import ru.babobka.nodeutils.time.inter.CallableInvoker;
 import ru.babobka.nodeutils.time.inter.RunnableInvoker;
@@ -10,7 +9,7 @@ import ru.babobka.nodeutils.time.inter.RunnableInvoker;
  * Created by 123 on 06.08.2018.
  */
 public class TimerInvoker {
-
+    private static Logger logger = Logger.getLogger(TimerInvoker.class);
     private final int maxDelayMillis;
 
     private TimerInvoker(int maxDelayMillis) {
@@ -50,11 +49,7 @@ public class TimerInvoker {
 
     private void printIfDelayed(Timer timer) {
         if (timer.getTimePassed() > maxDelayMillis) {
-            LazyLogger.logger.warning(timer.toString());
+            logger.warn(timer);
         }
-    }
-
-    private static class LazyLogger {
-        private static NodeLogger logger = Container.getInstance().get(NodeLogger.class);
     }
 }

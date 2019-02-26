@@ -4,9 +4,9 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
 
+    private static final Logger logger = Logger.getLogger(SQLBenchmarkStorageDAOImpl.class);
     private final DataSource dataSource = Container.getInstance().get(DataSource.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
 
     @Override
     public boolean insert(Benchmark benchmark) {
@@ -36,7 +36,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
                     benchmark.getRamBytes(), benchmark.getJavaVersion());
             return true;
         } catch (SQLException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             return false;
         }
     }
@@ -71,7 +71,7 @@ public class SQLBenchmarkStorageDAOImpl implements BenchmarkStorageDAO {
             int deleted = run.update("DELETE FROM benchmark WHERE ID=?", id);
             return deleted > 0;
         } catch (SQLException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             return false;
         }
     }

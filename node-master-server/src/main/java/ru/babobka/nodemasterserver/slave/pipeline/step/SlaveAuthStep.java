@@ -1,12 +1,12 @@
 package ru.babobka.nodemasterserver.slave.pipeline.step;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import java.io.IOException;
 public class SlaveAuthStep implements Step<PipeContext> {
     private final MasterAuthService authService = Container.getInstance().get(MasterAuthService.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(SlaveAuthStep.class);
 
     @Override
     public boolean execute(PipeContext context) {
@@ -27,13 +27,13 @@ public class SlaveAuthStep implements Step<PipeContext> {
             AuthResult authResult = authService.authClient(connection);
             context.setAuthResult(authResult);
             if (!authResult.isSuccess()) {
-                nodeLogger.warning("auth fail");
+                logger.warn("auth fail");
                 return false;
             }
-            nodeLogger.info("new slave was successfully authenticated");
+            logger.info("new slave was successfully authenticated");
             return true;
         } catch (IOException e) {
-            nodeLogger.error("cannot authenticate slave server due to network error");
+            logger.error("cannot authenticate slave server due to network error");
             return false;
         }
     }

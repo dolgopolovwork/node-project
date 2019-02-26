@@ -15,7 +15,7 @@ import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
  */
 public class MasterAuthServiceTest {
     private NodeUsersService nodeUsersService;
-    private NodeLogger nodeLogger;
+
     private SrpConfig srpConfig;
     private SRPService SRPService;
     private MasterAuthService masterAuthService;
@@ -47,14 +47,14 @@ public class MasterAuthServiceTest {
         securityConfig.setRsaConfig(rsaConfig);
         masterServerConfig.setSecurity(securityConfig);
         nodeUsersService = mock(NodeUsersService.class);
-        nodeLogger = mock(NodeLogger.class);
+
         srpConfig = mock(SrpConfig.class);
         sessions = mock(Sessions.class);
         SRPService = mock(SRPService.class);
         Container.getInstance().put(container -> {
             container.put(nodeUsersService);
             container.put(masterServerConfig);
-            container.put(nodeLogger);
+
             container.put(srpConfig);
             container.put(SRPService);
             container.put(sessions);

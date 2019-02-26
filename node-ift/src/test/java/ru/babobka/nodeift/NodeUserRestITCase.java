@@ -21,7 +21,7 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.HashUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -43,7 +43,7 @@ public class NodeUserRestITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(NodeUserRestITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), NodeUserRestITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();

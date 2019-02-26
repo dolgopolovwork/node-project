@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.model;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnResponseListener;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
@@ -8,7 +9,6 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 public class Responses {
 
     private static final int HOUR_MILLIS = 1000 * 60 * 60;
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(Responses.class);
     private final OnResponseListener taskIsReadyListener = Container.getInstance().get(OnTaskIsReady.class);
     private final OnResponseListener raceStyleTaskIsReadyListener = Container.getInstance().get(OnRaceStyleTaskIsReady.class);
     private final int maxSize;
@@ -116,7 +116,7 @@ public class Responses {
             resultingResponses.addAll(this.responsesList);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
         if (!completed && !Thread.currentThread().isInterrupted()) {
             throw new TimeoutException();

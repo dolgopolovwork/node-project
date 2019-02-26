@@ -58,7 +58,7 @@ public class MasterConfigEncryptionMain extends CLI {
             MasterServerConfigValidator validator = new MasterServerConfigValidator();
             validator.validate(masterServerConfig);
         } catch (IOException | IllegalArgumentException e) {
-            throw new IllegalStateException("Cannot read master server config", e);
+            throw new IllegalStateException("cannot read master server config", e);
         }
     }
 

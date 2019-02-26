@@ -1,12 +1,11 @@
 package ru.babobka.nodeslaveserver.server.pipeline.step;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
-import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.time.ServerTime;
 
@@ -17,7 +16,7 @@ import java.io.IOException;
  */
 public class GetServerTimeStep implements Step<PipeContext> {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(GetServerTimeStep.class);
 
     @Override
     public boolean execute(PipeContext pipeContext) {
@@ -29,7 +28,7 @@ public class GetServerTimeStep implements Step<PipeContext> {
             pipeContext.setServerTime(serverTime);
             return true;
         } catch (IOException e) {
-            nodeLogger.error("cannot  get master-server time due to network error");
+            logger.error("cannot  get master-server time due to network error");
             return false;
         }
     }

@@ -6,7 +6,7 @@ import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -23,17 +23,17 @@ public class ServerAuthStepTest {
     private NodeConnection connection;
     private PipeContext pipeContext;
     private ServerAuthStep serverAuthStep;
-    private NodeLogger nodeLogger;
+
     private SlaveAuthService slaveAuthService;
 
     @Before
     public void setUp() {
         connection = mock(NodeConnection.class);
         pipeContext = new PipeContext(connection, mock(AuthCredentials.class));
-        nodeLogger = mock(NodeLogger.class);
+
         slaveAuthService = mock(SlaveAuthService.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
+
             container.put(slaveAuthService);
         });
         serverAuthStep = new ServerAuthStep();

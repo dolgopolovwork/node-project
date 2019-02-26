@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.service;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodemasterserver.exception.DistributionException;
 import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
@@ -18,7 +19,6 @@ import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.DataValidators;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.io.IOException;
@@ -28,10 +28,10 @@ import java.util.concurrent.TimeoutException;
 
 public class TaskServiceImpl implements TaskService {
 
+    private static final Logger logger = Logger.getLogger(TaskServiceImpl.class);
     private static final int MAX_ATTEMPTS = 5;
     private final TaskPool taskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final ResponseStorage responseStorage = Container.getInstance().get(ResponseStorage.class);
     private final DistributionService distributionService = Container.getInstance().get(DistributionService.class);
     private final TaskMonitoringService taskMonitoringService = Container.getInstance().get(TaskMonitoringService.class);
@@ -40,10 +40,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean cancelTask(@NonNull UUID taskId) throws TaskExecutionException {
         try {
-            nodeLogger.debug("trying to cancel task " + taskId);
+            logger.debug("trying to cancel task " + taskId);
             Responses responses = responseStorage.get(taskId);
             if (responses == null) {
-                nodeLogger.debug("no responses were found. cannot cancel.");
+                logger.debug("no responses were found. cannot cancel.");
                 return false;
             }
             responseStorage.setStopAllResponses(taskId);
@@ -81,6 +81,7 @@ public class TaskServiceImpl implements TaskService {
             taskMonitoringService.incrementExecutedTasksCount();
             return result;
         } catch (IOException | ReducingException | TimeoutException | RuntimeException e) {
+            logger.error("exception thrown", e);
             taskMonitoringService.incrementFailedTasksCount();
             throw new TaskExecutionException(ResponseStatus.SYSTEM_ERROR, e);
         } finally {
@@ -104,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
         UUID taskId = request.getTaskId();
         int clusterSize = getClusterSize(request, task, maxNodes);
         if (clusterSize <= 0) {
-            nodeLogger.debug("rebroadcast attempt " + attempt);
+            logger.debug("rebroadcast attempt " + attempt);
             if (attempt == MAX_ATTEMPTS) {
                 throw new TaskExecutionException("cannot broadcast no more. system reached its max retry attempt.", ResponseStatus.NO_NODES);
             }
@@ -112,10 +113,10 @@ public class TaskServiceImpl implements TaskService {
             broadcastTask(request, task, maxNodes, attempt + 1);
             return;
         }
-        nodeLogger.debug("involved nodes " + clusterSize);
+        logger.debug("involved nodes " + clusterSize);
         responseStorage.create(taskId, new Responses(clusterSize, task));
         List<NodeRequest> requests = task.getDistributor().distribute(request, clusterSize);
-        nodeLogger.debug("requests to distribute " + requests);
+        logger.debug("requests to distribute " + requests);
         distributionService.broadcastRequests(request.getTaskName(), requests);
     }
 
@@ -142,12 +143,12 @@ public class TaskServiceImpl implements TaskService {
         } else if (task.isRequestDataTooBig(request)) {
             return TaskStartResult.validationError(taskId, "too big arguments");
         }
-        nodeLogger.debug("started task id is " + taskId);
+        logger.debug("started task id is " + taskId);
         try {
             broadcastTask(request, task, maxNodes);
             return TaskStartResult.ok(taskId);
         } catch (DistributionException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             distributionService.broadcastStopRequests(slavesStorage.getListByTaskId(taskId), taskId);
             return TaskStartResult.systemError(taskId, e.getMessage());
         }

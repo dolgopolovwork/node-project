@@ -5,7 +5,7 @@ import ru.babobka.factor.service.EllipticCurveFactorService;
 import ru.babobka.factor.service.EllipticCurveFactorServiceFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
@@ -18,7 +18,6 @@ public class DummyFactorizingBenchmark {
     static {
         Container.getInstance().put(container -> {
             container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
-            container.put(mock(NodeLogger.class));
             container.put(new BinaryMultiplicationProvider());
         });
     }

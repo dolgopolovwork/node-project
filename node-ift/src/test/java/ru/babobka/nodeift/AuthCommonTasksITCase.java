@@ -15,7 +15,7 @@ import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class AuthCommonTasksITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(AuthCommonTasksITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthCommonTasksITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
@@ -67,7 +67,7 @@ public class AuthCommonTasksITCase {
         availableTasks.add("abc");
         availableTasks.add("xyz");
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME,  TestCredentials.PASSWORD);
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AuthCommonTasksITCase {
         TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME,  TestCredentials.PASSWORD);
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
     }
 
 }

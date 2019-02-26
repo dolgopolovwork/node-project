@@ -1,7 +1,7 @@
 package ru.babobka.vsjws.runnable;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.vsjws.enumerations.HttpMethod;
 import ru.babobka.vsjws.enumerations.ResponseCode;
 import ru.babobka.vsjws.exception.BadProtocolSpecifiedException;
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class SocketProcessorRunnable implements Runnable {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static Logger logger = Logger.getLogger(SocketProcessorRunnable.class);
     private final RequestValidator requestValidator = Container.getInstance().get(RequestValidator.class);
     private final Socket socket;
     private final HttpSession httpSession;
@@ -62,7 +62,7 @@ public class SocketProcessorRunnable implements Runnable {
             }
             Session session = httpSession.getOrCreate(sessionId, request);
             if (!session.getAddress().equals(request.getAddress())) {
-                nodeLogger.warning("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
+                logger.warn("Possible session hacking. Session id " + sessionId + "; ip address " + request.getAddress());
                 response = ResponseFactory.code(ResponseCode.FORBIDDEN);
                 return;
             }
@@ -81,18 +81,18 @@ public class SocketProcessorRunnable implements Runnable {
         } catch (SocketTimeoutException e) {
             response = ResponseFactory.exception(e).setResponseCode(ResponseCode.REQUEST_TIMEOUT);
         } catch (Exception e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             response = ResponseFactory.exception(e);
         } finally {
             try {
                 HttpUtil.writeResponse(socket.getOutputStream(), response, noContent);
             } catch (IOException e1) {
-                nodeLogger.error(e1);
+                logger.error(e1);
             }
             try {
                 socket.close();
             } catch (IOException e) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
         }
     }

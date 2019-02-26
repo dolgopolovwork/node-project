@@ -1,11 +1,11 @@
 package ru.babobka.nodemasterserver.client;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -22,7 +22,7 @@ import static ru.babobka.nodeserials.enumerations.RequestStatus.RACE;
  */
 public class IncomingClientListenerThread extends Thread {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(IncomingClientListenerThread.class);
     private final ExecutorService executorService = Container.getInstance().get(MasterServerKey.CLIENTS_THREAD_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final ServerSocket serverSocket;
@@ -43,7 +43,7 @@ public class IncomingClientListenerThread extends Thread {
             }
         } finally {
             onExit();
-            nodeLogger.debug(this.getClass().getSimpleName() + " is done");
+            logger.debug(this.getClass().getSimpleName() + " is done");
         }
     }
 
@@ -51,7 +51,7 @@ public class IncomingClientListenerThread extends Thread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
         executorService.shutdownNow();
     }
@@ -71,7 +71,7 @@ public class IncomingClientListenerThread extends Thread {
             List<NodeRequest> requests = nodeConnection.receive();
             handleRequest(nodeConnection, requests);
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
     }
 
@@ -79,14 +79,14 @@ public class IncomingClientListenerThread extends Thread {
         for (NodeRequest request : requests) {
             RequestStatus status = request.getRequestStatus();
             if (!(status == NORMAL || status == RACE)) {
-                nodeLogger.warning("cannot handle request " + request);
+                logger.warn("cannot handle request " + request);
                 return;
             }
         }
         try {
             executorService.submit(createClientExecutor(nodeConnection, requests));
         } catch (RuntimeException e) {
-            nodeLogger.error("error occurred while handling requests " + requests, e);
+            logger.error("error occurred while handling requests " + requests, e);
         }
     }
 

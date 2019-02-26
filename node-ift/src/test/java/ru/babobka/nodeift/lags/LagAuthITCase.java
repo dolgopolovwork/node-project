@@ -10,7 +10,7 @@ import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class LagAuthITCase extends AuthITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(LagAuthITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagAuthITCase.class.getSimpleName());
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

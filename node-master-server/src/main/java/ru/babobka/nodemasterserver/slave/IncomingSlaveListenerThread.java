@@ -1,12 +1,12 @@
 package ru.babobka.nodemasterserver.slave;
 
 import lombok.NonNull;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.CyclicThread;
@@ -20,9 +20,9 @@ import java.net.Socket;
  */
 public class IncomingSlaveListenerThread extends CyclicThread {
 
+    private static final Logger logger = Logger.getLogger(IncomingSlaveListenerThread.class);
     private final ServerSocket serverSocket;
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private final SlaveCreatingPipelineFactory slaveCreatingPipelineFactory = Container.getInstance().get(SlaveCreatingPipelineFactory.class);
 
@@ -40,17 +40,17 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             Socket socket = serverSocket.accept();
             connection = nodeConnectionFactory.create(socket);
-            nodeLogger.info("new connection");
+            logger.info("new connection");
             PipeContext pipeContext = new PipeContext(connection);
             Pipeline<PipeContext> slaveCreatingPipeLine = slaveCreatingPipelineFactory.create(pipeContext);
             if (slaveCreatingPipeLine.execute(pipeContext)) {
                 connection.setReadTimeOut(config.getTime().getRequestReadTimeOutMillis());
             } else {
-                nodeLogger.error("cannot run slave due to pipeline failure");
+                logger.error("cannot run slave due to pipeline failure");
             }
         } catch (IOException e) {
             if (!serverSocket.isClosed() || !Thread.currentThread().isInterrupted()) {
-                nodeLogger.error(e);
+                logger.error("exception thrown", e);
             }
             if (connection != null) {
                 connection.close();
@@ -63,9 +63,9 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
-        nodeLogger.debug(this.getClass().getSimpleName() + " is done");
+        logger.debug(this.getClass().getSimpleName() + " is done");
     }
 
     @Override
@@ -74,7 +74,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
     }
 }

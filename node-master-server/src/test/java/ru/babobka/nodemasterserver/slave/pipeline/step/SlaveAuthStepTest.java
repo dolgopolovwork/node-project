@@ -9,7 +9,7 @@ import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -26,7 +26,7 @@ public class SlaveAuthStepTest {
     private SlaveAuthStep slaveAuthStep;
     private MasterAuthService masterAuthService;
     private MasterServerConfig masterServerConfig;
-    private NodeLogger nodeLogger;
+
     private NodeConnection connection;
     private PipeContext pipeContext;
 
@@ -34,13 +34,13 @@ public class SlaveAuthStepTest {
     public void setUp() {
         masterAuthService = mock(MasterAuthService.class);
         masterServerConfig = mock(MasterServerConfig.class);
-        nodeLogger = mock(NodeLogger.class);
+
         connection = mock(NodeConnection.class);
         pipeContext = new PipeContext(connection);
         Container.getInstance().put(container -> {
             container.put(masterAuthService);
             container.put(masterServerConfig);
-            container.put(nodeLogger);
+
         });
         slaveAuthStep = new SlaveAuthStep();
     }

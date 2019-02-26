@@ -1,7 +1,7 @@
 package ru.babobka.vsjws.webserver;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
 import ru.babobka.vsjws.model.http.session.HttpSession;
@@ -23,10 +23,10 @@ import java.util.concurrent.Executors;
  */
 public class WebServer extends Thread {
 
+    private static Logger logger = Logger.getLogger(WebServer.class);
     private static final int SOCKET_READ_TIMEOUT_MILLIS = 2000;
     private final WebServerConfigValidator configValidator = Container.getInstance().get(WebServerConfigValidator.class);
     private final JSONWebControllerMapper jsonWebControllerMapper = Container.getInstance().get(JSONWebControllerMapper.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
     private final Map<String, HttpWebController> controllerMap = new ConcurrentHashMap<>();
     private final WebServerConfig webServerConfig;
     private final ServerSocket serverSocket;
@@ -64,20 +64,20 @@ public class WebServer extends Thread {
 
     public void run() {
         try {
-            nodeLogger.info("run web-server " + getFullName());
+            logger.info("run web-server " + getFullName());
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Socket socket = serverSocket.accept();
                     socket.setSoTimeout(SOCKET_READ_TIMEOUT_MILLIS);
                     threadPool.execute(new SocketProcessorRunnable(httpSession, socket, controllerMap));
                 } catch (IOException e) {
-                    nodeLogger.error(e);
+                    logger.error("exception thrown", e);
                 }
             }
         } finally {
             clear();
         }
-        nodeLogger.info("web-server " + getFullName() + " is done");
+        logger.info("web-server " + getFullName() + " is done");
     }
 
     private void clear() {
@@ -85,7 +85,7 @@ public class WebServer extends Thread {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
         controllerMap.clear();
         httpSession.clear();
@@ -100,6 +100,4 @@ public class WebServer extends Thread {
     private String getFullName() {
         return TextUtil.beautifyServerName(webServerConfig.getServerName(), webServerConfig.getPort());
     }
-
-
 }

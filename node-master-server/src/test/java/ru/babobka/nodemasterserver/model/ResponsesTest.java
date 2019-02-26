@@ -11,7 +11,6 @@ import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.model.DataValidators;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,6 @@ import static org.mockito.Mockito.*;
  * Created by 123 on 11.09.2017.
  */
 public class ResponsesTest {
-    private NodeLogger nodeLogger;
     private OnResponseListener taskIsReadyListener;
     private OnResponseListener raceStyleTaskIsReadyListener;
     private SubTask task;
@@ -34,10 +32,8 @@ public class ResponsesTest {
     public void setUp() {
         task = mock(SubTask.class);
         when(task.getName()).thenReturn("test");
-        nodeLogger = mock(NodeLogger.class);
         raceStyleTaskIsReadyListener = mock(OnRaceStyleTaskIsReady.class);
         taskIsReadyListener = mock(OnTaskIsReady.class);
-        Container.getInstance().put(nodeLogger);
         Container.getInstance().put(taskIsReadyListener);
         Container.getInstance().put(raceStyleTaskIsReadyListener);
     }

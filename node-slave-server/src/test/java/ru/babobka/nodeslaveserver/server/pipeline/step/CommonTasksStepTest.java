@@ -6,7 +6,7 @@ import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_TASK_PO
  * Created by 123 on 09.06.2018.
  */
 public class CommonTasksStepTest {
-    private NodeLogger nodeLogger;
+
     private TaskPool taskPool;
     private NodeConnection connection;
     private PipeContext pipeContext;
@@ -32,11 +32,11 @@ public class CommonTasksStepTest {
     @Before
     public void setUp() {
         connection = mock(NodeConnection.class);
-        nodeLogger = mock(NodeLogger.class);
+
         pipeContext = new PipeContext(connection, mock(AuthCredentials.class));
         taskPool = mock(TaskPool.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
+
             container.put(SLAVE_SERVER_TASK_POOL, taskPool);
         });
         commonTasksStep = new CommonTasksStep();

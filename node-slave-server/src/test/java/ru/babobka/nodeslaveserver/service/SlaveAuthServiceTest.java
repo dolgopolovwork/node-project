@@ -10,7 +10,6 @@ import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodesecurity.service.RSAService;
 import ru.babobka.nodesecurity.service.SRPService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -24,7 +23,6 @@ import static org.mockito.Mockito.*;
  */
 public class SlaveAuthServiceTest {
     private SlaveAuthService slaveAuthService;
-    private NodeLogger nodeLogger;
     private SRPService srpService;
     private SlaveServerConfig slaveServerConfig;
     private RSAService rsaService;
@@ -35,10 +33,8 @@ public class SlaveAuthServiceTest {
         RSAConfig rsaConfig = RSAConfigFactory.create(128);
         slaveServerConfig.setServerPublicKey(rsaConfig.getPublicKey());
         rsaService = mock(RSAService.class);
-        nodeLogger = mock(NodeLogger.class);
         srpService = mock(SRPService.class);
         Container.getInstance().put(container -> {
-            container.put(nodeLogger);
             container.put(srpService);
             container.put(rsaService);
             container.put(slaveServerConfig);

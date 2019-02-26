@@ -1,5 +1,6 @@
 package ru.babobka.nodeift;
 
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,8 +17,7 @@ import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -32,6 +32,7 @@ import static org.junit.Assert.*;
  */
 public class PrimeCounterITCase {
 
+    private static Logger logger = Logger.getLogger(PrimeCounterITCase.class);
     protected static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
     protected static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
     protected static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
@@ -42,7 +43,7 @@ public class PrimeCounterITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        Container.getInstance().put(SimpleLoggerFactory.debugLogger(PrimeCounterITCase.class.getSimpleName(), TextUtil.getEnv(Env.NODE_LOGS)));
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), PrimeCounterITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
@@ -155,14 +156,13 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
-        NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 150; i++) {
                 NodeRequest request = getLargeRangeRequest();
-                nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
+                logger.info("Tested request task id is [" + request.getTaskId() + "]");
                 TaskExecutionResult result = taskService.executeTask(request);
-                nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
                 assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
             }
         }
@@ -170,7 +170,6 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
-        NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 3, true)) {
             final AtomicInteger failedTest = new AtomicInteger(0);
             slaveServerCluster.start();
@@ -180,11 +179,11 @@ public class PrimeCounterITCase {
                     for (int j = 0; j < 250; j++) {
                         try {
                             NodeRequest request = getLargeRangeRequest();
-                            nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
+                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
                             TaskExecutionResult result = taskService.executeTask(request);
-                            nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                            logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
                             if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
-                                nodeLogger.warning("Tested request task id [" + request.getTaskId() + "] was failed");
+                                logger.warn("Tested request task id [" + request.getTaskId() + "] was failed");
                                 failedTest.incrementAndGet();
                                 break;
                             }
@@ -206,7 +205,6 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
-        NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             final AtomicInteger failedTest = new AtomicInteger(0);
             slaveServerCluster.start();
@@ -216,9 +214,9 @@ public class PrimeCounterITCase {
                     for (int j = 0; j < 5; j++) {
                         try {
                             NodeRequest request = getExtraLargeRangeRequest();
-                            nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
+                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
                             TaskExecutionResult result = taskService.executeTask(request);
-                            nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                            logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
                             if (!result.getData().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
                                 failedTest.incrementAndGet();
                                 break;
@@ -241,14 +239,13 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
-        NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 25; i++) {
                 NodeRequest request = getExtraLargeRangeRequest();
-                nodeLogger.info("Tested request task id is [" + request.getTaskId() + "]");
+                logger.info("Tested request task id is [" + request.getTaskId() + "]");
                 TaskExecutionResult result = taskService.executeTask(request);
-                nodeLogger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
                 assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER);
             }
         }

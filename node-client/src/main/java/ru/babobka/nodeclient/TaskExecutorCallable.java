@@ -1,5 +1,6 @@
 package ru.babobka.nodeclient;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeclient.listener.ListenerResult;
 import ru.babobka.nodeclient.listener.OnResponseListener;
 import ru.babobka.nodeserials.NodeData;
@@ -18,6 +19,7 @@ import java.util.concurrent.Callable;
  */
 public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
 
+    private static final Logger logger = Logger.getLogger(TaskExecutorCallable.class);
     private static final OnResponseListener DUMMY_LISTENER = response -> ListenerResult.PROCEED;
     private static final int READ_TIMEOUT_MILLIS = 15_000;
     private final List<NodeRequest> requests;
@@ -99,7 +101,7 @@ public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
 
     private void printIfNotDone(Exception e) {
         if (!(doneFunc.isDone() || connection.isClosed())) {
-            e.printStackTrace();
+            logger.error("exception thrown", e);
         }
     }
 }

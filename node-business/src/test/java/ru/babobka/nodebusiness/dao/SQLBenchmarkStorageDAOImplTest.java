@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -23,15 +22,13 @@ import static org.mockito.Mockito.*;
 public class SQLBenchmarkStorageDAOImplTest {
     private SQLBenchmarkStorageDAOImpl sqlBenchmarkStorageDAO;
     private DataSource dataSource;
-    private NodeLogger nodeLogger;
+
 
     @Before
     public void setUp() {
         dataSource = mock(DataSource.class);
-        nodeLogger = mock(NodeLogger.class);
         Container.getInstance().put(container -> {
             container.put(dataSource);
-            container.put(nodeLogger);
         });
         sqlBenchmarkStorageDAO = spy(new SQLBenchmarkStorageDAOImpl());
     }

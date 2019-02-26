@@ -13,7 +13,6 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.vsjws.webserver.WebServer;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class MasterServerTest {
     private SlavesStorage slavesStorage;
     private MasterServerConfig masterServerConfig;
     private NodeUsersService nodeUsersService;
-    private NodeLogger nodeLogger;
+
     private CacheDAO cacheDAO;
     private ClientStorage clientStorage;
 
@@ -48,7 +47,7 @@ public class MasterServerTest {
         webServer = mock(WebServer.class);
         incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
-        nodeLogger = mock(NodeLogger.class);
+
         Container.getInstance().put(container -> {
             container.put(nodeUsersService);
             container.put(heartBeatingThread);
@@ -56,7 +55,7 @@ public class MasterServerTest {
             container.put(slaveListenerThread);
             container.put(masterServerConfig);
             container.put(webServer);
-            container.put(nodeLogger);
+
             container.put(slavesStorage);
             container.put(clientStorage);
             container.put(cacheDAO);
@@ -85,7 +84,6 @@ public class MasterServerTest {
         when(masterServerConfig.getModes()).thenReturn(modeConfig);
         doThrow(new RuntimeException()).when(slaveListenerThread).start();
         masterServer.run();
-        verify(nodeLogger).error(any(RuntimeException.class));
         verify(masterServer).clear();
     }
 

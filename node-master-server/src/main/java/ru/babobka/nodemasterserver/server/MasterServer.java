@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
@@ -10,7 +11,6 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.webserver.WebServer;
 
@@ -31,7 +31,7 @@ public class MasterServer extends Thread {
     private final WebServer webServer = Container.getInstance().get(WebServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static final Logger logger = Logger.getLogger(MasterServer.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
@@ -49,9 +49,9 @@ public class MasterServer extends Thread {
             incomingSlavesThread.start();
             heartBeatingThread.start();
             webServer.start();
-            nodeLogger.info(TextUtil.WELCOME_TEXT);
+            logger.info(TextUtil.WELCOME_TEXT);
         } catch (RuntimeException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
             clear();
         }
     }
@@ -72,7 +72,7 @@ public class MasterServer extends Thread {
         try {
             Container.getInstance().get(CacheDAO.class).close();
         } catch (IOException e) {
-            nodeLogger.error("can not close cache", e);
+            logger.error("can not close cache", e);
         }
         if (slavesStorage != null) {
             slavesStorage.clear();
@@ -87,7 +87,7 @@ public class MasterServer extends Thread {
         try {
             thread.join(10_000);
         } catch (InterruptedException e) {
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
     }
 

@@ -1,7 +1,8 @@
 package ru.babobka.primecounter.service;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
+import ru.babobka.nodeutils.thread.CyclicThread;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.primecounter.callable.PrimeCounterCallable;
 import ru.babobka.primecounter.model.Range;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
 
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
+    private static Logger logger = Logger.getLogger(PrimeCounterTaskService.class);
     private final AtomicBoolean done = new AtomicBoolean(false);
 
     PrimeCounterTaskService(int cores) {
@@ -44,7 +45,7 @@ public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
             }
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            nodeLogger.error(e);
+            logger.error("exception thrown", e);
         }
         return result;
     }

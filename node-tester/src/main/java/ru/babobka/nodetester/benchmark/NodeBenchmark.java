@@ -1,5 +1,6 @@
 package ru.babobka.nodetester.benchmark;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodebusiness.service.BenchmarkStorageService;
 import ru.babobka.nodeclient.console.CLI;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class NodeBenchmark {
 
+    private static final Logger logger = Logger.getLogger(NodeBenchmark.class);
     private static final String LOGIN = "test_user";
     private static final String PASSWORD = "test_password";
     private final BenchmarkMapper benchmarkMapper = new BenchmarkMapper();
@@ -69,7 +71,7 @@ public class NodeBenchmark {
                 saveBenchmark(benchmarkData, slaves, serviceThreads);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("exception thrown", e);
         } finally {
             masterServer.interrupt();
         }

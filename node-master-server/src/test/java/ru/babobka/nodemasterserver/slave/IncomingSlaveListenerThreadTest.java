@@ -9,8 +9,7 @@ import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodemasterserver.slave.pipeline.SlaveCreatingPipelineFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
-import ru.babobka.nodeutils.logger.NodeLogger;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
@@ -24,9 +23,14 @@ import static org.mockito.Mockito.*;
  * Created by 123 on 19.09.2017.
  */
 public class IncomingSlaveListenerThreadTest {
+
+    static {
+        LoggerInit.initConsoleLogger();
+    }
+
     private IncomingSlaveListenerThread incomingSlaveListenerThread;
     private NodeConnectionFactory nodeConnectionFactory;
-    private NodeLogger nodeLogger;
+
     private ServerSocket serverSocket;
     private MasterServerConfig masterServerConfig;
     private SlaveCreatingPipelineFactory pipelineFactory;
@@ -35,14 +39,13 @@ public class IncomingSlaveListenerThreadTest {
     public void setUp() throws IOException {
         masterServerConfig = mock(MasterServerConfig.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
-        nodeLogger = spy(SimpleLoggerFactory.consoleLogger("IncomingSlaveListenerThreadTest"));
         serverSocket = mock(ServerSocket.class);
         pipelineFactory = mock(SlaveCreatingPipelineFactory.class);
         Container.getInstance().put(container -> {
             container.put(nodeConnectionFactory);
             container.put(masterServerConfig);
             container.put(pipelineFactory);
-            container.put(nodeLogger);
+
         });
         incomingSlaveListenerThread = spy(new IncomingSlaveListenerThread(serverSocket));
     }
@@ -73,7 +76,6 @@ public class IncomingSlaveListenerThreadTest {
     public void testOnExitException() throws IOException {
         doThrow(new IOException()).when(serverSocket).close();
         incomingSlaveListenerThread.onExit();
-        verify(nodeLogger).error(any(Exception.class));
     }
 
     @Test
@@ -132,6 +134,5 @@ public class IncomingSlaveListenerThreadTest {
         incomingSlaveListenerThread.onCycle();
         verify(connection).close();
     }
-
 
 }

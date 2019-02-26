@@ -1,10 +1,10 @@
 package ru.babobka.nodemasterserver.thread;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.logger.NodeLogger;
 import ru.babobka.nodeutils.thread.CyclicThread;
 
 public class HeartBeatingThread extends CyclicThread {
@@ -14,10 +14,10 @@ public class HeartBeatingThread extends CyclicThread {
         setName("heart beating thread");
     }
 
+    private static final Logger logger = Logger.getLogger(HeartBeatingThread.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
-    private final NodeLogger nodeLogger = Container.getInstance().get(NodeLogger.class);
 
     @Override
     public int sleepMillis() {
@@ -26,9 +26,8 @@ public class HeartBeatingThread extends CyclicThread {
 
     @Override
     public void onCycle() {
-        nodeLogger.debug("heart beating time");
+        logger.debug("heart beating time");
         clientStorage.heartBeatAllClients();
         slavesStorage.heartBeatAllSlaves();
     }
-
 }

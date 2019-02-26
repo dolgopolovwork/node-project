@@ -13,7 +13,6 @@ import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.key.UtilKey;
-import ru.babobka.nodeutils.logger.SimpleLoggerFactory;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
@@ -26,7 +25,6 @@ public class SlaveServerApplicationContainer extends AbstractApplicationContaine
     protected void containImpl(Container container) throws Exception {
         SlaveServerConfig config = container.get(SlaveServerConfig.class);
         Properties.put(UtilKey.SERVICE_THREADS_NUM, Runtime.getRuntime().availableProcessors());
-        container.put(SimpleLoggerFactory.defaultLogger("slave-server", config.getLoggerFolder()));
         container.put(new NodeUtilsApplicationContainer());
         container.put(new SecurityApplicationContainer());
         container.put(new NodeConnectionFactory());
