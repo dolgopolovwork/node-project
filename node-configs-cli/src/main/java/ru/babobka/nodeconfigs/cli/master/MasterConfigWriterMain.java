@@ -1,7 +1,7 @@
 package ru.babobka.nodeconfigs.cli.master;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.Option;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.master.*;
@@ -20,6 +20,8 @@ import ru.babobka.nodeutils.validation.ValidationRule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by 123 on 16.09.2018.
@@ -38,12 +40,12 @@ public class MasterConfigWriterMain extends CLI {
     private final ConfigProvider configProvider = Container.getInstance().get(ConfigProvider.class);
 
     @Override
-    protected Options createOptions() {
-        return new Options();
+    public List<Option> createOptions() {
+        return Collections.emptyList();
     }
 
     @Override
-    protected void run(CommandLine cmd) throws Exception {
+    public void run(CommandLine cmd) throws Exception {
         MasterServerConfig masterServerConfig = new MasterServerConfig();
         setModeConfig(masterServerConfig);
         setPortConfig(masterServerConfig);
@@ -78,13 +80,12 @@ public class MasterConfigWriterMain extends CLI {
         printLabel("Modes configuration");
         ModeConfig modeConfig = new ModeConfig();
         modeConfig.setCacheMode(readYesNo("enable response caching?"));
-        modeConfig.setLocalMachineMode(readYesNo("make available to run tasks from localhost only?"));
         modeConfig.setSingleSessionMode(readYesNo("don't let clients connect with the same credentials twice?"));
         modeConfig.setTestUserMode(readYesNo("WARNING! don't use this ability in production.\ncreate test user?"));
         config.setModes(modeConfig);
     }
 
-    private PortConfig setPortConfig(MasterServerConfig config) {
+    private void setPortConfig(MasterServerConfig config) {
         printLabel("Ports configuration");
         PortConfig portConfig = new PortConfig();
         ValidationRule<String> validPortRule = port -> {
@@ -108,7 +109,6 @@ public class MasterConfigWriterMain extends CLI {
                 printErr(e.getMessage());
             }
         }
-        return portConfig;
     }
 
     private void setTimeConfig(MasterServerConfig config) {

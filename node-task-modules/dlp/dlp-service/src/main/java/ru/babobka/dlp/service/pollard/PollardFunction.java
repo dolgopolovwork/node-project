@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.PollardEntity;
 
 /**
@@ -7,10 +8,7 @@ import ru.babobka.dlp.model.PollardEntity;
  */
 public abstract class PollardFunction {
 
-    public PollardEntity mix(PollardEntity pollardEntity) {
-        if (pollardEntity == null) {
-            throw new IllegalArgumentException("pollardEntity is null");
-        }
+    public PollardEntity mix(@NonNull PollardEntity pollardEntity) {
         return mixImpl(pollardEntity);
     }
 

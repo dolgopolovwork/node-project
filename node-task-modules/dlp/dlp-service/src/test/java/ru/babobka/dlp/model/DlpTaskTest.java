@@ -10,12 +10,12 @@ import java.math.BigInteger;
  */
 public class DlpTaskTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullGen() {
         new DlpTask(null, Fp.random(BigInteger.TEN));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullValue() {
         new DlpTask(Fp.random(BigInteger.TEN), null);
     }

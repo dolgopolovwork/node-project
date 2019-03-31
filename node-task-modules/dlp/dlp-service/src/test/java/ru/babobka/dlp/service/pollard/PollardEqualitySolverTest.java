@@ -16,12 +16,12 @@ import static org.mockito.Mockito.mock;
  */
 public class PollardEqualitySolverTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testSolveNullDlpTask() {
         PollardEqualitySolver.solve(null, mock(Pair.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testSolveNullPair() {
         PollardEqualitySolver.solve(mock(DlpTask.class), null);
     }

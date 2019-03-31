@@ -17,6 +17,8 @@ public class SlaveServerConfig implements NodeConfiguration {
     private int authTimeOutMillis;
     private String loggerFolder;
     private String tasksFolder;
+    private String slaveLogin;
+    private String slavePassword;
 
     public int getRequestTimeoutMillis() {
         return requestTimeoutMillis;
@@ -78,6 +80,22 @@ public class SlaveServerConfig implements NodeConfiguration {
 
     public void setServerPublicKey(RSAPublicKey serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
+    }
+
+    public String getSlaveLogin() {
+        return slaveLogin;
+    }
+
+    public void setSlaveLogin(String slaveLogin) {
+        this.slaveLogin = slaveLogin;
+    }
+
+    public String getSlavePassword() {
+        return slavePassword;
+    }
+
+    public void setSlavePassword(String slavePassword) {
+        this.slavePassword = slavePassword;
     }
 
     @Override

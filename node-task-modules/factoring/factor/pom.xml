@@ -54,7 +54,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.nodeclient.MainApplication</mainClass>
+                            <mainClass>ru.babobka.nodeclient.FactorApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

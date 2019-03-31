@@ -24,7 +24,7 @@ public class StorageApplicationContainer extends AbstractApplicationContainer {
             if (storageConfigPath == null) {
                 throw new IllegalStateException("environment variable " + Env.NODE_STORAGE_CONFIG + " was not set. can not read storage configs.");
             }
-            container.putIfNotExists(new StreamUtil());
+            container.putIfAbsent(new StreamUtil());
             DataSourceConfig dataSourceConfig = JSONUtil.readJsonFile(
                     container.get(StreamUtil.class),
                     storageConfigPath, DataSourceConfig.class);

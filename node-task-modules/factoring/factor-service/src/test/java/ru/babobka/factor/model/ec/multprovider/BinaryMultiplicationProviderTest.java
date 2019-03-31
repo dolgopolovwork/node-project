@@ -27,7 +27,6 @@ public class BinaryMultiplicationProviderTest {
     public void testMultDummyMultEquality() {
         Random random = new Random();
         for (int i = 0; i < 1000; i++) {
-            //TODO в маленьких битах не работает. Узнать почему
             EllipticCurvePoint point = EllipticCurvePoint
                     .generateRandomPoint(BigInteger.probablePrime(32, new Random()));
             int mult = random.nextInt(100) + 1;

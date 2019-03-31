@@ -59,7 +59,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.node.dlp.benchmark.MainApplication</mainClass>
+                            <mainClass>ru.babobka.node.dlp.benchmark.DlpNodeBenchmarkApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

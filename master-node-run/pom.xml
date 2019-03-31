@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.masternoderun.MainApplication</mainClass>
+                            <mainClass>ru.babobka.masternoderun.MasterApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.babobka.nodeserials.enumerations.RequestStatus.NORMAL;
 import static ru.babobka.nodeserials.enumerations.RequestStatus.RACE;
@@ -22,6 +23,7 @@ import static ru.babobka.nodeserials.enumerations.RequestStatus.RACE;
  */
 public class IncomingClientListenerThread extends Thread {
 
+    private static final AtomicInteger INCOMING_CLIENT_ID = new AtomicInteger();
     private static final Logger logger = Logger.getLogger(IncomingClientListenerThread.class);
     private final ExecutorService executorService = Container.getInstance().get(MasterServerKey.CLIENTS_THREAD_POOL);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
@@ -32,7 +34,7 @@ public class IncomingClientListenerThread extends Thread {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;
-        setName("incoming client listener thread");
+        setName("incoming_client_listener_" + INCOMING_CLIENT_ID.getAndIncrement());
     }
 
     @Override

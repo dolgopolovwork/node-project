@@ -8,8 +8,8 @@ import ru.babobka.nodeutils.container.Container;
  */
 public class MasterServerRunner {
 
-    public static MasterServerApplicationContainer init() {
-        MasterServerApplicationContainer container = new MasterServerApplicationContainer();
+    public static TesterMasterServerApplicationContainer init() {
+        TesterMasterServerApplicationContainer container = new TesterMasterServerApplicationContainer();
         Container.getInstance().put(container);
         return container;
     }

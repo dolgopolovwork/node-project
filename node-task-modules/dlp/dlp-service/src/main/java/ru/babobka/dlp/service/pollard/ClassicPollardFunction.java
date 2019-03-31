@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.nodeutils.math.Fp;
 
@@ -14,8 +15,7 @@ public class ClassicPollardFunction extends PollardFunction {
     private final BigInteger thirdOfP;
     private final BigInteger twoThirdsOfP;
 
-    public ClassicPollardFunction(BigInteger p) {
-        if (p == null) throw new IllegalArgumentException("p is null");
+    public ClassicPollardFunction(@NonNull BigInteger p) {
         thirdOfP = p.divide(THREE);
         twoThirdsOfP = thirdOfP.multiply(TWO);
     }

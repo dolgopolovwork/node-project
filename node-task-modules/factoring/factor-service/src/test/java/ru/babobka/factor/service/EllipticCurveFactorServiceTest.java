@@ -6,34 +6,32 @@ import ru.babobka.factor.model.FactoringResult;
 import ru.babobka.factor.model.ec.multprovider.BinaryMultiplicationProvider;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
-
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 
 import java.math.BigInteger;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class EllipticCurveFactorServiceTest {
 
     @BeforeClass
     public static void setUp() {
         Container.getInstance().put(container -> {
-            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
+            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("test", Runtime.getRuntime().availableProcessors()));
             container.put(new BinaryMultiplicationProvider());
         });
     }
 
     @Test
-    public void testLittleNumbers() throws InterruptedException {
+    public void testLittleNumbers() {
         int tests = 150;
         int factorBits = 16;
         generateTests(tests, factorBits);
     }
 
     @Test
-    public void testLargeNumbers() throws InterruptedException {
+    public void testLargeNumbers() {
         int tests = 10;
         int factorBits = 35;
         generateTests(tests, factorBits);

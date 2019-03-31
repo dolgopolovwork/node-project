@@ -1,8 +1,6 @@
 package ru.babobka.primecounter.service;
 
 import org.apache.log4j.Logger;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.thread.CyclicThread;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.primecounter.callable.PrimeCounterCallable;
 import ru.babobka.primecounter.model.Range;

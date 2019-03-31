@@ -46,8 +46,6 @@ public class NodeUsersCRUDWebControllerTest {
         when(nodeUsersService.get(uuid)).thenReturn(user);
         HttpResponse response = nodeUsersCRUDWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
-        //TODO придумать залипуху для сравнения контентов
-        // assertEquals(failed.getContent(), user);
     }
 
     @Test
@@ -69,8 +67,6 @@ public class NodeUsersCRUDWebControllerTest {
         when(nodeUsersService.getList()).thenReturn(users);
         HttpResponse response = nodeUsersCRUDWebController.onGet(request);
         assertEquals(response.getResponseCode(), ResponseCode.OK);
-        //TODO придумать залипуху для сравнения контентов
-        //assertEquals(failed.getContent(), users);
     }
 
     @Test

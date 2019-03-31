@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
@@ -13,12 +14,8 @@ import java.math.BigInteger;
  */
 public class PollardEqualitySolver {
 
-    public static BigInteger solve(DlpTask dlpTask, Pair<PollardEntity> pollardCollision) {
-        if (pollardCollision == null) {
-            throw new IllegalArgumentException("collision was not set");
-        } else if (dlpTask == null) {
-            throw new IllegalArgumentException("dlp task was not set");
-        } else if (!pollardCollision.getFirst().isCollision(pollardCollision.getSecond())) {
+    public static BigInteger solve(@NonNull DlpTask dlpTask, @NonNull Pair<PollardEntity> pollardCollision) {
+        if (!pollardCollision.getFirst().isCollision(pollardCollision.getSecond())) {
             throw new IllegalArgumentException("not a real collision " + pollardCollision);
         } else if (!dlpTask.getGen().getMod().equals(pollardCollision.getFirst().getG().getMod())) {
             throw new IllegalArgumentException("DlpTask and pollardCollision operate with different fields");

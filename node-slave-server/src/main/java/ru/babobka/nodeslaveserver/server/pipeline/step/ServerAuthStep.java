@@ -25,7 +25,7 @@ public class ServerAuthStep implements Step<PipeContext> {
             }
             return true;
         } catch (IOException e) {
-            logger.error("cannot authenticate server due to network error");
+            logger.error("cannot authenticate server due to network error", e);
             return false;
         }
     }

@@ -1,5 +1,7 @@
 package ru.babobka.nodeutils.util;
 
+import lombok.NonNull;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -17,10 +19,8 @@ public class StreamUtil {
 
     private static final int DEFAULT_LOOP_BACK = 50;
 
-    public ServerSocket createServerSocket(int port, boolean local) throws IOException {
-        if (local) {
-            return new ServerSocket(port, DEFAULT_LOOP_BACK, InetAddress.getByName(null));
-        }
+
+    public ServerSocket createServerSocket(int port) throws IOException {
         return new ServerSocket(port, DEFAULT_LOOP_BACK);
     }
 
@@ -126,4 +126,7 @@ public class StreamUtil {
         }
     }
 
+    public static boolean isClosedConnectionException(@NonNull Exception e) {
+        return e.getCause() != null && e.getCause().getClass().equals(EOFException.class);
+    }
 }

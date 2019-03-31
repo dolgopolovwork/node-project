@@ -1,7 +1,13 @@
 package ru.babobka.nodeutils.container;
 
+import lombok.NonNull;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 public class Container {
 
@@ -16,17 +22,11 @@ public class Container {
         return SingletonHolder.HOLDER_INSTANCE;
     }
 
-    public synchronized void put(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("object to put in container is null");
-        }
+    public synchronized void put(@NonNull Object object) {
         containerMap.put(object.getClass(), object);
     }
 
-    public synchronized boolean putIfNotExists(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("object to put in container is null");
-        }
+    public synchronized boolean putIfAbsent(@NonNull Object object) {
         if (getNoException(object.getClass()) == null) {
             put(object);
             return true;
@@ -34,17 +34,11 @@ public class Container {
         return false;
     }
 
-    public synchronized void put(AbstractApplicationContainer abstractApplicationContainer) {
-        if (abstractApplicationContainer == null) {
-            throw new IllegalArgumentException("abstractApplicationContainer is null");
-        }
+    public synchronized void put(@NonNull AbstractApplicationContainer abstractApplicationContainer) {
         abstractApplicationContainer.contain(this);
     }
 
-    public synchronized void put(LambdaApplicationContainer lambdaApplicationContainer) {
-        if (lambdaApplicationContainer == null) {
-            throw new IllegalArgumentException("lambdaApplicationContainer is null");
-        }
+    public synchronized void put(@NonNull LambdaApplicationContainer lambdaApplicationContainer) {
         try {
             lambdaApplicationContainer.contain(this);
         } catch (Exception e) {
@@ -52,12 +46,7 @@ public class Container {
         }
     }
 
-    public synchronized void put(Key key, Object object) {
-        if (key == null) {
-            throw new IllegalArgumentException("key is null");
-        } else if (object == null) {
-            throw new IllegalArgumentException("object to put is null");
-        }
+    public synchronized void put(@NonNull Key key, @NonNull Object object) {
         namedContainerMap.put(key.name(), object);
     }
 
@@ -79,13 +68,13 @@ public class Container {
     public synchronized <T> T get(Key key) {
         T object = (T) namedContainerMap.get(key.name());
         if (object == null) {
-            throw new ContainerException("Object named " + key + " was not found");
+            throw new ContainerException("Object named '" + key + "' was not found");
         }
         return object;
     }
 
     @SuppressWarnings("unchecked")
-    public synchronized <T> T get(Key key, T defaultValue) {
+    public synchronized <T> T get(@NonNull Key key, @NonNull T defaultValue) {
         T object = (T) namedContainerMap.get(key.name());
         if (object == null) {
             return defaultValue;
@@ -93,25 +82,51 @@ public class Container {
         return object;
     }
 
-    public synchronized <T> T get(Class<T> clazz) {
+    public synchronized <T> T get(@NonNull Class<T> clazz) {
         T object = getNoException(clazz);
         if (object == null) {
-            throw new ContainerException("Object inheriting " + clazz + " was not found");
+            throw new ContainerException("Object inheriting '" + clazz + "' was not found");
+        }
+        return object;
+    }
+
+    public synchronized <T> T get(@NonNull Class<T> clazz, T defaultValue) {
+        T object = getNoException(clazz);
+        if (object == null) {
+            return defaultValue;
         }
         return object;
     }
 
     public synchronized void clear() {
+        killObjectsSilently(namedContainerMap.values());
+        killObjectsSilently(containerMap.values());
         namedContainerMap.clear();
         containerMap.clear();
     }
 
-    @Override
-    public synchronized String toString() {
-        return "Container{" +
-                "containerMap=" + containerMap +
-                ", namedContainerMap=" + namedContainerMap +
-                '}';
+    private void killObjectsSilently(Collection<Object> objects) {
+        objects.forEach(object -> {
+            if (object.getClass().isAssignableFrom(Closeable.class)) {
+                try {
+                    ((Closeable) object).close();
+                } catch (IOException ignored) {
+
+                }
+            } else if (object.getClass().isAssignableFrom(Thread.class)) {
+                try {
+                    ((Thread) object).interrupt();
+                } catch (Exception ignored) {
+
+                }
+            } else if (object.getClass().isAssignableFrom(ExecutorService.class)) {
+                try {
+                    ((ExecutorService) object).shutdownNow();
+                } catch (Exception ignored) {
+
+                }
+            }
+        });
     }
 
     private static class SingletonHolder {

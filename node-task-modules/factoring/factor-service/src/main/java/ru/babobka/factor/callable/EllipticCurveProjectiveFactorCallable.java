@@ -6,7 +6,9 @@ import ru.babobka.nodeutils.util.MathUtil;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,8 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class EllipticCurveProjectiveFactorCallable implements Callable<FactoringResult> {
 
-    //TODO оптимизируй расход памяти
-    private static final List<Long> primes = new ArrayList<>();
+    private static final Set<Long> primes = new LinkedHashSet<>();
     private static final int MIN_BORDER = 10000;
     private static long lastMaxBorder = 0L;
     private final BigInteger n;
@@ -49,7 +50,6 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         return callables;
     }
 
-    //TODO напиши на это тесты, чтобы понять, что нужен инкремент в цикле
     static synchronized void initPrimes(long border) {
         if (border <= lastMaxBorder) {
             return;
@@ -62,8 +62,13 @@ public class EllipticCurveProjectiveFactorCallable implements Callable<Factoring
         lastMaxBorder = border;
     }
 
-    static synchronized List<Long> getPrimes() {
+    static synchronized Set<Long> getPrimes() {
         return primes;
+    }
+
+    static synchronized void clearPrimes() {
+        lastMaxBorder = 0;
+        primes.clear();
     }
 
     FactoringResult factor() {

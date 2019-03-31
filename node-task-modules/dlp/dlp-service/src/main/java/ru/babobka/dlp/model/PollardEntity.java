@@ -1,5 +1,6 @@
 package ru.babobka.dlp.model;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.math.BigInteger;
@@ -16,18 +17,8 @@ public class PollardEntity {
     private final Fp valExp;
     private final Fp genExp;
 
-    public PollardEntity(Fp x, Fp a, Fp g, Fp valExp, Fp genExp) {
-        if (x == null) {
-            throw new IllegalArgumentException("x is null");
-        } else if (a == null) {
-            throw new IllegalArgumentException("a is null");
-        } else if (g == null) {
-            throw new IllegalArgumentException("g is null");
-        } else if (valExp == null) {
-            throw new IllegalArgumentException("valExp is null");
-        } else if (genExp == null) {
-            throw new IllegalArgumentException("genExp is null");
-        } else if (!valExp.getMod().equals(genExp.getMod())) {
+    public PollardEntity(@NonNull Fp x, @NonNull Fp a, @NonNull Fp g, @NonNull Fp valExp, @NonNull Fp genExp) {
+        if (!valExp.getMod().equals(genExp.getMod())) {
             throw new IllegalArgumentException("exponents must be from the same field");
         } else if (!g.getMod().equals(a.getMod())) {
             throw new IllegalArgumentException("both generator and searched value must be from the same field");

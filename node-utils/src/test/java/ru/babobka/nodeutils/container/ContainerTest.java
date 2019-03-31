@@ -35,10 +35,11 @@ public class ContainerTest {
         assertNotNull(Container.getInstance().get(Charset.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutNull() {
         Container.getInstance().put((AbstractApplicationContainer) null);
     }
+
     @Test
     public void testGetByKey() {
         assertEquals(Container.getInstance().get(TestKey.XYZ), Integer.valueOf(123));
@@ -49,12 +50,12 @@ public class ContainerTest {
         Container.getInstance().get(TestKey.ABC);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutNullKey() {
         Container.getInstance().put(null, new Object());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutNullObject() {
         Container.getInstance().put(TestKey.ABC, null);
     }
@@ -74,15 +75,15 @@ public class ContainerTest {
         Container.getInstance().get(Thread.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutIfNotExistsNull() {
-        Container.getInstance().putIfNotExists(null);
+        Container.getInstance().putIfAbsent(null);
     }
 
     @Test
     public void testPutIfNotExists() {
         Double number = 3.14;
-        Container.getInstance().putIfNotExists(number);
+        Container.getInstance().putIfAbsent(number);
         assertEquals(Container.getInstance().get(Double.class), number);
     }
 
@@ -90,8 +91,8 @@ public class ContainerTest {
     public void testPutIfNotExistsTwice() {
         Double number = 3.14;
         Double secondNumber = 2.7;
-        Container.getInstance().putIfNotExists(number);
-        Container.getInstance().putIfNotExists(secondNumber);
+        Container.getInstance().putIfAbsent(number);
+        Container.getInstance().putIfAbsent(secondNumber);
         assertEquals(Container.getInstance().get(Double.class), number);
     }
 

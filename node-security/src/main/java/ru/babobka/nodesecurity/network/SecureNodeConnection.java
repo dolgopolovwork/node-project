@@ -1,5 +1,6 @@
 package ru.babobka.nodesecurity.network;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.data.SecureDataFactory;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
 import ru.babobka.nodesecurity.service.SRPService;
@@ -18,6 +19,7 @@ import java.io.IOException;
  */
 public class SecureNodeConnection implements NodeConnection {
 
+    private static final Logger logger = Logger.getLogger(SecureNodeConnection.class);
     private final SecureDataFactory secureDataFactory = Container.getInstance().get(SecureDataFactory.class);
     private final SRPService SRPService = Container.getInstance().get(SRPService.class);
     private final byte[] secretKey;
@@ -62,6 +64,24 @@ public class SecureNodeConnection implements NodeConnection {
             return;
         }
         throw new NodeSecurityException("can not send insecure instance of class " + object.getClass().getCanonicalName());
+    }
+
+    @Override
+    public void sendIgnoreException(Object object) {
+        try {
+            send(object);
+        } catch (Exception e) {
+            logger.error("cannot send", e);
+        }
+    }
+
+    @Override
+    public void sendThrowRuntime(Object object) {
+        try {
+            send(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void send(NodeRequest request) throws IOException {

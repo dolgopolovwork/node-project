@@ -23,12 +23,13 @@ public class GetServerTimeStep implements Step<PipeContext> {
         AuthResult authResult = pipeContext.getAuthResult();
         NodeConnection connection = pipeContext.getConnection();
         try {
-            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, authResult.getSecretKey());
+            SecureNodeConnection secureNodeConnection =
+                    new SecureNodeConnection(connection, authResult.getSecretKey());
             ServerTime serverTime = getServerTime(secureNodeConnection);
             pipeContext.setServerTime(serverTime);
             return true;
         } catch (IOException e) {
-            logger.error("cannot  get master-server time due to network error");
+            logger.error("cannot  get master-server time due to network error", e);
             return false;
         }
     }

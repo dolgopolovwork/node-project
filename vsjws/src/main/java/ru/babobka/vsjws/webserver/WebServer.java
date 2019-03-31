@@ -2,6 +2,7 @@ package ru.babobka.vsjws.webserver;
 
 import org.apache.log4j.Logger;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.thread.PrettyNamedThreadPoolFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.vsjws.mapper.JSONWebControllerMapper;
 import ru.babobka.vsjws.model.http.session.HttpSession;
@@ -16,7 +17,6 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by dolgopolov.a on 30.12.15.
@@ -39,14 +39,9 @@ public class WebServer extends Thread {
         configValidator.validate(config);
         this.webServerConfig = config;
         this.httpSession = new HttpSession(config.getSessionTimeoutSeconds());
-        threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
-            Thread thread = Executors.defaultThreadFactory().newThread(r);
-            thread.setName("vsjws request executor thread pool");
-            thread.setDaemon(true);
-            return thread;
-        });
+        threadPool = PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("vsjws_request_handler");
         this.serverSocket = new ServerSocket(webServerConfig.getPort());
-        setName("vsjws thread");
+        setName("vsjws");
     }
 
     public HttpWebController addController(String uri, HttpWebController httpWebController) {
@@ -65,7 +60,7 @@ public class WebServer extends Thread {
     public void run() {
         try {
             logger.info("run web-server " + getFullName());
-            while (!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted() && !serverSocket.isClosed()) {
                 try {
                     Socket socket = serverSocket.accept();
                     socket.setSoTimeout(SOCKET_READ_TIMEOUT_MILLIS);

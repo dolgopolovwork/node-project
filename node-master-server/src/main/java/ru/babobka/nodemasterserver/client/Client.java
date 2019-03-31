@@ -2,18 +2,21 @@ package ru.babobka.nodemasterserver.client;
 
 import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
-import ru.babobka.nodemasterserver.exception.TaskExecutionException;
-import ru.babobka.nodemasterserver.service.TaskService;
-import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodetask.exception.TaskExecutionException;
+import ru.babobka.nodetask.service.TaskExecutionResult;
+import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
 
 /**
  * Created by 123 on 28.10.2017.
@@ -58,7 +61,9 @@ public class Client extends AbstractClient {
         } catch (IOException e) {
             if (!isDone()) {
                 cancelTask();
-                logger.error("exception thrown", e);
+                if (!connection.isClosed() && !isClosedConnectionException(e)) {
+                    logger.error("exception thrown", e);
+                }
             }
         }
     }
@@ -69,35 +74,44 @@ public class Client extends AbstractClient {
 
     void cancelTask() {
         for (NodeRequest request : requests) {
-            try {
-                taskService.cancelTask(request.getTaskId());
-            } catch (TaskExecutionException e) {
-                logger.error("exception thrown", e);
-            }
+            taskService.cancelTask(request.getTaskId(), canceled -> {
+                if (canceled) {
+                    logger.info("task " + request.getTaskId() + " has been stopped");
+                } else {
+                    logger.info("task " + request.getTaskId() + " has NOT been stopped");
+                }
+            }, error -> {
+                logger.error("exception thrown", error);
+            });
         }
         setDone();
     }
 
-    void sendFailed(TaskExecutionException taskExecutionException) throws IOException {
+    void sendFailed(TaskExecutionException taskExecutionException) {
         for (NodeRequest request : requests) {
-            String message = taskExecutionException.getMessage();
-            if (taskExecutionException.getExecutionStatus() == ResponseStatus.SYSTEM_ERROR) {
-                connection.send(NodeResponse.systemError(request, message));
-            } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.VALIDATION_ERROR) {
-                connection.send(NodeResponse.validationError(request, message));
-            } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.NO_NODES) {
-                connection.send(NodeResponse.noNodesError(request, message));
+            try {
+                connection.send(createErrorResponse(request, taskExecutionException));
+            } catch (IOException e) {
+                logger.error("cannot send failed response for task " + request.getTaskId(), e);
             }
         }
     }
 
-    void sendNormal(TaskExecutionResult result, NodeRequest request) throws IOException {
-        connection.send(NodeResponse.normal(result.getData(), request, result.getTimeTakes()));
+    void sendNormal(TaskExecutionResult result, NodeRequest request) {
+        try {
+            connection.send(NodeResponse.normal(result.getData(), request, result.getTimeTakes()));
+        } catch (IOException e) {
+            logger.error("cannot send response for task " + request.getTaskId(), e);
+        }
     }
 
-    void sendStopped() throws IOException {
+    void sendStopped() {
         for (NodeRequest request : requests) {
-            connection.send(NodeResponse.stopped(request));
+            try {
+                connection.send(NodeResponse.stopped(request));
+            } catch (IOException e) {
+                logger.error("cannot send stop for task " + request.getTaskId(), e);
+            }
         }
     }
 
@@ -110,8 +124,7 @@ public class Client extends AbstractClient {
     }
 
     void executeTask(NodeRequest request) throws IOException {
-        try {
-            TaskExecutionResult result = taskService.executeTask(request);
+        taskService.executeTask(request, result -> {
             if (result.wasStopped()) {
                 sendStopped();
             } else {
@@ -120,10 +133,23 @@ public class Client extends AbstractClient {
             if (processedRequests.incrementAndGet() == requests.size()) {
                 setDone();
             }
-        } catch (TaskExecutionException e) {
-            logger.error("exception thrown", e);
-            sendFailed(e);
+        }, error -> {
+            logger.error("exception thrown", error);
+            sendFailed(error);
+        });
+    }
+
+    //This code is duplicated
+    private NodeResponse createErrorResponse(NodeRequest request, TaskExecutionException taskExecutionException) {
+        String message = taskExecutionException.getMessage();
+        if (taskExecutionException.getExecutionStatus() == ResponseStatus.SYSTEM_ERROR) {
+            return NodeResponse.systemError(request, message);
+        } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.VALIDATION_ERROR) {
+            return NodeResponse.validationError(request, message);
+        } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.NO_NODES) {
+            return NodeResponse.noNodesError(request, message);
         }
+        throw new NotImplementedException();
     }
 
     private class ExecutionRunnable implements Runnable {

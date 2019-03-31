@@ -2,8 +2,6 @@ package ru.babobka.nodeconfigs.cli.master;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.enums.ConfExt;
@@ -16,6 +14,8 @@ import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by 123 on 13.09.2018.
@@ -36,16 +36,13 @@ public class MasterConfigReaderMain extends CLI {
     private final ConfigProvider configProvider = Container.getInstance().get(ConfigProvider.class);
 
     @Override
-    protected Options createOptions() {
-        Options options = new Options();
-        Option configPath = Option.builder().longOpt(CONFIG_PATH_OPTION).hasArg().
-                desc("Path to master node configuration file").required().build();
-        options.addOption(configPath);
-        return options;
+    public List<Option> createOptions() {
+        Option configPath = createArgOption(CONFIG_PATH_OPTION, "Path to master node configuration file");
+        return Collections.singletonList(configPath);
     }
 
     @Override
-    protected void extraValidation(CommandLine cmd) throws ParseException {
+    public void extraValidation(CommandLine cmd) {
         String configPath = cmd.getOptionValue(CONFIG_PATH_OPTION);
         if (TextUtil.isEmpty(configPath)) {
             throw new IllegalArgumentException("path to configuration file must be specified");
@@ -59,7 +56,7 @@ public class MasterConfigReaderMain extends CLI {
     }
 
     @Override
-    protected void run(CommandLine cmd) throws Exception {
+    public void run(CommandLine cmd) throws Exception {
         String configPath = cmd.getOptionValue(CONFIG_PATH_OPTION);
         String password = null;
         if (configPath.endsWith(ConfExt.ENCRYPTED.extension)) {

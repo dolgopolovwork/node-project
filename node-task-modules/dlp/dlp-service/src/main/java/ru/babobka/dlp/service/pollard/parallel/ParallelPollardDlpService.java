@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
+import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
@@ -67,10 +68,7 @@ public class ParallelPollardDlpService extends ThreadPoolService<DlpTask, BigInt
         return PollardEqualitySolver.solve(task, pollardCollision);
     }
 
-    private ParallelCollisionService createCollisionService(Map<Fp, PollardEntity> collisions) {
-        if (collisions == null) {
-            throw new IllegalArgumentException("no storage for collisions was set");
-        }
+    private ParallelCollisionService createCollisionService(@NonNull Map<Fp, PollardEntity> collisions) {
         return new ParallelCollisionService(collisions) {
             @Override
             public boolean isDone() {

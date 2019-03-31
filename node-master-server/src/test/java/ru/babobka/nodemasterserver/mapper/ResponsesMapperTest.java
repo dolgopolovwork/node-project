@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.mapper;
 
 import org.junit.Test;
 import ru.babobka.nodemasterserver.model.Responses;
-import ru.babobka.nodemasterserver.task.TaskExecutionResult;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.Reducer;

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  */
 public class TaskExecutorCallableTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullRequest() {
         new TaskExecutorCallable(
                 null,
@@ -29,7 +29,7 @@ public class TaskExecutorCallableTest {
                 null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullConnection() {
         new TaskExecutorCallable(
                 Arrays.asList(mock(NodeRequest.class), mock(NodeRequest.class)),
@@ -45,10 +45,20 @@ public class TaskExecutorCallableTest {
         new TaskExecutorCallable(
                 Arrays.asList(mock(NodeRequest.class), mock(NodeRequest.class)),
                 connection, null,
-                null);
+                new DoneFunc() {
+                    @Override
+                    public boolean isDone() {
+                        return false;
+                    }
+
+                    @Override
+                    public void setDone() {
+
+                    }
+                });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testNullDoneFunc() {
         NodeConnection connection = mock(NodeConnection.class);
         new TaskExecutorCallable(

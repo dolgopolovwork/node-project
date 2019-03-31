@@ -22,7 +22,7 @@ public class ParallelPollardDlpServiceTest {
 
     @Before
     public void setUp() {
-        Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
+        Container.getInstance().put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("test", Runtime.getRuntime().availableProcessors()));
         Container.getInstance().put(new PrimeDistinguishable());
         dlpService = new ParallelPollardDLPServiceTestable();
     }

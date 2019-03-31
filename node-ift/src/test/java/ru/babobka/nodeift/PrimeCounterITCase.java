@@ -2,16 +2,16 @@ package ru.babobka.nodeift;
 
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
-import ru.babobka.nodemasterserver.exception.TaskExecutionException;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodemasterserver.service.TaskService;
-import ru.babobka.nodemasterserver.task.TaskExecutionResult;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
+import ru.babobka.nodetask.exception.TaskExecutionException;
+import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
@@ -35,14 +35,14 @@ public class PrimeCounterITCase {
     private static Logger logger = Logger.getLogger(PrimeCounterITCase.class);
     protected static final int PRIME_COUNTER_LITTLE_RANGE_ANSWER = 25;
     protected static final int PRIME_COUNTER_MEDIUM_RANGE_ANSWER = 1229;
-    protected static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
+    public static final int PRIME_COUNTER_LARGE_RANGE_ANSWER = 22044;
     protected static final int PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER = 283146;
     private static final String TASK_NAME = "ru.babobka.primecounter.task.PrimeCounterTask";
     protected static MasterServer masterServer;
     private static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), PrimeCounterITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
@@ -74,7 +74,7 @@ public class PrimeCounterITCase {
         return createPrimeCounterRequest(0L, 10_000L);
     }
 
-    static NodeRequest getLargeRangeRequest() {
+    public static NodeRequest getLargeRangeRequest() {
         return createPrimeCounterRequest(0L, 250_000L);
     }
 
@@ -87,111 +87,137 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCountPrimesLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeOneSlave() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCountPrimesLittleRangeTwoSlaves() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLittleRangeTwoSlaves() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCountPrimesLittleRangeOneSlaveMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLittleRangeOneSlaveMassive() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLittleRangeTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLittleRangeTwoSlavesMassive() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
     @Test
-    public void testCountPrimesRangeTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesRangeTwoSlavesMassive() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLittleRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLittleRangeTwoSlavesMassiveGlitched() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLargeRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeTwoSlavesMassiveGlitched() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 150; i++) {
                 NodeRequest request = getLargeRangeRequest();
                 logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                TaskExecutionResult result = taskService.executeTask(request);
-                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                taskService.executeTask(request, result -> {
+                    logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                    assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                }, error -> {
+                    logger.error(error);
+                    fail();
+                });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 3, true)) {
-            final AtomicInteger failedTest = new AtomicInteger(0);
+            final AtomicInteger failedTest = new AtomicInteger();
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(() -> {
                     for (int j = 0; j < 250; j++) {
-                        try {
-                            NodeRequest request = getLargeRangeRequest();
-                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                            TaskExecutionResult result = taskService.executeTask(request);
-                            logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                            if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
-                                logger.warn("Tested request task id [" + request.getTaskId() + "] was failed");
-                                failedTest.incrementAndGet();
-                                break;
-                            }
-                        } catch (TaskExecutionException e) {
-                            failedTest.incrementAndGet();
-                            e.printStackTrace();
-                            break;
-                        }
+                        NodeRequest request = getLargeRangeRequest();
+                        logger.info("Tested request task id is [" + request.getTaskId() + "]");
+                        taskService.executeTask(request, result -> {
+                                    logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                                    if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
+                                        logger.warn("Tested request task id [" + request.getTaskId() + "] was failed");
+                                        failedTest.incrementAndGet();
+                                    }
+                                },
+                                error -> {
+                                    failedTest.incrementAndGet();
+                                    logger.error(error);
+                                });
                     }
                 });
                 threads[i].start();
@@ -204,28 +230,26 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitchedParallel() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitchedParallel() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
-            final AtomicInteger failedTest = new AtomicInteger(0);
+            final AtomicInteger failedTest = new AtomicInteger();
             slaveServerCluster.start();
             Thread[] threads = new Thread[5];
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(() -> {
                     for (int j = 0; j < 5; j++) {
-                        try {
-                            NodeRequest request = getExtraLargeRangeRequest();
-                            logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                            TaskExecutionResult result = taskService.executeTask(request);
+                        NodeRequest request = getExtraLargeRangeRequest();
+                        logger.info("Tested request task id is [" + request.getTaskId() + "]");
+                        taskService.executeTask(request, result -> {
                             logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
                             if (!result.getData().get("primeCount").equals(PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER)) {
                                 failedTest.incrementAndGet();
-                                break;
                             }
-                        } catch (TaskExecutionException e) {
+                        }, error -> {
+                            logger.error(error);
                             failedTest.incrementAndGet();
-                            e.printStackTrace();
-                            break;
-                        }
+                        });
+
                     }
                 });
                 threads[i].start();
@@ -238,170 +262,207 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitched() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitched() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 25; i++) {
                 NodeRequest request = getExtraLargeRangeRequest();
                 logger.info("Tested request task id is [" + request.getTaskId() + "]");
-                TaskExecutionResult result = taskService.executeTask(request);
-                logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER);
+                taskService.executeTask(request, result -> {
+                    logger.info("Tested request task id is [" + request.getTaskId() + "] is done");
+                    assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_EXTRA_LARGE_RANGE_ANSWER);
+                }, error -> {
+                    logger.error(error);
+                    fail();
+                });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLargeRangeOneSlaveMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeOneSlaveMassive() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
     @Test
-    public void testCountPrimesLargeRangeTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimesLargeRangeTwoSlavesMassive() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
-                TaskExecutionResult result = taskService.executeTask(request);
-                assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+                taskService.executeTask(request,
+                        result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                        error -> {
+                            logger.error(error);
+                            fail();
+                        });
             }
         }
     }
 
-    @Test(expected = TaskExecutionException.class)
-    public void testCountPrimeInvalidRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
+    @Test
+    public void testCountPrimeInvalidRangeOneSlave() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = createPrimeCounterRequest(100L, 0L);
-            taskService.executeTask(request);
-        }
-    }
-
-    @Test(expected = TaskExecutionException.class)
-    public void testCountPrimeInvalidRangeTwoSlaves() throws IOException, TaskExecutionException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
-            slaveServerCluster.start();
-            NodeRequest request = createPrimeCounterRequest(100L, 0L);
-            taskService.executeTask(request);
+            taskService.executeTask(request,
+                    result -> {
+                        fail();
+                    },
+                    error -> {
+                    });
         }
     }
 
     @Test
-    public void testCountPrimesMediumRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimeInvalidRangeTwoSlaves() throws IOException {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+            slaveServerCluster.start();
+            NodeRequest request = createPrimeCounterRequest(100L, 0L);
+            taskService.executeTask(request, response -> fail(), error -> {
+            });
+        }
+    }
+
+    @Test
+    public void testCountPrimesMediumRangeOneSlave() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getMediumRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_MEDIUM_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_MEDIUM_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCountPrimeLargeRangeOneSlave() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimeLargeRangeOneSlave() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCountPrimeLargeRangeTwoSlaves() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimeLargeRangeTwoSlaves() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCancelUnexistingTask() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCancelNotExistingTask() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
-            assertFalse(taskService.cancelTask(UUID.randomUUID()));
+            taskService.cancelTask(UUID.randomUUID(), Assert::assertFalse, error -> {
+                logger.error(error);
+                fail();
+            });
         }
     }
 
     @Test
-    public void testCancelTask() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCancelTask() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
-            Thread taskServiceThread = new Thread(() -> {
-                try {
-                    TaskExecutionResult result = taskService.executeTask(request);
-                    if (!result.wasStopped()) {
-                        taskFail.set(true);
-                    }
-                } catch (TaskExecutionException e) {
+            Thread taskServiceThread = new Thread(() -> taskService.executeTask(request, result -> {
+                if (!result.wasStopped()) {
                     taskFail.set(true);
-                    e.printStackTrace();
                 }
-            });
+            }, error -> {
+                logger.error(error);
+                taskFail.set(true);
+            }));
             taskServiceThread.start();
             Thread.sleep(1000L);
-            assertTrue(taskService.cancelTask(request.getTaskId()));
+            taskService.cancelTask(request.getTaskId(), Assert::assertTrue, error -> {
+                logger.error(error);
+                fail();
+            });
             taskServiceThread.join();
             assertFalse(taskFail.get());
         }
     }
 
     @Test
-    public void testCancelTaskTwoSlaves() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCancelTaskTwoSlaves() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
-            Thread taskServiceThread = new Thread(() -> {
-                try {
-                    TaskExecutionResult result = taskService.executeTask(request);
-                    if (!result.wasStopped()) {
-                        taskFail.set(true);
-                    }
-                } catch (TaskExecutionException e) {
+            Thread taskServiceThread = new Thread(() -> taskService.executeTask(request, result -> {
+                if (!result.wasStopped()) {
                     taskFail.set(true);
-                    e.printStackTrace();
                 }
-            });
+            }, error -> {
+                logger.error(error);
+                taskFail.set(true);
+            }));
+
             taskServiceThread.start();
             Thread.sleep(1000L);
-            assertTrue(taskService.cancelTask(request.getTaskId()));
+            taskService.cancelTask(request.getTaskId(), Assert::assertTrue, error -> {
+                logger.error(error);
+                fail();
+            });
             taskServiceThread.join();
             assertFalse(taskFail.get());
         }
     }
 
     @Test
-    public void testCancelTaskOneSlaveMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCancelTaskOneSlaveMassive() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
             slaveServerCluster.start();
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
                 NodeRequest request = getEnormousRangeRequest();
                 Thread taskServiceThread = new Thread(() -> {
-                    try {
-                        TaskExecutionResult result = taskService.executeTask(request);
+                    taskService.executeTask(request, result -> {
                         if (!result.wasStopped()) {
                             taskFail.set(true);
                         }
-                    } catch (TaskExecutionException e) {
+                    }, error -> {
+                        logger.error(error);
                         taskFail.set(true);
-                        e.printStackTrace();
-                    }
+                    });
+
                 });
                 taskServiceThread.start();
                 Thread.sleep(1000L);
-                assertTrue(taskService.cancelTask(request.getTaskId()));
+                taskService.cancelTask(request.getTaskId(), Assert::assertTrue, error -> {
+                    logger.error(error);
+                    fail();
+                });
                 taskServiceThread.join();
                 assertFalse(taskFail.get());
             }
@@ -409,26 +470,28 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCancelTaskTwoSlavesMassive() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCancelTaskTwoSlavesMassive() throws IOException, InterruptedException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
                 NodeRequest request = getEnormousRangeRequest();
                 Thread taskServiceThread = new Thread(() -> {
-                    try {
-                        TaskExecutionResult result = taskService.executeTask(request);
+                    taskService.executeTask(request, result -> {
                         if (!result.wasStopped()) {
                             taskFail.set(true);
                         }
-                    } catch (TaskExecutionException e) {
+                    }, error -> {
+                        logger.error(error);
                         taskFail.set(true);
-                        e.printStackTrace();
-                    }
+                    });
                 });
                 taskServiceThread.start();
                 Thread.sleep(1000L);
-                assertTrue(taskService.cancelTask(request.getTaskId()));
+                taskService.cancelTask(request.getTaskId(), Assert::assertTrue, error -> {
+                    logger.error(error);
+                    fail();
+                });
                 taskServiceThread.join();
                 assertFalse(taskFail.get());
             }
@@ -443,22 +506,20 @@ public class PrimeCounterITCase {
             Thread[] threads = new Thread[10];
             for (int i = 0; i < threads.length; i++) {
                 threads[i] = new Thread(() -> {
-                    try {
-                        for (int i1 = 0; i1 < 5; i1++) {
-                            NodeRequest request = getLargeRangeRequest();
-                            TaskExecutionResult result = taskService.executeTask(request);
+                    for (int i1 = 0; i1 < 5; i1++) {
+                        NodeRequest request = getLargeRangeRequest();
+                        taskService.executeTask(request, result -> {
                             if (!result.getData().get("primeCount").equals(PRIME_COUNTER_LARGE_RANGE_ANSWER)) {
                                 failedTests.incrementAndGet();
                             }
-                        }
-                    } catch (TaskExecutionException e) {
-                        failedTests.incrementAndGet();
-                        e.printStackTrace();
+                        }, error -> {
+                            logger.error(error);
+                            failedTests.incrementAndGet();
+                        });
                     }
                 });
                 threads[i].start();
             }
-
             for (Thread thread : threads) {
                 thread.join();
             }
@@ -467,24 +528,30 @@ public class PrimeCounterITCase {
     }
 
     @Test
-    public void testCountPrimeLittleRangeTwoSlaves() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimeLittleRangeTwoSlaves() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LITTLE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
 
     @Test
-    public void testCountPrimeLargeRangeThreeSlaves() throws IOException, TaskExecutionException, InterruptedException {
+    public void testCountPrimeLargeRangeThreeSlaves() throws IOException {
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 3)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
-            TaskExecutionResult result = taskService.executeTask(request);
-            assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
+            taskService.executeTask(request,
+                    result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),
+                    error -> {
+                        logger.error(error);
+                        fail();
+                    });
         }
     }
-
-
 }

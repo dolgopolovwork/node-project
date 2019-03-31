@@ -13,3 +13,4 @@
 .idea/*
 *.eclipse*
 /logs
+*.attach*

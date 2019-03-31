@@ -11,7 +11,7 @@ public class HeartBeatingThread extends CyclicThread {
 
     public HeartBeatingThread() {
         setDaemon(true);
-        setName("heart beating thread");
+        setName("heart_beating");
     }
 
     private static final Logger logger = Logger.getLogger(HeartBeatingThread.class);

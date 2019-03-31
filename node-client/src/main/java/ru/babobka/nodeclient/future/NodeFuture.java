@@ -1,5 +1,6 @@
 package ru.babobka.nodeclient.future;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.func.done.DoneFunc;
 import ru.babobka.nodeutils.network.NodeConnection;
 
@@ -16,14 +17,9 @@ public class NodeFuture<V> implements Future<V> {
     private final Future<V> future;
     private final DoneFunc doneFunc;
 
-    public NodeFuture(NodeConnection connection, Future<V> future, DoneFunc doneFunc) {
-        if (connection == null) {
-            throw new IllegalArgumentException("connection is null");
-        } else if (future == null) {
-            throw new IllegalArgumentException("future is null");
-        } else if (doneFunc == null) {
-            throw new IllegalArgumentException("doneFunc is null");
-        }
+    public NodeFuture(@NonNull NodeConnection connection,
+                      @NonNull Future<V> future,
+                      @NonNull DoneFunc doneFunc) {
         this.connection = connection;
         this.future = future;
         this.doneFunc = doneFunc;

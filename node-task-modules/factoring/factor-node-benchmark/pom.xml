@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.node.factor.benchmark.MainApplication</mainClass>
+                            <mainClass>ru.babobka.node.factor.benchmark.FactorNodeBenchmarkApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

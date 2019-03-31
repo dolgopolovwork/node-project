@@ -6,7 +6,7 @@ import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
-import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
+import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -18,6 +18,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -25,6 +26,7 @@ import java.lang.management.ManagementFactory;
  */
 public class MasterServer extends Thread {
 
+    private static final AtomicInteger MASTER_SERVER_ID = new AtomicInteger();
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
@@ -36,7 +38,7 @@ public class MasterServer extends Thread {
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
 
     public MasterServer() {
-        setName("master server thread");
+        setName("master_server_" + MASTER_SERVER_ID.getAndIncrement());
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.service.ResponseCacheService;
 import ru.babobka.nodemasterserver.model.CacheEntry;
-import ru.babobka.nodemasterserver.task.TaskExecutionResult;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.container.Container;

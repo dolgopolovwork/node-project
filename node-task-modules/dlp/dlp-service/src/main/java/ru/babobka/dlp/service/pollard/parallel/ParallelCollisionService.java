@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
 import ru.babobka.dlp.service.pollard.ClassicPollardFunction;
@@ -15,10 +16,7 @@ public abstract class ParallelCollisionService {
     private final Distinguishable distinguishable = Container.getInstance().get(Distinguishable.class);
     private final Map<Fp, PollardEntity> collisions;
 
-    public ParallelCollisionService(Map<Fp, PollardEntity> collisions) {
-        if (collisions == null) {
-            throw new IllegalArgumentException("collisions is null");
-        }
+    public ParallelCollisionService(@NonNull Map<Fp, PollardEntity> collisions) {
         this.collisions = collisions;
     }
 
