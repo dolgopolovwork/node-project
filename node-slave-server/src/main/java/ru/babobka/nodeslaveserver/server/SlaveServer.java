@@ -5,7 +5,8 @@ import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodesecurity.network.ClientSecureNodeConnection;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeslaveserver.controller.SocketController;
+import ru.babobka.nodeslaveserver.controller.AbstractSocketController;
+import ru.babobka.nodeslaveserver.controller.ControllerFactory;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
@@ -18,19 +19,22 @@ import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SlaveServer extends Thread {
 
+    private static final AtomicInteger SLAVE_ID = new AtomicInteger();
     private static final Logger logger = Logger.getLogger(SlaveServer.class);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final SlavePipelineFactory slavePipelineFactory = Container.getInstance().get(SlavePipelineFactory.class);
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
+    private final ControllerFactory controllerFactory;
 
-    public SlaveServer(@NonNull Socket socket,
-                       @NonNull String login,
-                       @NonNull String password) throws IOException {
+    SlaveServer(@NonNull Socket socket,
+                        @NonNull String login,
+                        @NonNull String password,
+                        @NonNull ControllerFactory controllerFactory) throws IOException {
 
         NodeConnection connection = nodeConnectionFactory.create(socket);
         AuthCredentials credentials = new AuthCredentials(login, password);
@@ -43,8 +47,9 @@ public class SlaveServer extends Thread {
             throw new SlaveStartupException("cannot start slave due to pipeline failure");
         }
         this.connection = createClientConnection(connection, pipeContext);
+        this.controllerFactory = controllerFactory;
         tasksStorage = new TasksStorage();
-        setName("slave server thread");
+        setName("slave_server_" + SLAVE_ID.getAndIncrement());
     }
 
     static ClientSecureNodeConnection createClientConnection(NodeConnection connection, PipeContext pipeContext) {
@@ -55,16 +60,9 @@ public class SlaveServer extends Thread {
 
     @Override
     public void run() {
-        try (SocketController controller = new SocketController(
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
-                    Thread thread = Executors.defaultThreadFactory().newThread(r);
-                    thread.setName("socket controller thread pool");
-                    thread.setDaemon(true);
-                    return thread;
-                }),
-                tasksStorage)) {
+        try (AbstractSocketController controller = controllerFactory.create(connection, tasksStorage)) {
             while (!isInterrupted() && !connection.isClosed()) {
-                controller.control(connection);
+                controller.control();
             }
         } catch (IOException | RuntimeException e) {
             logger.error("exception thrown", e);
@@ -80,12 +78,10 @@ public class SlaveServer extends Thread {
         try {
             connection.send(NodeResponse.death());
         } catch (IOException e) {
-            //TODO this shit produces StackOverflowError
             logger.warn("cannot send death message", e);
         }
         clear();
     }
-
 
     NodeConnection getConnection() {
         return connection;

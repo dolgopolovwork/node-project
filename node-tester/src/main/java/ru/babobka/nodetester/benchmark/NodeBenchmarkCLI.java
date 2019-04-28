@@ -16,6 +16,10 @@ import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by 123 on 03.02.2018.
@@ -27,42 +31,29 @@ public abstract class NodeBenchmarkCLI extends CLI {
     }
 
     private static final String TESTS_OPTION = "tests";
-    private static final String TESTS_OPT = "t";
     private static final String SLAVES_OPTION = "slaves";
-    private static final String SLAVES_OPT = "s";
     private static final String SERVICE_THREADS_OPTION = "threads";
-    private static final String SERVICE_THREADS_OPT = "st";
     private static final String CACHE_OPTION = "cache";
-    private static final String CACHE_OPT = "c";
     private static final String PERMANENT_DRIVER_OPTION = "perm";
 
     @Override
-    protected Options createOptions() {
-        Options options = new Options();
-        Option tests = Option.builder(TESTS_OPT).longOpt(TESTS_OPTION).hasArg().
-                desc("Tests to run").required().build();
-        Option slaves = Option.builder(SLAVES_OPT).longOpt(SLAVES_OPTION).hasArg().
-                desc("Slave nodes to run").build();
-        Option threads = Option.builder(SERVICE_THREADS_OPT).longOpt(SERVICE_THREADS_OPTION).hasArg().
-                desc("Threads to use per slave").build();
-        Option cache = Option.builder(CACHE_OPT).longOpt(CACHE_OPTION).
-                desc("Enables cache").build();
-        Option permanentDriver = Option.builder().longOpt(PERMANENT_DRIVER_OPTION).
-                desc("Enables benchmark result storage. Requires path to driver as an argument.").hasArg().build();
-        options.addOption(tests).addOption(slaves).addOption(threads).addOption(cache).addOption(permanentDriver);
-        Options benchmarkOptions = createBenchmarkOptions();
-        if (benchmarkOptions != null) {
-            for (Option benchmarkOption : benchmarkOptions.getOptions()) {
-                options.addOption(benchmarkOption);
-            }
-        }
+    public List<Option> createOptions() {
+        Option tests = createRequiredArgOption(TESTS_OPTION, "Tests to run");
+        Option slaves = createArgOption(SLAVES_OPTION, "Slave nodes to run");
+        Option threads = createArgOption(SERVICE_THREADS_OPTION, "Threads to use per slave");
+        Option cache = createFlagOption(CACHE_OPTION, "Enables cache");
+        Option permanentDriver = createArgOption(PERMANENT_DRIVER_OPTION, "Enables benchmark result storage. " +
+                "Requires path to driver as an argument");
+        List<Option> options = new ArrayList<>();
+        options.addAll(Arrays.asList(tests, slaves, threads, cache, permanentDriver));
+        options.addAll(createBenchmarkOptions());
         return options;
     }
 
-    protected abstract Options createBenchmarkOptions();
+    protected abstract List<Option> createBenchmarkOptions();
 
     @Override
-    protected void extraValidation(CommandLine cmd) throws ParseException {
+    public void extraValidation(CommandLine cmd) throws ParseException {
         String cmdTests = cmd.getOptionValue(TESTS_OPTION);
         if (TextUtil.tryParseInt(cmdTests, 0) == 0) {
             throw new ParseException("invalid tests number " + cmdTests);
@@ -99,7 +90,7 @@ public abstract class NodeBenchmarkCLI extends CLI {
     }
 
     @Override
-    protected void run(CommandLine cmd) {
+    public void run(CommandLine cmd) {
         Container container = Container.getInstance();
         try {
             Properties.put(TesterKey.ENABLE_CACHE, cmd.hasOption(CACHE_OPTION));

@@ -1,5 +1,6 @@
 package ru.babobka.nodeclient;
 
+import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodeclient.listener.ListenerResult;
 import ru.babobka.nodeclient.listener.OnResponseListener;
@@ -29,18 +30,12 @@ public class TaskExecutorCallable implements Callable<List<NodeResponse>> {
     private final DoneFunc doneFunc;
 
 
-    TaskExecutorCallable(List<NodeRequest> requests,
-                         NodeConnection connection,
+    TaskExecutorCallable(@NonNull List<NodeRequest> requests,
+                         @NonNull NodeConnection connection,
                          OnResponseListener listener,
-                         DoneFunc doneFunc) {
-        if (requests == null) {
-            throw new IllegalArgumentException("requests is null");
-        } else if (connection == null) {
-            throw new IllegalArgumentException("connection is null");
-        } else if (connection.isClosed()) {
-            throw new IllegalArgumentException("connection is closed");
-        } else if (doneFunc == null) {
-            throw new IllegalArgumentException("doneFunc is null");
+                         @NonNull DoneFunc doneFunc) {
+        if (connection.isClosed()) {
+            throw new IllegalArgumentException("cannot execute task. 'connection' is closed.");
         }
         this.doneFunc = doneFunc;
         this.requests = requests;

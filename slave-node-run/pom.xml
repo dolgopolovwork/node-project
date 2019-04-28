@@ -54,7 +54,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.slavenoderun.MainApplication</mainClass>
+                            <mainClass>ru.babobka.slavenoderun.SlaveApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

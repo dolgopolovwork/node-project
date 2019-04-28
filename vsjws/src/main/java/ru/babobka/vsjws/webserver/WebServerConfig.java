@@ -1,9 +1,13 @@
 package ru.babobka.vsjws.webserver;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Created by 123 on 01.01.2018.
  */
 public class WebServerConfig {
+    private static final Gson gson = new GsonBuilder().create();
     private String serverName;
     private int port;
     private int sessionTimeoutSeconds;
@@ -39,6 +43,11 @@ public class WebServerConfig {
 
     public void setLogFolder(String logFolder) {
         this.logFolder = logFolder;
+    }
+
+    @Override
+    public String toString() {
+        return gson.toJson(this);
     }
 
 }

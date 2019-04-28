@@ -3,7 +3,6 @@ package ru.babobka.nodeslaveserver.task;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
-import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.DataValidators;
@@ -12,6 +11,7 @@ import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodetask.model.TaskExecutor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,8 +40,9 @@ public class TaskRunnerServiceTest {
     @Test
     public void testRunTaskBadValidation() {
         when(dataValidators.isValidRequest(any(NodeRequest.class))).thenReturn(false);
-        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-        assertEquals(response.getStatus(), ResponseStatus.VALIDATION_ERROR);
+        taskRunnerService.runTask(tasksStorage, request, subTask,
+                response -> assertEquals(response.getStatus(), ResponseStatus.VALIDATION_ERROR),
+                error -> fail());
         verify(tasksStorage).removeRequest(request);
     }
 
@@ -51,8 +52,9 @@ public class TaskRunnerServiceTest {
         ExecutionResult result = mock(ExecutionResult.class);
         when(result.isStopped()).thenReturn(true);
         when(taskExecutor.execute(request)).thenReturn(result);
-        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-        assertEquals(response.getStatus(), ResponseStatus.STOPPED);
+        taskRunnerService.runTask(tasksStorage, request, subTask,
+                response -> assertEquals(response.getStatus(), ResponseStatus.STOPPED),
+                error -> fail());
         verify(tasksStorage).removeRequest(request);
     }
 
@@ -62,8 +64,9 @@ public class TaskRunnerServiceTest {
         ExecutionResult result = mock(ExecutionResult.class);
         when(result.isStopped()).thenReturn(false);
         when(taskExecutor.execute(request)).thenReturn(result);
-        NodeResponse response = taskRunnerService.runTask(tasksStorage, request, subTask);
-        assertEquals(response.getStatus(), ResponseStatus.NORMAL);
+        taskRunnerService.runTask(tasksStorage, request, subTask,
+                response -> assertEquals(response.getStatus(), ResponseStatus.NORMAL),
+                error -> fail());
         verify(tasksStorage).removeRequest(request);
     }
 }

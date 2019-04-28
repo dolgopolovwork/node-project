@@ -42,7 +42,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.node.dummybenchmark.MainApplication</mainClass>
+                            <mainClass>ru.babobka.node.dummybenchmark.DummyNodeBenchmarkAp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

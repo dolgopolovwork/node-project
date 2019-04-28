@@ -8,7 +8,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.task.TaskRunnerService;
-import ru.babobka.nodeslaveserver.thread.RequestHandlerThread;
+import ru.babobka.nodeslaveserver.thread.SlaveBackedNodeRequestHandler;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.SubTask;
@@ -28,42 +28,39 @@ public class SocketControllerTest {
     private TaskPool taskPool;
     private SlaveServerConfig slaveServerConfig;
     private TasksStorage tasksStorage;
-    private SocketController socketController;
     private ExecutorService executorService;
     private TaskRunnerService taskRunnerService;
+    private NodeConnection connection;
 
     @Before
     public void setUp() {
+        connection = mock(NodeConnection.class);
         taskPool = mock(TaskPool.class);
         slaveServerConfig = mock(SlaveServerConfig.class);
         tasksStorage = mock(TasksStorage.class);
         executorService = mock(ExecutorService.class);
         taskRunnerService = mock(TaskRunnerService.class);
-        Container.getInstance().put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
-        Container.getInstance().put(slaveServerConfig);
-        Container.getInstance().put(taskRunnerService);
-        socketController = new SocketController(executorService, tasksStorage);
+        Container.getInstance().put(container -> {
+            container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, taskPool);
+            container.put(slaveServerConfig);
+            container.put(taskRunnerService);
+        });
     }
 
     @After
     public void tearDown() throws IOException {
         Container.getInstance().clear();
-        socketController.close();
     }
 
     @Test
     public void testControlHeartBeat() throws IOException {
         NodeRequest request = NodeRequest.heartBeat();
-        NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(connection).send(any(NodeResponse.class));
         verify(executorService, never()).submit(any(Runnable.class));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testControlNull() throws IOException {
-        socketController.control(null);
     }
 
     @Test
@@ -72,10 +69,12 @@ public class SocketControllerTest {
         NodeRequest request = NodeRequest.stop(uuid);
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(tasksStorage).stopTask(request);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerThread.class));
+        verify(executorService, never()).submit(any(SlaveBackedNodeRequestHandler.class));
     }
 
     @Test
@@ -86,9 +85,11 @@ public class SocketControllerTest {
         when(tasksStorage.exists(uuid)).thenReturn(true);
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerThread.class));
+        verify(executorService, never()).submit(any(SlaveBackedNodeRequestHandler.class));
     }
 
     @Test
@@ -101,10 +102,12 @@ public class SocketControllerTest {
         when(connection.receive()).thenReturn(request);
         SubTask subTask = mock(SubTask.class);
         when(taskPool.get(taskName)).thenReturn(subTask);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(tasksStorage).put(request, subTask);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService).submit(any(RequestHandlerThread.class));
+        verify(executorService).submit(any(SlaveBackedNodeRequestHandler.class));
     }
 
     @Test
@@ -116,10 +119,12 @@ public class SocketControllerTest {
         when(connection.receive()).thenReturn(request);
         SubTask subTask = mock(SubTask.class);
         when(taskPool.get(taskName)).thenReturn(subTask);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(tasksStorage).put(request, subTask);
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService).submit(any(RequestHandlerThread.class));
+        verify(executorService).submit(any(SlaveBackedNodeRequestHandler.class));
     }
 
     @Test
@@ -130,8 +135,10 @@ public class SocketControllerTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.receive()).thenReturn(request);
         when(tasksStorage.wasStopped(request)).thenReturn(true);
-        socketController.control(connection);
+        try (AbstractSocketController socketController = new SlaveBackedSocketController(connection, tasksStorage, executorService)) {
+            socketController.control();
+        }
         verify(connection, never()).send(any(NodeResponse.class));
-        verify(executorService, never()).submit(any(RequestHandlerThread.class));
+        verify(executorService, never()).submit(any(SlaveBackedNodeRequestHandler.class));
     }
 }

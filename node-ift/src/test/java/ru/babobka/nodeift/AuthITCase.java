@@ -9,6 +9,7 @@ import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.rsa.RSAConfig;
 import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -34,7 +35,7 @@ public class AuthITCase {
     protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
@@ -50,7 +51,7 @@ public class AuthITCase {
         Container.getInstance().clear();
     }
 
-    @Test(expected = SlaveStartupException.class)
+    @Test(expected = SlaveAuthException.class)
     public void testAuthFail() throws IOException {
         SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", "bad password");
         interruptAndJoin(slaveServer);
@@ -68,6 +69,12 @@ public class AuthITCase {
         interruptAndJoin(slaveServer);
     }
 
+    @Test(expected = SlaveAuthException.class)
+    public void testAuthBadPassword() throws IOException {
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, "bad_password");
+        interruptAndJoin(slaveServer);
+    }
+
     @Test
     public void testMassAuthSuccess() throws IOException {
         int slaves = getTests();
@@ -79,7 +86,7 @@ public class AuthITCase {
     }
 
     @Test
-    public void testMassAuthSuccessParallel() throws IOException {
+    public void testMassAuthSuccessParallel() {
         int cores = Runtime.getRuntime().availableProcessors();
         final AtomicBoolean authFail = new AtomicBoolean(false);
         Thread[] authThreads = new Thread[cores];
@@ -162,6 +169,6 @@ public class AuthITCase {
     }
 
     protected int getTests() {
-        return 100;
+        return 25;
     }
 }

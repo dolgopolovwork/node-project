@@ -167,7 +167,7 @@ public class MathUtilTest {
     public void testGetRelativePrime() throws InterruptedException {
         int bits = 45;
         Random random = new Random();
-        ExecutorService executorService = ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors());
+        ExecutorService executorService = ThreadPoolService.createDaemonPool("test", Runtime.getRuntime().availableProcessors());
         AtomicBoolean failed = new AtomicBoolean();
         AtomicInteger counter = new AtomicInteger();
         int tests = 1000;

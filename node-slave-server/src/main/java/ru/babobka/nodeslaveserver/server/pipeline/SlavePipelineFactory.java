@@ -10,7 +10,8 @@ import ru.babobka.nodeutils.func.pipeline.Pipeline;
 public class SlavePipelineFactory {
 
     public Pipeline<PipeContext> create(@NonNull PipeContext pipeContext) {
-        return new Pipeline<PipeContext>(() -> pipeContext.getConnection().close()).add(new AuthStep())
+        return new Pipeline<PipeContext>(() -> pipeContext.getConnection().close())
+                .add(new AuthStep())
                 .add(new CommonTasksStep())
                 .add(new ServerAuthStep())
                 .add(new SessionCreatingStep())

@@ -61,6 +61,7 @@ public class EllipticCurveProjectiveFactorCallableTest {
 
     @Test
     public void testInitPrimesTwiceHigherBorder() {
+        EllipticCurveProjectiveFactorCallable.clearPrimes();
         EllipticCurveProjectiveFactorCallable.initPrimes(100);
         int oldSize = EllipticCurveProjectiveFactorCallable.getPrimes().size();
         EllipticCurveProjectiveFactorCallable.initPrimes(150);

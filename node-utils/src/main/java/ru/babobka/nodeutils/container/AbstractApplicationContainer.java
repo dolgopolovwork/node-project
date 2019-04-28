@@ -6,6 +6,7 @@ public abstract class AbstractApplicationContainer {
         try {
             containImpl(container);
         } catch (Exception e) {
+            container.clear();
             throw new ContainerException(e);
         }
     }

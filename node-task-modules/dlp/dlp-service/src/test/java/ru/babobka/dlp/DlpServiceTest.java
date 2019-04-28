@@ -21,7 +21,7 @@ public class DlpServiceTest {
         }
     };
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testDlpNullTask() {
         dlpService.dlp(null);
     }

@@ -1,7 +1,6 @@
 package ru.babobka.nodeutils.log;
 
 import org.apache.log4j.PropertyConfigurator;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.enums.LogProperties;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -67,10 +66,5 @@ public class LoggerInit {
             throw new RuntimeException("cannot init log", e);
         }
         PropertyConfigurator.configure(p);
-    }
-
-    public static void main(String[] args) {
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), "Kek");
-
     }
 }

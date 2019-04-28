@@ -10,7 +10,7 @@ import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
-import ru.babobka.nodemasterserver.monitoring.TaskMonitoringService;
+import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.service.*;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.Sessions;
@@ -22,15 +22,17 @@ import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.model.StoppedTasks;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.thread.PrettyNamedThreadPoolFactory;
 import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeweb.webcontroller.NodeInfoWebController;
+import ru.babobka.nodeweb.webcontroller.NodeClusterSizeWebController;
+import ru.babobka.nodeweb.webcontroller.NodeHealthCheckWebController;
+import ru.babobka.nodeweb.webcontroller.NodeTaskMonitoringWebController;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 import ru.babobka.vsjws.webserver.WebServer;
 import ru.babobka.vsjws.webserver.WebServerApplicationContainer;
 import ru.babobka.vsjws.webserver.WebServerConfig;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 /**
  * Created by 123 on 18.02.2018.
@@ -57,25 +59,21 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         container.put(new ResponsesMapper());
         if (masterServerConfig.getModes().isCacheMode()) {
             container.put(new CacheRequestListener());
-            container.put(new TaskServiceCacheProxy(new TaskServiceImpl()));
+            container.put(new MasterTaskServiceCacheProxy(new MasterTaskService()));
         } else {
-            container.put(new TaskServiceImpl());
+            container.put(new MasterTaskService());
         }
         container.put(new StoppedTasks());
         container.put(new SlaveFactory());
         container.put(MasterServerKey.CLIENTS_THREAD_POOL,
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), r -> {
-                    Thread thread = Executors.defaultThreadFactory().newThread(r);
-                    thread.setName("client thread pool");
-                    thread.setDaemon(true);
-                    return thread;
-                }));
+                PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("client_thread_pool")
+        );
         container.put(new IncomingClientListenerThread(streamUtil.createServerSocket(
-                masterServerConfig.getPorts().getClientListenerPort(), true)));
+                masterServerConfig.getPorts().getClientListenerPort())));
         container.put(new HeartBeatingThread());
         container.put(new MasterAuthService());
         container.put(new IncomingSlaveListenerThread(streamUtil.createServerSocket(
-                masterServerConfig.getPorts().getSlaveListenerPort(), masterServerConfig.getModes().isLocalMachineMode())));
+                masterServerConfig.getPorts().getSlaveListenerPort())));
         container.put(new OnTaskIsReady());
         container.put(new OnRaceStyleTaskIsReady());
         container.put(createWebServer(container, masterServerConfig));
@@ -91,7 +89,9 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         webServerConfig.setSessionTimeoutSeconds(15 * 60);
         WebServer webServer = new WebServer(webServerConfig);
         webServer.addController("users", new NodeUsersCRUDWebController());
-        webServer.addController("serverInfo", new NodeInfoWebController());
+        webServer.addController("monitoring", new NodeTaskMonitoringWebController());
+        webServer.addController("healthcheck", new NodeHealthCheckWebController());
+        webServer.addController("clustersize", new NodeClusterSizeWebController());
         return webServer;
     }
 

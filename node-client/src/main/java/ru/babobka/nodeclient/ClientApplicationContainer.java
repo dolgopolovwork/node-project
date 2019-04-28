@@ -2,6 +2,7 @@ package ru.babobka.nodeclient;
 
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 
@@ -12,6 +13,7 @@ public class ClientApplicationContainer extends AbstractApplicationContainer {
 
     @Override
     protected void containImpl(Container container) {
+        LoggerInit.initConsoleLogger();
         container.put(new StreamUtil());
         container.put(TimerInvoker.createMaxOneSecondDelay());
     }

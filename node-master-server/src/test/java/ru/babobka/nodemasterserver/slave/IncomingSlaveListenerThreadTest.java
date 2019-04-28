@@ -36,7 +36,7 @@ public class IncomingSlaveListenerThreadTest {
     private SlaveCreatingPipelineFactory pipelineFactory;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         masterServerConfig = mock(MasterServerConfig.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
         serverSocket = mock(ServerSocket.class);

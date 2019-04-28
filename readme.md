@@ -1,22 +1,16 @@
-﻿#Как работать с репозиторием
+﻿# Node project
 
-##Запускать тесты
-```
-mvn test
-```
-##Запускать интеграционные тесты
-```
-mvn test-compile failsafe:integration-test failsafe:verify
-```
-##Установка
-```
-mvn install
-```
-##Если сломалось на этапе анализа кода
-```
-mvn findbugs:gui
-```
-##Собирать запускаемый проект со всеми зависимостями
-```
-mvn clean compile assembly:single
-```
+The node project - is a project intended for high speed distributed mathematical computations.  It's a typical master-slave architecture based system, so the system is split into two parts: masters and slaves. Masters - are nodes that manage incoming requests, handle network errors, distribute tasks among slaves, balance the system load and participate in other 'housekeeping' routines. Slaves - are nodes that process tasks that were sent by the master server and do the main computation job. Unlike masters, slaves utilize CPU with extreme intensity.  
+
+The usual task execution flow is quite simple. Tasks from the master node are divided into smaller subtasks and sent to all the slaves. Once the slaves' process subtasks, they send it back to the master, and finally, the master takes all the sub-results and transforms it into the final result.
+ 
+Unfortunately, it's not as simple as it sounds. There are at least two main challenges that bring big troubles: system heterogeneity and network instability. These two problems must be taken into account to make the system stable, safe, robust and easy to use. Fortunately, the node project provides solutions to these problems. The system was developed with an assumption that any node may go offline at any moment. For instance, failed slave node work won't be lost, and all the unfinished tasks will be rebroadcasted to remaining 'healthy' slaves.
+ 
+The next big issue is security. The system gives the master node a lot of liberties, rights, and permissions which are needed to load slave nodes with task processing. This freedom must be protected with great care because the master node is capable of harming slave nodes by tasks overloading. Master node requests hijacking may destroy the whole system. For this particular case, the SRP authentication protocol was integrated into the project. At the current state, the system is resistant to basic attacks like MITM, replay attacks, etc. 
+The curious reader may wonder what type of tasks the system is capable of solving. Is it able to distribute and parallelize any task? And what are those tasks? The node project may execute any task if its computation and distribution functions are defined programmatically. But mainly, the system is suitable for mathematical and engineering computations. Currently, the node project has been tested by solving tasks from the field of number theory: composite number factorization using Lenstra algorithm, Pollard based discrete logarithm computation, etc.
+ 
+It's also important to mention that the system is easy to deploy and easy to extend. The only preinstalled software that is needed to run the node project is Java Virtual Machine(JVM) which is quite popular today. The system may be run in different environments: local machines, local networks, over the internet, Docker containers, AWS clusters, etc.
+
+The node project may be used for many non-profit purposes like scientific volunteer computations or data analysis. But it also may be used in Bitcoin mining process, which is a very profitable type of activity.
+
+The system is entirely free and open source: the complete code base is stored in a public Bitbucket repository.  The master-slave node images are also available at Docker hub. Currently, the project in search of contributors and public attention. 

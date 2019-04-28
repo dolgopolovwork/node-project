@@ -10,7 +10,6 @@ import ru.babobka.primecounter.model.Range;
 import ru.babobka.primecounter.tester.DummyPrimeTester;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Created by 123 on 21.10.2017.
@@ -24,7 +23,8 @@ public class PrimeCounterTaskServiceTest {
         Container.getInstance().put(container -> {
             container.put(
                     UtilKey.SERVICE_THREAD_POOL,
-                    ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
+                    ThreadPoolService.createDaemonPool("test",
+                            Runtime.getRuntime().availableProcessors()));
             container.put(new DummyPrimeTester());
         });
 

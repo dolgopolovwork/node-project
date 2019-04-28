@@ -33,7 +33,8 @@ public class AuthCommonTasksITCase {
     private TaskPool taskPool;
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() {
+
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthCommonTasksITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

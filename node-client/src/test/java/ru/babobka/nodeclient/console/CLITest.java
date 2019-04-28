@@ -1,71 +1,100 @@
 package ru.babobka.nodeclient.console;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import java.util.List;
+
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-
-/**
- * Created by 123 on 03.02.2018.
- */
 public class CLITest {
 
     private CLI cli;
 
     @Before
     public void setUp() {
-        cli = mock(CLI.class, Mockito.CALLS_REAL_METHODS);
+        cli = spy(new TestableCLI());
     }
 
     @Test
-    public void testOnMainParseException() throws Exception {
-        String[] args = {"abc", "xyz"};
-        CommandLineParser parser = mock(CommandLineParser.class);
+    public void testOnStart() throws Exception {
+        String[] args = new String[]{};
         Options options = mock(Options.class);
-        when(parser.parse(options, args)).thenThrow(new ParseException("test exception"));
-        doReturn(parser).when(cli).createParser();
-        doReturn(options).when(cli).createOptions();
+        doReturn(options).when(cli).buildOptions();
+        CommandLine cmd = mock(CommandLine.class);
+        doReturn(cmd).when(cli).parseCMD(options, args);
+        cli.onStart(args);
+        verify(cli).extraValidation(cmd);
+        verify(cli).run(cmd);
+    }
+
+    @Test
+    public void testOnStartFailedParse() throws Exception {
+        String[] args = new String[]{};
+        Options options = mock(Options.class);
+        doReturn(options).when(cli).buildOptions();
+        CommandLine cmd = mock(CommandLine.class);
         doNothing().when(cli).printHelp(options);
-        cli.onMain(args);
+        doThrow(new RuntimeException()).when(cli).parseCMD(options, args);
+        cli.onStart(args);
+        verify(cli, never()).extraValidation(cmd);
+        verify(cli, never()).run(cmd);
         verify(cli).printHelp(options);
-        verify(cli, never()).run(any(CommandLine.class));
     }
 
     @Test
-    public void testOnMainFailedValidation() throws Exception {
-        String[] args = {"abc", "xyz"};
-        CommandLineParser parser = mock(CommandLineParser.class);
+    public void testOnStartFailedExtraValidation() throws Exception {
+        String[] args = new String[]{};
         Options options = mock(Options.class);
-        CommandLine commandLine = mock(CommandLine.class);
-        when(parser.parse(options, args)).thenReturn(commandLine);
-        doReturn(parser).when(cli).createParser();
-        doReturn(options).when(cli).createOptions();
+        doReturn(options).when(cli).buildOptions();
+        CommandLine cmd = mock(CommandLine.class);
         doNothing().when(cli).printHelp(options);
-        doThrow(new ParseException("test exception")).when(cli).extraValidation(commandLine);
-        cli.onMain(args);
+        doReturn(cmd).when(cli).parseCMD(options, args);
+        doThrow(new RuntimeException()).when(cli).extraValidation(cmd);
+        cli.onStart(args);
+        verify(cli).extraValidation(cmd);
+        verify(cli, never()).run(cmd);
         verify(cli).printHelp(options);
-        verify(cli, never()).run(any(CommandLine.class));
     }
 
     @Test
-    public void testOnMain() throws Exception {
-        String[] args = {"abc", "xyz"};
-        CommandLineParser parser = mock(CommandLineParser.class);
+    public void testDoubleStart() throws Exception {
+        String[] args = new String[]{};
         Options options = mock(Options.class);
-        CommandLine commandLine = mock(CommandLine.class);
-        when(parser.parse(options, args)).thenReturn(commandLine);
-        doReturn(parser).when(cli).createParser();
-        doReturn(options).when(cli).createOptions();
-        doNothing().when(cli).printHelp(options);
-        doNothing().when(cli).run(commandLine);
-        cli.onMain(args);
-        verify(cli, never()).printHelp(options);
-        verify(cli).run(commandLine);
+        doReturn(options).when(cli).buildOptions();
+        CommandLine cmd = mock(CommandLine.class);
+        doReturn(cmd).when(cli).parseCMD(options, args);
+        cli.onStart(args);
+        verify(cli).run(cmd);
+        try {
+            cli.onStart(args);
+            fail();
+        } catch (IllegalStateException expected) {
+
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
+    private class TestableCLI extends CLI {
+
+        @Override
+        public List<Option> createOptions() {
+            return null;
+        }
+
+        @Override
+        public void run(CommandLine cmd) {
+
+        }
+
+        @Override
+        public String getAppName() {
+            return null;
+        }
     }
 }

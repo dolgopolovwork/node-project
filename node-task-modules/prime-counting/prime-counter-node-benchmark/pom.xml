@@ -59,7 +59,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.babobka.node.primecounter.benchmark.MainApplication</mainClass>
+                            <mainClass>ru.babobka.node.primecounter.benchmark.PrimeCounterNodeBenchmarkApp</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

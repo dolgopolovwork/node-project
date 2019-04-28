@@ -6,6 +6,7 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodetask.model.ExecutionResult;
 import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodeutils.func.Callback;
 import ru.babobka.nodeutils.time.Timer;
 
 /**
@@ -13,19 +14,28 @@ import ru.babobka.nodeutils.time.Timer;
  */
 public class TaskRunnerService {
 
-    public NodeResponse runTask(@NonNull TasksStorage tasksStorage,
-                                @NonNull NodeRequest request,
-                                @NonNull SubTask subTask) {
+    public void runTask(@NonNull TasksStorage tasksStorage,
+                        @NonNull NodeRequest request,
+                        @NonNull SubTask subTask,
+                        @NonNull Callback<NodeResponse> onResponseCallback,
+                        @NonNull Callback<Exception> onExceptionCallback) {
         try {
             if (!subTask.getDataValidators().isValidRequest(request)) {
-                return NodeResponse.validationError(request);
+                onResponseCallback.callback(NodeResponse.validationError(request));
+                return;
             }
             Timer timer = new Timer();
             ExecutionResult result = subTask.getTaskExecutor().execute(request);
-            if (result.isStopped())
-                return NodeResponse.stopped(request);
-            return NodeResponse.normal(result.getData(), request, timer.getTimePassed());
-        } finally {
+            if (result.isStopped()) {
+                onResponseCallback.callback(NodeResponse.stopped(request));
+                return;
+            }
+            onResponseCallback.callback(NodeResponse.normal(result.getData(), request, timer.getTimePassed()));
+        }
+        catch (Exception e){
+            onExceptionCallback.callback(e);
+        }
+        finally {
             tasksStorage.removeRequest(request);
         }
     }

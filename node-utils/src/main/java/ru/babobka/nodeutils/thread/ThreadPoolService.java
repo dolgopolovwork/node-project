@@ -1,5 +1,6 @@
 package ru.babobka.nodeutils.thread;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
 
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -82,27 +82,12 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
         return cores;
     }
 
-    public static ExecutorService createDaemonPool(int threads) {
-        return createDaemonPool(null, threads);
+
+    public static ExecutorService createDaemonPool(@NonNull String name, int threads) {
+        return PrettyNamedThreadPoolFactory.fixedHighPriorityDaemonThreadPool(name, threads);
     }
 
-    public static ExecutorService createDaemonPool(String name, int threads) {
-        return Executors.newFixedThreadPool(threads, r -> {
-            Thread t = Executors.defaultThreadFactory().newThread(r);
-            if (name != null) {
-                t.setName(name);
-            }
-            t.setPriority(Thread.MAX_PRIORITY);
-            t.setDaemon(true);
-            return t;
-        });
-    }
-
-    public static ExecutorService createDaemonPool() {
-        return createDaemonPool((int) (Runtime.getRuntime().availableProcessors() * 1.5));
-    }
-
-    public static ExecutorService createDaemonPool(String threadsName) {
+    public static ExecutorService createDaemonPool(@NonNull String threadsName) {
         return createDaemonPool(threadsName, (int) (Runtime.getRuntime().availableProcessors() * 1.5));
     }
 

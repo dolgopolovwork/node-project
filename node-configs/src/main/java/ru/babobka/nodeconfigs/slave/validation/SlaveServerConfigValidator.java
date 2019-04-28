@@ -12,11 +12,13 @@ import java.util.Arrays;
 public class SlaveServerConfigValidator extends Validator<SlaveServerConfig> {
     public SlaveServerConfigValidator() {
         super(Arrays.asList(
+                new CredentialsValidationRule(),
                 new ServerPortValidationRule(),
                 new AuthTimeoutMillisValidationRule(),
                 new LoggerFolderValidationRule(),
                 new RequestTimeoutMillisValidationRule(),
                 new TasksFolderValidationRule(),
-                new ServerPublicKeyValidationRule()));
+                new ServerPublicKeyValidationRule())
+        );
     }
 }

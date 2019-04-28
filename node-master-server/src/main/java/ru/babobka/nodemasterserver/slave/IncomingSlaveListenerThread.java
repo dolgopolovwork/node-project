@@ -14,12 +14,13 @@ import ru.babobka.nodeutils.thread.CyclicThread;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by dolgopolov.a on 27.07.15.
  */
 public class IncomingSlaveListenerThread extends CyclicThread {
-
+    private static final AtomicInteger INCOMING_SLAVE_ID = new AtomicInteger();
     private static final Logger logger = Logger.getLogger(IncomingSlaveListenerThread.class);
     private final ServerSocket serverSocket;
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
@@ -31,7 +32,7 @@ public class IncomingSlaveListenerThread extends CyclicThread {
             throw new IllegalArgumentException("serverSocket is closed");
         }
         this.serverSocket = serverSocket;
-        setName("incoming slave listener thread");
+        setName("incoming_slave_listener_" + INCOMING_SLAVE_ID.getAndIncrement());
     }
 
     @Override

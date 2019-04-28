@@ -21,7 +21,7 @@ import ru.babobka.nodeweb.NodeWebApplicationContainer;
 public class MasterServerApplicationContainer extends AbstractApplicationContainer {
 
     @Override
-    protected void containImpl(Container container) throws Exception {
+    protected void containImpl(Container container) {
         MasterServerConfig config = container.get(MasterServerConfig.class);
         container.put(new SecurityApplicationContainer());
         container.put(createSrpConfig(config));

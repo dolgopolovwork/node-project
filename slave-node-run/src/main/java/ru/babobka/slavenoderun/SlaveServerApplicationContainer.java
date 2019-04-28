@@ -22,7 +22,7 @@ import ru.babobka.nodeutils.thread.ThreadPoolService;
 public class SlaveServerApplicationContainer extends AbstractApplicationContainer {
 
     @Override
-    protected void containImpl(Container container) throws Exception {
+    protected void containImpl(Container container) {
         SlaveServerConfig config = container.get(SlaveServerConfig.class);
         Properties.put(UtilKey.SERVICE_THREADS_NUM, Runtime.getRuntime().availableProcessors());
         container.put(new NodeUtilsApplicationContainer());
@@ -32,7 +32,7 @@ public class SlaveServerApplicationContainer extends AbstractApplicationContaine
         container.put(new NodeTaskApplicationContainer());
         container.put(new SlavePipelineFactory());
         container.put(new TaskRunnerService());
-        container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("service thread pool"));
+        container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("service"));
         container.put(SlaveServerKey.SLAVE_SERVER_TASK_POOL, new TaskPool(config.getTasksFolder()));
         container.put(new SlaveAuthService());
     }

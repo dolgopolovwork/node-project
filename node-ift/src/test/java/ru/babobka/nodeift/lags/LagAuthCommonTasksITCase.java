@@ -3,7 +3,6 @@ package ru.babobka.nodeift.lags;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
-import ru.babobka.nodeconfigs.service.ConfigProvider;
 import ru.babobka.nodeift.AuthCommonTasksITCase;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -14,15 +13,13 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.io.IOException;
-
 /**
  * Created by 123 on 08.04.2018.
  */
 public class LagAuthCommonTasksITCase extends AuthCommonTasksITCase {
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS),LagAuthCommonTasksITCase.class.getSimpleName());
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();

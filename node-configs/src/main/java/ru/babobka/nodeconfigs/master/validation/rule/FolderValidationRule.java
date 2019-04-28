@@ -33,4 +33,5 @@ public class FolderValidationRule implements ValidationRule<MasterServerConfig> 
             throw new IllegalArgumentException("folder '" + taskFolder + "' doesn't exist");
         }
     }
+
 }

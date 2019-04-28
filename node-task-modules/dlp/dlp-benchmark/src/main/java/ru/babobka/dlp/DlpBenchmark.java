@@ -52,8 +52,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.mock;
-
 public class DlpBenchmark {
     @State(Scope.Thread)
     public static class MyState {
@@ -63,7 +61,7 @@ public class DlpBenchmark {
 
         @Setup(Level.Trial)
         public void doSetup() {
-            executorService = ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors());
+            executorService = ThreadPoolService.createDaemonPool("benchmark", Runtime.getRuntime().availableProcessors());
             Container.getInstance().put(container -> {
                 container.put(UtilKey.SERVICE_THREAD_POOL, executorService);
                 container.put(new PollardCollisionService());

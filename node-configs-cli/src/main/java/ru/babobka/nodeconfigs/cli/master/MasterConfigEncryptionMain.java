@@ -17,6 +17,8 @@ import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by 123 on 17.09.2018.
@@ -37,15 +39,15 @@ public class MasterConfigEncryptionMain extends CLI {
     private final ConfigProvider configProvider = Container.getInstance().get(ConfigProvider.class);
 
     @Override
-    protected Options createOptions() {
-        Options options = new Options();
-        Option configPath = Option.builder().longOpt(CONFIG_PATH_OPTION).hasArg().
-                desc("Path to master node configuration file").required().build();
-        return options.addOption(configPath);
+    public List<Option> createOptions() {
+        Option configPath = createRequiredArgOption(
+                CONFIG_PATH_OPTION,
+                "Path to master node configuration file");
+        return Collections.singletonList(configPath);
     }
 
     @Override
-    protected void extraValidation(CommandLine cmd) throws ParseException {
+    public void extraValidation(CommandLine cmd) {
         String configPath = cmd.getOptionValue(CONFIG_PATH_OPTION);
         File configFile = new File(configPath);
         if (!configFile.exists()) {
@@ -63,7 +65,7 @@ public class MasterConfigEncryptionMain extends CLI {
     }
 
     @Override
-    protected void run(CommandLine cmd) throws Exception {
+    public void run(CommandLine cmd) throws Exception {
         String password = readPassword("please provide password to encrypt configuration");
         String configPath = cmd.getOptionValue(CONFIG_PATH_OPTION);
         File originalConfigFile = new File(configPath);

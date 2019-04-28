@@ -26,7 +26,7 @@ public class Slave extends AbstractNetworkSlave {
 
     public Slave(Set<String> availableTasks, NodeConnection connection) {
         this(availableTasks, connection, null);
-        setName("slave thread " + getSlaveId());
+        setName("slave_" + getSlaveId());
     }
 
     public Slave(@NonNull Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {
@@ -58,7 +58,7 @@ public class Slave extends AbstractNetworkSlave {
                 logger.error("exception thrown", e);
                 Throwable cause = e.getCause();
                 setBadStatusForAllTasks();
-                if (cause != null && cause instanceof DistributionException) {
+                if (cause instanceof DistributionException) {
                     cancelAllTasks();
                 }
                 clearTasks();
@@ -79,7 +79,7 @@ public class Slave extends AbstractNetworkSlave {
         }
     }
 
-    public boolean taskIsAvailable(String taskName) {
+    boolean taskIsAvailable(String taskName) {
         return availableTasks.contains(taskName);
     }
 

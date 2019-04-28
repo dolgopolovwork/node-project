@@ -80,23 +80,32 @@ public class SlaveAuthService extends AbstractAuth {
         byte[] secret = HashUtil.sha2(hashedPassword, authData.getSalt());
         Fp x = new Fp(new BigInteger(secret), srpConfig.getG().getMod());
         byte[] secretKey = srpService.createSecretKeyUser(B, a, u, x, srpConfig);
-        boolean validKeys = checkSecretKeys(connection, secretKey, authData);
-        if (!validKeys) {
+        boolean slaveChallengeSolved = solveMasterChallenge(connection, secretKey);
+        if (!slaveChallengeSolved) {
+            logger.error("not able to solver master-server challenge");
+            return AuthResult.fail();
+        }
+        boolean masterChallengeSolved = sendMasterChallenge(connection, secretKey, authData);
+        if (!masterChallengeSolved) {
             return fail(connection);
         }
         success(connection);
         return AuthResult.success(login, secretKey);
     }
 
-    private boolean checkSecretKeys(NodeConnection connection, byte[] secretKey, AuthData authData) throws IOException {
-        boolean solvedChallenge = srpService.solveChallenge(connection, secretKey);
-        if (!solvedChallenge) {
-            logger.debug("failed to solve challenge");
-            return false;
-        }
+    private boolean sendMasterChallenge(NodeConnection connection, byte[] secretKey, AuthData authData) throws IOException {
         boolean challengeResult = srpService.sendChallenge(connection, secretKey, authData.getSrpConfig());
         if (!challengeResult) {
             logger.debug("server failed to solve challenge");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean solveMasterChallenge(NodeConnection connection, byte[] secretKey) {
+        boolean solvedChallenge = srpService.solveChallenge(connection, secretKey);
+        if (!solvedChallenge) {
+            logger.debug("failed to solve challenge");
             return false;
         }
         return true;

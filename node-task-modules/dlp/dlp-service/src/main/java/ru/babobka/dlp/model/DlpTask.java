@@ -1,5 +1,6 @@
 package ru.babobka.dlp.model;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.math.Fp;
 
 import java.io.Serializable;
@@ -12,10 +13,8 @@ public class DlpTask implements Serializable {
     private final Fp gen;
     private final Fp y;
 
-    public DlpTask(Fp gen, Fp y) {
-        if (gen == null || y == null) {
-            throw new IllegalArgumentException("Both generator and y must be non null");
-        } else if (!gen.getMod().equals(y.getMod())) {
+    public DlpTask(@NonNull Fp gen, @NonNull Fp y) {
+        if (!gen.getMod().equals(y.getMod())) {
             throw new IllegalArgumentException("Generator and y are from different groups");
         } else if (y.equals(Fp.addNeutral(y.getMod()))) {
             throw new IllegalArgumentException("cannot get dlp for zero");

@@ -22,7 +22,7 @@ public class SessionCreatingStep implements Step<PipeContext> {
             }
             return true;
         } catch (IOException e) {
-            logger.error("cannot create session due to network error");
+            logger.error("cannot create session due to network error", e);
             return false;
         }
     }

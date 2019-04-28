@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.DlpTask;
 
 import java.math.BigInteger;
@@ -9,10 +10,8 @@ import java.math.BigInteger;
  */
 public abstract class DlpService {
 
-    public BigInteger dlp(DlpTask task) {
-        if (task == null) {
-            throw new IllegalArgumentException("task is null");
-        } else if (task.getY().isMultNeutral()) {
+    public BigInteger dlp(@NonNull DlpTask task) {
+        if (task.getY().isMultNeutral()) {
             return BigInteger.ZERO;
         } else if (task.getY().equals(task.getGen())) {
             return BigInteger.ONE;

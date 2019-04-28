@@ -14,6 +14,10 @@ public interface NodeConnection extends Closeable {
 
     void send(Object object) throws IOException;
 
+    void sendIgnoreException(Object object);
+
+    void sendThrowRuntime(Object object);
+
     void close();
 
     boolean isClosed();

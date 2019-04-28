@@ -1,5 +1,6 @@
 package ru.babobka.masternoderun;
 
+import lombok.NonNull;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodeconfigs.service.ConfigProvider;
@@ -15,23 +16,21 @@ import java.io.IOException;
 public class MasterServerRunner {
 
     private final ConfigProvider configProvider = Container.getInstance().get(ConfigProvider.class);
-    private final MasterServerConfigValidator configValidator = Container.getInstance().get(MasterServerConfigValidator.class);
+    private final MasterServerConfigValidator configValidator =
+            Container.getInstance().get(MasterServerConfigValidator.class);
 
-    public void run(String configPath, String configPassword) throws IOException {
+    void run(String configPath, String configPassword) throws IOException {
         Container container = Container.getInstance();
-        MasterServerConfig config = configProvider.getConfig(configPath, MasterServerConfig.class, configPassword);
-        LoggerInit.initPersistentConsoleLogger(config.getFolders().getLoggerFolder(),"master-server");
+        MasterServerConfig config = getConfig(configPath, configPassword);
         configValidator.validate(config);
+        LoggerInit.initPersistentConsoleLogger(config.getFolders().getLoggerFolder(), "master-server");
         container.put(config);
-        container.put(createMasterServerContainer());
-        createMasterServer().start();
+        container.put(new MasterServerApplicationContainer());
+        new MasterServer().start();
     }
 
-    MasterServer createMasterServer() {
-        return new MasterServer();
-    }
 
-    MasterServerApplicationContainer createMasterServerContainer() {
-        return new MasterServerApplicationContainer();
+    private MasterServerConfig getConfig(@NonNull String configPath, String configPassword) throws IOException {
+        return configProvider.getConfig(configPath, MasterServerConfig.class, configPassword);
     }
 }

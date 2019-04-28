@@ -1,5 +1,6 @@
 package ru.babobka.nodeclient.future;
 
+import lombok.NonNull;
 import ru.babobka.nodeserials.NodeResponse;
 
 import java.util.List;
@@ -14,10 +15,7 @@ import java.util.concurrent.TimeoutException;
 public class SingleNodeFuture implements Future<NodeResponse> {
     private final Future<List<NodeResponse>> future;
 
-    public SingleNodeFuture(Future<List<NodeResponse>> future) {
-        if (future == null) {
-            throw new IllegalArgumentException("future is null");
-        }
+    public SingleNodeFuture(@NonNull Future<List<NodeResponse>> future) {
         this.future = future;
     }
 
@@ -42,7 +40,7 @@ public class SingleNodeFuture implements Future<NodeResponse> {
         if (responses != null && !responses.isEmpty()) {
             return responses.get(0);
         }
-        return null;
+        throw new IllegalStateException("No responses");
     }
 
     @Override

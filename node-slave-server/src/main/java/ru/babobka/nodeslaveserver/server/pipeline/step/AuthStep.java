@@ -33,7 +33,7 @@ public class AuthStep implements Step<PipeContext> {
             logger.info("authentication success");
             return true;
         } catch (IOException e) {
-            logger.error("authentication fail due to network error");
+            logger.error("authentication fail due to network error", e);
             return false;
         }
     }

@@ -56,9 +56,12 @@ public class ClassLoaderUtil {
                 }
                 String className = je.getName().substring(0, je.getName().length() - 6);
                 className = className.replace('/', '.');
-                Class<?> c = cl.loadClass(className);
-                if (clazz.isAssignableFrom(c) && !clazz.equals(c)) {
-                    objects.add(c.newInstance());
+                try {
+                    Class<?> c = cl.loadClass(className);
+                    if (clazz.isAssignableFrom(c) && !clazz.equals(c)) {
+                        objects.add(c.newInstance());
+                    }
+                } catch (NoClassDefFoundError ignored) {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {

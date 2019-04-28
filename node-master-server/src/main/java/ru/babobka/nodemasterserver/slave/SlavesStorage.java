@@ -2,7 +2,9 @@ package ru.babobka.nodemasterserver.slave;
 
 import lombok.NonNull;
 import org.apache.log4j.Logger;
+import ru.babobka.nodemasterserver.listener.SlaveStorageChangeListener;
 import ru.babobka.nodeserials.NodeData;
+import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,6 +16,10 @@ import java.util.*;
 public class SlavesStorage {
 
     private static final Logger logger = Logger.getLogger(SlavesStorage.class);
+    private final SlaveStorageChangeListener slaveStorageChangeListener = Container.getInstance().get(
+            SlaveStorageChangeListener.class, (changeType, currentSize) -> {
+                //Do nothing by default
+            });
     private final List<Slave> slaves = new ArrayList<>();
     private final UUID storageId = UUID.randomUUID();
     private boolean closed;
@@ -29,12 +35,14 @@ public class SlavesStorage {
     public synchronized void remove(Slave slave) {
         logger.info("remove slave " + slave + " from storage " + storageId);
         slaves.remove(slave);
+        callListenerSafely(SlaveStorageChangeListener.SlaveStorageChangeType.REMOVE, slaves.size());
     }
 
-    public synchronized boolean add(Slave slave) {
+    public synchronized boolean add(@NonNull Slave slave) {
         if (!isClosed()) {
             logger.info("add new slave " + slave + " to slave storage " + storageId);
             slaves.add(slave);
+            callListenerSafely(SlaveStorageChangeListener.SlaveStorageChangeType.ADD, slaves.size());
             return true;
         } else {
             logger.info("slave " + slave + " was not added to slave storage " + storageId + " due to closed storage status");
@@ -42,7 +50,7 @@ public class SlavesStorage {
         }
     }
 
-    public synchronized List<Slave> getFullList() {
+    synchronized List<Slave> getFullList() {
         List<Slave> fullSlaveList = new ArrayList<>(this.slaves.size());
         for (Slave slave : slaves) {
             if (!slave.isInterrupted()) {
@@ -52,11 +60,11 @@ public class SlavesStorage {
         return fullSlaveList;
     }
 
-    public synchronized List<Slave> getList(String taskName) {
+    public synchronized List<Slave> getList(@NonNull String taskName) {
         return getList(taskName, slaves.size());
     }
 
-    public synchronized List<Slave> getList(String taskName, int maxSlaves) {
+    synchronized List<Slave> getList(@NonNull String taskName, int maxSlaves) {
         if (maxSlaves < 1) {
             return new ArrayList<>();
         }
@@ -68,7 +76,7 @@ public class SlavesStorage {
                 groupedSlaves.add(slave);
             }
         }
-        Collections.sort(groupedSlaves, (slave1, slave2) -> slaveUsageMap.get(slave1.getSlaveId()).compareTo(slaveUsageMap.get(slave2.getSlaveId())));
+        groupedSlaves.sort(Comparator.comparing(slave -> slaveUsageMap.get(slave.getSlaveId())));
         return groupedSlaves.subList(0, Math.min(maxSlaves, groupedSlaves.size()));
     }
 
@@ -94,7 +102,7 @@ public class SlavesStorage {
         }
     }
 
-    void sendHeartBeat(Slave slave) {
+    private void sendHeartBeat(Slave slave) {
         try {
             slave.sendHeartBeating();
         } catch (IOException e) {
@@ -106,7 +114,7 @@ public class SlavesStorage {
         return slaves.size();
     }
 
-    public synchronized int getClusterSize(String taskName) {
+    public synchronized int getClusterSize(@NonNull String taskName) {
         int counter = 0;
         for (Slave slave : slaves) {
             if (!slave.isInterrupted() && slave.taskIsAvailable(taskName)) {
@@ -127,6 +135,17 @@ public class SlavesStorage {
         if (!isEmpty()) {
             interruptAll();
             slaves.clear();
+        }
+        callListenerSafely(SlaveStorageChangeListener.SlaveStorageChangeType.CLEAR, 0);
+    }
+
+    private void callListenerSafely(
+            @NonNull SlaveStorageChangeListener.SlaveStorageChangeType changeType,
+            int currentSize) {
+        try {
+            slaveStorageChangeListener.onChange(changeType, currentSize);
+        } catch (Exception e) {
+            logger.error("listener execution exception", e);
         }
     }
 

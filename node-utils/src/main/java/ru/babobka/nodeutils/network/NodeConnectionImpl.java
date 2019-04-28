@@ -57,6 +57,24 @@ public class NodeConnectionImpl implements NodeConnection {
         }
     }
 
+    @Override
+    public void sendIgnoreException(Object object) {
+        try {
+            send(object);
+        } catch (Exception e) {
+            logger.error("cannot send", e);
+        }
+    }
+
+    @Override
+    public void sendThrowRuntime(Object object) {
+        try {
+            send(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void close() {
         synchronized (socket) {
             if (socket.isClosed()) {

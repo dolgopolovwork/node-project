@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.mapper;
 
 import lombok.NonNull;
 import ru.babobka.nodemasterserver.model.Responses;
-import ru.babobka.nodemasterserver.task.TaskExecutionResult;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;

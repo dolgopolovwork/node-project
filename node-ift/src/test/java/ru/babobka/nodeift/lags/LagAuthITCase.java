@@ -13,15 +13,13 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.io.IOException;
-
 /**
  * Created by 123 on 06.11.2017.
  */
 public class LagAuthITCase extends AuthITCase {
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp() {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagAuthITCase.class.getSimpleName());
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();

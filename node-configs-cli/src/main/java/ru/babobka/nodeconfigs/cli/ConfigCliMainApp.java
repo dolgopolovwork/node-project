@@ -32,6 +32,6 @@ public class ConfigCliMainApp {
             CLI.printErr("You must specify a valid command to execute.\nAvailable commands: " + COMMANDS.keySet());
             return;
         }
-        commandRunnable.onMain(Arrays.copyOfRange(args, 1, args.length));
+        commandRunnable.onStart(Arrays.copyOfRange(args, 1, args.length));
     }
 }

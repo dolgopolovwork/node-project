@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
+import lombok.NonNull;
 import ru.babobka.dlp.model.DlpTask;
 import ru.babobka.dlp.model.Pair;
 import ru.babobka.dlp.model.PollardEntity;
@@ -28,12 +29,7 @@ public class PollardWalk implements Callable<Pair<PollardEntity>> {
         return walks;
     }
 
-    PollardWalk(ParallelCollisionService collisionService, DlpTask dlpTask) {
-        if (collisionService == null) {
-            throw new IllegalArgumentException("collisionService is null");
-        } else if (dlpTask == null) {
-            throw new IllegalArgumentException("dlpTask is null");
-        }
+    PollardWalk(@NonNull ParallelCollisionService collisionService, @NonNull DlpTask dlpTask) {
         this.collisionService = collisionService;
         this.dlpTask = dlpTask;
     }

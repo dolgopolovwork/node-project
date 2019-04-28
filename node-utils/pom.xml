@@ -20,6 +20,12 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.mindrot/jbcrypt -->
         <dependency>
             <groupId>org.mindrot</groupId>
@@ -54,27 +60,15 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.25</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.jms/jms -->
-        <!-- I'M WITH STUPID ^ -->
-        <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms</artifactId>
-            <version>1.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
-        <!-- I'M WITH STUPID ALSO ^ -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4.7</version>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>

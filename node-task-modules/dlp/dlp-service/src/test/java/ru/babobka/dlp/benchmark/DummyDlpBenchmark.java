@@ -26,7 +26,7 @@ public class DummyDlpBenchmark {
 
     static {
         Container.getInstance().put(container -> {
-            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool(Runtime.getRuntime().availableProcessors()));
+            container.put(UtilKey.SERVICE_THREAD_POOL, ThreadPoolService.createDaemonPool("benchmark", Runtime.getRuntime().availableProcessors()));
             container.put(new PollardCollisionService());
             container.put(new PrimeDistinguishable());
         });

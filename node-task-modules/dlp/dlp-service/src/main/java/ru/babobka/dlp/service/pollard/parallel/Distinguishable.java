@@ -1,5 +1,6 @@
 package ru.babobka.dlp.service.pollard.parallel;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.math.Fp;
 
 /**
@@ -7,10 +8,7 @@ import ru.babobka.nodeutils.math.Fp;
  */
 public abstract class Distinguishable {
 
-    boolean isDistinguishable(Fp point) {
-        if (point == null) {
-            throw new IllegalArgumentException("point is null");
-        }
+    boolean isDistinguishable(@NonNull Fp point) {
         return isDistinguishableImpl(point);
     }
 
