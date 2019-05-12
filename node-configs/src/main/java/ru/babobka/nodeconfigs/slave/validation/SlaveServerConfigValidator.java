@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class SlaveServerConfigValidator extends Validator<SlaveServerConfig> {
     public SlaveServerConfigValidator() {
         super(Arrays.asList(
-                new CredentialsValidationRule(),
+                new KeyConfigValidationRule(),
                 new ServerPortValidationRule(),
                 new AuthTimeoutMillisValidationRule(),
                 new LoggerFolderValidationRule(),

@@ -7,9 +7,7 @@ import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAConfig;
-import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
@@ -21,6 +19,7 @@ import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,8 +40,8 @@ public class AuthITCase {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -55,25 +54,25 @@ public class AuthITCase {
 
     @Test(expected = SlaveAuthException.class)
     public void testAuthFail() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", "bad password");
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", KeyDecoder.generateKeyPair().getPrivate());
         interruptAndJoin(slaveServer);
     }
 
     @Test
     public void testAuthSuccess() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
         interruptAndJoin(slaveServer);
     }
 
     @Test
     public void testAuth() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
         interruptAndJoin(slaveServer);
     }
 
     @Test(expected = SlaveAuthException.class)
-    public void testAuthBadPassword() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, "bad_password");
+    public void testAuthBadPrivateKey() throws IOException {
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, KeyDecoder.generateKeyPair().getPrivate());
         interruptAndJoin(slaveServer);
     }
 
@@ -82,7 +81,7 @@ public class AuthITCase {
         int slaves = getTests();
         List<SlaveServer> slaveServerList = new ArrayList<>(slaves);
         for (int i = 0; i < slaves; i++) {
-            slaveServerList.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD));
+            slaveServerList.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY));
         }
         interruptAndJoin(slaveServerList);
     }
@@ -99,7 +98,7 @@ public class AuthITCase {
                         break;
                     }
                     try {
-                        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+                        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
                         interruptAndJoin(slaveServer);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -115,11 +114,25 @@ public class AuthITCase {
     }
 
     @Test
-    public void testMassAuthFail() throws IOException {
+    public void testMassAuthFailBadLogin() throws IOException {
         int slaves = getTests();
         for (int i = 0; i < slaves; i++) {
             try {
-                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", "bad_password");
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", KeyDecoder.generateKeyPair().getPrivate());
+                interruptAndJoin(slaveServer);
+                fail();
+            } catch (SlaveStartupException e) {
+                //that's ok
+            }
+        }
+    }
+
+    @Test
+    public void testMassAuthFailBadPrivateKey() throws IOException {
+        int slaves = getTests();
+        for (int i = 0; i < slaves; i++) {
+            try {
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, KeyDecoder.generateKeyPair().getPrivate());
                 interruptAndJoin(slaveServer);
                 fail();
             } catch (SlaveStartupException e) {
@@ -132,14 +145,13 @@ public class AuthITCase {
     public void testServerAuthFail() throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try {
-            RSAConfig rsaConfig = RSAConfigFactory.create(128);
-            slaveServerConfig.setServerPublicKey(rsaConfig.getPublicKey());
-            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+            slaveServerConfig.setServerBase64PublicKey(TextUtil.toBase64(KeyDecoder.generateKeyPair().getPublic().getEncoded()));
+            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
             interruptAndJoin(slaveServer);
         } finally {
             //возвращаем публичный ключ обратно
             MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-            slaveServerConfig.setServerPublicKey(masterServerConfig.getSecurity().getRsaConfig().getPublicKey());
+            slaveServerConfig.setServerBase64PublicKey(masterServerConfig.getKeyPair().getPubKey());
         }
     }
 

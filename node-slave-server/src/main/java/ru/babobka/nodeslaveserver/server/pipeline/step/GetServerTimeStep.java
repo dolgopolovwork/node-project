@@ -24,7 +24,10 @@ public class GetServerTimeStep implements Step<PipeContext> {
         NodeConnection connection = pipeContext.getConnection();
         try {
             SecureNodeConnection secureNodeConnection =
-                    new SecureNodeConnection(connection, authResult.getSecretKey());
+                    new SecureNodeConnection(
+                            connection,
+                            pipeContext.getCredentials().getPrivateKey(),
+                            authResult.getPublicKey());
             ServerTime serverTime = getServerTime(secureNodeConnection);
             pipeContext.setServerTime(serverTime);
             return true;

@@ -4,7 +4,7 @@ import org.junit.*;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.slave.Sessions;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -15,6 +15,7 @@ import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,8 +38,8 @@ public class SessionAuthITCase {
         MasterServerRunner.init();
         Container.getInstance().get(MasterServerConfig.class).getModes().setSingleSessionMode(true);
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -62,9 +63,9 @@ public class SessionAuthITCase {
         SlaveServer slaveServer1 = null;
         SlaveServer slaveServer2 = null;
         try {
-            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
             try {
-                slaveServer2 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+                slaveServer2 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
                 fail();
             } catch (SlaveStartupException expected) {
                 //that's ok
@@ -77,7 +78,7 @@ public class SessionAuthITCase {
     @Test
     public void testAuthMultipleSessions() throws IOException, InterruptedException {
         for (int i = 0; i < 10; i++) {
-            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
             interruptAndJoin(slaveServer);
             waitUntilClearSession();
         }
@@ -92,7 +93,7 @@ public class SessionAuthITCase {
             authThreads[i] = new Thread(() -> {
                 try {
                     Thread.sleep(new Random().nextInt(1000));
-                    slaveServers.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD));
+                    slaveServers.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY));
                     successfulAuthentications.incrementAndGet();
                 } catch (IOException | InterruptedException expected) {
                     Thread.currentThread().interrupt();
@@ -110,7 +111,7 @@ public class SessionAuthITCase {
     public void testAuthOneSession() throws IOException, InterruptedException {
         SlaveServer slaveServer1 = null;
         try {
-            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
         } finally {
             interruptAndJoin(slaveServer1);
         }

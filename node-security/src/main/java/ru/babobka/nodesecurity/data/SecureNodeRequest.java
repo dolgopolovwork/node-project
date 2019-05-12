@@ -10,23 +10,23 @@ import java.util.Arrays;
  */
 public class SecureNodeRequest extends NodeRequest {
     private static final long serialVersionUID = 5027409098381331691L;
-    private final byte[] mac;
+    private final byte[] signature;
 
-    SecureNodeRequest(NodeRequest request, byte[] mac) {
+    public SecureNodeRequest(NodeRequest request, byte[] signature) {
         super(request.getId(),
                 request.getTaskId(),
                 request.getTaskName(),
                 request.getData(),
                 request.getRequestStatus(),
                 request.getTimeStamp());
-        if (ArrayUtil.isEmpty(mac)) {
-            throw new IllegalArgumentException("mac was not set");
+        if (ArrayUtil.isEmpty(signature)) {
+            throw new IllegalArgumentException("signature was not set");
         }
-        this.mac = mac.clone();
+        this.signature = signature.clone();
     }
 
-    public byte[] getMac() {
-        return mac.clone();
+    public byte[] getSignature() {
+        return signature.clone();
     }
 
     @Override
@@ -37,13 +37,13 @@ public class SecureNodeRequest extends NodeRequest {
 
         SecureNodeRequest request = (SecureNodeRequest) o;
 
-        return Arrays.equals(mac, request.mac);
+        return Arrays.equals(signature, request.signature);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(mac);
+        result = 31 * result + Arrays.hashCode(signature);
         return result;
     }
 }

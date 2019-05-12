@@ -4,17 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SRPService;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.HashUtil;
+import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 
-import static org.junit.Assert.assertArrayEquals;
+import java.security.spec.InvalidKeySpecException;
+
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by 123 on 12.08.2017.
@@ -22,17 +17,9 @@ import static org.mockito.Mockito.when;
 public class UserDTOMapperTest {
 
     private UserDTOMapper userDTOMapper;
-    private SRPService SRPService;
-    private SrpConfig srpConfig;
 
     @Before
     public void setUp() {
-        SRPService = mock(SRPService.class);
-        srpConfig = mock(SrpConfig.class);
-        Container.getInstance().put(container -> {
-            container.put(SRPService);
-            container.put(srpConfig);
-        });
         userDTOMapper = new UserDTOMapper();
     }
 
@@ -42,17 +29,14 @@ public class UserDTOMapperTest {
     }
 
     @Test
-    public void testMap() {
-        String password = "test";
+    public void testMap() throws InvalidKeySpecException {
         UserDTO userDTO = new UserDTO();
         userDTO.setName("abc");
         userDTO.setEmail("abc@xyz.ru");
-        userDTO.setHashedPassword(HashUtil.hexSha2(password));
-        byte[] secret = {1, 2, 3};
-        when(SRPService.secretBuilder(eq(HashUtil.hexStringToByteArray(userDTO.getHashedPassword())), any(), eq(srpConfig))).thenReturn(secret);
+        userDTO.setBase64PubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
         User user = userDTOMapper.map(userDTO);
         assertEquals(userDTO.getName(), user.getName());
-        assertArrayEquals(user.getSecret(), secret);
+        assertEquals(user.getPublicKey(), KeyDecoder.decodePublicKey(userDTO.getBase64PubKey()));
         assertEquals(userDTO.getEmail(), user.getEmail());
     }
 }

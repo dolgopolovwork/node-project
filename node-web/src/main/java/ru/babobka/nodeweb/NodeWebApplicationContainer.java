@@ -6,11 +6,11 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.add.rule.EmailValidationRule;
 import ru.babobka.nodeweb.validation.user.add.rule.NameValidationRule;
-import ru.babobka.nodeweb.validation.user.add.rule.PasswordValidationRule;
+import ru.babobka.nodeweb.validation.user.add.rule.PubKeyValidationRule;
 import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
 import ru.babobka.nodeweb.validation.user.update.rule.NullableEmailValidationRule;
 import ru.babobka.nodeweb.validation.user.update.rule.NullableNameValidationRule;
-import ru.babobka.nodeweb.validation.user.update.rule.NullablePasswordValidationRule;
+import ru.babobka.nodeweb.validation.user.update.rule.NullablePubKeyValidationRule;
 
 /**
  * Created by 123 on 04.11.2017.
@@ -18,8 +18,10 @@ import ru.babobka.nodeweb.validation.user.update.rule.NullablePasswordValidation
 public class NodeWebApplicationContainer extends AbstractApplicationContainer {
     @Override
     protected void containImpl(Container container) {
-        container.put(new AddUserValidator(new EmailValidationRule(), new NameValidationRule(), new PasswordValidationRule()));
-        container.put(new UpdateUserValidator(new NullableEmailValidationRule(), new NullableNameValidationRule(), new NullablePasswordValidationRule()));
+        container.put(new AddUserValidator(
+                new EmailValidationRule(), new NameValidationRule(), new PubKeyValidationRule()));
+        container.put(new UpdateUserValidator(
+                new NullableEmailValidationRule(), new NullableNameValidationRule(), new NullablePubKeyValidationRule()));
         container.put(new NodeUsersServiceImpl());
     }
 }

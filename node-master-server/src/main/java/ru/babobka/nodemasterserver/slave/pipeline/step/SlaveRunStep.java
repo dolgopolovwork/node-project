@@ -8,6 +8,7 @@ import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
@@ -15,6 +16,7 @@ import ru.babobka.nodeutils.func.pipeline.Step;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Set;
 
 /**
@@ -33,7 +35,8 @@ public class SlaveRunStep implements Step<PipeContext> {
         AuthResult authResult = pipeContext.getAuthResult();
         Set<String> availableTasks = pipeContext.getAvailableTasks();
         try {
-            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, authResult.getSecretKey());
+            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(
+                    connection, KeyDecoder.decodePrivateKey(config.getKeyPair().getPrivKey()), authResult.getPublicKey());
             if (!runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
                 logger.warn("cannot run slave");
                 sessions.remove(authResult.getUserName());
@@ -43,7 +46,7 @@ public class SlaveRunStep implements Step<PipeContext> {
             connection.send(true);
             secureNodeConnection.send(NodeRequest.time());
             return true;
-        } catch (IOException e) {
+        } catch (IOException | InvalidKeySpecException e) {
             logger.error("cannot run slave due to network error", e);
             return false;
         }

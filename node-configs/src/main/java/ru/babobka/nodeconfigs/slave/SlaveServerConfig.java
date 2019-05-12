@@ -3,7 +3,7 @@ package ru.babobka.nodeconfigs.slave;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.babobka.nodeconfigs.NodeConfiguration;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 import ru.babobka.nodeutils.util.TextUtil;
 
 public class SlaveServerConfig implements NodeConfiguration {
@@ -12,13 +12,13 @@ public class SlaveServerConfig implements NodeConfiguration {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private int serverPort;
     private String serverHost;
-    private RSAPublicKey serverPublicKey;
+    private String serverBase64PublicKey;
     private int requestTimeoutMillis;
     private int authTimeOutMillis;
     private String loggerFolder;
     private String tasksFolder;
     private String slaveLogin;
-    private String slavePassword;
+    private Base64KeyPair keyPair;
 
     public int getRequestTimeoutMillis() {
         return requestTimeoutMillis;
@@ -74,14 +74,6 @@ public class SlaveServerConfig implements NodeConfiguration {
         this.serverHost = serverHost;
     }
 
-    public RSAPublicKey getServerPublicKey() {
-        return serverPublicKey;
-    }
-
-    public void setServerPublicKey(RSAPublicKey serverPublicKey) {
-        this.serverPublicKey = serverPublicKey;
-    }
-
     public String getSlaveLogin() {
         return slaveLogin;
     }
@@ -90,12 +82,20 @@ public class SlaveServerConfig implements NodeConfiguration {
         this.slaveLogin = slaveLogin;
     }
 
-    public String getSlavePassword() {
-        return slavePassword;
+    public Base64KeyPair getKeyPair() {
+        return keyPair;
     }
 
-    public void setSlavePassword(String slavePassword) {
-        this.slavePassword = slavePassword;
+    public void setKeyPair(Base64KeyPair keyPair) {
+        this.keyPair = keyPair;
+    }
+
+    public String getServerBase64PublicKey() {
+        return serverBase64PublicKey;
+    }
+
+    public void setServerBase64PublicKey(String serverBase64PublicKey) {
+        this.serverBase64PublicKey = serverBase64PublicKey;
     }
 
     @Override

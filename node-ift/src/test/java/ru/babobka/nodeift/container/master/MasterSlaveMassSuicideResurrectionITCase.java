@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 
-@Ignore
 public class MasterSlaveMassSuicideResurrectionITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();

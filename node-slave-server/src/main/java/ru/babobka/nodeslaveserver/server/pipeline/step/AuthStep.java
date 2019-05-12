@@ -24,7 +24,8 @@ public class AuthStep implements Step<PipeContext> {
         NodeConnection connection = pipeContext.getConnection();
         AuthCredentials credentials = pipeContext.getCredentials();
         try {
-            AuthResult authResult = authService.authClient(connection, credentials.getLogin(), credentials.getPassword());
+            AuthResult authResult = authService.authClient(
+                    connection, credentials.getLogin(), credentials.getPrivateKey());
             pipeContext.setAuthResult(authResult);
             if (!authResult.isSuccess()) {
                 logger.error("authentication fail");

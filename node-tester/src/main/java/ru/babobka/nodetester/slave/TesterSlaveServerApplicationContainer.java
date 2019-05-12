@@ -1,9 +1,11 @@
 package ru.babobka.nodetester.slave;
 
+import lombok.NonNull;
+import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
@@ -19,19 +21,20 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.key.UtilKey;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
+import ru.babobka.nodeutils.util.TextUtil;
+
+import java.security.PublicKey;
 
 /**
  * Created by 123 on 05.11.2017.
  */
 public class TesterSlaveServerApplicationContainer extends AbstractApplicationContainer {
 
-    private final RSAPublicKey rsaPublicKey;
+    private final PublicKey serverPubKey;
 
-    public TesterSlaveServerApplicationContainer(RSAPublicKey rsaPublicKey) {
-        if (rsaPublicKey == null) {
-            throw new IllegalArgumentException("rsaPublicKey is null");
-        }
-        this.rsaPublicKey = rsaPublicKey;
+    public TesterSlaveServerApplicationContainer(@NonNull PublicKey serverPubKey) {
+
+        this.serverPubKey = serverPubKey;
     }
 
     @Override
@@ -58,14 +61,17 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
         config.setSlaveLogin("test_user");
-        config.setSlavePassword("test_password");
+        Base64KeyPair keyPair = new Base64KeyPair();
+        keyPair.setPrivKey(DebugBase64KeyPair.DEBUG_PRIV_KEY);
+        keyPair.setPubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
+        config.setKeyPair(keyPair);
         config.setTasksFolder("$" + Env.NODE_TASKS.name());
         config.setLoggerFolder("$" + Env.NODE_LOGS.name());
         config.setAuthTimeOutMillis(15_000);
         config.setRequestTimeoutMillis(30_000);
         config.setServerHost("localhost");
         config.setServerPort(9090);
-        config.setServerPublicKey(rsaPublicKey);
+        config.setServerBase64PublicKey(TextUtil.toBase64(serverPubKey.getEncoded()));
         return config;
     }
 }

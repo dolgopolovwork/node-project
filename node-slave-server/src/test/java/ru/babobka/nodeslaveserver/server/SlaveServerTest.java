@@ -21,6 +21,7 @@ import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.PrivateKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -60,7 +61,7 @@ public class SlaveServerTest {
         Socket socket = mock(Socket.class);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        new SlaveServer(socket, "abc", "xyz", mock(ControllerFactory.class));
+        new SlaveServer(socket, "abc", mock(PrivateKey.class), mock(ControllerFactory.class));
     }
 
     @Test
@@ -93,7 +94,7 @@ public class SlaveServerTest {
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         PowerMockito.mockStatic(SlaveServer.class);
         BDDMockito.given(SlaveServer.createClientConnection(eq(connection), any(PipeContext.class))).willReturn(clientSecureNodeConnection);
-        return spy(new SlaveServer(socket, "abc", "xyz", mock(ControllerFactory.class)));
+        return spy(new SlaveServer(socket, "abc", mock(PrivateKey.class), mock(ControllerFactory.class)));
     }
 
 }

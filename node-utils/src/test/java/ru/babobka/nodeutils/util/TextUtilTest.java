@@ -2,12 +2,49 @@ package ru.babobka.nodeutils.util;
 
 import org.junit.Test;
 
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 import static ru.babobka.nodeutils.util.TextUtil.getLongestRepeats;
 
 public class TextUtilTest {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFromBase64InvalidString() {
+        TextUtil.fromBase64("not base 64");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testFromBase64NullString() {
+        TextUtil.fromBase64(null);
+    }
+
+    @Test
+    public void testFromBase64EmptyString() {
+        assertEquals(0, TextUtil.fromBase64("").length);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testToBase64NullString() {
+        TextUtil.toBase64(null);
+    }
+
+    @Test
+    public void testToBase64EmptyString() {
+        assertEquals(0, TextUtil.toBase64(new byte[]{}).length());
+    }
+
+    @Test
+    public void testToFromBase64Consistency() {
+        Random random = new Random();
+        byte[] array;
+        for (int i = 0; i < 10_000; i++) {
+            array = new byte[random.nextInt(99) + 1];
+            random.nextBytes(array);
+            assertArrayEquals(array, TextUtil.fromBase64(TextUtil.toBase64(array)));
+        }
+    }
 
     @Test
     public void testNotNull() {

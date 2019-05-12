@@ -3,6 +3,7 @@ package ru.babobka.slavenoderun.factory;
 import lombok.NonNull;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.log.LoggerInit;
@@ -11,6 +12,8 @@ import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.slavenoderun.SlaveServerApplicationContainer;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
 
 /**
  * Created by 123 on 05.12.2017.
@@ -25,9 +28,9 @@ public abstract class SlaveServerRunnerFactory {
     protected abstract SlaveServer create(String masterServerHost,
                                           int masterServerPort,
                                           String login,
-                                          String password) throws IOException;
+                                          PrivateKey privateKey) throws IOException;
 
-    public SlaveServer build(String configPath) throws IOException {
+    public SlaveServer build(String configPath) throws GeneralSecurityException, IOException {
         Container container = Container.getInstance();
         SlaveServerConfig config = getConfig(configPath);
         configValidator.validate(config);
@@ -41,7 +44,7 @@ public abstract class SlaveServerRunnerFactory {
                 config.getServerHost(),
                 config.getServerPort(),
                 config.getSlaveLogin(),
-                config.getSlavePassword());
+                KeyDecoder.decodePrivateKey(config.getKeyPair().getPrivKey()));
     }
 
     private SlaveServerConfig getConfig(@NonNull String configPath) throws IOException {

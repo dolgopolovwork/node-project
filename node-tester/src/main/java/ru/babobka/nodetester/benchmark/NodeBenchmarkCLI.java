@@ -2,7 +2,6 @@ package ru.babobka.nodetester.benchmark;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import ru.babobka.nodebusiness.StorageApplicationContainer;
 import ru.babobka.nodeclient.console.CLI;
@@ -16,9 +15,9 @@ import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -104,9 +103,9 @@ public abstract class NodeBenchmarkCLI extends CLI {
             return;
         }
         print(getSlaves(cmd) + " slave(s) with " + getServiceThreads(cmd) + " thread(s) per slave");
-        benchMarkRun(cmd);
+        benchmarkRun(cmd);
     }
 
-    protected abstract void benchMarkRun(CommandLine cmd);
+    protected abstract void benchmarkRun(CommandLine cmd);
 
 }

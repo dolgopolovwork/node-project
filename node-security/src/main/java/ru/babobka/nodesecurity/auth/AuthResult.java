@@ -1,41 +1,44 @@
 package ru.babobka.nodesecurity.auth;
 
-import ru.babobka.nodeutils.util.ArrayUtil;
+import lombok.NonNull;
 import ru.babobka.nodeutils.util.TextUtil;
+
+import java.security.PublicKey;
 
 /**
  * Created by 123 on 30.04.2018.
  */
 public class AuthResult {
-    private final byte[] secretKey;
+    private final PublicKey publicKey;
     private final String userName;
     private final boolean success;
 
-    private AuthResult(String userName, byte[] secretKey, boolean success) {
-        if (secretKey != null) {
-            this.secretKey = secretKey.clone();
-        } else {
-            this.secretKey = null;
+    private AuthResult(String userName, PublicKey publicKey, boolean success) {
+        if (success) {
+            if (userName == null) {
+                throw new NullPointerException("userName is null");
+            } else if (publicKey == null) {
+                throw new NullPointerException("publicKey is null");
+            }
         }
+        this.publicKey = publicKey;
         this.success = success;
         this.userName = userName;
     }
 
-    public static AuthResult success(String userName, byte[] secretKey) {
+    public static AuthResult success(@NonNull String userName, PublicKey publicKey) {
         if (TextUtil.isEmpty(userName)) {
             throw new IllegalArgumentException("userName is empty");
-        } else if (ArrayUtil.isEmpty(secretKey)) {
-            throw new IllegalArgumentException("secretKey is empty");
         }
-        return new AuthResult(userName, secretKey, true);
+        return new AuthResult(userName, publicKey, true);
     }
 
     public static AuthResult fail() {
         return new AuthResult(null, null, false);
     }
 
-    public byte[] getSecretKey() {
-        return secretKey.clone();
+    public PublicKey getPublicKey() {
+        return publicKey;
     }
 
     public boolean isSuccess() {

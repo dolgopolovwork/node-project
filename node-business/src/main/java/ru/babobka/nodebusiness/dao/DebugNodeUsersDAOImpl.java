@@ -70,10 +70,9 @@ public class DebugNodeUsersDAOImpl implements NodeUsersDAO {
             foundUser.setEmail(user.getEmail());
         if (user.getName() != null)
             foundUser.setName(user.getName());
-        if (!ArrayUtil.isEmpty(user.getSalt()))
-            foundUser.setSalt(user.getSalt());
-        if (!ArrayUtil.isEmpty(user.getSecret()))
-            foundUser.setSecret(user.getSecret());
+        if (user.getPublicKey() != null) {
+            foundUser.setPublicKey(user.getPublicKey());
+        }
         return true;
     }
 }

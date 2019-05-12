@@ -7,6 +7,7 @@ import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodetester.benchmark.NodeBenchmarkCLI;
 import ru.babobka.nodeutils.util.TextUtil;
 
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class PrimeCounterNodeBenchmarkApp extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected void benchMarkRun(CommandLine cmd) {
+    protected void benchmarkRun(CommandLine cmd) {
         int begin = Integer.parseInt(cmd.getOptionValue(BEGIN_OPTION));
         int end = Integer.parseInt(cmd.getOptionValue(END_OPTION));
         new NodeBenchmark(getAppName(), getTests(cmd))

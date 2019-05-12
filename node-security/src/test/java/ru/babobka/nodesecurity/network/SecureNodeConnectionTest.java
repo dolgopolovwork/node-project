@@ -2,160 +2,215 @@ package ru.babobka.nodesecurity.network;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodesecurity.data.SecureDataFactory;
+import ru.babobka.nodesecurity.checker.SecureDataChecker;
 import ru.babobka.nodesecurity.data.SecureNodeRequest;
-import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
-import ru.babobka.nodesecurity.service.SRPService;
+import ru.babobka.nodesecurity.sign.DigitalSigner;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
+import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
-import ru.babobka.nodeutils.time.TimerInvoker;
 
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-/**
- * Created by 123 on 04.05.2018.
- */
 public class SecureNodeConnectionTest {
 
-    private SecureDataFactory secureDataFactory;
-    private SRPService SRPService;
+    private DigitalSigner digitalSigner;
+    private SecureDataChecker secureDataChecker;
 
     @Before
     public void setUp() {
-        secureDataFactory = mock(SecureDataFactory.class);
-        SRPService = mock(SRPService.class);
+        digitalSigner = mock(DigitalSigner.class);
+        secureDataChecker = mock(SecureDataChecker.class);
         Container.getInstance().put(container -> {
-            container.put(secureDataFactory);
-            container.put(SRPService);
-            container.put(TimerInvoker.create(10_000));
+            container.put(digitalSigner);
+            container.put(secureDataChecker);
         });
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullConnection() {
-        new SecureNodeConnection(null, new byte[]{1, 2, 3});
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testClosedConnection() {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(true);
-        new SecureNodeConnection(connection, new byte[]{1, 2, 3});
+        new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullSecretKey() {
+    @Test(expected = RuntimeException.class)
+    public void testSendThrowRuntime() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        new SecureNodeConnection(connection, null);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        doThrow(new IOException()).when(secureNodeConnection).send((Object) any());
+        secureNodeConnection.sendThrowRuntime(123);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testEmptySecretKey() {
+    @Test
+    public void testSendIgnoreException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        new SecureNodeConnection(connection, new byte[]{});
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        doThrow(new IOException()).when(secureNodeConnection).send((Object) any());
+        secureNodeConnection.sendIgnoreException(123);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendNull() throws IOException {
+    @Test
+    public void testClose() {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});
-        secureNodeConnection.send((Object) null);
+        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class));
+        secureNodeConnection.close();
+        verify(connection).close();
+
+    }
+
+    @Test
+    public void testSetReadTimeOut() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.isClosed()).thenReturn(false);
+        SecureNodeConnection secureNodeConnection =
+                new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class));
+        int timeout = 1;
+        secureNodeConnection.setReadTimeOut(timeout);
+        verify(connection).setReadTimeOut(timeout);
     }
 
     @Test(expected = NodeSecurityException.class)
-    public void testSendInsecureObject() throws IOException {
+    public void testSendBadObject() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});
-        secureNodeConnection.send("abc");
+        new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)).send(123);
     }
 
     @Test
-    public void testSendHeartBeatingRequest() throws IOException {
+    public void testSendNodeResponse() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        NodeResponse response = mock(NodeResponse.class);
+        doNothing().when(secureNodeConnection).send(response);
+        Object objectToSend = response;
+        secureNodeConnection.send(objectToSend);
+        verify(secureNodeConnection).send(response);
+    }
+
+    @Test
+    public void testSendNodeRequest() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.isClosed()).thenReturn(false);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        NodeRequest request = mock(NodeRequest.class);
+        doNothing().when(secureNodeConnection).send(request);
+        Object objectToSend = request;
+        secureNodeConnection.send(objectToSend);
+        verify(secureNodeConnection).send(request);
+    }
+
+    @Test
+    public void testSendHeartBeatRequest() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.isClosed()).thenReturn(false);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
         NodeRequest request = NodeRequest.heartBeat();
         secureNodeConnection.send(request);
         verify(connection).send(request);
+        verify(digitalSigner, never()).sign(eq(request), any());
     }
 
     @Test
-    public void testSendHeartBeatingResponse() throws IOException {
+    public void testSendNodeRequestDirectly() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, new byte[]{1, 2, 3});
+        PrivateKey privateKey = mock(PrivateKey.class);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, privateKey, mock(PublicKey.class)));
+        NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", new Data());
+        secureNodeConnection.send(request);
+        verify(connection).send(any());
+        verify(digitalSigner).sign(request, privateKey);
+    }
+
+    @Test
+    public void testSendHeartBeatResponse() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.isClosed()).thenReturn(false);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
         NodeResponse response = NodeResponse.heartBeat();
         secureNodeConnection.send(response);
         verify(connection).send(response);
+        verify(digitalSigner, never()).sign(eq(response), any());
     }
 
     @Test
-    public void testSendResponse() throws IOException {
+    public void testSendNodeResponseDirectly() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        byte[] secretKey = {1, 2, 3};
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, secretKey);
-        NodeResponse response = NodeResponse.stopped(UUID.randomUUID());
-        SecureNodeResponse secureNodeResponse = mock(SecureNodeResponse.class);
-        when(secureDataFactory.create(response, secretKey)).thenReturn(secureNodeResponse);
+        PrivateKey privateKey = mock(PrivateKey.class);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, privateKey, mock(PublicKey.class)));
+        NodeResponse response = NodeResponse.dummy(UUID.randomUUID());
         secureNodeConnection.send(response);
-        verify(connection).send(secureNodeResponse);
+        verify(connection).send(any());
+        verify(digitalSigner).sign(response, privateKey);
     }
 
     @Test
-    public void testSendRequest() throws IOException {
+    public void testReceiveNoCloseInsecureObject() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(false);
-        byte[] secretKey = {1, 2, 3};
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, secretKey);
-        NodeRequest request = NodeRequest.stop(UUID.randomUUID());
-        SecureNodeRequest secureNodeRequest = mock(SecureNodeRequest.class);
-        when(secureDataFactory.create(request, secretKey)).thenReturn(secureNodeRequest);
-        secureNodeConnection.send(request);
-        verify(connection).send(secureNodeRequest);
+        PublicKey publicKey = mock(PublicKey.class);
+        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, mock(PrivateKey.class), publicKey);
+        SecureNodeRequest receivedRequest = mock(SecureNodeRequest.class);
+        when(connection.receive()).thenReturn(receivedRequest);
+        when(secureDataChecker.isSecure(receivedRequest, publicKey)).thenReturn(false);
+        try {
+            secureNodeConnection.receiveNoClose();
+            fail();
+        } catch (NodeSecurityException ignored) {
+            verify(connection, never()).close();
+        }
     }
 
     @Test
-    public void testReceiveInsecure() throws IOException {
-        NodeRequest insecureRequest = mock(NodeRequest.class);
-        byte[] secretKey = {1, 2, 3};
-        when(SRPService.isSecure(insecureRequest, secretKey)).thenReturn(false);
+    public void testReceiveNoCloseObject() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        when(connection.receive()).thenReturn(insecureRequest);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, secretKey);
+        PublicKey publicKey = mock(PublicKey.class);
+        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, mock(PrivateKey.class), publicKey);
+        SecureNodeRequest receivedRequest = mock(SecureNodeRequest.class);
+        when(connection.receive()).thenReturn(receivedRequest);
+        when(secureDataChecker.isSecure(receivedRequest, publicKey)).thenReturn(true);
+        assertEquals(receivedRequest, secureNodeConnection.receiveNoClose());
+        verify(connection, never()).close();
+    }
+
+    @Test
+    public void testReceiveBadRequest() throws IOException {
+        NodeConnection connection = mock(NodeConnection.class);
+        when(connection.isClosed()).thenReturn(false);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        doThrow(new NodeSecurityException("")).when(secureNodeConnection).receiveNoClose();
         try {
             secureNodeConnection.receive();
             fail();
-        } catch (NodeSecurityException expected) {
-            //that's ok
+        } catch (NodeSecurityException ingored) {
+            verify(connection).close();
         }
-        verify(connection).close();
     }
 
     @Test
     public void testReceive() throws IOException {
-        NodeRequest request = mock(NodeRequest.class);
-        byte[] secretKey = {1, 2, 3};
-        when(SRPService.isSecure(request, secretKey)).thenReturn(true);
         NodeConnection connection = mock(NodeConnection.class);
-        when(connection.receive()).thenReturn(request);
         when(connection.isClosed()).thenReturn(false);
-        SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, secretKey);
+        SecureNodeConnection secureNodeConnection = spy(new SecureNodeConnection(connection, mock(PrivateKey.class), mock(PublicKey.class)));
+        NodeRequest request = NodeRequest.regular(UUID.randomUUID(), "test", new Data());
+        doReturn(request).when(secureNodeConnection).receiveNoClose();
         assertEquals(request, secureNodeConnection.receive());
         verify(connection, never()).close();
     }
-
 }

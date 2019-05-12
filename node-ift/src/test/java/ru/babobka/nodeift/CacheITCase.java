@@ -3,10 +3,10 @@ package ru.babobka.nodeift;
 import org.apache.log4j.Logger;
 import org.junit.*;
 import ru.babobka.nodebusiness.dao.CacheDAO;
-import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodetester.key.TesterKey;
@@ -20,6 +20,7 @@ import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
+import java.security.PublicKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -41,8 +42,8 @@ public class CacheITCase {
         Properties.put(TesterKey.ENABLE_CACHE, true);
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);
         monitoringService = Container.getInstance().get(TaskMonitoringService.class);
@@ -64,7 +65,7 @@ public class CacheITCase {
 
     @Test
     public void testCacheCountPrimesLittleRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < getTests(); i++) {
@@ -82,7 +83,7 @@ public class CacheITCase {
     @Test
     public void testCacheCountPrimesLargeRangeOneSlave() throws IOException {
         final int requests = getTests();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < requests; i++) {
@@ -101,7 +102,7 @@ public class CacheITCase {
     public void testCacheCountPrimesLargeRangeOneSlaveClosedCluster() throws IOException {
         final int requests = getTests();
         NodeRequest request = getLargeRangeRequest();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             taskService.executeTask(request,
                     result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),

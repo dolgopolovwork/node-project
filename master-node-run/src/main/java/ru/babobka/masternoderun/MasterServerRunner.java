@@ -19,9 +19,9 @@ public class MasterServerRunner {
     private final MasterServerConfigValidator configValidator =
             Container.getInstance().get(MasterServerConfigValidator.class);
 
-    void run(String configPath, String configPassword) throws IOException {
+    void run(String configPath) throws IOException {
         Container container = Container.getInstance();
-        MasterServerConfig config = getConfig(configPath, configPassword);
+        MasterServerConfig config = getConfig(configPath);
         configValidator.validate(config);
         LoggerInit.initPersistentConsoleLogger(config.getFolders().getLoggerFolder(), "master-server");
         container.put(config);
@@ -30,7 +30,7 @@ public class MasterServerRunner {
     }
 
 
-    private MasterServerConfig getConfig(@NonNull String configPath, String configPassword) throws IOException {
-        return configProvider.getConfig(configPath, MasterServerConfig.class, configPassword);
+    private MasterServerConfig getConfig(@NonNull String configPath) throws IOException {
+        return configProvider.getConfig(configPath, MasterServerConfig.class);
     }
 }

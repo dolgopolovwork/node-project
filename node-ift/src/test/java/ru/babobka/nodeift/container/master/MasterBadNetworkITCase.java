@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 
-@Ignore
 public class MasterBadNetworkITCase extends AbstractContainerITCase {
     private static GenericContainer master = createMaster();
     private static final List<GenericContainer> slaves

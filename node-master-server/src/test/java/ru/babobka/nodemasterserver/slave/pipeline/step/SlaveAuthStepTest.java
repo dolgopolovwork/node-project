@@ -13,6 +13,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.security.PublicKey;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -63,7 +64,7 @@ public class SlaveAuthStepTest {
     public void testExecuteAuthSuccess() throws IOException {
         TimeConfig timeConfig = new TimeConfig();
         when(masterServerConfig.getTime()).thenReturn(timeConfig);
-        AuthResult authResult = AuthResult.success("abc", new byte[]{0});
+        AuthResult authResult = AuthResult.success("abc", mock(PublicKey.class));
         when(masterAuthService.authClient(connection)).thenReturn(authResult);
         assertTrue(slaveAuthStep.execute(pipeContext));
         assertEquals(pipeContext.getAuthResult(), authResult);

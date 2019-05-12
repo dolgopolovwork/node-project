@@ -10,6 +10,7 @@ import ru.babobka.nodeutils.waiter.Waiter;
 import ru.babobka.slavenoderun.factory.SlaveServerRunnerFactory;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -52,6 +53,9 @@ class SlaveRunner {
                 e.printStackTrace();
                 logger.info("wait slave reconnection");
                 waitReconnection();
+            } catch (GeneralSecurityException e) {
+                logger.error("Error occurred while creating slave", e);
+                return null;
             }
         }
         return null;

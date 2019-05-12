@@ -1,5 +1,6 @@
 package ru.babobka.nodeutils.util;
 
+import lombok.NonNull;
 import ru.babobka.nodeutils.enums.Env;
 
 import java.io.PrintStream;
@@ -8,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Locale;
 
 public class TextUtil {
@@ -23,6 +25,15 @@ public class TextUtil {
 
     private TextUtil() {
     }
+
+    public static String toBase64(@NonNull byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    public static byte[] fromBase64(@NonNull String base64) {
+        return Base64.getDecoder().decode(base64);
+    }
+
 
     public static boolean isValidEmail(String email) {
         return email != null && email.matches(EMAIL_PATTERN);

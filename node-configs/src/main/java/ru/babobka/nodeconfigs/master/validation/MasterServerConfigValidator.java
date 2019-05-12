@@ -3,7 +3,7 @@ package ru.babobka.nodeconfigs.master.validation;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.validation.rule.FolderValidationRule;
 import ru.babobka.nodeconfigs.master.validation.rule.PortValidationRule;
-import ru.babobka.nodeconfigs.master.validation.rule.SecurityConfigValidationRule;
+import ru.babobka.nodeconfigs.master.validation.rule.KeyConfigValidationRule;
 import ru.babobka.nodeconfigs.master.validation.rule.TimeValidationRule;
 import ru.babobka.nodeutils.validation.Validator;
 
@@ -19,6 +19,6 @@ public class MasterServerConfigValidator extends Validator<MasterServerConfig> {
                 new FolderValidationRule(),
                 new PortValidationRule(),
                 new TimeValidationRule(),
-                new SecurityConfigValidationRule()));
+                new KeyConfigValidationRule()));
     }
 }

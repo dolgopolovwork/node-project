@@ -10,9 +10,9 @@ import java.util.Arrays;
  */
 public class SecureNodeResponse extends NodeResponse {
     private static final long serialVersionUID = -1606074489575029102L;
-    private final byte[] mac;
+    private final byte[] signature;
 
-    SecureNodeResponse(NodeResponse response, byte[] mac) {
+    public SecureNodeResponse(NodeResponse response, byte[] signature) {
         super(response.getId(),
                 response.getTaskId(),
                 response.getTimeTakes(),
@@ -21,14 +21,14 @@ public class SecureNodeResponse extends NodeResponse {
                 response.getData(),
                 response.getTaskName(),
                 response.getTimeStamp());
-        if (ArrayUtil.isEmpty(mac)) {
-            throw new IllegalArgumentException("mac was not set");
+        if (ArrayUtil.isEmpty(signature)) {
+            throw new IllegalArgumentException("signature was not set");
         }
-        this.mac = mac.clone();
+        this.signature = signature.clone();
     }
 
-    public byte[] getMac() {
-        return mac.clone();
+    public byte[] getSignature() {
+        return signature.clone();
     }
 
     @Override
@@ -39,13 +39,13 @@ public class SecureNodeResponse extends NodeResponse {
 
         SecureNodeResponse response = (SecureNodeResponse) o;
 
-        return Arrays.equals(mac, response.mac);
+        return Arrays.equals(signature, response.signature);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + Arrays.hashCode(mac);
+        result = 31 * result + Arrays.hashCode(signature);
         return result;
     }
 }

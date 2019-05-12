@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by 123 on 03.05.2018.
  */
-public abstract class AbstractAuth {
+public abstract class AuthHelper {
     protected AuthResult fail(NodeConnection connection) throws IOException {
         connection.send(false);
         return AuthResult.fail();
