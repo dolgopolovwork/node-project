@@ -2,6 +2,7 @@ package ru.babobka.nodeift.lags;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeift.AuthITCase;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
@@ -16,6 +17,7 @@ import ru.babobka.nodeutils.util.TextUtil;
 /**
  * Created by 123 on 06.11.2017.
  */
+@Ignore
 public class LagAuthITCase extends AuthITCase {
 
     @BeforeClass

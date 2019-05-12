@@ -21,10 +21,6 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
     private final Lock executionLock = new ReentrantLock();
     private boolean stopped;
 
-    private static class LazyThreadPool {
-        private static final ExecutorService threadPool = Container.getInstance().get(UtilKey.SERVICE_THREAD_POOL);
-    }
-
     public ThreadPoolService(int cores) {
         if (cores < 1) {
             throw new IllegalArgumentException("there must be at least one core");
@@ -66,9 +62,10 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
             throw new IllegalArgumentException("cannot submit null callables");
         }
         List<Future<T>> futures = new ArrayList<>(callables.size());
-        if (!LazyThreadPool.threadPool.isShutdown()) {
+        ExecutorService threadPool = Container.getInstance().get(UtilKey.SERVICE_THREAD_POOL);
+        if (!threadPool.isShutdown()) {
             for (Callable<T> callable : callables) {
-                futures.add(LazyThreadPool.threadPool.submit(callable));
+                futures.add(threadPool.submit(callable));
             }
         }
         return futures;
@@ -84,7 +81,7 @@ public abstract class ThreadPoolService<I extends Serializable, O extends Serial
 
 
     public static ExecutorService createDaemonPool(@NonNull String name, int threads) {
-        return PrettyNamedThreadPoolFactory.fixedHighPriorityDaemonThreadPool(name, threads);
+        return PrettyNamedThreadPoolFactory.fixedDaemonThreadPool(name, threads);
     }
 
     public static ExecutorService createDaemonPool(@NonNull String threadsName) {

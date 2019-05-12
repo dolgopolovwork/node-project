@@ -2,6 +2,7 @@ package ru.babobka.vsjws.model.http;
 
 import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
+import lombok.NonNull;
 import org.apache.tika.Tika;
 import org.apache.tika.io.IOUtils;
 import ru.babobka.nodeutils.util.JSONUtil;
@@ -29,11 +30,11 @@ public class ResponseFactory {
     private static final Gson GSON = new Gson();
     private static final Tika TIKA = new Tika();
 
-    public static HttpResponse raw(byte[] content, ResponseCode code, String contentType) {
+    public static HttpResponse raw(@NonNull byte[] content, @NonNull ResponseCode code, @NonNull String contentType) {
         return new HttpResponse(code, contentType, content, null, content.length);
     }
 
-    public static HttpResponse file(File file) {
+    public static HttpResponse file(@NonNull File file) {
         if (file.exists() && file.isFile()) {
             try {
                 return new HttpResponse(ResponseCode.OK, TIKA.detect(file), null, file, file.length());
@@ -45,7 +46,7 @@ public class ResponseFactory {
         }
     }
 
-    public static HttpResponse resource(String fileName) {
+    public static HttpResponse resource(@NonNull String fileName) {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             if (is == null) {
                 throw new IllegalStateException(new FileNotFoundException("File " + fileName + " doesn't exist"));
@@ -57,7 +58,7 @@ public class ResponseFactory {
         }
     }
 
-    public static HttpResponse resource(InputStream is) {
+    public static HttpResponse resource(@NonNull InputStream is) {
         try {
             byte[] bytes = IOUtils.toByteArray(is);
             return new HttpResponse(ResponseCode.OK, TIKA.detect(bytes), bytes, null, bytes.length);
@@ -66,7 +67,7 @@ public class ResponseFactory {
         }
     }
 
-    public static HttpResponse redirect(String url) {
+    public static HttpResponse redirect(@NonNull String url) {
         String localUrl = url;
         if (!localUrl.startsWith("http")) {
             localUrl = "http://" + localUrl;
@@ -79,37 +80,34 @@ public class ResponseFactory {
         }
     }
 
-    public static HttpResponse json(Object object) {
-        if (object == null) {
-            throw new IllegalArgumentException("json object cannot be null");
+    public static HttpResponse json(@NonNull Object object) {
+        if (object instanceof String) {
+            return json(object.toString());
         } else {
-            if (object instanceof String) {
-                return json(object.toString());
-            } else {
-                return text(GSON.toJson(object), ContentType.JSON);
-            }
+            return text(GSON.toJson(object), ContentType.JSON);
         }
+
     }
 
-    public static HttpResponse json(String json) {
+    public static HttpResponse json(@NonNull String json) {
         if (JSONUtil.isJSONValid(json)) {
             return text(json, ContentType.JSON);
         }
         throw new IllegalArgumentException("Invalid json " + json);
     }
 
-    public static HttpResponse xml(String xml) {
+    public static HttpResponse xml(@NonNull String xml) {
         return text(xml, ContentType.XML);
     }
 
-    public static HttpResponse xslt(Map<String, Serializable> map, String xslFileName) {
+    public static HttpResponse xslt(@NonNull Map<String, Serializable> map, @NonNull String xslFileName) {
         XStream stream = new XStream();
         stream.registerConverter(new XsltConverter());
         stream.alias("root", Map.class);
         return xslt(stream.toXML(map), xslFileName);
     }
 
-    public static HttpResponse xslt(String xml, String xslFileName) {
+    public static HttpResponse xslt(@NonNull String xml, @NonNull String xslFileName) {
         try (StringReader reader = new StringReader(xml); StringWriter writer = new StringWriter()) {
             TransformerFactory tFactory = TransformerFactory.newInstance();
             Transformer transformer = tFactory.newTransformer(
@@ -122,31 +120,28 @@ public class ResponseFactory {
         }
     }
 
-    public static HttpResponse html(String content) {
+    public static HttpResponse html(@NonNull String content) {
         return text(content, ContentType.HTML);
     }
 
-    public static HttpResponse text(String content) {
+    public static HttpResponse text(@NonNull String content) {
         return text(content, ContentType.PLAIN);
     }
 
-    public static HttpResponse text(Object content) {
+    public static HttpResponse text(@NonNull Object content) {
         return text(content.toString());
     }
 
-    private static HttpResponse text(String content, String contentType) {
-        if (content == null) {
-            throw new IllegalArgumentException();
-        }
+    private static HttpResponse text(@NonNull String content, @NonNull String contentType) {
         byte[] bytes = content.getBytes(MAIN_ENCODING);
         return new HttpResponse(ResponseCode.OK, contentType, bytes, null, bytes.length);
     }
 
-    public static HttpResponse text(Object content, ContentType contentType) {
+    public static HttpResponse text(@NonNull Object content, @NonNull ContentType contentType) {
         return text(content.toString(), contentType.toString());
     }
 
-    public static HttpResponse code(ResponseCode code) {
+    public static HttpResponse code(@NonNull ResponseCode code) {
         return text(code.getText(), ContentType.PLAIN).setResponseCode(code);
     }
 
@@ -158,7 +153,7 @@ public class ResponseFactory {
         return text("Ok", ContentType.PLAIN);
     }
 
-    public static HttpResponse exception(Exception e) {
+    public static HttpResponse exception(@NonNull Exception e) {
         String text = TextUtil.getStringFromException(e);
         return text(text, ContentType.PLAIN).setResponseCode(ResponseCode.INTERNAL_SERVER_ERROR);
     }

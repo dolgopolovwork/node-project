@@ -2,6 +2,7 @@ package ru.babobka.nodeift;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
@@ -36,6 +37,7 @@ public class AuthITCase {
 
     @BeforeClass
     public static void setUp() {
+        Container.getInstance().clear();
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
@@ -169,6 +171,6 @@ public class AuthITCase {
     }
 
     protected int getTests() {
-        return 25;
+        return 15;
     }
 }

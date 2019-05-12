@@ -10,10 +10,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.Closeable;
-import java.io.EOFException;
 import java.io.IOException;
-
-import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
 
 public abstract class AbstractSocketController implements Closeable {
 
@@ -29,9 +26,7 @@ public abstract class AbstractSocketController implements Closeable {
         try {
             doControl(connection);
         } catch (Exception e) {
-            if (!connection.isClosed() && !isClosedConnectionException(e)) {
-                throw new IllegalStateException("cannot control", e);
-            }
+            throw new IllegalStateException("cannot control", e);
         }
     }
 

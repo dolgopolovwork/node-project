@@ -15,7 +15,6 @@ import ru.babobka.nodeutils.react.PubSub;
 import java.util.concurrent.ExecutorService;
 
 import static org.mockito.Mockito.*;
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_REQUEST_STREAM;
 
 public class MasterBackedSocketControllerTest {
 
@@ -40,11 +39,10 @@ public class MasterBackedSocketControllerTest {
         executorService = mock(ExecutorService.class);
         Container.getInstance().put(container -> {
             container.put(taskService);
-            container.put(SLAVE_SERVER_REQUEST_STREAM, requestsStream);
             container.put(slaveServerConfig);
         });
         masterBackedSocketController = new MasterBackedSocketController(
-                connection, executorService, raceStyleTaskStorage, stoppedTasks);
+                connection, executorService, requestsStream, raceStyleTaskStorage, stoppedTasks);
     }
 
     @After

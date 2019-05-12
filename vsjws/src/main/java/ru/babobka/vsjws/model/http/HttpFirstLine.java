@@ -14,7 +14,7 @@ public class HttpFirstLine {
         }
         try {
             method = line.substring(0, line.indexOf(' '));
-            protocol = line.substring(line.lastIndexOf(' '), line.length()).trim();
+            protocol = line.substring(line.lastIndexOf(' ')).trim();
             uri = line.substring(method.length(), line.length() - protocol.length()).trim();
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("cannot parse first line");

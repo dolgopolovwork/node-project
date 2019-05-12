@@ -4,10 +4,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class ContainerTest {
 
@@ -108,6 +112,37 @@ public class ContainerTest {
         int realValue = 2;
         Container.getInstance().put(TestKey.ABC, realValue);
         assertEquals((int) Container.getInstance().get(TestKey.ABC, defaultValue), realValue);
+    }
+
+    @Test
+    public void testSilentKillOnClear() throws IOException {
+        ExecutorService executorService = spy(ExecutorService.class);
+        Thread thread = spy(Thread.class);
+        Closeable closeable = spy(Closeable.class);
+        Container.getInstance().put(executorService);
+        Container.getInstance().put(thread);
+        Container.getInstance().put(closeable);
+        Container.getInstance().clear();
+        assertTrue(Container.getInstance().isEmpty());
+        verify(executorService).shutdownNow();
+        verify(thread).interrupt();
+        verify(closeable).close();
+    }
+
+    @Test
+    public void testSilentKillOnClearGlitchy() throws IOException {
+        ExecutorService executorService = spy(ExecutorService.class);
+        Thread thread = spy(Thread.class);
+        Closeable closeable = spy(Closeable.class);
+        doThrow(new RuntimeException()).when(closeable).close();
+        Container.getInstance().put(executorService);
+        Container.getInstance().put(thread);
+        Container.getInstance().put(closeable);
+        Container.getInstance().clear();
+        assertTrue(Container.getInstance().isEmpty());
+        verify(executorService).shutdownNow();
+        verify(thread).interrupt();
+        verify(closeable).close();
     }
 
     interface A {

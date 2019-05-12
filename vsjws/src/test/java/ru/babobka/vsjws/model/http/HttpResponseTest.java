@@ -107,7 +107,7 @@ public class HttpResponseTest {
         assertEquals(response.getContentType(), ContentType.JSON.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testJsonNullResponse() {
         ResponseFactory.json(null);
     }
@@ -121,7 +121,6 @@ public class HttpResponseTest {
         HttpResponse response = ResponseFactory.json(list);
         JSONArray responseJSON = new JSONArray(new String(response.getContent()));
         assertEquals(responseJSON.length(), list.size());
-
     }
 
     @Test

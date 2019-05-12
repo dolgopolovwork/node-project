@@ -14,15 +14,12 @@ import ru.babobka.nodeutils.react.PubSub;
 
 import java.util.concurrent.ExecutorService;
 
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_REQUEST_STREAM;
-
 /**
  * Created by 123 on 26.03.2019.
  */
 public class MasterBackedSocketController extends AbstractSocketController {
 
-    private final PubSub<NodeRequest> requestsStream =
-            Container.getInstance().get(SLAVE_SERVER_REQUEST_STREAM);
+    private final PubSub<NodeRequest> requestsStream;
     private final ExecutorService threadPool;
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
     private final StoppedTasks stoppedTasks;
@@ -31,9 +28,11 @@ public class MasterBackedSocketController extends AbstractSocketController {
     public MasterBackedSocketController(
             NodeConnection connection,
             @NonNull ExecutorService threadPool,
+            @NonNull PubSub<NodeRequest> requestsStream,
             @NonNull RaceStyleTaskStorage raceStyleTaskStorage,
             @NonNull StoppedTasks stoppedTasks) {
         super(connection);
+        this.requestsStream = requestsStream;
         this.raceStyleTaskStorage = raceStyleTaskStorage;
         this.threadPool = threadPool;
         this.stoppedTasks = stoppedTasks;
@@ -43,9 +42,11 @@ public class MasterBackedSocketController extends AbstractSocketController {
 
     public MasterBackedSocketController(
             NodeConnection connection,
-            ExecutorService threadPool
+            ExecutorService threadPool,
+            PubSub<NodeRequest> requestsStream
     ) {
-        this(connection, threadPool, new RaceStyleTaskStorage(), new StoppedTasks());
+        this(connection, threadPool, requestsStream, new RaceStyleTaskStorage(), new StoppedTasks());
+
     }
 
     private void initExecuteTaskSubscriber() {
@@ -77,5 +78,6 @@ public class MasterBackedSocketController extends AbstractSocketController {
     public void close() {
         stoppedTasks.clear();
         raceStyleTaskStorage.clear();
+        requestsStream.close();
     }
 }

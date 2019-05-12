@@ -2,6 +2,7 @@ package ru.babobka.nodeift.lags;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
@@ -20,6 +21,7 @@ import ru.babobka.nodeutils.util.TextUtil;
 /**
  * Created by 123 on 18.02.2018.
  */
+@Ignore
 public class LagCacheITCase extends ru.babobka.nodeift.CacheITCase {
 
     @BeforeClass

@@ -3,6 +3,7 @@ package ru.babobka.nodeserials;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class NodeResponse extends NodeData {
@@ -25,7 +26,7 @@ public class NodeResponse extends NodeData {
     }
 
     public NodeResponse(UUID taskId, ResponseStatus status, String taskName) {
-        this(UUID.randomUUID(), taskId, 0, status, null, null, taskName, System.currentTimeMillis());
+        this(UUID.randomUUID(), taskId, -1, status, null, null, taskName, System.currentTimeMillis());
     }
 
     public static NodeResponse validationError(NodeRequest request) {
@@ -73,12 +74,12 @@ public class NodeResponse extends NodeData {
     }
 
     public static NodeResponse heartBeat() {
-        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, ResponseStatus.HEART_BEAT, null, null,
+        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, -1, ResponseStatus.HEART_BEAT, null, null,
                 null, System.currentTimeMillis());
     }
 
     public static NodeResponse death() {
-        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, 0, ResponseStatus.DEATH, null, null,
+        return new NodeResponse(DUMMY_UUID, DUMMY_UUID, -1, ResponseStatus.DEATH, null, null,
                 null, System.currentTimeMillis());
     }
 
@@ -116,7 +117,7 @@ public class NodeResponse extends NodeData {
         NodeResponse that = (NodeResponse) o;
 
         if (timeTakes != that.timeTakes) return false;
-        return status == that.status && (message != null ? message.equals(that.message) : that.message == null);
+        return status == that.status && (Objects.equals(message, that.message));
     }
 
     @Override

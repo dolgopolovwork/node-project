@@ -32,7 +32,6 @@ public class XsltConverter implements Converter {
             }
             writer.endNode();
         }
-
     }
 
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {

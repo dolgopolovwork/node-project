@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   master-node:
-    image: babobka/node-project-master
+    image: test/node-project-master
     container_name: master-node
     environment:
       - NODE_LOGS=logs
@@ -16,7 +16,7 @@ services:
       - node-project
 
   slave-node-1:
-    image: babobka/node-project-slave
+    image: test/node-project-slave
     container_name: slave-node-1
     environment:
       - NODE_LOGS=logs
@@ -35,7 +35,7 @@ services:
 
 
   submaster-slave-node:
-    image: babobka/node-project-slave
+    image: test/node-project-slave
     container_name: submaster-slave-node
     environment:
       - NODE_LOGS=logs
@@ -53,7 +53,7 @@ services:
       - node-project
 
   submaster-node:
-    image: babobka/node-project-submaster
+    image: test/node-project-submaster
     container_name: submaster-node
     environment:
       - NODE_LOGS=logs

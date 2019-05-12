@@ -2,6 +2,7 @@ package ru.babobka.nodeift.container.master;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
@@ -22,7 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 
-public class MasterSlaveMassSuicideResurrectionContainerITCase extends AbstractContainerITCase {
+@Ignore
+public class MasterSlaveMassSuicideResurrectionITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();
     private static final List<GenericContainer> slaves

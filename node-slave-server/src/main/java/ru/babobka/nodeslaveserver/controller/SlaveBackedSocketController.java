@@ -65,7 +65,7 @@ public class SlaveBackedSocketController extends AbstractSocketController {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         threadPool.shutdownNow();
     }
 }

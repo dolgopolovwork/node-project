@@ -1,9 +1,6 @@
 package ru.babobka.nodeift;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.slave.Sessions;
@@ -61,7 +58,7 @@ public class SessionAuthITCase {
     }
 
     @Test
-    public void testAuthTwoSessions() throws IOException, InterruptedException {
+    public void testAuthTwoSessions() throws IOException {
         SlaveServer slaveServer1 = null;
         SlaveServer slaveServer2 = null;
         try {
@@ -140,13 +137,13 @@ public class SessionAuthITCase {
         }
     }
 
-    private void interruptAndJoin(SlaveServer... slaveServers) throws InterruptedException {
+    private void interruptAndJoin(SlaveServer... slaveServers) {
         for (SlaveServer slaveServer : slaveServers) {
             interruptAndJoin(slaveServer);
         }
     }
 
-    private void interruptAndJoin(List<SlaveServer> slaveServers) throws InterruptedException {
+    private void interruptAndJoin(List<SlaveServer> slaveServers) {
         for (SlaveServer slaveServer : slaveServers) {
             interruptAndJoin(slaveServer);
         }

@@ -2,6 +2,7 @@ package ru.babobka.nodeift;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
@@ -40,6 +41,7 @@ public class ClientITCase {
 
     @BeforeClass
     public static void setUp() {
+        Container.getInstance().clear();
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), ClientITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

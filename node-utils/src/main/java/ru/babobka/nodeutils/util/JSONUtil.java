@@ -3,6 +3,7 @@ package ru.babobka.nodeutils.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import lombok.NonNull;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -48,13 +49,12 @@ public class JSONUtil {
         return GSON.fromJson(jsonObject.toString(), clazz);
     }
 
-    public static <T extends Serializable> T readJsonFile(StreamUtil streamUtil, String pathToJson, Class<T> clazz) throws IOException {
-        if (streamUtil == null) {
-            throw new IllegalArgumentException("streamUtil is null");
-        } else if (TextUtil.isEmpty(pathToJson)) {
+    public static <T extends Serializable> T readJsonFile(
+            @NonNull StreamUtil streamUtil,
+            @NonNull String pathToJson,
+            @NonNull Class<T> clazz) throws IOException {
+        if (TextUtil.isEmpty(pathToJson)) {
             throw new IllegalArgumentException("pathToJson is null");
-        } else if (clazz == null) {
-            throw new IllegalArgumentException("class was not specified");
         }
         String fileContent = streamUtil.readFile(pathToJson);
         try {

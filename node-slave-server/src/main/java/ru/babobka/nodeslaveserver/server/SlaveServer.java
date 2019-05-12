@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
+
 public class SlaveServer extends Thread {
 
     private static final AtomicInteger SLAVE_ID = new AtomicInteger();
@@ -32,9 +34,9 @@ public class SlaveServer extends Thread {
     private final ControllerFactory controllerFactory;
 
     SlaveServer(@NonNull Socket socket,
-                        @NonNull String login,
-                        @NonNull String password,
-                        @NonNull ControllerFactory controllerFactory) throws IOException {
+                @NonNull String login,
+                @NonNull String password,
+                @NonNull ControllerFactory controllerFactory) throws IOException {
 
         NodeConnection connection = nodeConnectionFactory.create(socket);
         AuthCredentials credentials = new AuthCredentials(login, password);
@@ -65,7 +67,9 @@ public class SlaveServer extends Thread {
                 controller.control();
             }
         } catch (IOException | RuntimeException e) {
-            logger.error("exception thrown", e);
+            if (!connection.isClosed() && !isClosedConnectionException(e)) {
+                logger.error("exception thrown", e);
+            }
         } finally {
             logger.info("exiting slave server");
             clear();

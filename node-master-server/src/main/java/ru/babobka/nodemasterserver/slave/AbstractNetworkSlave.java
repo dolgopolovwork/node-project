@@ -70,7 +70,7 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
             logger.info("slave " + this.getSlaveId() + " gently asked to be killed");
             return false;
         } else if (response.getStatus() == ResponseStatus.NO_NODES) {
-            logger.info("slave "+ this.getSlaveId()+" server is out of sub-slaves");
+            logger.info("slave " + this.getSlaveId() + " server is out of sub-slaves");
             return false;
         } else if (response.getStatus() != ResponseStatus.HEART_BEAT) {
             onReceive(response);

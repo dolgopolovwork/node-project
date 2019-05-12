@@ -1,7 +1,8 @@
-package ru.babobka.nodeift.container.submaster;
+package ru.babobka.nodeift.container.master;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
@@ -22,35 +23,31 @@ import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 import static ru.babobka.nodeift.PrimeCounterITCase.PRIME_COUNTER_LARGE_RANGE_ANSWER;
 import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
-public class MasterOneSlaveAndSubMasterNoSlavesContainerITCase extends AbstractContainerITCase {
+@Ignore
+public class MasterOneSlaveITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();
     private static final GenericContainer slave = createSlave();
-    private static final GenericContainer submaster = createSubMaster();
 
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
         Thread.sleep(2_000);
         slave.start();
-        Thread.sleep(2_000);
-        submaster.start();
         Thread.sleep(5_000);
     }
 
     @AfterClass
     public static void stopContainer() {
-        slave.close();
-        submaster.close();
         master.close();
+        slave.close();
     }
 
     @Test
     public void testFactor() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
-        assertTrue(isSubmasterHealthy(submaster));
         assertEquals(1, getMasterClusterSize(master));
-        assertEquals(0, getSubmasterClusterSize(submaster));
+        int executedTaskSize = getMasterTaskMonitoring(master).getExecutedTasks();
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 45;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -61,17 +58,18 @@ public class MasterOneSlaveAndSubMasterNoSlavesContainerITCase extends AbstractC
             BigInteger factor = response.getDataValue("factor");
             assertTrue(factor.equals(p) || factor.equals(q));
         }
+        assertEquals(executedTaskSize + 1, getMasterTaskMonitoring(master).getExecutedTasks());
     }
 
     @Test
     public void testFactorMassive() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
-        assertTrue(isSubmasterHealthy(submaster));
         assertEquals(1, getMasterClusterSize(master));
-        assertEquals(0, getSubmasterClusterSize(submaster));
+        int executedTaskSize = getMasterTaskMonitoring(master).getExecutedTasks();
+        int tests = 25;
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 35;
-            for (int i = 0; i < 25; i++) {
+            for (int i = 0; i < tests; i++) {
                 BigInteger p = BigInteger.probablePrime(bits, new Random());
                 BigInteger q = BigInteger.probablePrime(bits, new Random());
                 NodeRequest request = createFactorTest(p, q);
@@ -81,27 +79,27 @@ public class MasterOneSlaveAndSubMasterNoSlavesContainerITCase extends AbstractC
                 assertTrue(factor.equals(p) || factor.equals(q));
             }
         }
+        assertEquals(executedTaskSize + tests, getMasterTaskMonitoring(master).getExecutedTasks());
     }
 
     @Test
     public void testPrimeCount() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
-        assertTrue(isSubmasterHealthy(submaster));
         assertEquals(1, getMasterClusterSize(master));
-        assertEquals(0, getSubmasterClusterSize(submaster));
+        int executedTaskSize = getMasterTaskMonitoring(master).getExecutedTasks();
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
             assertEquals((int) response.getDataValue("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER);
         }
+        assertEquals(executedTaskSize + 1, getMasterTaskMonitoring(master).getExecutedTasks());
     }
 
     @Test
     public void testFactorTooBigRequest() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
-        assertTrue(isSubmasterHealthy(submaster));
         assertEquals(1, getMasterClusterSize(master));
-        assertEquals(0, getSubmasterClusterSize(submaster));
+        int executedTaskSize = getMasterTaskMonitoring(master).getExecutedTasks();
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 256;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -111,5 +109,6 @@ public class MasterOneSlaveAndSubMasterNoSlavesContainerITCase extends AbstractC
             NodeResponse response = future.get();
             assertEquals(response.getStatus(), ResponseStatus.VALIDATION_ERROR);
         }
+        assertEquals(executedTaskSize, getMasterTaskMonitoring(master).getExecutedTasks());
     }
 }

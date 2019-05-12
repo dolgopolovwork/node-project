@@ -9,12 +9,13 @@ import org.testcontainers.containers.output.OutputFrame;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringData;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
-import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 
 public abstract class AbstractContainerITCase {
+
+    private static final String USER_FOLDER = System.getProperty("user.dir");
 
     static {
         LoggerInit.initConsoleLogger();
@@ -90,9 +91,9 @@ public abstract class AbstractContainerITCase {
     private static void mountLogsAndTasks(@NonNull GenericContainer container, @NonNull String folderName) {
         container.withEnv(Env.NODE_LOGS.name(), "logs").withEnv(Env.NODE_TASKS.name(), "tasks");
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_LOGS), "/opt/" + folderName + "/logs", BindMode.READ_WRITE);
+                USER_FOLDER + "/logs", "/opt/" + folderName + "/logs", BindMode.READ_WRITE);
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_TASKS), "/opt/" + folderName + "/tasks", BindMode.READ_ONLY);
+                USER_FOLDER + "/tasks", "/opt/" + folderName + "/tasks", BindMode.READ_ONLY);
     }
 
     private static void initLogConsumer(@NonNull GenericContainer container) {
@@ -154,9 +155,4 @@ public abstract class AbstractContainerITCase {
     private static int getSubmasterWebPort(@NonNull GenericContainer master) {
         return master.getMappedPort(ContainerConfigs.submasterServerConfig.getPorts().getWebListenerPort());
     }
-
-    protected static int getSubmasterClientPort(@NonNull GenericContainer submaster) {
-        return submaster.getMappedPort(ContainerConfigs.submasterServerConfig.getPorts().getClientListenerPort());
-    }
-
 }

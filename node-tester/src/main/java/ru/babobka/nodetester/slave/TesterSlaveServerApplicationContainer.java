@@ -4,7 +4,6 @@ import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.rsa.RSAPublicKey;
-import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeslaveserver.service.SlaveAuthService;
@@ -19,11 +18,7 @@ import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.key.UtilKey;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
-import ru.babobka.nodeutils.react.PubSub;
 import ru.babobka.nodeutils.thread.ThreadPoolService;
-
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_REQUEST_STREAM;
-
 
 /**
  * Created by 123 on 05.11.2017.
@@ -46,7 +41,6 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
             container.put(new NodeUtilsApplicationContainer());
             container.put(new SecurityApplicationContainer());
             container.putIfAbsent(new NodeConnectionFactory());
-            container.put(SLAVE_SERVER_REQUEST_STREAM, new PubSub<NodeRequest>());
             SlaveServerConfig config = createTestConfig();
             new SlaveServerConfigValidator().validate(config);
             container.put(config);

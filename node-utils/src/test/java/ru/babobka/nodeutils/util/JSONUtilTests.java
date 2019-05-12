@@ -51,7 +51,7 @@ public class JSONUtilTests {
         assertFalse(JSONUtil.isJSONValid("{kek}"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testReadJsonFileNullPath() throws IOException {
         JSONUtil.readJsonFile(mock(StreamUtil.class), null, Serializable.class);
     }

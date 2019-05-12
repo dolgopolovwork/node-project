@@ -8,9 +8,7 @@ import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
-import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.react.PubSub;
 import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.waiter.Waiter;
@@ -24,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_CREATION_WAITER;
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_REQUEST_STREAM;
 
 public class SubMasterApp extends CLI {
 
@@ -39,7 +36,6 @@ public class SubMasterApp extends CLI {
             container.put(new MasterServerConfigValidator());
             container.put(new SecurityApplicationContainer());
             container.put(new ConfigsApplicationContainer());
-            container.put(SLAVE_SERVER_REQUEST_STREAM, new PubSub<NodeRequest>());
             container.put(new GotSlavesListener(slaveCreationWaiter));
             container.put(SLAVE_CREATION_WAITER, slaveCreationWaiter);
         });

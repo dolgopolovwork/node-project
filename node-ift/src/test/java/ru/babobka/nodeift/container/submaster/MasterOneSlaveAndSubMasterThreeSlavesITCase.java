@@ -2,6 +2,7 @@ package ru.babobka.nodeift.container.submaster;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
@@ -24,9 +25,11 @@ import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 import static ru.babobka.nodeift.PrimeCounterITCase.PRIME_COUNTER_LARGE_RANGE_ANSWER;
 import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
-public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContainerITCase {
+@Ignore
+public class MasterOneSlaveAndSubMasterThreeSlavesITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();
+    private static final GenericContainer slave = createSlave();
     private static final GenericContainer submaster = createSubMaster();
     private static final List<GenericContainer> submasterSlaves
             = Arrays.asList(createSubMasterSlave(), createSubMasterSlave(), createSubMasterSlave());
@@ -37,12 +40,15 @@ public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContai
         Thread.sleep(2_000);
         submaster.start();
         Thread.sleep(2_000);
-        submasterSlaves.forEach(GenericContainer::start);
+        slave.start();
         Thread.sleep(2_000);
+        submasterSlaves.forEach(GenericContainer::start);
+        Thread.sleep(5_000);
     }
 
     @AfterClass
     public static void stopContainers() {
+        slave.stop();
         submasterSlaves.forEach(GenericContainer::stop);
         submaster.stop();
         master.stop();
@@ -52,7 +58,7 @@ public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContai
     public void testFactor() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
         assertTrue(isSubmasterHealthy(submaster));
-        assertEquals(1, getMasterClusterSize(master));
+        assertEquals(2, getMasterClusterSize(master));
         assertEquals(3, getSubmasterClusterSize(submaster));
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 45;
@@ -70,7 +76,7 @@ public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContai
     public void testFactorMassive() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
         assertTrue(isSubmasterHealthy(submaster));
-        assertEquals(1, getMasterClusterSize(master));
+        assertEquals(2, getMasterClusterSize(master));
         assertEquals(3, getSubmasterClusterSize(submaster));
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 35;
@@ -90,7 +96,7 @@ public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContai
     public void testPrimeCount() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
         assertTrue(isSubmasterHealthy(submaster));
-        assertEquals(1, getMasterClusterSize(master));
+        assertEquals(2, getMasterClusterSize(master));
         assertEquals(3, getSubmasterClusterSize(submaster));
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
@@ -103,7 +109,7 @@ public class MasterAndSubMasterThreeSlavesContainerITCase extends AbstractContai
     public void testFactorTooBigRequest() throws IOException, InterruptedException, ExecutionException {
         assertTrue(isMasterHealthy(master));
         assertTrue(isSubmasterHealthy(submaster));
-        assertEquals(1, getMasterClusterSize(master));
+        assertEquals(2, getMasterClusterSize(master));
         assertEquals(3, getSubmasterClusterSize(submaster));
         try (Client client = new Client("localhost", getMasterClientPort(master))) {
             int bits = 256;

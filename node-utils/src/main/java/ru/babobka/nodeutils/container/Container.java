@@ -3,7 +3,6 @@ package ru.babobka.nodeutils.container;
 import lombok.NonNull;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,6 +31,10 @@ public class Container {
             return true;
         }
         return false;
+    }
+
+    synchronized boolean isEmpty() {
+        return containerMap.isEmpty() && namedContainerMap.isEmpty();
     }
 
     public synchronized void put(@NonNull AbstractApplicationContainer abstractApplicationContainer) {
@@ -107,19 +110,19 @@ public class Container {
 
     private void killObjectsSilently(Collection<Object> objects) {
         objects.forEach(object -> {
-            if (object.getClass().isAssignableFrom(Closeable.class)) {
+            if (Closeable.class.isAssignableFrom(object.getClass())) {
                 try {
                     ((Closeable) object).close();
-                } catch (IOException ignored) {
+                } catch (Exception ignored) {
 
                 }
-            } else if (object.getClass().isAssignableFrom(Thread.class)) {
+            } else if (Thread.class.isAssignableFrom(object.getClass())) {
                 try {
                     ((Thread) object).interrupt();
                 } catch (Exception ignored) {
 
                 }
-            } else if (object.getClass().isAssignableFrom(ExecutorService.class)) {
+            } else if (ExecutorService.class.isAssignableFrom(object.getClass())) {
                 try {
                     ((ExecutorService) object).shutdownNow();
                 } catch (Exception ignored) {
@@ -130,6 +133,15 @@ public class Container {
     }
 
     private static class SingletonHolder {
+        static {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    HOLDER_INSTANCE.clear();
+                }
+            });
+        }
+
         static final Container HOLDER_INSTANCE = new Container();
     }
 }

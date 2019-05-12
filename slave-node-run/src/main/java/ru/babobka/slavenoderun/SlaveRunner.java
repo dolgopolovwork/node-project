@@ -50,6 +50,7 @@ class SlaveRunner {
                 return null;
             } catch (IOException e) {
                 e.printStackTrace();
+                logger.info("wait slave reconnection");
                 waitReconnection();
             }
         }
