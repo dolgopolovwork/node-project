@@ -4,10 +4,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import ru.babobka.nodebusiness.dao.CacheDAO;
-import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
+import ru.babobka.nodeconfigs.master.MasterServerConfig;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodetask.service.TaskService;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.LaggyNodeConnectionFactory;
@@ -17,6 +17,8 @@ import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
+
+import java.security.PublicKey;
 
 /**
  * Created by 123 on 18.02.2018.
@@ -31,8 +33,8 @@ public class LagCacheITCase extends ru.babobka.nodeift.CacheITCase {
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);
         monitoringService = Container.getInstance().get(TaskMonitoringService.class);

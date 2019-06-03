@@ -49,7 +49,7 @@ public abstract class AbstractContainerITCase {
                 .withExposedPorts(
                         ContainerConfigs.submasterServerConfig.getPorts().getClientListenerPort(),
                         ContainerConfigs.submasterServerConfig.getPorts().getWebListenerPort());
-        initLogConsumer(submaster);
+        //initLogConsumer(submaster);
         submaster.addFileSystemBind(
                 ContainerConfigs.SUBMASTER_CONFIG_PATH, "/opt/submaster/config/submaster-server-config.json", BindMode.READ_ONLY);
         submaster.addFileSystemBind(
@@ -66,7 +66,7 @@ public abstract class AbstractContainerITCase {
                         ContainerConfigs.submasterSlaveConfig.getServerHost() + ":"
                                 + ContainerConfigs.submasterSlaveConfig.getServerPort())
                 .withNetwork(ContainerConfigs.NETWORK);
-        initLogConsumer(slave);
+        //initLogConsumer(slave);
         mountLogsAndTasks(slave, "slave");
         slave.addFileSystemBind(
                 ContainerConfigs.SUBMASTER_SLAVE_CONFIG_PATH, "/opt/slave/config/slave-server-config.json", BindMode.READ_ONLY);
@@ -81,7 +81,7 @@ public abstract class AbstractContainerITCase {
                         ContainerConfigs.slaveServerConfig.getServerHost() + ":"
                                 + ContainerConfigs.slaveServerConfig.getServerPort())
                 .withNetwork(ContainerConfigs.NETWORK);
-        initLogConsumer(slave);
+        //initLogConsumer(slave);
         mountLogsAndTasks(slave, "slave");
         slave.addFileSystemBind(
                 ContainerConfigs.SLAVE_CONFIG_PATH, "/opt/slave/config/slave-server-config.json", BindMode.READ_ONLY);

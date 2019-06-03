@@ -1,9 +1,8 @@
 package ru.babobka.nodeconfigs.cli;
 
 import ru.babobka.nodeclient.console.CLI;
-import ru.babobka.nodeconfigs.cli.master.MasterConfigEncryptionMain;
-import ru.babobka.nodeconfigs.cli.master.MasterConfigReaderMain;
 import ru.babobka.nodeconfigs.cli.master.MasterConfigWriterMain;
+import ru.babobka.nodeconfigs.cli.slave.SlaveConfigWriterMain;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,9 +15,8 @@ public class ConfigCliMainApp {
     private static final Map<String, CLI> COMMANDS = new HashMap<>();
 
     static {
-        addCommand(new MasterConfigEncryptionMain());
-        addCommand(new MasterConfigReaderMain());
         addCommand(new MasterConfigWriterMain());
+        addCommand(new SlaveConfigWriterMain());
     }
 
     private static void addCommand(CLI cli) {

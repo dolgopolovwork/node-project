@@ -13,7 +13,7 @@ import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,7 +22,6 @@ import java.util.List;
 public class MasterApp extends CLI {
 
     private static final String CONFIG_PATH_OPTION = "masterConfigPath";
-    private static final String CONFIG_PASSWORD_OPTION = "masterConfigPassword";
 
     private static void init() {
         Container.getInstance().put(container -> {
@@ -40,18 +39,14 @@ public class MasterApp extends CLI {
                 CONFIG_PATH_OPTION,
                 "Defines path to configuration json file. " +
                         "May be omitted, if environment variable " + Env.NODE_MASTER_CONFIG + " is set.");
-        Option configPassword = createArgOption(
-                CONFIG_PASSWORD_OPTION,
-                "Defines password for decryption of configuration file. Not used if configuration file is not encrypted.");
-        return Arrays.asList(configPath, configPassword);
+        return Collections.singletonList(configPath);
     }
 
     @Override
     public void run(CommandLine cmd) throws IOException {
         String pathToConfig = getPathToConfig(cmd);
-        String configPassword = cmd.getOptionValue(CONFIG_PASSWORD_OPTION);
         MasterServerRunner masterServerRunner = new MasterServerRunner();
-        masterServerRunner.run(pathToConfig, configPassword);
+        masterServerRunner.run(pathToConfig);
     }
 
     @Override

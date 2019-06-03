@@ -6,10 +6,10 @@ import ru.babobka.nodebusiness.dao.NodeUsersDAO;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodesecurity.config.SrpConfig;
-import ru.babobka.nodesecurity.service.SRPService;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.container.Container;
 
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -25,27 +25,21 @@ public class NodeUsersServiceImplTest {
     private NodeUsersDAO nodeUsersDAO;
     private UserDTOMapper userDTOMapper;
     private NodeUsersService nodeUsersService;
-    private SrpConfig srpConfig;
-    private SRPService SRPService;
 
     @Before
     public void setUp() {
         nodeUsersDAO = mock(NodeUsersDAO.class);
         userDTOMapper = mock(UserDTOMapper.class);
-        srpConfig = mock(SrpConfig.class);
-        SRPService = mock(SRPService.class);
         Container.getInstance().put(container -> {
             container.put(nodeUsersDAO);
             container.put(userDTOMapper);
-            container.put(srpConfig);
-            container.put(SRPService);
         });
 
         nodeUsersService = new NodeUsersServiceImpl();
     }
 
     @Test
-    public void testGetList() {
+    public void testGetList() throws InvalidKeySpecException {
         User user = createUser();
         List<User> users = Arrays.asList(user, user, user);
         when(nodeUsersDAO.getList()).thenReturn(users);
@@ -53,7 +47,7 @@ public class NodeUsersServiceImplTest {
     }
 
     @Test
-    public void testGet() {
+    public void testGet() throws InvalidKeySpecException {
         User user = createUser();
         UUID uuid = UUID.randomUUID();
         user.setId(uuid);
@@ -89,12 +83,11 @@ public class NodeUsersServiceImplTest {
         verify(nodeUsersDAO).add(any(User.class));
     }
 
-    private User createUser() {
+    private User createUser() throws InvalidKeySpecException {
         User user = new User();
         user.setEmail("abc@xyz.ru");
         user.setName("abc");
-        user.setSalt(new byte[]{1, 2, 3});
-        user.setSecret(new byte[]{4, 5, 6});
+        user.setPublicKey(KeyDecoder.decodePublicKey(DebugBase64KeyPair.DEBUG_PUB_KEY));
         user.setId(UUID.randomUUID());
         return user;
     }

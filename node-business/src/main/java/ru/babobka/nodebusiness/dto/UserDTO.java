@@ -10,7 +10,7 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 3340802658169837956L;
     private String name;
-    private String hashedPassword;
+    private String base64PubKey;
     private String email;
 
     public String getName() {
@@ -21,18 +21,19 @@ public class UserDTO implements Serializable {
         this.name = name;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getBase64PubKey() {
+        return base64PubKey;
+    }
+
+    public void setBase64PubKey(String base64PubKey) {
+        this.base64PubKey = base64PubKey;
     }
 }

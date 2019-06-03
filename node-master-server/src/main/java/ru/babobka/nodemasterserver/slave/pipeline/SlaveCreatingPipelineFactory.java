@@ -12,7 +12,6 @@ public class SlaveCreatingPipelineFactory {
         return new Pipeline<PipeContext>(() -> pipeContext.getConnection().close())
                 .add(new SlaveAuthStep())
                 .add(new CommonTasksStep())
-                .add(new ServerAuthStep())
                 .add(new SlaveCreateStep())
                 .add(new SlaveRunStep());
     }

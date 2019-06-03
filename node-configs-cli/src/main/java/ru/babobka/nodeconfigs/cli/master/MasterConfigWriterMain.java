@@ -10,9 +10,9 @@ import ru.babobka.nodeconfigs.master.validation.rule.PortValidationRule;
 import ru.babobka.nodeconfigs.master.validation.rule.TimeValidationRule;
 import ru.babobka.nodeconfigs.service.ConfigProvider;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
-import ru.babobka.nodesecurity.rsa.RSAConfigFactory;
+import ru.babobka.nodesecurity.keypair.Base64KeyPair;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
@@ -20,6 +20,7 @@ import ru.babobka.nodeutils.validation.ValidationRule;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,12 +68,7 @@ public class MasterConfigWriterMain extends CLI {
                 printErr("folder '" + configFolder + "' doesn't exist");
             }
         }
-        boolean mustBeEncrypted = readYesNo("do you want your config to be encrypted?");
-        String password = null;
-        if (mustBeEncrypted) {
-            password = readPassword("please provide password to encrypt configuration file.");
-        }
-        configProvider.createConfig(configFolder, config, password);
+        configProvider.createMasterConfig(configFolder, config);
         print("Congratulations! Your config file was successfully created in " + configFolder);
     }
 
@@ -80,7 +76,7 @@ public class MasterConfigWriterMain extends CLI {
         printLabel("Modes configuration");
         ModeConfig modeConfig = new ModeConfig();
         modeConfig.setCacheMode(readYesNo("enable response caching?"));
-        modeConfig.setSingleSessionMode(readYesNo("don't let clients connect with the same credentials twice?"));
+        modeConfig.setSingleSessionMode(!readYesNo("enable multiple sessions?"));
         modeConfig.setTestUserMode(readYesNo("WARNING! don't use this ability in production.\ncreate test user?"));
         config.setModes(modeConfig);
     }
@@ -96,11 +92,11 @@ public class MasterConfigWriterMain extends CLI {
         PortValidationRule totalPortValidationRule = new PortValidationRule();
         while (true) {
             portConfig.setClientListenerPort(Integer.parseInt(readLine(
-                    "please provide port number for clients", validPortRule)));
+                    "port number for clients", validPortRule)));
             portConfig.setSlaveListenerPort(Integer.parseInt(readLine(
-                    "please provide port number for slaves", validPortRule)));
+                    "port number for slaves", validPortRule)));
             portConfig.setWebListenerPort(Integer.parseInt(readLine(
-                    "please provide port number for web-server", validPortRule)));
+                    "port number for web-server", validPortRule)));
             try {
                 config.setPorts(portConfig);
                 totalPortValidationRule.validate(config);
@@ -122,13 +118,13 @@ public class MasterConfigWriterMain extends CLI {
         TimeValidationRule timeValidationRule = new TimeValidationRule();
         while (true) {
             timeConfig.setAuthTimeOutMillis(Integer.parseInt(readLine(
-                    "please provide timeout for authentication service (in seconds)", validNumber)) * 1000);
+                    "timeout for authentication service (in seconds)", validNumber)) * 1000);
             timeConfig.setDataOutDateMillis(Integer.parseInt(readLine(
-                    "please provide timeout for transmitted data to be considered outdated (in seconds)", validNumber)) * 1000);
+                    "timeout for transmitted data to be considered outdated (in seconds)", validNumber)) * 1000);
             timeConfig.setHeartBeatCycleMillis(Integer.parseInt(readLine(
-                    "please provide frequency of heart beating (in seconds)", validNumber)) * 1000);
+                    "frequency of heart beating (in seconds)", validNumber)) * 1000);
             timeConfig.setRequestReadTimeOutMillis(Integer.parseInt(readLine(
-                    "please provide data reading timeout (in seconds)", validNumber)) * 1000);
+                    "data reading timeout (in seconds)", validNumber)) * 1000);
             try {
                 config.setTime(timeConfig);
                 timeValidationRule.validate(config);
@@ -145,8 +141,8 @@ public class MasterConfigWriterMain extends CLI {
         FolderConfig folderConfig = new FolderConfig();
         FolderValidationRule folderValidationRule = new FolderValidationRule();
         while (true) {
-            folderConfig.setLoggerFolder(readLine("please provide path to log folder"));
-            folderConfig.setTasksFolder(readLine("please provide path to folder full of tasks"));
+            folderConfig.setLoggerFolder(readLine("path to log folder"));
+            folderConfig.setTasksFolder(readLine("path to folder full of tasks"));
             try {
                 config.setFolders(folderConfig);
                 folderValidationRule.validate(config);
@@ -158,11 +154,11 @@ public class MasterConfigWriterMain extends CLI {
     }
 
     private void setSecurityConfig(MasterServerConfig config) {
-        SecurityConfig securityConfig = new SecurityConfig();
-        securityConfig.setBigSafePrime(SafePrime.random((256)).getPrime());
-        securityConfig.setChallengeBytes(32);
-        securityConfig.setRsaConfig(RSAConfigFactory.create(256));
-        config.setSecurity(securityConfig);
+        KeyPair keyPair = KeyDecoder.generateKeyPair();
+        Base64KeyPair base64KeyPair = new Base64KeyPair();
+        base64KeyPair.setPrivKey(TextUtil.toBase64(keyPair.getPrivate().getEncoded()));
+        base64KeyPair.setPubKey(TextUtil.toBase64(keyPair.getPublic().getEncoded()));
+        config.setKeyPair(base64KeyPair);
     }
 
     @Override

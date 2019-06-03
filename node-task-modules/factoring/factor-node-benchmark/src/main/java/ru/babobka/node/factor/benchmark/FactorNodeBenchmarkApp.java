@@ -31,7 +31,7 @@ public class FactorNodeBenchmarkApp extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected void benchMarkRun(CommandLine cmd) {
+    protected void benchmarkRun(CommandLine cmd) {
         int numberBitLength = Integer.parseInt(cmd.getOptionValue(NUMBER_BIT_LENGTH_OPTION));
         new NodeBenchmark(getAppName(), getTests(cmd))
                 .run(getSlaves(cmd), getServiceThreads(cmd), new FactorNodeBenchmarkPerformer(numberBitLength));

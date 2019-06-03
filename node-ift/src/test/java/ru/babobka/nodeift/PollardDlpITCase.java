@@ -7,10 +7,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
-import ru.babobka.nodetask.exception.TaskExecutionException;
 import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
@@ -24,6 +23,7 @@ import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.PublicKey;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -43,8 +43,8 @@ public class PollardDlpITCase {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), PollardDlpITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);
     }
@@ -87,7 +87,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpMediumNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 25;
             createDlpTest(bits, taskService);
@@ -96,7 +96,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpMediumNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 25;
             createDlpTest(bits, taskService);
@@ -105,7 +105,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpMediumNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 25;
             for (int i = 0; i < 25; i++) {
@@ -116,7 +116,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpBigNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 32;
             createDlpTest(bits, taskService);
@@ -125,7 +125,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpBigNumberOneSlaveMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 32;
             for (int i = 0; i < 15; i++) {
@@ -136,7 +136,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpBigNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 32;
             createDlpTest(bits, taskService);
@@ -145,7 +145,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpBigNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 32;
             for (int i = 0; i < 15; i++) {
@@ -156,7 +156,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpBigNumberTwoSlavesMassiveGlitchy() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2, true)) {
             slaveServerCluster.start();
             int bits = 32;
             for (int i = 0; i < 500; i++) {
@@ -167,7 +167,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpExtraBigNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 40;
             createDlpTest(bits, taskService);
@@ -176,7 +176,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpExtraBigNumberOneSlaveMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 40;
             for (int i = 0; i < 5; i++) {
@@ -187,7 +187,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpExtraBigNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 40;
             createDlpTest(bits, taskService);
@@ -196,7 +196,7 @@ public class PollardDlpITCase {
 
     @Test
     public void testDlpExtraBigNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 40;
             for (int i = 0; i < 5; i++) {

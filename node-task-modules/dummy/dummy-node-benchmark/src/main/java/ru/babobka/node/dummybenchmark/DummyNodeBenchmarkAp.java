@@ -16,7 +16,7 @@ public class DummyNodeBenchmarkAp extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected void benchMarkRun(CommandLine cmd) {
+    protected void benchmarkRun(CommandLine cmd) {
         new NodeBenchmark(getAppName(), getTests(cmd))
                 .run(getSlaves(cmd), getServiceThreads(cmd), new DummyNodeBenchmarkPerformer());
     }

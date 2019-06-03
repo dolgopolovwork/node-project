@@ -3,11 +3,12 @@ package ru.babobka.nodetester.benchmark;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.model.Benchmark;
 import ru.babobka.nodebusiness.service.BenchmarkStorageService;
+import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.PortConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodetester.benchmark.mapper.BenchmarkMapper;
 import ru.babobka.nodetester.benchmark.performer.BenchmarkPerformer;
 import ru.babobka.nodetester.key.TesterKey;
@@ -19,6 +20,8 @@ import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -28,7 +31,6 @@ public class NodeBenchmark {
 
     private static final Logger logger = Logger.getLogger(NodeBenchmark.class);
     private static final String LOGIN = "test_user";
-    private static final String PASSWORD = "test_password";
     private final BenchmarkMapper benchmarkMapper = new BenchmarkMapper();
     private final long startTime;
     private final String appName;
@@ -56,24 +58,27 @@ public class NodeBenchmark {
         if (slaves < 0 || serviceThreads < 0) {
             throw new IllegalArgumentException("Both slaves and serviceThreads must be at least 1");
         }
-        MasterServerRunner.init();
-        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
-        startMonitoring();
-        Container.getInstance().put(UtilKey.SERVICE_THREADS_NUM, serviceThreads);
-        MasterServer masterServer = MasterServerRunner.runMasterServer();
-        try (SlaveServerCluster slaveServerCluster = createCluster(LOGIN, PASSWORD, slaves)) {
-            slaveServerCluster.start();
-            BenchmarkData benchmarkData = executeCycledBenchmark(masterServerConfig.getPorts(), tests, benchmarkPerformer);
-            if (benchmarkData != null) {
-                CLI.print(benchmarkData.toString());
-                saveBenchmark(benchmarkData, slaves, serviceThreads);
+        try {
+            MasterServerRunner.init();
+            MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+            PublicKey publicKey = KeyDecoder.decodePublicKey(masterServerConfig.getKeyPair().getPubKey());
+            SlaveServerRunner.init(publicKey);
+            startMonitoring();
+            Container.getInstance().put(UtilKey.SERVICE_THREADS_NUM, serviceThreads);
+            MasterServer masterServer = MasterServerRunner.runMasterServer();
+            try (SlaveServerCluster slaveServerCluster = createCluster(
+                    LOGIN, KeyDecoder.decodePrivateKey(DebugBase64KeyPair.DEBUG_PRIV_KEY), slaves)) {
+                slaveServerCluster.start();
+                BenchmarkData benchmarkData = executeCycledBenchmark(masterServerConfig.getPorts(), tests, benchmarkPerformer);
+                if (benchmarkData != null) {
+                    CLI.print(benchmarkData.toString());
+                    saveBenchmark(benchmarkData, slaves, serviceThreads);
+                }
+            } finally {
+                masterServer.interrupt();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("exception thrown", e);
-        } finally {
-            masterServer.interrupt();
         }
     }
 
@@ -95,8 +100,8 @@ public class NodeBenchmark {
         storageService.insert(benchmark);
     }
 
-    SlaveServerCluster createCluster(String login, String password, int slaves) throws IOException {
-        return new SlaveServerCluster(login, password, slaves);
+    SlaveServerCluster createCluster(String login, PrivateKey privateKey, int slaves) throws IOException {
+        return new SlaveServerCluster(login, privateKey, slaves);
     }
 
 }

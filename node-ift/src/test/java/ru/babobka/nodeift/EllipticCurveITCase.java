@@ -7,10 +7,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
-import ru.babobka.nodetask.exception.TaskExecutionException;
 import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
@@ -22,6 +21,8 @@ import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 import java.util.UUID;
 
@@ -39,12 +40,12 @@ public class EllipticCurveITCase {
     private static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws InvalidKeySpecException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), EllipticCurveITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPubKey = KeyDecoder.decodePublicKey(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPubKey);
         masterServer = MasterServerRunner.runMasterServer();
         taskService = Container.getInstance().get(TaskService.class);
     }
@@ -81,7 +82,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorMediumNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 32;
             createFactorTest(bits, taskService);
@@ -90,7 +91,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorMediumNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 32;
             createFactorTest(bits, taskService);
@@ -99,7 +100,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorMediumNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 32;
             for (int i = 0; i < 50; i++) {
@@ -110,7 +111,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorBigNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 40;
             createFactorTest(bits, taskService);
@@ -119,7 +120,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorBigNumberOneSlaveMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 40;
             for (int i = 0; i < 25; i++) {
@@ -130,7 +131,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorBigNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 40;
             createFactorTest(bits, taskService);
@@ -139,7 +140,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorBigNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 40;
             for (int i = 0; i < 25; i++) {
@@ -150,7 +151,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorBigNumberTwoSlavesMassiveGlitchy() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2, true)) {
             slaveServerCluster.start();
             int bits = 40;
             for (int i = 0; i < 10; i++) {
@@ -161,7 +162,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorExtraBigNumberOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 45;
             createFactorTest(bits, taskService);
@@ -170,7 +171,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorExtraBigNumberOneSlaveMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY)) {
             slaveServerCluster.start();
             int bits = 45;
             for (int i = 0; i < 10; i++) {
@@ -181,7 +182,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorExtraBigNumberTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 45;
             createFactorTest(bits, taskService);
@@ -190,7 +191,7 @@ public class EllipticCurveITCase {
 
     @Test
     public void testFactorExtraBigNumberTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PASSWORD, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2)) {
             slaveServerCluster.start();
             int bits = 45;
             for (int i = 0; i < 10; i++) {

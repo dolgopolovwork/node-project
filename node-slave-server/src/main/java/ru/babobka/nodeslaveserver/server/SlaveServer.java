@@ -19,6 +19,7 @@ import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.PrivateKey;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
@@ -35,11 +36,11 @@ public class SlaveServer extends Thread {
 
     SlaveServer(@NonNull Socket socket,
                 @NonNull String login,
-                @NonNull String password,
+                @NonNull PrivateKey privateKey,
                 @NonNull ControllerFactory controllerFactory) throws IOException {
 
         NodeConnection connection = nodeConnectionFactory.create(socket);
-        AuthCredentials credentials = new AuthCredentials(login, password);
+        AuthCredentials credentials = new AuthCredentials(login, privateKey);
         PipeContext pipeContext = new PipeContext(connection, credentials);
         Pipeline<PipeContext> slaveCreationPipeline = slavePipelineFactory.create(pipeContext);
         if (!slaveCreationPipeline.execute(pipeContext)) {
@@ -57,7 +58,8 @@ public class SlaveServer extends Thread {
     static ClientSecureNodeConnection createClientConnection(NodeConnection connection, PipeContext pipeContext) {
         return new ClientSecureNodeConnection(
                 pipeContext.getServerTime(), connection,
-                pipeContext.getAuthResult().getSecretKey());
+                pipeContext.getCredentials().getPrivateKey(),
+                pipeContext.getAuthResult().getPublicKey());
     }
 
     @Override

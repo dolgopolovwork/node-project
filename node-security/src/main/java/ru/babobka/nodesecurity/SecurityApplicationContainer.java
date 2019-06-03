@@ -1,10 +1,7 @@
 package ru.babobka.nodesecurity;
 
-import ru.babobka.nodesecurity.data.SecureDataFactory;
-import ru.babobka.nodesecurity.service.AESService;
-import ru.babobka.nodesecurity.service.RSAService;
-import ru.babobka.nodesecurity.service.SRPService;
-import ru.babobka.nodesecurity.service.SecureJSONService;
+import ru.babobka.nodesecurity.checker.SecureDataChecker;
+import ru.babobka.nodesecurity.sign.DigitalSigner;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
@@ -14,10 +11,7 @@ import ru.babobka.nodeutils.container.Container;
 public class SecurityApplicationContainer extends AbstractApplicationContainer {
     @Override
     protected void containImpl(Container container) {
-        container.put(new SRPService());
-        container.put(new SecureDataFactory());
-        container.put(new RSAService());
-        container.put(new AESService());
-        container.put(new SecureJSONService());
+        container.put(new DigitalSigner());
+        container.put(new SecureDataChecker());
     }
 }

@@ -23,7 +23,6 @@ import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 import static ru.babobka.nodeift.PrimeCounterITCase.PRIME_COUNTER_LARGE_RANGE_ANSWER;
 import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
-@Ignore
 public class MasterAndSubMasterOneSlaveITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();

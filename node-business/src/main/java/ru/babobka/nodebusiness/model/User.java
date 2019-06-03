@@ -1,7 +1,9 @@
 package ru.babobka.nodebusiness.model;
 
 import java.io.Serializable;
+import java.security.PublicKey;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -11,13 +13,18 @@ import java.util.UUID;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 6569577055168857214L;
-    private static final byte[] EMPTY_ARRAY = {};
     private String name;
-    private byte[] secret;
-    private byte[] salt;
+    private PublicKey publicKey;
     private String email;
     private UUID id;
 
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+    }
 
     public String getEmail() {
         return email;
@@ -25,28 +32,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public byte[] getSecret() {
-        if (secret != null)
-            return secret.clone();
-        return EMPTY_ARRAY;
-    }
-
-    public void setSecret(byte[] secret) {
-        if (secret != null)
-            this.secret = secret.clone();
-    }
-
-    public byte[] getSalt() {
-        if (salt != null)
-            return salt.clone();
-        return EMPTY_ARRAY;
-    }
-
-    public void setSalt(byte[] salt) {
-        if (salt != null)
-            this.salt = salt.clone();
     }
 
     public String getName() {
@@ -65,36 +50,28 @@ public class User implements Serializable {
         this.id = id;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         User user = (User) o;
-
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (!Arrays.equals(secret, user.secret)) return false;
-        if (!Arrays.equals(salt, user.salt)) return false;
-        if (email != null ? !email.equals(user.email) : user.email != null) return false;
-        return id != null ? id.equals(user.id) : user.id == null;
+        return Objects.equals(name, user.name) &&
+                Objects.equals(publicKey, user.publicKey) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + Arrays.hashCode(secret);
-        result = 31 * result + Arrays.hashCode(salt);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (id != null ? id.hashCode() : 0);
-        return result;
+        return Objects.hash(name, publicKey, email, id);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", secret=" + Arrays.toString(secret) +
-                ", salt=" + Arrays.toString(salt) +
+                ", publicKey=" + publicKey +
                 ", email='" + email + '\'' +
                 ", id=" + id +
                 '}';

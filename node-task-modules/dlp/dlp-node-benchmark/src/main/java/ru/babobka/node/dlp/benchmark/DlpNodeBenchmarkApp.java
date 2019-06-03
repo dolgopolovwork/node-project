@@ -37,7 +37,7 @@ public class DlpNodeBenchmarkApp extends NodeBenchmarkCLI {
     }
 
     @Override
-    protected void benchMarkRun(CommandLine cmd) {
+    protected void benchmarkRun(CommandLine cmd) {
         int orderBitLength = Integer.parseInt(cmd.getOptionValue(ORDER_BIT_LENGTH_OPTION));
         new NodeBenchmark(getAppName(), getTests(cmd))
                 .run(getSlaves(cmd), getServiceThreads(cmd), new DlpNodeBenchmarkPerformer(orderBitLength));

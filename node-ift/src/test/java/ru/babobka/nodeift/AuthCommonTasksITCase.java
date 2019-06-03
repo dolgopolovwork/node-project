@@ -4,7 +4,7 @@ import org.junit.*;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.server.MasterServer;
-import ru.babobka.nodesecurity.rsa.RSAPublicKey;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodetask.TaskPool;
@@ -16,6 +16,7 @@ import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,8 +36,8 @@ public class AuthCommonTasksITCase {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthCommonTasksITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
-        RSAPublicKey publicKey = masterServerConfig.getSecurity().getRsaConfig().getPublicKey();
-        SlaveServerRunner.init(publicKey);
+        PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());
+        SlaveServerRunner.init(serverPublicKey);
         masterServer = MasterServerRunner.runMasterServer();
     }
 
@@ -56,7 +57,7 @@ public class AuthCommonTasksITCase {
     @Test(expected = SlaveStartupException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
     }
 
     @Test(expected = SlaveStartupException.class)
@@ -65,7 +66,7 @@ public class AuthCommonTasksITCase {
         availableTasks.add("abc");
         availableTasks.add("xyz");
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
     }
 
     @Test
@@ -74,7 +75,7 @@ public class AuthCommonTasksITCase {
         TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PASSWORD);
+        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
     }
 
 }

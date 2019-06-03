@@ -3,6 +3,7 @@ package ru.babobka.nodeconfigs.master;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.babobka.nodeconfigs.NodeConfiguration;
+import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 
 public class MasterServerConfig implements NodeConfiguration {
 
@@ -11,7 +12,7 @@ public class MasterServerConfig implements NodeConfiguration {
     private ModeConfig modes;
     private PortConfig ports;
     private TimeConfig time;
-    private SecurityConfig security;
+    private Base64KeyPair keyPair;
     private FolderConfig folders;
 
     public ModeConfig getModes() {
@@ -38,20 +39,20 @@ public class MasterServerConfig implements NodeConfiguration {
         this.time = time;
     }
 
-    public SecurityConfig getSecurity() {
-        return security;
-    }
-
-    public void setSecurity(SecurityConfig security) {
-        this.security = security;
-    }
-
     public FolderConfig getFolders() {
         return folders;
     }
 
     public void setFolders(FolderConfig folders) {
         this.folders = folders;
+    }
+
+    public Base64KeyPair getKeyPair() {
+        return keyPair;
+    }
+
+    public void setKeyPair(Base64KeyPair keyPair) {
+        this.keyPair = keyPair;
     }
 
     @Override

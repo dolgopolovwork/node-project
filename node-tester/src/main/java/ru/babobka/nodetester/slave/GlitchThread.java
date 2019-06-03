@@ -1,10 +1,12 @@
 package ru.babobka.nodetester.slave;
 
+import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.thread.CyclicThread;
 import ru.babobka.nodeutils.util.TextUtil;
 
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Random;
 
@@ -15,18 +17,16 @@ public class GlitchThread extends CyclicThread {
     private static final Logger logger = Logger.getLogger(GlitchThread.class);
     private final List<SlaveServer> slaveServerList;
     private final String login;
-    private final String password;
+    private final PrivateKey privateKey;
 
-    public GlitchThread(String login, String password, List<SlaveServer> slaveServerList) {
+    public GlitchThread(String login, @NonNull PrivateKey privateKey, List<SlaveServer> slaveServerList) {
         if (TextUtil.isEmpty(login)) {
             throw new IllegalArgumentException("login was not set");
-        } else if (TextUtil.isEmpty(password)) {
-            throw new IllegalArgumentException("password was not set");
         } else if (slaveServerList == null) {
             throw new IllegalArgumentException("slaveServerList was not set");
         }
         this.login = login;
-        this.password = password;
+        this.privateKey = privateKey;
         this.slaveServerList = slaveServerList;
     }
 
@@ -45,7 +45,7 @@ public class GlitchThread extends CyclicThread {
             removeRandomSlave(slaveServerList);
             try {
                 sleep(500);
-                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(login, password);
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(login, privateKey);
                 slaveServerList.add(slaveServer);
             } catch (Exception e) {
                 logger.error("exception thrown", e);
