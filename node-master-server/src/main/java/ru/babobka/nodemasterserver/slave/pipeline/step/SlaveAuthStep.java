@@ -33,7 +33,7 @@ public class SlaveAuthStep implements Step<PipeContext> {
             logger.info("new slave was successfully authenticated");
             return true;
         } catch (IOException e) {
-            logger.error("cannot authenticate slave server due to network error");
+            logger.error("cannot authenticate slave server due to network error", e);
             return false;
         }
     }

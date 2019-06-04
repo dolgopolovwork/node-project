@@ -32,8 +32,9 @@ public class MasterAuthService extends AuthHelper {
 
     public AuthResult authClient(NodeConnection connection) throws IOException {
         String login = connection.receive();
+        logger.info("'" + login + "' authentication process has been started");
         if (sessions.contains(login)) {
-            logger.error(login + " has been authenticated");
+            logger.error("'" + login + "' has been authenticated already");
             return fail(connection);
         }
         User user = usersService.get(login);
@@ -41,7 +42,7 @@ public class MasterAuthService extends AuthHelper {
             logger.error("can not find user " + login);
             return fail(connection);
         }
-        logger.info(login + " was found");
+        logger.info("'" + login + "' was found");
         success(connection);
         return checkUser(connection, user);
     }

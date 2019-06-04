@@ -1,6 +1,6 @@
 {
   "serverPort": 9089,
-  "serverHost": "master-node",
+  "serverHost": "submaster-node",
   "serverBase64PublicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuSg4CBuxUjwctcJdXWh/lCkl7DHLIatJoF+6iuvU1U0Pt/ULDzpXx2gLrfMZmLrPNmfDiWn3yONdFDkRRsHk1KH3o3oNDS0VEF18XYRNLkHi2HvtHhsorFcy3B//ugiYyPKXY5hPd+HZa2diMgcRR+VgG7ew3IALwIkpCoyLljIW1YokXQHXJwqwWCBKRSNdPM9oGMHnEXNZCjbAW+EiqEw0M2m6PBoOVyOoeQNANlecXtSl3c2gVHFRcjl3HgwmoER2JxSDRsW72DDJD5qTkn++M5ZVbALzGoFLtGJuldvy46kQIrfkC+dTDteoLA80jRS65GTYqXTZjNf9Vt6w2QIDAQAB",
   "requestTimeoutMillis": 60000,
   "authTimeOutMillis": 15000,

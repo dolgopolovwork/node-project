@@ -32,9 +32,9 @@ public class MasterOneSlaveAndSubMasterNoSlavesITCase extends AbstractContainerI
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         slave.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submaster.start();
         Thread.sleep(5_000);
     }

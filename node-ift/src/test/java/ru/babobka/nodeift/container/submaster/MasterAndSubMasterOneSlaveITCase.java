@@ -2,7 +2,6 @@ package ru.babobka.nodeift.container.submaster;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
@@ -32,9 +31,9 @@ public class MasterAndSubMasterOneSlaveITCase extends AbstractContainerITCase {
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submaster.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submasterSlave.start();
         Thread.sleep(5_000);
     }
