@@ -29,9 +29,9 @@ public class MasterAndSubMasterBadNetworkOneSlaveITCase extends AbstractContaine
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submaster.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submasterSlave.start();
         Thread.sleep(5_000);
     }

@@ -26,14 +26,15 @@ public class MasterAndSubMasterNoSlavesITCase extends AbstractContainerITCase {
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
         submaster.start();
-        Thread.sleep(2_000);
+        Thread.sleep(5_000);
     }
 
     @AfterClass
     public static void stopContainer() {
         master.close();
+        submaster.close();
     }
 
     @Test
