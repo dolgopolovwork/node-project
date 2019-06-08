@@ -1,7 +1,10 @@
 package ru.babobka.nodeift;
 
 import org.apache.log4j.Logger;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;

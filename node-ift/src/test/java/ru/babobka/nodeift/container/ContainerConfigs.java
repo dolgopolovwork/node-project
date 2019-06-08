@@ -4,13 +4,15 @@ import org.testcontainers.containers.Network;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.JSONUtil;
 import ru.babobka.nodeutils.util.StreamUtil;
+import ru.babobka.nodeutils.util.TextUtil;
 
 class ContainerConfigs {
 
-    private static final String CONFIG_FOLDER = System.getProperty("user.dir") + "/config";
+    private static final String CONFIG_FOLDER = TextUtil.getEnv(Env.NODE_TEST_CONFIG_FOLDER);
     static final Network NETWORK = Network.SHARED;
     private static final StreamUtil streamUtil = new StreamUtil();
     static final String MASTER_CONFIG_PATH = CONFIG_FOLDER + "/master-server-config.json";

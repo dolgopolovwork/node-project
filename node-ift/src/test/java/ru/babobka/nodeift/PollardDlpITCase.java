@@ -3,7 +3,6 @@ package ru.babobka.nodeift;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;

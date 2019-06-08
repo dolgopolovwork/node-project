@@ -1,5 +1,6 @@
 package ru.babobka.nodetask;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodetask.exception.CanNotInitTaskFactoryException;
 import ru.babobka.nodetask.model.SubTask;
 import ru.babobka.nodetask.model.TaskFactory;
@@ -16,12 +17,14 @@ import java.util.*;
  */
 public class TaskPool {
 
+    private static final Logger logger = Logger.getLogger(TaskPool.class);
     private final Map<String, TaskFactory> tasksMap = new HashMap<>();
     private final StreamUtil streamUtil = Container.getInstance().get(StreamUtil.class);
     private final TasksUtil tasksUtil = Container.getInstance().get(TasksUtil.class);
 
     public TaskPool(String tasksFolderPath) {
         try {
+            logger.info("reading tasks from '" + tasksFolderPath + "'");
             File tasksFolder = new File(tasksFolderPath);
             String absoluteTasksFolderPath = tasksFolder.getAbsolutePath();
             List<String> files = streamUtil.getJarFileListFromFolder(absoluteTasksFolderPath);
@@ -37,11 +40,11 @@ public class TaskPool {
             throw new CanNotInitTaskFactoryException(e);
         } catch (RuntimeException e) {
             throw new CanNotInitTaskFactoryException(
-                    "cannot init factory pool. try to redownload new jars to node-slave-server task folder", e);
+                    "cannot init factory pool. try to re-download new jars to node-slave-server task folder", e);
         }
         if (tasksMap.isEmpty()) {
             throw new CanNotInitTaskFactoryException(
-                    "cannot init factory pool. no task to run. try to redownload new jars to node-slave-server task folder");
+                    "cannot init factory pool. no task to run. try to re-download new jars to node-slave-server task folder");
         }
     }
 

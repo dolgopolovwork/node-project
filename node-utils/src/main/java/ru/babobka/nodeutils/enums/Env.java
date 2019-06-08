@@ -6,6 +6,7 @@ package ru.babobka.nodeutils.enums;
 public enum Env {
     NODE_MASTER_CONFIG,
     NODE_SLAVE_CONFIG,
+    NODE_TEST_CONFIG_FOLDER,
     NODE_STORAGE_CONFIG,
     NODE_LOGS,
     NODE_TASKS
