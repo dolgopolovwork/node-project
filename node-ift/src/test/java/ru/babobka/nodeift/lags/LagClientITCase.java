@@ -2,7 +2,6 @@ package ru.babobka.nodeift.lags;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodetester.master.MasterServerRunner;
@@ -18,7 +17,6 @@ import java.security.PublicKey;
 /**
  * Created by 123 on 12.12.2017.
  */
-@Ignore
 public class LagClientITCase extends ru.babobka.nodeift.ClientITCase {
 
     @BeforeClass

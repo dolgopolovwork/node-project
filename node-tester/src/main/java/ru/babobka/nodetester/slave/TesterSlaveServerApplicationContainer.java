@@ -70,7 +70,7 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
         config.setAuthTimeOutMillis(15_000);
         config.setRequestTimeoutMillis(30_000);
         config.setServerHost("localhost");
-        config.setServerPort(9090);
+        config.setServerPort(19090);
         config.setServerBase64PublicKey(TextUtil.toBase64(serverPubKey.getEncoded()));
         return config;
     }

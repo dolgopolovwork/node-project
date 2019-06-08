@@ -2,7 +2,6 @@ package ru.babobka.nodeift;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;

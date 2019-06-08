@@ -62,9 +62,9 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
         config.setModes(modeConfig);
 
         PortConfig portConfig = new PortConfig();
-        portConfig.setSlaveListenerPort(9090);
-        portConfig.setWebListenerPort(8081);
-        portConfig.setClientListenerPort(9999);
+        portConfig.setSlaveListenerPort(19090);
+        portConfig.setWebListenerPort(18081);
+        portConfig.setClientListenerPort(19999);
         config.setPorts(portConfig);
 
         Base64KeyPair base64KeyPair = new Base64KeyPair();

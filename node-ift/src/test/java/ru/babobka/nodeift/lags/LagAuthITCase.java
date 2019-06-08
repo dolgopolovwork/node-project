@@ -19,7 +19,6 @@ import java.security.PublicKey;
 /**
  * Created by 123 on 06.11.2017.
  */
-@Ignore
 public class LagAuthITCase extends AuthITCase {
 
     @BeforeClass
