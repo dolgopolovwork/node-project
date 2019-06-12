@@ -13,6 +13,7 @@ public class MasterServerConfig implements NodeConfiguration {
     private TimeConfig time;
     private Base64KeyPair keyPair;
     private FolderConfig folders;
+    private RmqConfig rmqConfig;
 
     public ModeConfig getModes() {
         return modes;
@@ -52,6 +53,14 @@ public class MasterServerConfig implements NodeConfiguration {
 
     public void setKeyPair(Base64KeyPair keyPair) {
         this.keyPair = keyPair;
+    }
+
+    public RmqConfig getRmqConfig() {
+        return rmqConfig;
+    }
+
+    public void setRmqConfig(RmqConfig rmqConfig) {
+        this.rmqConfig = rmqConfig;
     }
 
     @Override
