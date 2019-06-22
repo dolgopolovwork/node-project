@@ -36,13 +36,13 @@ public class MasterOneSlaveAndSubMasterThreeSlavesITCase extends AbstractContain
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         submaster.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         slave.start();
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
         submasterSlaves.forEach(GenericContainer::start);
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass

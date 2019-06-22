@@ -1,49 +1,82 @@
 package ru.babobka.nodeift.container;
 
-import org.testcontainers.containers.Network;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
-import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.enums.Env;
-import ru.babobka.nodeutils.time.TimerInvoker;
-import ru.babobka.nodeutils.util.JSONUtil;
-import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeutils.util.TextUtil;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class ContainerConfigs {
 
-    private static final String CONFIG_FOLDER = TextUtil.getEnv(Env.NODE_TEST_CONFIG_FOLDER);
-    static final Network NETWORK = Network.SHARED;
-    private static final StreamUtil streamUtil = new StreamUtil();
-    static final String MASTER_CONFIG_PATH = CONFIG_FOLDER + "/master-server-config.json";
-    static final String SLAVE_CONFIG_PATH = CONFIG_FOLDER + "/slave-server-config.json";
-    static final String SUBMASTER_CONFIG_PATH = CONFIG_FOLDER + "/submaster/submaster-server-config.json";
-    static final String SUBMASTER_CONNECT_CONFIG_PATH = CONFIG_FOLDER + "/submaster/connect-config.json";
-    static final String SUBMASTER_SLAVE_CONFIG_PATH = CONFIG_FOLDER + "/submaster/slave-server-config.json";
-    static final MasterServerConfig masterServerConfig;
-    static final MasterServerConfig submasterServerConfig;
-    static final SlaveServerConfig submasterConnectConfig;
-    static final SlaveServerConfig submasterSlaveConfig;
-    static final SlaveServerConfig slaveServerConfig;
+
+    private static final String MASTER_SERVER_CONFIG_ENV_PREFIX = MasterServerConfig.class.getSimpleName().toUpperCase();
+    private static final String SLAVE_SERVER_CONFIG_ENV_PREFIX = SlaveServerConfig.class.getSimpleName().toUpperCase();
+
+    static final String MASTER_SERVER_NETWORK_ALIAS = "master-host";
+    static final int MASTER_CLIENT_PORT = 17070;
+    static final int MASTER_WEB_PORT = 18080;
+    static final int MASTER_SLAVE_PORT = 19090;
+
+    static final Map<String, String> MASTER_ENV = new HashMap<>();
 
     static {
-        try {
-            masterServerConfig =
-                    JSONUtil.readJsonFile(streamUtil, MASTER_CONFIG_PATH, MasterServerConfig.class);
-            slaveServerConfig =
-                    JSONUtil.readJsonFile(streamUtil, SLAVE_CONFIG_PATH, SlaveServerConfig.class);
-            submasterServerConfig =
-                    JSONUtil.readJsonFile(streamUtil, SUBMASTER_CONFIG_PATH, MasterServerConfig.class);
-            submasterConnectConfig =
-                    JSONUtil.readJsonFile(streamUtil, SUBMASTER_CONNECT_CONFIG_PATH, SlaveServerConfig.class);
-            submasterSlaveConfig =
-                    JSONUtil.readJsonFile(streamUtil, SUBMASTER_SLAVE_CONFIG_PATH, SlaveServerConfig.class);
-            Container.getInstance().put(container -> {
-                container.put(streamUtil);
-                container.put(TimerInvoker.createMaxOneSecondDelay());
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_TESTUSERMODE", "true");
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_CACHEMODE", "false");
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_SINGLESESSIONMODE", "false");
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PUBKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PRIVKEY", DebugBase64KeyPair.DEBUG_PRIV_KEY);
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_SLAVELISTENERPORT", String.valueOf(MASTER_SLAVE_PORT));
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_WEBLISTENERPORT", String.valueOf(MASTER_WEB_PORT));
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_CLIENTLISTENERPORT", String.valueOf(MASTER_CLIENT_PORT));
     }
+
+    static final Map<String, String> SLAVE_ENV = new HashMap<>();
+
+    static {
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERPORT", String.valueOf(MASTER_SLAVE_PORT));
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERHOST", MASTER_SERVER_NETWORK_ALIAS);
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERBASE64PUBLICKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_SLAVELOGIN", DebugCredentials.USER_NAME);
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PUBKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PRIVKEY", DebugBase64KeyPair.DEBUG_PRIV_KEY);
+    }
+
+    static final String SUBMASTER_SERVER_NETWORK_ALIAS = "sub-master-host";
+    static final int SUBMASTER_CLIENT_PORT = 27070;
+    static final int SUBMASTER_WEB_PORT = 28080;
+    static final int SUBMASTER_SLAVE_PORT = 29090;
+
+    static final Map<String, String> SUBMASTER_ENV = new HashMap<>();
+
+    static {
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_TESTUSERMODE", "true");
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_CACHEMODE", "false");
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_SINGLESESSIONMODE", "false");
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PUBKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PRIVKEY", DebugBase64KeyPair.DEBUG_PRIV_KEY);
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_SLAVELISTENERPORT", String.valueOf(SUBMASTER_SLAVE_PORT));
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_WEBLISTENERPORT", String.valueOf(SUBMASTER_WEB_PORT));
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_CLIENTLISTENERPORT", String.valueOf(SUBMASTER_CLIENT_PORT));
+
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERPORT", String.valueOf(MASTER_SLAVE_PORT));
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERHOST", MASTER_SERVER_NETWORK_ALIAS);
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERBASE64PUBLICKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_SLAVELOGIN", DebugCredentials.USER_NAME);
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PUBKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SUBMASTER_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PRIVKEY", DebugBase64KeyPair.DEBUG_PRIV_KEY);
+    }
+
+    static final Map<String, String> SUBMASTERSLAVE_ENV = new HashMap<>();
+
+    static {
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERPORT", String.valueOf(SUBMASTER_SLAVE_PORT));
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERHOST", SUBMASTER_SERVER_NETWORK_ALIAS);
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_MASTERSERVERBASE64PUBLICKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_SLAVELOGIN", DebugCredentials.USER_NAME);
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PUBKEY", DebugBase64KeyPair.DEBUG_PUB_KEY);
+        SUBMASTERSLAVE_ENV.put(SLAVE_SERVER_CONFIG_ENV_PREFIX + "_KEYPAIR_PRIVKEY", DebugBase64KeyPair.DEBUG_PRIV_KEY);
+    }
+
 }

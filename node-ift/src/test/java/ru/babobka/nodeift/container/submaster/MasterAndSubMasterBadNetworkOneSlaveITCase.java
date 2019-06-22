@@ -29,11 +29,11 @@ public class MasterAndSubMasterBadNetworkOneSlaveITCase extends AbstractContaine
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         submaster.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         submasterSlave.start();
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass
@@ -49,9 +49,9 @@ public class MasterAndSubMasterBadNetworkOneSlaveITCase extends AbstractContaine
         int bits = 35;
         for (int i = 0; i < tests; i++) {
             submaster.stop();
-            Thread.sleep(5_000);
+            Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
             submaster.start();
-            Thread.sleep(10_000);
+            Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
             assertTrue(isMasterHealthy(master));
             assertTrue(isSubmasterHealthy(submaster));
             assertEquals(1, getMasterClusterSize(master));

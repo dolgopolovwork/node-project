@@ -3,68 +3,62 @@ version: '3.5'
 services:
 
   master-node:
-    image: test/node-project-master
-    container_name: master-node
-    environment:
-      - NODE_LOGS=logs
-      - NODE_TASKS=tasks
+    image: babobka/node-project-master:1.0
+    container_name: master-host
+    env_file:
+      - .env_master
     volumes:
-      - ../config:/opt/master/config
-      - ../logs:/opt/master/logs
-      - ../tasks:/opt/master/tasks
+      - ../logs:/logs
+      - ../tasks:/tasks
     networks:
       - node-project
 
   slave-node-1:
-    image: test/node-project-slave
-    container_name: slave-node-1
+    image: babobka/node-project-slave:1.0
+    container_name: slave-host-1
+    env_file:
+      - .env_slave
     environment:
-      - NODE_LOGS=logs
-      - NODE_TASKS=tasks
-      - WAIT_HOSTS=master-node:9090
+      - WAIT_HOSTS=master-host:19090
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=3
     volumes:
-      - ../config/slave-server-config.json:/opt/slave/config/slave-server-config.json
-      - ../logs:/opt/slave/logs
-      - ../tasks:/opt/slave/tasks
+      - ../logs:/logs
+      - ../tasks:/tasks
     depends_on:
       - master-node
     networks:
       - node-project
 
-
   submaster-slave-node:
-    image: test/node-project-slave
-    container_name: submaster-slave-node
+    image: babobka/node-project-slave:1.0
+    container_name: submaster-slave-host
+    env_file:
+      - .env_submaster_slave
     environment:
-      - NODE_LOGS=logs
-      - NODE_TASKS=tasks
-      - WAIT_HOSTS=submaster-node:9089
+      - WAIT_HOSTS=submaster-host:29090
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=3
     volumes:
-      - ../config/submaster/slave-server-config.json:/opt/slave/config/slave-server-config.json
-      - ../logs:/opt/slave/logs
-      - ../tasks:/opt/slave/tasks
+      - ../logs:/logs
+      - ../tasks:/tasks
     depends_on:
       - submaster-node
     networks:
       - node-project
 
   submaster-node:
-    image: test/node-project-submaster
-    container_name: submaster-node
+    image: babobka/node-project-submaster:1.0
+    container_name: submaster-host
+    env_file:
+      - .env_submaster
     environment:
-      - NODE_LOGS=logs
-      - NODE_TASKS=tasks
-      - WAIT_HOSTS=master-node:9090
+      - WAIT_HOSTS=master-host:19090
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=3
     volumes:
-      - ../config/submaster:/opt/submaster/config
-      - ../logs:/opt/submasterlogs
-      - ../tasks:/opt/submaster/tasks
+      - ../logs:/logs
+      - ../tasks:/tasks
     depends_on:
       - master-node
     networks:

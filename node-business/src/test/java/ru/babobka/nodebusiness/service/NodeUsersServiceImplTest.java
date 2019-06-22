@@ -83,11 +83,11 @@ public class NodeUsersServiceImplTest {
         verify(nodeUsersDAO).add(any(User.class));
     }
 
-    private User createUser() throws InvalidKeySpecException {
+    private User createUser() {
         User user = new User();
         user.setEmail("abc@xyz.ru");
         user.setName("abc");
-        user.setPublicKey(KeyDecoder.decodePublicKey(DebugBase64KeyPair.DEBUG_PUB_KEY));
+        user.setPublicKey(KeyDecoder.generateKeyPair().getPublic());
         user.setId(UUID.randomUUID());
         return user;
     }

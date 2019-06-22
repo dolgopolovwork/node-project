@@ -1,8 +1,7 @@
 package ru.babobka.nodesecurity.keypair;
 
-import lombok.NonNull;
-
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Base64KeyPair implements Serializable {
 
@@ -14,7 +13,7 @@ public class Base64KeyPair implements Serializable {
         return pubKey;
     }
 
-    public void setPubKey(@NonNull String pubKey) {
+    public void setPubKey(String pubKey) {
         this.pubKey = pubKey;
     }
 
@@ -22,8 +21,29 @@ public class Base64KeyPair implements Serializable {
         return privKey;
     }
 
-    public void setPrivKey(@NonNull String privKey) {
+    public void setPrivKey(String privKey) {
         this.privKey = privKey;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Base64KeyPair that = (Base64KeyPair) o;
+        return Objects.equals(pubKey, that.pubKey) &&
+                Objects.equals(privKey, that.privKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pubKey, privKey);
+    }
+
+    @Override
+    public String toString() {
+        return "Base64KeyPair{" +
+                "pubKey='" + pubKey + '\'' +
+                ", privKey='***'" +
+                '}';
+    }
 }

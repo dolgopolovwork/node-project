@@ -28,9 +28,9 @@ public class SlowMasterStartupITCase extends AbstractContainerITCase {
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         slave.start();
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
         master.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass

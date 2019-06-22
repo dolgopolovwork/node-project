@@ -7,6 +7,7 @@ import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
@@ -48,7 +49,7 @@ public class NodeInfoWebControllerITCase {
     @Test
     public void testGetClusterSize() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
             slaveServerCluster.start();
             String content = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/clustersize")
                     .execute().returnContent().toString();

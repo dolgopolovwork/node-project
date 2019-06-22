@@ -2,7 +2,6 @@ package ru.babobka.nodeift.container.master;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
@@ -32,9 +31,9 @@ public class MasterSlaveMassSuicideResurrectionITCase extends AbstractContainerI
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(2_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         slaves.forEach(GenericContainer::start);
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass
@@ -46,13 +45,13 @@ public class MasterSlaveMassSuicideResurrectionITCase extends AbstractContainerI
     @Test
     public void testFactor() throws IOException, InterruptedException, ExecutionException {
         slaves.forEach(GenericContainer::stop);
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
         slaves.clear();
         assertTrue(isMasterHealthy(master));
         assertEquals(0, getMasterClusterSize(master));
         slaves.addAll(Arrays.asList(createSlave(), createSlave(), createSlave()));
         slaves.forEach(GenericContainer::start);
-        Thread.sleep(5_000);
+        Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
         assertTrue(isMasterHealthy(master));
         assertEquals(3, getMasterClusterSize(master));
         try (Client client = new Client("localhost", getMasterClientPort(master))) {

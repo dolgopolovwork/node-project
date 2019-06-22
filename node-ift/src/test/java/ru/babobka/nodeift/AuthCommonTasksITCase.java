@@ -11,6 +11,7 @@ import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
 import ru.babobka.nodetask.TaskPool;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
@@ -60,7 +61,7 @@ public class AuthCommonTasksITCase {
     @Test(expected = SlaveStartupException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
     }
 
     @Test(expected = SlaveStartupException.class)
@@ -69,7 +70,7 @@ public class AuthCommonTasksITCase {
         availableTasks.add("abc");
         availableTasks.add("xyz");
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class AuthCommonTasksITCase {
         TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
     }
 
 }

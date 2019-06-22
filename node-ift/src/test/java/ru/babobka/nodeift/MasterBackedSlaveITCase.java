@@ -9,6 +9,7 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeslaveserver.controller.AbstractSocketController;
 import ru.babobka.nodeslaveserver.controller.MasterBackedSocketController;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.TestableNodeConnection;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
@@ -84,7 +85,7 @@ public class MasterBackedSlaveITCase {
                 responseWaiter.countDown();
             }
         });
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
              AbstractSocketController controller = new MasterBackedSocketController(connection, socketControllerThreadPool, requestStream)) {
             slaveServerCluster.start();
             controller.onExecute(getLargeRangeRequest());
@@ -122,7 +123,7 @@ public class MasterBackedSlaveITCase {
                 responseWaiter.countDown();
             }
         });
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
              AbstractSocketController controller = new MasterBackedSocketController(connection, socketControllerThreadPool, requestStream)) {
             slaveServerCluster.start();
             int bits = 45;
@@ -151,7 +152,7 @@ public class MasterBackedSlaveITCase {
                 responseWaiter.countDown();
             }
         });
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
              AbstractSocketController controller = new MasterBackedSocketController(connection, socketControllerThreadPool, requestStream)) {
             slaveServerCluster.start();
             int bits = 35;
@@ -181,7 +182,7 @@ public class MasterBackedSlaveITCase {
             }
         });
 
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
              AbstractSocketController controller = new MasterBackedSocketController(connection, socketControllerThreadPool, requestStream)) {
             slaveServerCluster.start();
             for (int i = 0; i < getTests(); i++) {
@@ -203,7 +204,7 @@ public class MasterBackedSlaveITCase {
                 responseWaiter.countDown();
             }
         });
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
              AbstractSocketController controller = new MasterBackedSocketController(connection, socketControllerThreadPool, requestStream)) {
             slaveServerCluster.start();
             int bits = 256;

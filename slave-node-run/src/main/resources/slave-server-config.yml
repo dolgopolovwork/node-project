@@ -1,0 +1,21 @@
+# port of master server
+masterServerPort: 19090
+# host of master server
+masterServerHost: master-host
+# master server RSA public key is Base64 format
+masterServerBase64PublicKey:
+# max time to tell if a connection is stale  
+requestTimeoutMillis: 60000
+# max time to authenticate a slave
+authTimeOutMillis: 15000
+# folder where logs will be written at
+loggerFolder: "/logger"
+# folder with tasks(jar files)
+tasksFolder: "/tasks"
+# slave login  
+slaveLogin:
+keyPair:
+  # RSA public key in Base64 format
+  pubKey:
+  # RSA private key in Base64 format
+  privKey: 

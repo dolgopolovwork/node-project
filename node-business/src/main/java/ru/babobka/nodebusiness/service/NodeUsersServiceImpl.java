@@ -2,13 +2,12 @@ package ru.babobka.nodebusiness.service;
 
 
 import ru.babobka.nodebusiness.dao.NodeUsersDAO;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.container.Container;
 
-import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,14 +49,10 @@ public class NodeUsersServiceImpl implements NodeUsersService {
     public void createDebugUser() {
 
         User user = new User();
-        user.setName("test_user");
+        user.setName(DebugCredentials.USER_NAME);
         user.setEmail("test@email.com");
         user.setId(UUID.randomUUID());
-        try {
-            user.setPublicKey(KeyDecoder.decodePublicKey(DebugBase64KeyPair.DEBUG_PUB_KEY));
-        } catch (InvalidKeySpecException ignored) {
-            // Won't happen
-        }
+        user.setPublicKey(DebugCredentials.PUB_KEY);
         userDAO.add(user);
     }
 
