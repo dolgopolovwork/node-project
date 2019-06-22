@@ -13,21 +13,21 @@ public class ServerPortValidationRuleTest {
     @Test(expected = IllegalArgumentException.class)
     public void testValidateNegativePort() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setServerPort(-1);
+        config.setMasterServerPort(-1);
         serverPortValidationRule.validate(config);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testValidateTooBigPort() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setServerPort(1_000_000);
+        config.setMasterServerPort(1_000_000);
         serverPortValidationRule.validate(config);
     }
 
     @Test
     public void testValidate() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setServerPort(1024);
+        config.setMasterServerPort(1024);
         serverPortValidationRule.validate(config);
     }
 }

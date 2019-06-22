@@ -1,22 +1,19 @@
 package ru.babobka.nodetester.benchmark;
 
+import lombok.NonNull;
 import org.apache.log4j.Logger;
-import ru.babobka.nodebusiness.model.Benchmark;
-import ru.babobka.nodebusiness.service.BenchmarkStorageService;
-import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.PortConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
-import ru.babobka.nodetester.benchmark.mapper.BenchmarkMapper;
 import ru.babobka.nodetester.benchmark.performer.BenchmarkPerformer;
-import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.key.UtilKey;
 
 import java.io.IOException;
@@ -30,19 +27,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class NodeBenchmark {
 
     private static final Logger logger = Logger.getLogger(NodeBenchmark.class);
-    private static final String LOGIN = "test_user";
-    private final BenchmarkMapper benchmarkMapper = new BenchmarkMapper();
-    private final long startTime;
+    private static final String LOGIN = DebugCredentials.USER_NAME;
     private final String appName;
     private final int tests;
 
-    public NodeBenchmark(String appName, int tests) {
-        if (appName == null) {
-            throw new IllegalArgumentException("appName is null");
-        }
+    public NodeBenchmark(@NonNull String appName, int tests) {
         this.tests = tests;
         this.appName = appName;
-        this.startTime = System.currentTimeMillis();
     }
 
     BenchmarkData executeCycledBenchmark(PortConfig portConfig, int tests, BenchmarkPerformer performer) {
@@ -72,7 +63,6 @@ public class NodeBenchmark {
                 BenchmarkData benchmarkData = executeCycledBenchmark(masterServerConfig.getPorts(), tests, benchmarkPerformer);
                 if (benchmarkData != null) {
                     CLI.print(benchmarkData.toString());
-                    saveBenchmark(benchmarkData, slaves, serviceThreads);
                 }
             } finally {
                 masterServer.interrupt();
@@ -82,22 +72,8 @@ public class NodeBenchmark {
         }
     }
 
-    protected long getStartTime() {
-        return startTime;
-    }
-
     void startMonitoring() {
         MasterServer.runMBeanServer();
-    }
-
-    private void saveBenchmark(BenchmarkData benchmarkData, int slaves, int serviceThreads) {
-        boolean ableToSave = Properties.getBool(TesterKey.PERMANENT, false);
-        if (!ableToSave) {
-            return;
-        }
-        BenchmarkStorageService storageService = Container.getInstance().get(BenchmarkStorageService.class);
-        Benchmark benchmark = benchmarkMapper.map(benchmarkData, getStartTime(), appName, slaves, serviceThreads);
-        storageService.insert(benchmark);
     }
 
     SlaveServerCluster createCluster(String login, PrivateKey privateKey, int slaves) throws IOException {

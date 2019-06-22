@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.security.spec.InvalidKeySpecException;
 
@@ -33,7 +33,7 @@ public class UserDTOMapperTest {
         UserDTO userDTO = new UserDTO();
         userDTO.setName("abc");
         userDTO.setEmail("abc@xyz.ru");
-        userDTO.setBase64PubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
+        userDTO.setBase64PubKey(TextUtil.toBase64(KeyDecoder.generateKeyPair().getPublic().getEncoded()));
         User user = userDTOMapper.map(userDTO);
         assertEquals(userDTO.getName(), user.getName());
         assertEquals(user.getPublicKey(), KeyDecoder.decodePublicKey(userDTO.getBase64PubKey()));

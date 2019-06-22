@@ -1,0 +1,33 @@
+modes:
+  # enables test user mode. not for production environment
+  testUserMode: false
+  # enables cache
+  cacheMode: true
+  # the same user will not be able to login twice if this mode is on
+  singleSessionMode: true
+ports:
+  # port for slaves
+  slaveListenerPort: 19091
+  # port for clients
+  clientListenerPort: 17071
+  # port for web-server
+  webListenerPort: 18081
+time:
+  # max time to authenticate a slave
+  authTimeOutMillis: 15000
+  # max time to tell if a connection is stale
+  requestReadTimeOutMillis: 60000
+  # master server sends dummy request with this period to tell if slave is connected
+  heartBeatCycleMillis: 30000
+  # any request will be considered stale if it's older that this value
+  dataOutDateMillis: 600000
+keyPair:
+  # RSA public key in Base64 format
+  pubKey:
+  # RSA private key in Base64 format
+  privKey:
+folders:
+  # folder where logs will be written at
+  loggerFolder: "/logger"
+  # folder with tasks(jar files)
+  tasksFolder: "/tasks"

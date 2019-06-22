@@ -1,5 +1,6 @@
 package ru.babobka.masternoderun;
 
+import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
@@ -15,6 +16,8 @@ import ru.babobka.nodeweb.NodeWebApplicationContainer;
  * Created by 123 on 05.11.2017.
  */
 public class MasterServerApplicationContainer extends AbstractApplicationContainer {
+
+    private static final Logger logger = Logger.getLogger(MasterServerApplicationContainer.class);
 
     @Override
     protected void containImpl(Container container) {

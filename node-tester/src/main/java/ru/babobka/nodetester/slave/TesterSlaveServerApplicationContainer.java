@@ -1,7 +1,8 @@
 package ru.babobka.nodetester.slave;
 
 import lombok.NonNull;
-import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
@@ -33,7 +34,6 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
     private final PublicKey serverPubKey;
 
     public TesterSlaveServerApplicationContainer(@NonNull PublicKey serverPubKey) {
-
         this.serverPubKey = serverPubKey;
     }
 
@@ -60,18 +60,18 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
 
     private SlaveServerConfig createTestConfig() {
         SlaveServerConfig config = new SlaveServerConfig();
-        config.setSlaveLogin("test_user");
+        config.setSlaveLogin(DebugCredentials.USER_NAME);
         Base64KeyPair keyPair = new Base64KeyPair();
         keyPair.setPrivKey(DebugBase64KeyPair.DEBUG_PRIV_KEY);
         keyPair.setPubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
         config.setKeyPair(keyPair);
-        config.setTasksFolder("$" + Env.NODE_TASKS.name());
-        config.setLoggerFolder("$" + Env.NODE_LOGS.name());
+        config.setTasksFolder(TextUtil.getEnv(Env.NODE_TASKS));
+        config.setLoggerFolder(TextUtil.getEnv(Env.NODE_LOGS));
         config.setAuthTimeOutMillis(15_000);
         config.setRequestTimeoutMillis(30_000);
-        config.setServerHost("localhost");
-        config.setServerPort(19090);
-        config.setServerBase64PublicKey(TextUtil.toBase64(serverPubKey.getEncoded()));
+        config.setMasterServerHost("localhost");
+        config.setMasterServerPort(19090);
+        config.setMasterServerBase64PublicKey(TextUtil.toBase64(serverPubKey.getEncoded()));
         return config;
     }
 }

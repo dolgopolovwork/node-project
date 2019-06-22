@@ -5,10 +5,14 @@ import lombok.NonNull;
 import org.apache.http.client.fluent.Request;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.OutputFrame;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringData;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
+import ru.babobka.nodeutils.time.TimerInvoker;
+import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
@@ -16,83 +20,86 @@ import java.util.function.Consumer;
 
 public abstract class AbstractContainerITCase {
 
+    private static final Network NETWORK = Network.SHARED;
+
+    protected static final int MASTER_SERVER_WAIT_MILLIS = 5_000;
+    protected static final int SLAVE_SERVER_WAIT_MILLIS = 10_000;
+
     static {
         LoggerInit.initConsoleLogger();
+        Container.getInstance().put(container -> {
+            container.put(new StreamUtil());
+            container.put(TimerInvoker.createMaxOneSecondDelay());
+        });
     }
 
     private static final Gson gson = new Gson();
 
     protected static GenericContainer createMaster() {
         GenericContainer master = new GenericContainer<>(DockerImage.MASTER.getImageName())
-                .withNetwork(ContainerConfigs.NETWORK)
-                .withNetworkAliases(ContainerConfigs.slaveServerConfig.getServerHost())
+                .withNetwork(NETWORK)
+                .withEnv(ContainerConfigs.MASTER_ENV)
+                .withNetworkAliases(ContainerConfigs.MASTER_SERVER_NETWORK_ALIAS)
                 .withExposedPorts(
-                        ContainerConfigs.masterServerConfig.getPorts().getClientListenerPort(),
-                        ContainerConfigs.masterServerConfig.getPorts().getWebListenerPort());
+                        ContainerConfigs.MASTER_CLIENT_PORT,
+                        ContainerConfigs.MASTER_SLAVE_PORT,
+                        ContainerConfigs.MASTER_WEB_PORT);
         initLogConsumer(master);
-        master.addFileSystemBind(
-                ContainerConfigs.MASTER_CONFIG_PATH, "/opt/master/config/master-server-config.json", BindMode.READ_ONLY);
-        mountLogsAndTasks(master, "master");
+        mountLogsAndTasks(master);
         return master;
     }
 
     protected static GenericContainer createSubMaster() {
         GenericContainer submaster = new GenericContainer<>(DockerImage.SUBMASTER.getImageName())
+                .withEnv(ContainerConfigs.SUBMASTER_ENV)
                 .withEnv("WAIT_HOSTS_TIMEOUT", "300")
                 .withEnv("WAIT_SLEEP_INTERVAL", "3")
                 .withEnv("WAIT_HOSTS",
-                        ContainerConfigs.submasterConnectConfig.getServerHost() + ":"
-                                + ContainerConfigs.submasterConnectConfig.getServerPort())
-                .withNetwork(ContainerConfigs.NETWORK)
-                .withNetworkAliases(ContainerConfigs.submasterSlaveConfig.getServerHost())
+                        ContainerConfigs.MASTER_SERVER_NETWORK_ALIAS + ":"
+                                + ContainerConfigs.MASTER_SLAVE_PORT)
+                .withNetwork(NETWORK)
+                .withNetworkAliases(ContainerConfigs.SUBMASTER_SERVER_NETWORK_ALIAS)
                 .withExposedPorts(
-                        ContainerConfigs.submasterServerConfig.getPorts().getClientListenerPort(),
-                        ContainerConfigs.submasterServerConfig.getPorts().getWebListenerPort());
+                        ContainerConfigs.SUBMASTER_CLIENT_PORT,
+                        ContainerConfigs.SUBMASTER_SLAVE_PORT,
+                        ContainerConfigs.SUBMASTER_WEB_PORT);
         initLogConsumer(submaster);
-        submaster.addFileSystemBind(
-                ContainerConfigs.SUBMASTER_CONFIG_PATH, "/opt/submaster/config/submaster-server-config.json", BindMode.READ_ONLY);
-        submaster.addFileSystemBind(
-                ContainerConfigs.SUBMASTER_CONNECT_CONFIG_PATH, "/opt/submaster/config/connect-config.json", BindMode.READ_ONLY);
-        mountLogsAndTasks(submaster, "submaster");
+        mountLogsAndTasks(submaster);
         return submaster;
     }
 
     protected static GenericContainer createSubMasterSlave() {
         GenericContainer slave = new GenericContainer<>(DockerImage.SLAVE.getImageName())
+                .withEnv(ContainerConfigs.SUBMASTERSLAVE_ENV)
                 .withEnv("WAIT_HOSTS_TIMEOUT", "300")
                 .withEnv("WAIT_SLEEP_INTERVAL", "3")
                 .withEnv("WAIT_HOSTS",
-                        ContainerConfigs.submasterSlaveConfig.getServerHost() + ":"
-                                + ContainerConfigs.submasterSlaveConfig.getServerPort())
-                .withNetwork(ContainerConfigs.NETWORK);
+                        ContainerConfigs.SUBMASTER_SERVER_NETWORK_ALIAS + ":"
+                                + ContainerConfigs.SUBMASTER_SLAVE_PORT)
+                .withNetwork(NETWORK);
         initLogConsumer(slave);
-        mountLogsAndTasks(slave, "slave");
-        slave.addFileSystemBind(
-                ContainerConfigs.SUBMASTER_SLAVE_CONFIG_PATH, "/opt/slave/config/slave-server-config.json", BindMode.READ_ONLY);
+        mountLogsAndTasks(slave);
         return slave;
     }
 
     protected static GenericContainer createSlave() {
         GenericContainer slave = new GenericContainer<>(DockerImage.SLAVE.getImageName())
+                .withEnv(ContainerConfigs.SLAVE_ENV)
                 .withEnv("WAIT_HOSTS_TIMEOUT", "300")
                 .withEnv("WAIT_SLEEP_INTERVAL", "3")
                 .withEnv("WAIT_HOSTS",
-                        ContainerConfigs.slaveServerConfig.getServerHost() + ":"
-                                + ContainerConfigs.slaveServerConfig.getServerPort())
-                .withNetwork(ContainerConfigs.NETWORK);
+                        ContainerConfigs.MASTER_SERVER_NETWORK_ALIAS + ":" + ContainerConfigs.MASTER_SLAVE_PORT)
+                .withNetwork(NETWORK);
         initLogConsumer(slave);
-        mountLogsAndTasks(slave, "slave");
-        slave.addFileSystemBind(
-                ContainerConfigs.SLAVE_CONFIG_PATH, "/opt/slave/config/slave-server-config.json", BindMode.READ_ONLY);
+        mountLogsAndTasks(slave);
         return slave;
     }
 
-    private static void mountLogsAndTasks(@NonNull GenericContainer container, @NonNull String folderName) {
-        container.withEnv(Env.NODE_LOGS.name(), "logs").withEnv(Env.NODE_TASKS.name(), "tasks");
+    private static void mountLogsAndTasks(@NonNull GenericContainer container) {
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_LOGS), "/opt/" + folderName + "/logs", BindMode.READ_WRITE);
+                TextUtil.getEnv(Env.NODE_LOGS), "/logs", BindMode.READ_WRITE);
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_TASKS), "/opt/" + folderName + "/tasks", BindMode.READ_ONLY);
+                TextUtil.getEnv(Env.NODE_TASKS), "/tasks", BindMode.READ_ONLY);
     }
 
     private static void initLogConsumer(@NonNull GenericContainer container) {
@@ -105,7 +112,7 @@ public abstract class AbstractContainerITCase {
     }
 
     protected static int getMasterClientPort(@NonNull GenericContainer master) {
-        return master.getMappedPort(ContainerConfigs.masterServerConfig.getPorts().getClientListenerPort());
+        return master.getMappedPort(ContainerConfigs.MASTER_CLIENT_PORT);
     }
 
     protected static boolean isMasterHealthy(@NonNull GenericContainer master) throws IOException {
@@ -147,10 +154,11 @@ public abstract class AbstractContainerITCase {
     }
 
     private static int getMasterWebPort(@NonNull GenericContainer master) {
-        return master.getMappedPort(ContainerConfigs.masterServerConfig.getPorts().getWebListenerPort());
+        return master.getMappedPort(ContainerConfigs.MASTER_WEB_PORT);
     }
 
-    private static int getSubmasterWebPort(@NonNull GenericContainer master) {
-        return master.getMappedPort(ContainerConfigs.submasterServerConfig.getPorts().getWebListenerPort());
+    private static int getSubmasterWebPort(@NonNull GenericContainer submaster) {
+        return submaster.getMappedPort(ContainerConfigs.SUBMASTER_WEB_PORT);
     }
+
 }

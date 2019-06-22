@@ -48,19 +48,4 @@ public class JSONUtil {
     public static <T> T parseJson(JSONObject jsonObject, Class<T> clazz) {
         return GSON.fromJson(jsonObject.toString(), clazz);
     }
-
-    public static <T extends Serializable> T readJsonFile(
-            @NonNull StreamUtil streamUtil,
-            @NonNull String pathToJson,
-            @NonNull Class<T> clazz) throws IOException {
-        if (TextUtil.isEmpty(pathToJson)) {
-            throw new IllegalArgumentException("pathToJson is null");
-        }
-        String fileContent = streamUtil.readFile(pathToJson);
-        try {
-            return GSON.fromJson(fileContent, clazz);
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
-    }
 }

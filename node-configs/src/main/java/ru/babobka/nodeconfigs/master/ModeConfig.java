@@ -1,11 +1,13 @@
 package ru.babobka.nodeconfigs.master;
 
-import java.io.Serializable;
+import ru.babobka.nodeconfigs.NodeConfiguration;
+
+import java.util.Objects;
 
 /**
  * Created by 123 on 13.05.2018.
  */
-public class ModeConfig implements Serializable {
+public class ModeConfig implements NodeConfiguration {
     private static final long serialVersionUID = 7927649430932591211L;
     private boolean testUserMode;
     private boolean cacheMode;
@@ -33,5 +35,29 @@ public class ModeConfig implements Serializable {
 
     public void setSingleSessionMode(boolean singleSessionMode) {
         this.singleSessionMode = singleSessionMode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModeConfig that = (ModeConfig) o;
+        return testUserMode == that.testUserMode &&
+                cacheMode == that.cacheMode &&
+                singleSessionMode == that.singleSessionMode;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testUserMode, cacheMode, singleSessionMode);
+    }
+
+    @Override
+    public ModeConfig copy() {
+        ModeConfig modeConfig = new ModeConfig();
+        modeConfig.setSingleSessionMode(this.singleSessionMode);
+        modeConfig.setCacheMode(this.cacheMode);
+        modeConfig.setTestUserMode(this.testUserMode);
+        return modeConfig;
     }
 }

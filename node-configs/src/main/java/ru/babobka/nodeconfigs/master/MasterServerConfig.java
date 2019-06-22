@@ -1,14 +1,13 @@
 package ru.babobka.nodeconfigs.master;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import ru.babobka.nodeconfigs.NodeConfiguration;
 import ru.babobka.nodesecurity.keypair.Base64KeyPair;
+
+import java.util.Objects;
 
 public class MasterServerConfig implements NodeConfiguration {
 
     private static final long serialVersionUID = 156081573106293600L;
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private ModeConfig modes;
     private PortConfig ports;
     private TimeConfig time;
@@ -56,7 +55,43 @@ public class MasterServerConfig implements NodeConfiguration {
     }
 
     @Override
-    public String toString() {
-        return GSON.toJson(this);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MasterServerConfig that = (MasterServerConfig) o;
+        return Objects.equals(modes, that.modes) &&
+                Objects.equals(ports, that.ports) &&
+                Objects.equals(time, that.time) &&
+                Objects.equals(keyPair, that.keyPair) &&
+                Objects.equals(folders, that.folders);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(modes, ports, time, keyPair, folders);
+    }
+
+    @Override
+    public MasterServerConfig copy() {
+        MasterServerConfig masterServerConfig = new MasterServerConfig();
+        if (this.keyPair != null) {
+            Base64KeyPair base64KeyPair = new Base64KeyPair();
+            base64KeyPair.setPrivKey(this.keyPair.getPrivKey());
+            base64KeyPair.setPubKey(this.keyPair.getPubKey());
+            masterServerConfig.setKeyPair(base64KeyPair);
+        }
+        if (this.ports != null) {
+            masterServerConfig.setPorts(this.ports.copy());
+        }
+        if (this.folders != null) {
+            masterServerConfig.setFolders(this.folders.copy());
+        }
+        if (this.modes != null) {
+            masterServerConfig.setModes(this.modes.copy());
+        }
+        if (this.time != null) {
+            masterServerConfig.setTime(this.time.copy());
+        }
+        return masterServerConfig;
     }
 }

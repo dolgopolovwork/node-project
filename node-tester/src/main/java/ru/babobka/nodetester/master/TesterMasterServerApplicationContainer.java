@@ -43,8 +43,8 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
         MasterServerConfig config = new MasterServerConfig();
 
         FolderConfig folderConfig = new FolderConfig();
-        folderConfig.setTasksFolder("$" + Env.NODE_TASKS.name());
-        folderConfig.setLoggerFolder("$" + Env.NODE_LOGS.name());
+        folderConfig.setTasksFolder(TextUtil.getEnv(Env.NODE_TASKS));
+        folderConfig.setLoggerFolder(TextUtil.getEnv(Env.NODE_LOGS));
         config.setFolders(folderConfig);
 
         TimeConfig timeConfig = new TimeConfig();

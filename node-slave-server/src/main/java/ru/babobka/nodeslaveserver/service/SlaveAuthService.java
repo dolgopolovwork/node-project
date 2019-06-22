@@ -41,7 +41,7 @@ public class SlaveAuthService extends AuthHelper {
     private AuthResult checkServer(
             @NonNull NodeConnection connection, @NonNull String login, @NonNull PrivateKey privateKey) throws IOException {
         try {
-            PublicKey serverPubKey = KeyDecoder.decodePublicKey(slaveServerConfig.getServerBase64PublicKey());
+            PublicKey serverPubKey = KeyDecoder.decodePublicKey(slaveServerConfig.getMasterServerBase64PublicKey());
             SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, privateKey, serverPubKey);
             SecureNodeResponse serverNonceChallenge = secureNodeConnection.receiveNoClose();
             secureNodeConnection.send(serverNonceChallenge);

@@ -11,6 +11,7 @@ import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
@@ -61,7 +62,7 @@ public class ClientITCase {
     public void testPrimeCountNoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
             assertEquals(response.getStatus(), ResponseStatus.NO_NODES);
@@ -72,8 +73,8 @@ public class ClientITCase {
     public void testPrimeCountTwoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
+             Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
             NodeResponse response = future.get();
@@ -85,8 +86,8 @@ public class ClientITCase {
     public void testPrimeCountTwoSlavesMassive() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
+             Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             for (int i = 0; i < getTests(); i++) {
                 Future<NodeResponse> future = client.executeTask(getLargeRangeRequest());
@@ -100,8 +101,8 @@ public class ClientITCase {
     public void testFactorTwoSlaves() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
+             Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 45;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -118,8 +119,8 @@ public class ClientITCase {
     public void testFactorOneSlaveTooBigRequest() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+             Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 256;
             BigInteger p = BigInteger.probablePrime(bits, new Random());
@@ -135,8 +136,8 @@ public class ClientITCase {
     public void testFactorTwoSlavesMassive() throws IOException, InterruptedException, ExecutionException {
         MasterServerConfig masterConfig = Container.getInstance().get(MasterServerConfig.class);
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY, 2);
-             Client client = new Client(slaveServerConfig.getServerHost(), masterConfig.getPorts().getClientListenerPort())) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2);
+             Client client = new Client(slaveServerConfig.getMasterServerHost(), masterConfig.getPorts().getClientListenerPort())) {
             slaveServerCluster.start();
             int bits = 35;
             for (int i = 0; i < getTests(); i++) {

@@ -5,7 +5,9 @@ import org.apache.commons.cli.Option;
 import ru.babobka.masternoderun.MasterApp;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
+import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
+import ru.babobka.nodeconfigs.service.ConfigProvider;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
@@ -29,6 +31,7 @@ public class SubMasterApp extends CLI {
 
     static {
         Container.getInstance().put(container -> {
+            container.put(new ConfigProvider());
             container.put(new StreamUtil());
             container.put(new SlaveServerConfigValidator());
             container.put(new MasterBackedSlaveServerFactory());
@@ -57,7 +60,7 @@ public class SubMasterApp extends CLI {
     }
 
     @Override
-    public void run(CommandLine cmd) throws IOException {
+    public void run(CommandLine cmd) throws IOException, EnvConfigCreationException {
         masterApp.run(cmd);
         slaveApp.run(cmd);
     }

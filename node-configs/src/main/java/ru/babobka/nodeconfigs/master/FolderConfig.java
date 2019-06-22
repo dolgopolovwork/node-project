@@ -1,22 +1,20 @@
 package ru.babobka.nodeconfigs.master;
 
-import ru.babobka.nodeutils.util.TextUtil;
+import ru.babobka.nodeconfigs.NodeConfiguration;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by 123 on 13.05.2018.
  */
-public class FolderConfig implements Serializable {
+public class FolderConfig implements NodeConfiguration {
 
     private static final long serialVersionUID = 3745117609183677038L;
     private String loggerFolder;
     private String tasksFolder;
 
     public String getLoggerFolder() {
-        if (loggerFolder != null && loggerFolder.startsWith("$")) {
-            return TextUtil.getEnv(loggerFolder.substring(1));
-        }
         return loggerFolder;
     }
 
@@ -25,9 +23,6 @@ public class FolderConfig implements Serializable {
     }
 
     public String getTasksFolder() {
-        if (tasksFolder != null && tasksFolder.startsWith("$")) {
-            return TextUtil.getEnv(tasksFolder.substring(1));
-        }
         return tasksFolder;
     }
 
@@ -35,4 +30,25 @@ public class FolderConfig implements Serializable {
         this.tasksFolder = tasksFolder;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FolderConfig that = (FolderConfig) o;
+        return Objects.equals(loggerFolder, that.loggerFolder) &&
+                Objects.equals(tasksFolder, that.tasksFolder);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(loggerFolder, tasksFolder);
+    }
+
+    @Override
+    public FolderConfig copy() {
+        FolderConfig folderConfig = new FolderConfig();
+        folderConfig.setLoggerFolder(loggerFolder);
+        folderConfig.setTasksFolder(tasksFolder);
+        return folderConfig;
+    }
 }

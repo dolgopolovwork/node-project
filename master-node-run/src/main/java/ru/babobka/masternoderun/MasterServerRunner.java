@@ -1,6 +1,7 @@
 package ru.babobka.masternoderun;
 
 import lombok.NonNull;
+import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodeconfigs.service.ConfigProvider;
@@ -19,9 +20,9 @@ public class MasterServerRunner {
     private final MasterServerConfigValidator configValidator =
             Container.getInstance().get(MasterServerConfigValidator.class);
 
-    void run(String configPath) throws IOException {
+    void run() throws IOException, EnvConfigCreationException {
         Container container = Container.getInstance();
-        MasterServerConfig config = getConfig(configPath);
+        MasterServerConfig config = getConfig();
         configValidator.validate(config);
         LoggerInit.initPersistentConsoleLogger(config.getFolders().getLoggerFolder(), "master-server");
         container.put(config);
@@ -29,8 +30,7 @@ public class MasterServerRunner {
         new MasterServer().start();
     }
 
-
-    private MasterServerConfig getConfig(@NonNull String configPath) throws IOException {
-        return configProvider.getConfig(configPath, MasterServerConfig.class);
+    private MasterServerConfig getConfig() throws IOException, EnvConfigCreationException {
+        return configProvider.getConfig("master-server-config.yml", MasterServerConfig.class);
     }
 }

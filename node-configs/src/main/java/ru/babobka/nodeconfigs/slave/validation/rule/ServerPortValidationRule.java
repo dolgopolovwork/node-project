@@ -10,8 +10,8 @@ import ru.babobka.nodeutils.validation.ValidationRule;
 public class ServerPortValidationRule implements ValidationRule<SlaveServerConfig> {
     @Override
     public void validate(SlaveServerConfig slaveServerConfig) {
-        if (!TextUtil.isValidPort(slaveServerConfig.getServerPort())) {
-            throw new IllegalArgumentException("invalid server port " + slaveServerConfig.getServerPort());
+        if (!TextUtil.isValidPort(slaveServerConfig.getMasterServerPort())) {
+            throw new IllegalArgumentException("invalid server port " + slaveServerConfig.getMasterServerPort());
         }
     }
 }

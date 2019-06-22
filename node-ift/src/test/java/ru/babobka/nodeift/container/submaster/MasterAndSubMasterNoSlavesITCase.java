@@ -26,9 +26,9 @@ public class MasterAndSubMasterNoSlavesITCase extends AbstractContainerITCase {
     @BeforeClass
     public static void runContainers() throws InterruptedException {
         master.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         submaster.start();
-        Thread.sleep(5_000);
+        Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass

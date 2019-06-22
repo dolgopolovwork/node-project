@@ -2,8 +2,10 @@ package ru.babobka.masternoderun;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.apache.log4j.Logger;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
+import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class MasterApp extends CLI {
 
-    private static final String CONFIG_PATH_OPTION = "masterConfigPath";
+    private static Logger logger = Logger.getLogger(MasterApp.class);
 
     private static void init() {
         Container.getInstance().put(container -> {
@@ -35,36 +37,18 @@ public class MasterApp extends CLI {
 
     @Override
     public List<Option> createOptions() {
-        Option configPath = createArgOption(
-                CONFIG_PATH_OPTION,
-                "Defines path to configuration json file. " +
-                        "May be omitted, if environment variable " + Env.NODE_MASTER_CONFIG + " is set.");
-        return Collections.singletonList(configPath);
+        return Collections.emptyList();
     }
 
     @Override
-    public void run(CommandLine cmd) throws IOException {
-        String pathToConfig = getPathToConfig(cmd);
+    public void run(CommandLine cmd) throws IOException, EnvConfigCreationException {
         MasterServerRunner masterServerRunner = new MasterServerRunner();
-        masterServerRunner.run(pathToConfig);
+        masterServerRunner.run();
     }
 
     @Override
     public String getAppName() {
         return "master-node-run";
-    }
-
-    private static String getPathToConfig(CommandLine cmd) {
-        String configPath = cmd.getOptionValue(CONFIG_PATH_OPTION);
-        if (configPath != null) {
-            return configPath;
-        }
-        configPath = TextUtil.getEnv(Env.NODE_MASTER_CONFIG);
-        if (configPath != null) {
-            print("Path to config was taken from environment variable " + Env.NODE_MASTER_CONFIG);
-            return configPath;
-        }
-        throw new IllegalArgumentException("Path to config was not set");
     }
 
     public static void main(String[] args) {

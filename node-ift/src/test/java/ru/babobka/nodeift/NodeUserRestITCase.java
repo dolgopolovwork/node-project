@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodebusiness.service.DebugBase64KeyPair;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;

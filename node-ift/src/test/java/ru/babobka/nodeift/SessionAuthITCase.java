@@ -10,6 +10,7 @@ import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
@@ -66,9 +67,9 @@ public class SessionAuthITCase {
         SlaveServer slaveServer1 = null;
         SlaveServer slaveServer2 = null;
         try {
-            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+            slaveServer1 = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
             try {
-                slaveServer2 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+                slaveServer2 = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
                 fail();
             } catch (SlaveStartupException expected) {
                 //that's ok
@@ -81,7 +82,7 @@ public class SessionAuthITCase {
     @Test
     public void testAuthMultipleSessions() throws IOException, InterruptedException {
         for (int i = 0; i < 10; i++) {
-            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
             interruptAndJoin(slaveServer);
             waitUntilClearSession();
         }
@@ -96,7 +97,7 @@ public class SessionAuthITCase {
             authThreads[i] = new Thread(() -> {
                 try {
                     Thread.sleep(new Random().nextInt(1000));
-                    slaveServers.add(SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY));
+                    slaveServers.add(SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY));
                     successfulAuthentications.incrementAndGet();
                 } catch (IOException | InterruptedException expected) {
                     Thread.currentThread().interrupt();
@@ -114,7 +115,7 @@ public class SessionAuthITCase {
     public void testAuthOneSession() throws IOException, InterruptedException {
         SlaveServer slaveServer1 = null;
         try {
-            slaveServer1 = SlaveServerRunner.runSlaveServer(TestCredentials.USER_NAME, TestCredentials.PRIV_KEY);
+            slaveServer1 = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
         } finally {
             interruptAndJoin(slaveServer1);
         }

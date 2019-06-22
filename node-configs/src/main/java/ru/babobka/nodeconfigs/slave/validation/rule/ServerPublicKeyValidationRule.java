@@ -12,11 +12,11 @@ import java.security.spec.InvalidKeySpecException;
 public class ServerPublicKeyValidationRule implements ValidationRule<SlaveServerConfig> {
     @Override
     public void validate(SlaveServerConfig slaveServerConfig) {
-        if (slaveServerConfig.getServerBase64PublicKey() == null) {
+        if (slaveServerConfig.getMasterServerBase64PublicKey() == null) {
             throw new IllegalArgumentException("server public key was not set");
         }
         try {
-            KeyDecoder.decodePublicKey(slaveServerConfig.getServerBase64PublicKey());
+            KeyDecoder.decodePublicKey(slaveServerConfig.getMasterServerBase64PublicKey());
         } catch (InvalidKeySpecException e) {
             throw new IllegalStateException("Cannot decode server public key", e);
         }

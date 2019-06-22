@@ -1,6 +1,5 @@
 package ru.babobka.slavenoderun;
 
-import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.key.SlaveServerKey;
@@ -25,10 +24,10 @@ class SlaveRunner {
             Container.getInstance().get(SlaveServerRunnerFactory.class);
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    void run(@NonNull String pathToConfig) {
+    void run() {
         checkWasStarted();
         while (!Thread.currentThread().isInterrupted()) {
-            SlaveServer slaveServer = createSlaveWhileNotConnected(pathToConfig);
+            SlaveServer slaveServer = createSlaveWhileNotConnected();
             if (slaveServer == null) {
                 return;
             }
@@ -42,11 +41,11 @@ class SlaveRunner {
         }
     }
 
-    private SlaveServer createSlaveWhileNotConnected(String pathToConfig) {
+    private SlaveServer createSlaveWhileNotConnected() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 slaveCreationWaiter.waitUntilAble();
-                return slaveServerFactory.build(pathToConfig);
+                return slaveServerFactory.build();
             } catch (SlaveAuthException e) {
                 return null;
             } catch (IOException e) {
@@ -54,7 +53,10 @@ class SlaveRunner {
                 logger.info("wait slave reconnection");
                 waitReconnection();
             } catch (GeneralSecurityException e) {
-                logger.error("Error occurred while creating slave", e);
+                logger.error("error occurred while creating slave", e);
+                return null;
+            } catch (Exception e) {
+                logger.error("cannot create slave due to severe error", e);
                 return null;
             }
         }

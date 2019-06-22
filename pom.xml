@@ -22,7 +22,6 @@
         <module>node-client</module>
         <module>node-tester</module>
         <module>node-configs</module>
-        <module>node-configs-cli</module>
         <!-- Factorization -->
         <module>node-task-modules/factoring/factor</module>
         <module>node-task-modules/factoring/factor-service</module>

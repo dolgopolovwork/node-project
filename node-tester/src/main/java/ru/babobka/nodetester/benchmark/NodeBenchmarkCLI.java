@@ -3,19 +3,14 @@ package ru.babobka.nodetester.benchmark;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.ParseException;
-import ru.babobka.nodebusiness.StorageApplicationContainer;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
-import ru.babobka.nodeutils.util.ClassLoaderUtil;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +28,6 @@ public abstract class NodeBenchmarkCLI extends CLI {
     private static final String SLAVES_OPTION = "slaves";
     private static final String SERVICE_THREADS_OPTION = "threads";
     private static final String CACHE_OPTION = "cache";
-    private static final String PERMANENT_DRIVER_OPTION = "perm";
 
     @Override
     public List<Option> createOptions() {
@@ -41,10 +35,8 @@ public abstract class NodeBenchmarkCLI extends CLI {
         Option slaves = createArgOption(SLAVES_OPTION, "Slave nodes to run");
         Option threads = createArgOption(SERVICE_THREADS_OPTION, "Threads to use per slave");
         Option cache = createFlagOption(CACHE_OPTION, "Enables cache");
-        Option permanentDriver = createArgOption(PERMANENT_DRIVER_OPTION, "Enables benchmark result storage. " +
-                "Requires path to driver as an argument");
         List<Option> options = new ArrayList<>();
-        options.addAll(Arrays.asList(tests, slaves, threads, cache, permanentDriver));
+        options.addAll(Arrays.asList(tests, slaves, threads, cache));
         options.addAll(createBenchmarkOptions());
         return options;
     }
@@ -64,10 +56,6 @@ public abstract class NodeBenchmarkCLI extends CLI {
         String cmdThreads = cmd.getOptionValue(SERVICE_THREADS_OPTION);
         if (cmdThreads != null && TextUtil.tryParseInt(cmdThreads, 0) < 1) {
             throw new ParseException("invalid number of threads " + cmdThreads);
-        }
-        String cmdPermanentDriver = cmd.getOptionValue(PERMANENT_DRIVER_OPTION);
-        if (cmdPermanentDriver != null && !new File(cmdPermanentDriver).exists()) {
-            throw new ParseException("file " + cmdPermanentDriver + " doesn't exists");
         }
         extraBenchmarkValidation(cmd);
     }
@@ -91,17 +79,7 @@ public abstract class NodeBenchmarkCLI extends CLI {
     @Override
     public void run(CommandLine cmd) {
         Container container = Container.getInstance();
-        try {
-            Properties.put(TesterKey.ENABLE_CACHE, cmd.hasOption(CACHE_OPTION));
-            if (cmd.hasOption(PERMANENT_DRIVER_OPTION)) {
-                Properties.put(TesterKey.PERMANENT, true);
-                ClassLoaderUtil.addPath(cmd.getOptionValue(PERMANENT_DRIVER_OPTION));
-                container.put(new StorageApplicationContainer());
-            }
-        } catch (IOException e) {
-            printErr(e.getMessage());
-            return;
-        }
+        Properties.put(TesterKey.ENABLE_CACHE, cmd.hasOption(CACHE_OPTION));
         print(getSlaves(cmd) + " slave(s) with " + getServiceThreads(cmd) + " thread(s) per slave");
         benchmarkRun(cmd);
     }
