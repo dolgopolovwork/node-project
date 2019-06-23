@@ -41,7 +41,7 @@ public class CacheITCase {
     protected static CacheDAO cacheDAO;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), CacheITCase.class.getSimpleName());
         Properties.put(TesterKey.ENABLE_CACHE, true);
         MasterServerRunner.init();

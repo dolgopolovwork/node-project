@@ -8,11 +8,11 @@ public class RmqConfigValidationRule implements ValidationRule<MasterServerConfi
 
     @Override
     public void validate(MasterServerConfig masterServerConfig) {
-        if (masterServerConfig.getRmqConfig() != null) {
-            if (!TextUtil.isValidPort(masterServerConfig.getRmqConfig().getPort())) {
+        if (masterServerConfig.getRmq() != null) {
+            if (!TextUtil.isValidPort(masterServerConfig.getRmq().getPort())) {
                 throw new IllegalArgumentException("invalid Rmq port "
-                        + masterServerConfig.getRmqConfig().getPort());
-            } else if (TextUtil.isEmpty(masterServerConfig.getRmqConfig().getHost())) {
+                        + masterServerConfig.getRmq().getPort());
+            } else if (TextUtil.isEmpty(masterServerConfig.getRmq().getHost())) {
                 throw new IllegalArgumentException("RMQ host was not set");
             }
         }

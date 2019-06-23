@@ -23,17 +23,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RpcServer implements Closeable {
     private static final String RPC_QUEUE_NAME = "rpc_queue";
+    private static final DefaultExceptionHandler rmqExceptionHandler = new RmqErrorHandler();
     private static final Logger logger = Logger.getLogger(RpcServer.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
     private final NodeResponseErrorMapper nodeResponseErrorMapper = Container.getInstance().get(NodeResponseErrorMapper.class);
     private final ExecutorService rpcConsumerThreadPool = PrettyNamedThreadPoolFactory.singleThreadPool("rmq-consumer");
     private final ExecutorService rpcExecutorThreadPool = PrettyNamedThreadPoolFactory.fixedThreadPool("rpc-executor");
-    private final Connection rmqConnection = createConnection(masterServerConfig.getRmqConfig());
-    private final Channel channel = rmqConnection.createChannel();
+    private final Connection rmqConnection;
+    private final Channel channel;
     private final AtomicBoolean started = new AtomicBoolean();
 
-    public RpcServer() throws IOException, TimeoutException {
+    public RpcServer() throws IOException {
+        try {
+            rmqConnection = createConnection(masterServerConfig.getRmq());
+        } catch (TimeoutException ex) {
+            throw new IOException("Cannot create connection", ex);
+        }
+        channel = rmqConnection.createChannel();
         channel.queueDeclare(RPC_QUEUE_NAME, true, false, false, null);
     }
 
@@ -97,20 +104,7 @@ public class RpcServer implements Closeable {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(rmqConfig.getHost());
         factory.setPort(rmqConfig.getPort());
-        factory.setExceptionHandler(new DefaultExceptionHandler() {
-            @Override
-            public void handleConnectionRecoveryException(Connection connection, Throwable exception) {
-                logger.error("rmq exception. exit.", exception);
-                System.exit(1);
-            }
-
-            @Override
-            public void handleUnexpectedConnectionDriverException(Connection connection, Throwable exception) {
-                logger.error("rmq exception. exit.", exception);
-                System.exit(1);
-            }
-        });
-
+        factory.setExceptionHandler(rmqExceptionHandler);
         return factory.newConnection(rpcConsumerThreadPool);
     }
 
@@ -118,12 +112,13 @@ public class RpcServer implements Closeable {
     public void close() {
         try {
             channel.close();
-        } catch (Exception ignored) {
-
+        } catch (Exception ex) {
+            logger.error("Cannot close channel", ex);
         }
         try {
             rmqConnection.close();
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            logger.error("Cannot close rmq connection", ex);
 
         }
         rpcConsumerThreadPool.shutdownNow();

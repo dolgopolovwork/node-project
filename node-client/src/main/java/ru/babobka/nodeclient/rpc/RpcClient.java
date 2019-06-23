@@ -22,27 +22,25 @@ public class RpcClient implements Closeable {
     private final Connection connection;
     private final Channel channel;
     private final String replyQueue;
-    private static final String RPC_QUEUE = "rpc_queue";
+    static final String RPC_QUEUE = "rpc_queue";
 
-    // TODO добавь слушатель пропущенных сообщений
-    public RpcClient(@NonNull String host, int port, @NonNull String replyQueue) throws IOException, TimeoutException {
-        if (TextUtil.isEmpty(host)) {
-            throw new IllegalArgumentException("host was not set");
-        } else if (!TextUtil.isValidPort(port)) {
-            throw new IllegalArgumentException("not valid port " + port);
-        } else if (TextUtil.isEmpty(replyQueue)) {
-            throw new IllegalArgumentException("replyQueue was not set");
-        }
+    RpcClient(@NonNull String host,
+              int port,
+              @NonNull String replyQueue,
+              @NonNull ConnectionFactory connectionFactory) throws IOException, TimeoutException {
+        validateArguments(host, port, replyQueue);
         this.replyQueue = replyQueue;
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(host);
-        factory.setPort(port);
-        connection = factory.newConnection();
-        channel = connection.createChannel();
+        this.connection = connectionFactory.newConnection();
+        this.channel = connection.createChannel();
         initChannel();
     }
 
-    public NodeResponse call(@NonNull NodeRequest request) throws IOException, InterruptedException {
+    // TODO добавь слушатель пропущенных сообщений
+    public RpcClient(String host, int port, String replyQueue) throws IOException, TimeoutException {
+        this(host, port, replyQueue, createConnectionFactory(host, port));
+    }
+
+    public NodeResponse call(@NonNull NodeRequest request) throws IOException, InterruptedException, TimeoutException {
         if (!(request.getRequestStatus() == RequestStatus.RACE || request.getRequestStatus() == RequestStatus.NORMAL)) {
             throw new IllegalArgumentException("invalid request status " + request.getRequestStatus().name());
         }
@@ -52,9 +50,16 @@ public class RpcClient implements Closeable {
                 .correlationId(corrId)
                 .replyTo(replyQueue)
                 .build();
-
-        rpcResponsePool.reserveResponse(corrId);
+        reserveResponse(corrId);
         channel.basicPublish("", RPC_QUEUE, props, NodeSerializer.serializeRequest(request));
+        return getResponse(corrId);
+    }
+
+    void reserveResponse(String corrId) {
+        rpcResponsePool.reserveResponse(corrId);
+    }
+
+    NodeResponse getResponse(String corrId) throws TimeoutException, InterruptedException {
         return rpcResponsePool.getResponse(corrId);
     }
 
@@ -71,6 +76,23 @@ public class RpcClient implements Closeable {
 
         }, consumerTag -> {
         });
+    }
+
+    private static void validateArguments(String host, int port, String replyQueue) {
+        if (TextUtil.isEmpty(host)) {
+            throw new IllegalArgumentException("host was not set");
+        } else if (!TextUtil.isValidPort(port)) {
+            throw new IllegalArgumentException("not valid port " + port);
+        } else if (TextUtil.isEmpty(replyQueue)) {
+            throw new IllegalArgumentException("replyQueue was not set");
+        }
+    }
+
+    private static ConnectionFactory createConnectionFactory(String host, int port) {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(host);
+        factory.setPort(port);
+        return factory;
     }
 
     @Override

@@ -40,9 +40,9 @@ public class MasterServer extends Thread {
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
     private final RpcServer rpcServer;
 
-    public MasterServer() throws IOException, TimeoutException {
+    public MasterServer() throws IOException {
         setName("master_server_" + MASTER_SERVER_ID.getAndIncrement());
-        if (masterServerConfig.getRmqConfig() != null) {
+        if (masterServerConfig.getRmq() != null) {
             rpcServer = new RpcServer();
         } else {
             rpcServer = null;

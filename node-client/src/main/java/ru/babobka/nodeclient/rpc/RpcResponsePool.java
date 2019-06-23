@@ -5,6 +5,7 @@ import ru.babobka.nodeserials.NodeResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 public class RpcResponsePool {
 
@@ -21,16 +22,21 @@ public class RpcResponsePool {
         }
     }
 
-    public NodeResponse getResponse(@NonNull String correlationId) throws InterruptedException {
+
+    public NodeResponse getResponse(@NonNull String correlationId) throws InterruptedException, TimeoutException {
+        return getResponse(correlationId, Long.MAX_VALUE);
+    }
+
+    public NodeResponse getResponse(@NonNull String correlationId, long timeoutMillis) throws InterruptedException, TimeoutException {
         LockedResponse lockedResponse = getLockedResponse(correlationId);
         if (lockedResponse != null) {
             try {
-                return lockedResponse.getResponse();
+                return lockedResponse.getResponse(timeoutMillis);
             } finally {
                 remove(correlationId);
             }
         }
-        throw new IllegalStateException("no response with correlationId '" + correlationId + "' has been reserved");
+        throw new IllegalStateException("No response with correlationId '" + correlationId + "' has been reserved");
     }
 
     private synchronized LockedResponse getLockedResponse(String correlationId) {

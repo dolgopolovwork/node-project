@@ -3,7 +3,6 @@ package ru.babobka.nodeserials.data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -82,11 +81,6 @@ public class Data implements Serializable {
 
     public void remove(String key) {
         dataCollection.remove(key);
-    }
-
-    public Data putString(String key, List<String> value) {
-        dataCollection.put(key, (Serializable) value);
-        return this;
     }
 
     public FinalIterator<Map.Entry<String, Serializable>> getIterator() {

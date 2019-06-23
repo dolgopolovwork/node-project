@@ -32,6 +32,16 @@ class ContainerConfigs {
         MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_PORTS_CLIENTLISTENERPORT", String.valueOf(MASTER_CLIENT_PORT));
     }
 
+    static final Map<String, String> MASTER_RMQ_ENV = new HashMap<>();
+
+    static final String RMQ_NETWORK_ALIAS = "rmq";
+    static final int DEFAULT_RMQ_PORT = 5672;
+
+    static {
+        MASTER_RMQ_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_RMQ_HOST", RMQ_NETWORK_ALIAS);
+        MASTER_RMQ_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_RMQ_PORT", String.valueOf(DEFAULT_RMQ_PORT));
+    }
+
     static final Map<String, String> SLAVE_ENV = new HashMap<>();
 
     static {

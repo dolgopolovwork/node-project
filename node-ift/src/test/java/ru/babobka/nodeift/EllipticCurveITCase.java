@@ -40,7 +40,7 @@ public class EllipticCurveITCase {
     private static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() throws InvalidKeySpecException {
+    public static void setUp() throws InvalidKeySpecException, IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), EllipticCurveITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

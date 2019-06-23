@@ -12,6 +12,7 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
+import java.io.IOException;
 import java.security.PublicKey;
 
 /**
@@ -20,7 +21,7 @@ import java.security.PublicKey;
 public class LagClientITCase extends ru.babobka.nodeift.ClientITCase {
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagClientITCase.class.getSimpleName());
         Container.getInstance().put(container -> {
             container.put(new LaggyNodeConnectionFactory());
