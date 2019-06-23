@@ -41,7 +41,7 @@ public class NodeUserRestITCase {
     private static final Gson GSON = new Gson();
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), NodeUserRestITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

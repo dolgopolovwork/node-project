@@ -16,6 +16,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.vsjws.webserver.WebServer;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import static org.mockito.Mockito.*;
 
@@ -37,7 +38,7 @@ public class MasterServerTest {
     private ClientStorage clientStorage;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, TimeoutException {
         clientStorage = mock(ClientStorage.class);
         nodeUsersService = mock(NodeUsersService.class);
         masterServerConfig = mock(MasterServerConfig.class);

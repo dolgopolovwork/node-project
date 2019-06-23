@@ -4,7 +4,7 @@ NODE_MASTER_DOCKER_TAG="babobka/node-project-master:$TAG"
 NODE_SLAVE_DOCKER_TAG="babobka/node-project-slave:$TAG"
 NODE_SUBMASTER_DOCKER_TAG="babobka/node-project-submaster:$TAG"
 # install all modules, run unit tests, create task jars
- mvn clean install &&
+mvn clean install &&
 # create runnable jars
 mvn clean compile assembly:single -f master-node-run/pom.xml &&
 mvn clean compile assembly:single -f slave-node-run/pom.xml &&

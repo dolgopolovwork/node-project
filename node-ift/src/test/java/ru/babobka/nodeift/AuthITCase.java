@@ -35,7 +35,7 @@ public class AuthITCase {
     protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         Container.getInstance().clear();
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), AuthITCase.class.getSimpleName());
         MasterServerRunner.init();

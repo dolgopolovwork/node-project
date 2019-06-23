@@ -14,6 +14,7 @@ import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
+import java.io.IOException;
 import java.security.PublicKey;
 
 /**
@@ -22,7 +23,7 @@ import java.security.PublicKey;
 public class LagAuthITCase extends AuthITCase {
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), LagAuthITCase.class.getSimpleName());
         Container.getInstance().put(new LaggyNodeConnectionFactory());
         MasterServerRunner.init();

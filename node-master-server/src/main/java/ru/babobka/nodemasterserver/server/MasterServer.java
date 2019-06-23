@@ -2,11 +2,12 @@ package ru.babobka.nodemasterserver.server;
 
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
-import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
+import ru.babobka.nodemasterserver.rpc.RpcServer;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
@@ -18,6 +19,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -36,9 +38,15 @@ public class MasterServer extends Thread {
     private static final Logger logger = Logger.getLogger(MasterServer.class);
     private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
+    private final RpcServer rpcServer;
 
-    public MasterServer() {
+    public MasterServer() throws IOException {
         setName("master_server_" + MASTER_SERVER_ID.getAndIncrement());
+        if (masterServerConfig.getRmq() != null) {
+            rpcServer = new RpcServer();
+        } else {
+            rpcServer = null;
+        }
     }
 
     @Override
@@ -51,8 +59,11 @@ public class MasterServer extends Thread {
             incomingSlavesThread.start();
             heartBeatingThread.start();
             webServer.start();
+            if (rpcServer != null) {
+                rpcServer.start();
+            }
             logger.info(TextUtil.WELCOME_TEXT);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             logger.error("exception thrown", e);
             clear();
         }
@@ -67,6 +78,9 @@ public class MasterServer extends Thread {
         interruptAndJoin(incomingSlavesThread);
         interruptAndJoin(webServer);
         interruptAndJoin(heartBeatingThread);
+        if (rpcServer != null) {
+            rpcServer.close();
+        }
         clear();
     }
 
@@ -84,7 +98,7 @@ public class MasterServer extends Thread {
         }
     }
 
-    void interruptAndJoin(Thread thread) {
+    private void interruptAndJoin(Thread thread) {
         thread.interrupt();
         try {
             thread.join(10_000);

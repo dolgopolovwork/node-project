@@ -21,9 +21,9 @@ import java.util.function.Consumer;
 public abstract class AbstractContainerITCase {
 
     private static final Network NETWORK = Network.SHARED;
-
     protected static final int MASTER_SERVER_WAIT_MILLIS = 5_000;
     protected static final int SLAVE_SERVER_WAIT_MILLIS = 10_000;
+    protected static final String RPC_REPLY_QUEUE = "rpc_reply_queue";
 
     static {
         LoggerInit.initConsoleLogger();
@@ -34,6 +34,13 @@ public abstract class AbstractContainerITCase {
     }
 
     private static final Gson gson = new Gson();
+
+    protected static GenericContainer createRMQ() {
+        return new GenericContainer("rabbitmq:3-management")
+                .withExposedPorts(ContainerConfigs.DEFAULT_RMQ_PORT)
+                .withNetwork(NETWORK)
+                .withNetworkAliases(ContainerConfigs.RMQ_NETWORK_ALIAS);
+    }
 
     protected static GenericContainer createMaster() {
         GenericContainer master = new GenericContainer<>(DockerImage.MASTER.getImageName())
@@ -47,6 +54,15 @@ public abstract class AbstractContainerITCase {
         initLogConsumer(master);
         mountLogsAndTasks(master);
         return master;
+    }
+
+    protected static GenericContainer createMasterWithRMQ() {
+        return createMaster().withEnv(ContainerConfigs.MASTER_RMQ_ENV)
+                .withEnv("WAIT_HOSTS_TIMEOUT", "300")
+                .withEnv("WAIT_SLEEP_INTERVAL", "3")
+                .withEnv("WAIT_HOSTS",
+                        ContainerConfigs.RMQ_NETWORK_ALIAS + ":"
+                                + ContainerConfigs.DEFAULT_RMQ_PORT);
     }
 
     protected static GenericContainer createSubMaster() {
@@ -113,6 +129,10 @@ public abstract class AbstractContainerITCase {
 
     protected static int getMasterClientPort(@NonNull GenericContainer master) {
         return master.getMappedPort(ContainerConfigs.MASTER_CLIENT_PORT);
+    }
+
+    protected static int getRmqPort(@NonNull GenericContainer rmq) {
+        return rmq.getMappedPort(ContainerConfigs.DEFAULT_RMQ_PORT);
     }
 
     protected static boolean isMasterHealthy(@NonNull GenericContainer master) throws IOException {

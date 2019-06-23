@@ -39,7 +39,7 @@ public class PollardDlpITCase {
     private static TaskService taskService;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), PollardDlpITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

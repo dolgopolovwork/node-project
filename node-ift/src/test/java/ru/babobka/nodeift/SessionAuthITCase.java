@@ -37,7 +37,7 @@ public class SessionAuthITCase {
     protected static MasterServer masterServer;
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), SessionAuthITCase.class.getSimpleName());
         MasterServerRunner.init();
         Container.getInstance().get(MasterServerConfig.class).getModes().setSingleSessionMode(true);

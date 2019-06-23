@@ -2,6 +2,7 @@ package ru.babobka.nodemasterserver.client;
 
 import org.apache.log4j.Logger;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
+import ru.babobka.nodemasterserver.mapper.NodeResponseErrorMapper;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
@@ -24,6 +25,7 @@ import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
 public class Client extends AbstractClient {
 
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
+    private final NodeResponseErrorMapper nodeResponseErrorMapper = Container.getInstance().get(NodeResponseErrorMapper.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
     private static final Logger logger = Logger.getLogger(Client.class);
     private final TaskService taskService = Container.getInstance().get(TaskService.class);
@@ -90,7 +92,7 @@ public class Client extends AbstractClient {
     void sendFailed(TaskExecutionException taskExecutionException) {
         for (NodeRequest request : requests) {
             try {
-                connection.send(createErrorResponse(request, taskExecutionException));
+                connection.send(nodeResponseErrorMapper.createErrorResponse(request, taskExecutionException));
             } catch (IOException e) {
                 logger.error("cannot send failed response for task " + request.getTaskId(), e);
             }
@@ -123,7 +125,7 @@ public class Client extends AbstractClient {
         this.done = true;
     }
 
-    void executeTask(NodeRequest request) throws IOException {
+    void executeTask(NodeRequest request) {
         taskService.executeTask(request, result -> {
             if (result.wasStopped()) {
                 sendStopped();
@@ -139,19 +141,6 @@ public class Client extends AbstractClient {
         });
     }
 
-    //This code is duplicated
-    private NodeResponse createErrorResponse(NodeRequest request, TaskExecutionException taskExecutionException) {
-        String message = taskExecutionException.getMessage();
-        if (taskExecutionException.getExecutionStatus() == ResponseStatus.SYSTEM_ERROR) {
-            return NodeResponse.systemError(request, message);
-        } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.VALIDATION_ERROR) {
-            return NodeResponse.validationError(request, message);
-        } else if (taskExecutionException.getExecutionStatus() == ResponseStatus.NO_NODES) {
-            return NodeResponse.noNodesError(request, message);
-        }
-        throw new NotImplementedException();
-    }
-
     private class ExecutionRunnable implements Runnable {
 
         private final NodeRequest request;
@@ -164,7 +153,7 @@ public class Client extends AbstractClient {
         public void run() {
             try {
                 executeTask(request);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("exception thrown", e);
             }
         }

@@ -13,6 +13,7 @@ public class MasterServerConfig implements NodeConfiguration {
     private TimeConfig time;
     private Base64KeyPair keyPair;
     private FolderConfig folders;
+    private RmqConfig rmq;
 
     public ModeConfig getModes() {
         return modes;
@@ -54,6 +55,14 @@ public class MasterServerConfig implements NodeConfiguration {
         this.keyPair = keyPair;
     }
 
+    public RmqConfig getRmq() {
+        return rmq;
+    }
+
+    public void setRmq(RmqConfig rmq) {
+        this.rmq = rmq;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -91,6 +100,9 @@ public class MasterServerConfig implements NodeConfiguration {
         }
         if (this.time != null) {
             masterServerConfig.setTime(this.time.copy());
+        }
+        if (this.rmq != null) {
+            masterServerConfig.setRmq(this.rmq.copy());
         }
         return masterServerConfig;
     }

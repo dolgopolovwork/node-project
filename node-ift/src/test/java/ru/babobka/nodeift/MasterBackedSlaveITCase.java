@@ -57,7 +57,7 @@ public class MasterBackedSlaveITCase {
     }
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws IOException {
         Container.getInstance().clear();
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), MasterBackedSlaveITCase.class.getSimpleName());
         MasterServerRunner.init();

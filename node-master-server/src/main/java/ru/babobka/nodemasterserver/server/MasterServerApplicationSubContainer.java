@@ -1,6 +1,7 @@
 package ru.babobka.nodemasterserver.server;
 
 import lombok.NonNull;
+import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
@@ -8,9 +9,9 @@ import ru.babobka.nodemasterserver.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
+import ru.babobka.nodemasterserver.mapper.NodeResponseErrorMapper;
 import ru.babobka.nodemasterserver.mapper.ResponsesMapper;
 import ru.babobka.nodemasterserver.model.ResponseStorage;
-import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodemasterserver.service.*;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.Sessions;
@@ -47,6 +48,7 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
     @Override
     protected void containImpl(Container container) throws Exception {
         StreamUtil streamUtil = container.get(StreamUtil.class);
+        container.put(new NodeResponseErrorMapper());
         container.put(new Sessions());
         container.put(new SlavesStorage());
         container.put(new DistributionService());
