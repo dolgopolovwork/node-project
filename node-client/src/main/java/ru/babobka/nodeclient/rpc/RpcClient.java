@@ -22,7 +22,7 @@ public class RpcClient implements Closeable {
     private final Connection connection;
     private final Channel channel;
     private final String replyQueue;
-    static final String RPC_QUEUE = "rpc_queue";
+    static final String RPC_QUEUE_NAME = "rpc_queue";
 
     RpcClient(@NonNull String host,
               int port,
@@ -32,6 +32,7 @@ public class RpcClient implements Closeable {
         this.replyQueue = replyQueue;
         this.connection = connectionFactory.newConnection();
         this.channel = connection.createChannel();
+        channel.queueDeclare(RPC_QUEUE_NAME, true, false, false, null);
         initChannel();
     }
 
@@ -51,7 +52,7 @@ public class RpcClient implements Closeable {
                 .replyTo(replyQueue)
                 .build();
         reserveResponse(corrId);
-        channel.basicPublish("", RPC_QUEUE, props, NodeSerializer.serializeRequest(request));
+        channel.basicPublish("", RPC_QUEUE_NAME, props, NodeSerializer.serializeRequest(request));
         return getResponse(corrId);
     }
 
@@ -64,7 +65,7 @@ public class RpcClient implements Closeable {
     }
 
     public void cancelCall(@NonNull UUID taskId) throws IOException {
-        channel.basicPublish("", RPC_QUEUE, null, NodeSerializer.serializeRequest(NodeRequest.stop(taskId)));
+        channel.basicPublish("", RPC_QUEUE_NAME, null, NodeSerializer.serializeRequest(NodeRequest.stop(taskId)));
     }
 
     private void initChannel() throws IOException {

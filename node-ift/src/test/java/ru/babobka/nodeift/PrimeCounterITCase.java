@@ -83,7 +83,7 @@ public class PrimeCounterITCase {
         return createPrimeCounterRequest(0L, 4_000_000L);
     }
 
-    static NodeRequest getEnormousRangeRequest() {
+    public static NodeRequest getEnormousRangeRequest() {
         return createPrimeCounterRequest(0L, 15_000_000L);
     }
 

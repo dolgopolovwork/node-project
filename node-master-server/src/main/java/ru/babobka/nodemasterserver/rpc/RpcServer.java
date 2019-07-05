@@ -9,6 +9,7 @@ import ru.babobka.nodemasterserver.mapper.NodeResponseErrorMapper;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
+import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeserials.exception.NodeSerializationException;
 import ru.babobka.nodeserials.serializer.NodeSerializer;
 import ru.babobka.nodetask.service.TaskService;
@@ -90,6 +91,11 @@ public class RpcServer implements Closeable {
                               Delivery delivery,
                               AMQP.BasicProperties replyProps) {
         try {
+            if (response.getStatus() == ResponseStatus.NO_NODES) {
+                logger.info("got no slaves to execute tasks. task goes back to rpc queue '" + RPC_QUEUE_NAME + "'.");
+                channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+                return;
+            }
             channel.basicPublish("",
                     delivery.getProperties().getReplyTo(),
                     replyProps,

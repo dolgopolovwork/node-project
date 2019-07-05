@@ -8,11 +8,11 @@ import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-class ContainerConfigs {
+public class ContainerConfigs {
 
 
-    private static final String MASTER_SERVER_CONFIG_ENV_PREFIX = MasterServerConfig.class.getSimpleName().toUpperCase();
-    private static final String SLAVE_SERVER_CONFIG_ENV_PREFIX = SlaveServerConfig.class.getSimpleName().toUpperCase();
+    public static final String MASTER_SERVER_CONFIG_ENV_PREFIX = MasterServerConfig.class.getSimpleName().toUpperCase();
+    public static final String SLAVE_SERVER_CONFIG_ENV_PREFIX = SlaveServerConfig.class.getSimpleName().toUpperCase();
 
     static final String MASTER_SERVER_NETWORK_ALIAS = "master-host";
     static final int MASTER_CLIENT_PORT = 17070;
@@ -34,8 +34,8 @@ class ContainerConfigs {
 
     static final Map<String, String> MASTER_RMQ_ENV = new HashMap<>();
 
-    static final String RMQ_NETWORK_ALIAS = "rmq";
-    static final int DEFAULT_RMQ_PORT = 5672;
+    public static final String RMQ_NETWORK_ALIAS = "rmq";
+    public static final int DEFAULT_RMQ_PORT = 5672;
 
     static {
         MASTER_RMQ_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_RMQ_HOST", RMQ_NETWORK_ALIAS);
