@@ -65,7 +65,7 @@ public class RpcClientTest {
         RpcClient rpcClient = spy(new RpcClient("localhost", 123, replyQueue, connectionFactory));
         rpcClient.cancelCall(taskID);
         ArgumentCaptor<byte[]> request = ArgumentCaptor.forClass(byte[].class);
-        verify(channel).basicPublish(eq(""), eq(RpcClient.RPC_QUEUE), eq(null), request.capture());
+        verify(channel).basicPublish(eq(""), eq(RpcClient.RPC_QUEUE_NAME), eq(null), request.capture());
         NodeRequest actualRequest = NodeSerializer.deserializeRequest(request.getValue());
         assertEquals(RequestStatus.STOP, actualRequest.getRequestStatus());
         assertEquals(taskID, actualRequest.getTaskId());
@@ -105,7 +105,7 @@ public class RpcClientTest {
         verify(rpcClient).reserveResponse(anyString());
         ArgumentCaptor<byte[]> serializedRequest = ArgumentCaptor.forClass(byte[].class);
         ArgumentCaptor<AMQP.BasicProperties> properties = ArgumentCaptor.forClass(AMQP.BasicProperties.class);
-        verify(channel).basicPublish(eq(""), eq(RpcClient.RPC_QUEUE), properties.capture(), serializedRequest.capture());
+        verify(channel).basicPublish(eq(""), eq(RpcClient.RPC_QUEUE_NAME), properties.capture(), serializedRequest.capture());
         assertEquals(replyQueue, properties.getValue().getReplyTo());
         NodeRequest deserializedRequest = NodeSerializer.deserializeRequest(serializedRequest.getValue());
         assertEquals(request, deserializedRequest);

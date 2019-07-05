@@ -1,6 +1,5 @@
 package ru.babobka.masternoderun;
 
-import lombok.NonNull;
 import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
@@ -10,7 +9,6 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.log.LoggerInit;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by 123 on 05.12.2017.
@@ -28,6 +26,7 @@ public class MasterServerRunner {
         LoggerInit.initPersistentConsoleLogger(config.getFolders().getLoggerFolder(), "master-server");
         container.put(config);
         container.put(new MasterServerApplicationContainer());
+        MasterServer.runMBeanServer();
         new MasterServer().start();
     }
 
