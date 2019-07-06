@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import com.sun.net.httpserver.HttpServer;
 import lombok.NonNull;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
@@ -29,11 +30,9 @@ import ru.babobka.nodeweb.webcontroller.NodeClusterSizeWebController;
 import ru.babobka.nodeweb.webcontroller.NodeHealthCheckWebController;
 import ru.babobka.nodeweb.webcontroller.NodeTaskMonitoringWebController;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
-import ru.babobka.vsjws.webserver.WebServer;
-import ru.babobka.vsjws.webserver.WebServerApplicationContainer;
-import ru.babobka.vsjws.webserver.WebServerConfig;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Created by 123 on 18.02.2018.
@@ -81,20 +80,15 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         container.put(createWebServer(container, masterServerConfig));
     }
 
-    private static WebServer createWebServer(Container container, MasterServerConfig config) throws IOException {
-        container.put(new WebServerApplicationContainer());
+    private static HttpServer createWebServer(Container container, MasterServerConfig config) throws IOException {
         container.put(new NodeMasterInfoServiceImpl());
-        WebServerConfig webServerConfig = new WebServerConfig();
-        webServerConfig.setServerName("node web server");
-        webServerConfig.setPort(config.getPorts().getWebListenerPort());
-        webServerConfig.setLogFolder(config.getFolders().getLoggerFolder());
-        webServerConfig.setSessionTimeoutSeconds(15 * 60);
-        WebServer webServer = new WebServer(webServerConfig);
-        webServer.addController("users", new NodeUsersCRUDWebController());
-        webServer.addController("monitoring", new NodeTaskMonitoringWebController());
-        webServer.addController("healthcheck", new NodeHealthCheckWebController());
-        webServer.addController("clustersize", new NodeClusterSizeWebController());
+        HttpServer webServer = HttpServer.create();
+        webServer.bind(new InetSocketAddress(config.getPorts().getWebListenerPort()), 0);
+        webServer.createContext("/users", new NodeUsersCRUDWebController());
+        webServer.createContext("/monitoring", new NodeTaskMonitoringWebController());
+        webServer.createContext("/healthcheck", new NodeHealthCheckWebController());
+        webServer.createContext("/clustersize", new NodeClusterSizeWebController());
+        webServer.setExecutor(PrettyNamedThreadPoolFactory.singleDaemonThreadPool("http-server"));
         return webServer;
     }
-
 }

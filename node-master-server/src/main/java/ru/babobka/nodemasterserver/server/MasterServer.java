@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import com.sun.net.httpserver.HttpServer;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dao.CacheDAO;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
@@ -13,13 +14,11 @@ import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.TextUtil;
-import ru.babobka.vsjws.webserver.WebServer;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -32,7 +31,7 @@ public class MasterServer extends Thread {
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
-    private final WebServer webServer = Container.getInstance().get(WebServer.class);
+    private final HttpServer webServer = Container.getInstance().get(HttpServer.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private static final Logger logger = Logger.getLogger(MasterServer.class);
@@ -76,11 +75,11 @@ public class MasterServer extends Thread {
         clientStorage.closeStorage();
         interruptAndJoin(incomingClientsThread);
         interruptAndJoin(incomingSlavesThread);
-        interruptAndJoin(webServer);
         interruptAndJoin(heartBeatingThread);
         if (rpcServer != null) {
             rpcServer.close();
         }
+        webServer.stop(0);
         clear();
     }
 

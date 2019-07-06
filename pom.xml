@@ -43,8 +43,7 @@
         <module>node-task-modules/dlp/dlp</module>
         <!-- Web -->
         <module>node-web</module>
-        <module>vsjws</module>
-  </modules>
+    </modules>
 
     <build>
         <pluginManagement>

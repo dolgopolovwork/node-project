@@ -1,5 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
+import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,10 +14,8 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.vsjws.webserver.WebServer;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import static org.mockito.Mockito.*;
 
@@ -29,7 +28,7 @@ public class MasterServerTest {
     private Thread incomingClientsThread;
     private Thread heartBeatingThread;
     private Thread slaveListenerThread;
-    private WebServer webServer;
+    private HttpServer webServer;
     private SlavesStorage slavesStorage;
     private MasterServerConfig masterServerConfig;
     private NodeUsersService nodeUsersService;
@@ -38,14 +37,14 @@ public class MasterServerTest {
     private ClientStorage clientStorage;
 
     @Before
-    public void setUp() throws IOException, TimeoutException {
+    public void setUp() throws IOException {
         clientStorage = mock(ClientStorage.class);
         nodeUsersService = mock(NodeUsersService.class);
         masterServerConfig = mock(MasterServerConfig.class);
         heartBeatingThread = mock(HeartBeatingThread.class);
         slaveListenerThread = mock(IncomingSlaveListenerThread.class);
         cacheDAO = mock(CacheDAO.class);
-        webServer = mock(WebServer.class);
+        webServer = mock(HttpServer.class);
         incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
 
@@ -56,7 +55,6 @@ public class MasterServerTest {
             container.put(slaveListenerThread);
             container.put(masterServerConfig);
             container.put(webServer);
-
             container.put(slavesStorage);
             container.put(clientStorage);
             container.put(cacheDAO);
@@ -80,7 +78,7 @@ public class MasterServerTest {
     }
 
     @Test
-    public void testRunException() throws IOException {
+    public void testRunException() {
         ModeConfig modeConfig = new ModeConfig();
         when(masterServerConfig.getModes()).thenReturn(modeConfig);
         doThrow(new RuntimeException()).when(slaveListenerThread).start();
@@ -99,6 +97,7 @@ public class MasterServerTest {
     @Test
     public void testInterrupt() {
         masterServer.interrupt();
+        verify(webServer).stop(anyInt());
         verify(masterServer).clear();
     }
 
