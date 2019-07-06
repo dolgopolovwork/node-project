@@ -173,7 +173,7 @@ public class TextUtilTest {
         getLongestRepeats("", '1');
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testGetLongestRepeatsNullText() {
         getLongestRepeats((String) null, '1');
     }

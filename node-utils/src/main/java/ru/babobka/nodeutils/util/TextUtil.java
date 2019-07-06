@@ -3,10 +3,6 @@ package ru.babobka.nodeutils.util;
 import lombok.NonNull;
 import ru.babobka.nodeutils.enums.Env;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -31,9 +27,8 @@ public class TextUtil {
     }
 
     public static byte[] fromBase64(@NonNull String base64) {
-        return Base64.getDecoder().decode(base64);
+        return Base64.getDecoder().decode(base64.getBytes(TextUtil.CHARSET));
     }
-
 
     public static boolean isValidEmail(String email) {
         return email != null && email.matches(EMAIL_PATTERN);
@@ -70,41 +65,13 @@ public class TextUtil {
         }
     }
 
-    public static void hideWarnings(String... prefixes) {
-        try {
-            PrintStream filterOut = new PrintStream(System.err, true, "UTF-8") {
-                public void println(String line) {
-                    if (!startsWith(line, prefixes))
-                        super.println(line);
-                }
-            };
-            System.setErr(filterOut);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private static boolean startsWith(String text, String[] prefixes) {
-        if (text == null || prefixes == null) {
-            return false;
-        }
-        for (String prefix : prefixes) {
-            if (text.startsWith(prefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static int getLongestRepeats(String text, char repeatedChar) {
-        if (text == null) {
-            throw new IllegalArgumentException("text must be set");
-        }
+    public static int getLongestRepeats(@NonNull String text, char repeatedChar) {
         return getLongestRepeats(text.toCharArray(), repeatedChar);
     }
 
-    public static int getLongestRepeats(char[] chars, char repeatedChar) {
-        if (chars == null || chars.length == 0) {
+    public static int getLongestRepeats(@NonNull char[] chars, char repeatedChar) {
+        if (chars.length == 0) {
             throw new IllegalArgumentException("chars must be set");
         }
         int[] repeats = new int[chars.length];
@@ -127,18 +94,6 @@ public class TextUtil {
         return maxRepeat;
     }
 
-    public static boolean isValidPort(String port) {
-        if (isEmpty(port)) {
-            return false;
-        }
-        int defaultInvalidValue = -1;
-        int portNumber = tryParseInt(port, defaultInvalidValue);
-        if (portNumber == defaultInvalidValue) {
-            return false;
-        }
-        return isValidPort(portNumber);
-    }
-
     public static boolean isValidPort(int port) {
         return port > 0 && port <= 65535;
     }
@@ -149,10 +104,6 @@ public class TextUtil {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
-    }
-
-    public static int tryParseInt(String s) {
-        return tryParseInt(s, 0);
     }
 
     public static String getFirstNonNull(String... strings) {
@@ -184,13 +135,4 @@ public class TextUtil {
         return "";
     }
 
-    public static String getStringFromException(Exception ex) {
-        StringWriter errors = new StringWriter();
-        ex.printStackTrace(new PrintWriter(errors));
-        return errors.toString();
-    }
-
-    public static String beautifyServerName(String serverName, int port) {
-        return "'" + serverName + "':" + port;
-    }
 }

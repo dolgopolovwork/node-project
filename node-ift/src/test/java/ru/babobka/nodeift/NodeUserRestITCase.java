@@ -10,9 +10,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
@@ -24,7 +24,6 @@ import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -44,7 +43,6 @@ public class NodeUserRestITCase {
     public static void setUp() throws IOException {
         LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), NodeUserRestITCase.class.getSimpleName());
         MasterServerRunner.init();
-        MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         masterServer = MasterServerRunner.runMasterServer();
         nodeUsersService = Container.getInstance().get(NodeUsersServiceImpl.class);
         config = Container.getInstance().get(MasterServerConfig.class);
@@ -132,7 +130,7 @@ public class NodeUserRestITCase {
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail("abc@xyz.ru");
         userDTO.setName("abc");
-        userDTO.setBase64PubKey(URLEncoder.encode(DebugBase64KeyPair.DEBUG_PUB_KEY, "UTF-8"));
+        userDTO.setBase64PubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
         assertEquals(Request.Put("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
                 .bodyString(GSON.toJson(userDTO), ContentType.APPLICATION_JSON).execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_OK);
         assertEquals(nodeUsersService.getList().size(), 1);
@@ -148,7 +146,7 @@ public class NodeUserRestITCase {
     @Test
     public void testPostUserNotFound() throws IOException {
         assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + UUID.randomUUID())
-                .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+                .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
     @Test

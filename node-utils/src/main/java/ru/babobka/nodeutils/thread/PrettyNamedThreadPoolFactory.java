@@ -44,4 +44,8 @@ public interface PrettyNamedThreadPoolFactory {
         return fixedThreadPool(poolName, 1, false, Thread.NORM_PRIORITY);
     }
 
+    static ExecutorService singleDaemonThreadPool(@NonNull String poolName) {
+        return fixedThreadPool(poolName, 1, true, Thread.NORM_PRIORITY);
+    }
+
 }

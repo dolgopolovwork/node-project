@@ -10,12 +10,6 @@
     <description>The node master server web client</description>
     <dependencies>
         <dependency>
-            <groupId>ru.babobka.vsjws</groupId>
-            <artifactId>vsjws</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>ru.babobka.nodebusiness</groupId>
             <artifactId>node-business</artifactId>
             <version>1.0-SNAPSHOT</version>

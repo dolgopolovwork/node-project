@@ -1,19 +1,18 @@
 package ru.babobka.nodeweb.webcontroller;
 
+import com.sun.net.httpserver.HttpExchange;
 import ru.babobka.nodebusiness.service.NodeMasterInfoService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.vsjws.model.http.HttpRequest;
-import ru.babobka.vsjws.model.http.HttpResponse;
-import ru.babobka.vsjws.model.http.ResponseFactory;
-import ru.babobka.vsjws.webcontroller.HttpWebController;
 
-public class NodeClusterSizeWebController extends HttpWebController {
+import java.io.IOException;
+
+public class NodeClusterSizeWebController extends WebController {
 
     private final NodeMasterInfoService nodeMasterInfoService =
             Container.getInstance().get(NodeMasterInfoService.class);
 
     @Override
-    public HttpResponse onGet(HttpRequest request) {
-        return ResponseFactory.text(nodeMasterInfoService.totalNodes());
+    protected void onGet(HttpExchange httpExchange) throws IOException {
+        sendText(httpExchange, nodeMasterInfoService.totalNodes());
     }
 }

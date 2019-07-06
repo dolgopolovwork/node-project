@@ -4,10 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import lombok.NonNull;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Created by 123 on 05.03.2018.
@@ -37,15 +33,18 @@ public class JSONUtil {
         return (json.startsWith("{") && json.endsWith("}")) || (json.startsWith("[") && json.endsWith("]"));
     }
 
-    public static JSONObject toJsonDefault(String body) {
-        if (TextUtil.isEmpty(body)) {
-            return new JSONObject("{}");
-        }
-        return new JSONObject(body);
-
+    public static String toJsonString(@NonNull Object object) {
+        return GSON.toJson(object);
     }
 
-    public static <T> T parseJson(JSONObject jsonObject, Class<T> clazz) {
-        return GSON.fromJson(jsonObject.toString(), clazz);
+    public static <T> T parseJson(@NonNull String json, @NonNull Class<T> clazz) {
+        if (json.isEmpty()) {
+            try {
+                return clazz.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new IllegalArgumentException("cannot parse json", e);
+            }
+        }
+        return GSON.fromJson(json, clazz);
     }
 }

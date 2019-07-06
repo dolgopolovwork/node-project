@@ -1,13 +1,13 @@
 package ru.babobka.nodeweb.webcontroller;
 
-import ru.babobka.vsjws.model.http.HttpRequest;
-import ru.babobka.vsjws.model.http.HttpResponse;
-import ru.babobka.vsjws.model.http.ResponseFactory;
-import ru.babobka.vsjws.webcontroller.HttpWebController;
+import com.sun.net.httpserver.HttpExchange;
 
-public class NodeHealthCheckWebController extends HttpWebController {
+import java.io.IOException;
 
-    public HttpResponse onGet(HttpRequest request) {
-        return ResponseFactory.ok();
+public class NodeHealthCheckWebController extends WebController {
+
+    @Override
+    public void onGet(HttpExchange httpExchange) throws IOException {
+        sendOk(httpExchange);
     }
 }
