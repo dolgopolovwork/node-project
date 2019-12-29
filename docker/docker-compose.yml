@@ -2,11 +2,28 @@ version: '3.5'
 
 services:
 
+  node-postgres:
+    image: postgres:9.5
+    container_name: node-postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+    volumes:
+      - ../init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - node-project
+
   master-node:
     image: babobka/node-project-master:1.0
     container_name: master-host
     env_file:
       - .env_master
+    environment:
+      - WAIT_HOSTS=node-postgres:5432
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=3
     volumes:
       - ../logs:/logs
       - ../tasks:/tasks

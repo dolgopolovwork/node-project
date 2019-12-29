@@ -1,11 +1,11 @@
 package ru.babobka.nodemasterserver.mapper;
 
 import lombok.NonNull;
+import org.apache.commons.lang.NotImplementedException;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.exception.TaskExecutionException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 // This code is duplicated
 public class NodeResponseErrorMapper {

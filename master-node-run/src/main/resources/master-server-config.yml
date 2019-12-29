@@ -31,3 +31,9 @@ folders:
   loggerFolder: "/logger"
   # folder with tasks(jar files)
   tasksFolder: "/tasks"
+# database connection config
+dbConfig:
+  user : "test"
+  password: "test"
+  host: "node-postgres"
+  port: 5432

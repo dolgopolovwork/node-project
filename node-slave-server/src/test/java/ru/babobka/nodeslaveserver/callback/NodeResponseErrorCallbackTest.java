@@ -1,12 +1,12 @@
 package ru.babobka.nodeslaveserver.callback;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.exception.TaskExecutionException;
 import ru.babobka.nodeutils.network.NodeConnection;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 

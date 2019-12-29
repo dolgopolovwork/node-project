@@ -2,7 +2,7 @@ package ru.babobka.nodebusiness.service;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodeutils.container.Container;
 
 import static org.junit.Assert.assertEquals;

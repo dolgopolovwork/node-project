@@ -1,6 +1,7 @@
 package ru.babobka.nodeslaveserver.callback;
 
 import lombok.NonNull;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
@@ -8,7 +9,6 @@ import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodetask.exception.TaskExecutionException;
 import ru.babobka.nodeutils.func.Callback;
 import ru.babobka.nodeutils.network.NodeConnection;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 

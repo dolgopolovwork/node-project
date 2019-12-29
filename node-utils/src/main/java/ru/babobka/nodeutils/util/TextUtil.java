@@ -129,6 +129,22 @@ public class TextUtil {
         return System.getenv(name);
     }
 
+    public static String getLogFolder() {
+        String projectFolder = getEnv(Env.NODE_PROJECT_FOLDER);
+        if (isEmpty(projectFolder)) {
+            throw new IllegalArgumentException(Env.NODE_PROJECT_FOLDER + " env var is not set");
+        }
+        return projectFolder + "/logs";
+    }
+
+    public static String getTasksFolder() {
+        String projectFolder = getEnv(Env.NODE_PROJECT_FOLDER);
+        if (isEmpty(projectFolder)) {
+            throw new IllegalArgumentException(Env.NODE_PROJECT_FOLDER + " env var is not set");
+        }
+        return projectFolder + "/tasks";
+    }
+
     static String toURL(String text) {
         if (text != null)
             return text.toLowerCase(Locale.getDefault()).replaceAll("[^A-Za-z0-9]", "-");

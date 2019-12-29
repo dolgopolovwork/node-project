@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
 
-    private static Logger logger = Logger.getLogger(PrimeCounterTaskService.class);
+    private static final Logger logger = Logger.getLogger(PrimeCounterTaskService.class);
     private final AtomicBoolean done = new AtomicBoolean(false);
 
     PrimeCounterTaskService(int cores) {

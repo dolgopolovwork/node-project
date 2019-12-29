@@ -1,4 +1,4 @@
-package ru.babobka.nodebusiness.dao;
+package ru.babobka.nodebusiness.dao.user;
 
 import ru.babobka.nodebusiness.model.User;
 
@@ -9,6 +9,7 @@ import java.util.UUID;
 /**
  * Created by dolgopolov.a on 05.12.15.
  */
+//TODO think about error handling
 public interface NodeUsersDAO {
 
     User get(UUID id);
@@ -17,12 +18,12 @@ public interface NodeUsersDAO {
 
     List<User> getList();
 
-    void add(User user);
+    boolean add(User user);
 
     boolean exists(String login);
 
     boolean remove(UUID id);
 
-    boolean update(UUID id, User user);
+    boolean update(User user);
 
 }

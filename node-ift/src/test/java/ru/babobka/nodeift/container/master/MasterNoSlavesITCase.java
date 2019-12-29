@@ -21,15 +21,18 @@ import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 public class MasterNoSlavesITCase extends AbstractContainerITCase {
 
     private static final GenericContainer master = createMaster();
+    private static final GenericContainer postgres = createPostgres();
 
     @BeforeClass
     public static void runContainers() throws InterruptedException {
+        postgres.start();
         master.start();
         Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
     }
 
     @AfterClass
     public static void stopContainer() {
+        postgres.stop();
         master.close();
     }
 

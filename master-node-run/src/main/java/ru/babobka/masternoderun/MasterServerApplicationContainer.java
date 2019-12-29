@@ -1,7 +1,11 @@
 package ru.babobka.masternoderun;
 
-import org.apache.log4j.Logger;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
+import ru.babobka.nodebusiness.dao.user.DBNodeUserDAOImpl;
+import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
@@ -12,16 +16,18 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
 
+import java.util.Properties;
+
 /**
  * Created by 123 on 05.11.2017.
  */
 public class MasterServerApplicationContainer extends AbstractApplicationContainer {
 
-    private static final Logger logger = Logger.getLogger(MasterServerApplicationContainer.class);
-
     @Override
     protected void containImpl(Container container) {
         MasterServerConfig config = container.get(MasterServerConfig.class);
+        container.put(createSessionFactory(config));
+        container.put(new DBNodeUserDAOImpl());
         container.put(new SecurityApplicationContainer());
         container.put(new NodeConnectionFactory());
         container.put(new NodeUtilsApplicationContainer());
@@ -29,5 +35,27 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         container.put(new NodeBusinessApplicationContainer());
         container.put(new NodeWebApplicationContainer());
         container.put(new MasterServerApplicationSubContainer(config));
+    }
+
+    public static SessionFactory createSessionFactory(MasterServerConfig masterServerConfig) {
+        try {
+            Properties properties = new Properties();
+            properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+            properties.put("hibernate.connection.driver_class", "org.postgresql.Driver");
+            properties.put("hibernate.connection.url", "jdbc:postgresql://" + masterServerConfig.getDbConfig().getHost() + ":" + masterServerConfig.getDbConfig().getPort() + "/" + masterServerConfig.getDbConfig().getUser());
+            properties.put("hibernate.connection.username", masterServerConfig.getDbConfig().getUser());
+            properties.put("hibernate.connection.password", masterServerConfig.getDbConfig().getPassword());
+            properties.put("show_sql", "true");
+            properties.put("format_sql", "true");
+            properties.put(Environment.C3P0_MIN_SIZE, 5);
+            properties.put(Environment.C3P0_MAX_SIZE, 20);
+            properties.put(Environment.C3P0_TIMEOUT, 1800);
+            Configuration configuration = new Configuration();
+            configuration.addAnnotatedClass(User.class);
+            configuration.setProperties(properties);
+            return configuration.buildSessionFactory();
+        } catch (Throwable th) {
+            throw new ExceptionInInitializerError(th);
+        }
     }
 }

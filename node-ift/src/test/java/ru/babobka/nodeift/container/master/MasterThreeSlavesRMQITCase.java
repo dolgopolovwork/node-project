@@ -25,6 +25,7 @@ import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
 public class MasterThreeSlavesRMQITCase extends AbstractContainerITCase {
 
+    private static final GenericContainer postgres = createPostgres();
     private static final GenericContainer master = createMasterWithRMQ();
     private static final GenericContainer rmq = createRMQ();
     private static final List<GenericContainer> slaves
@@ -32,6 +33,7 @@ public class MasterThreeSlavesRMQITCase extends AbstractContainerITCase {
 
     @BeforeClass
     public static void runContainers() throws InterruptedException {
+        postgres.start();
         rmq.start();
         master.start();
         Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
@@ -41,6 +43,7 @@ public class MasterThreeSlavesRMQITCase extends AbstractContainerITCase {
 
     @AfterClass
     public static void stopContainer() {
+        postgres.stop();
         rmq.close();
         master.close();
         slaves.forEach(GenericContainer::stop);

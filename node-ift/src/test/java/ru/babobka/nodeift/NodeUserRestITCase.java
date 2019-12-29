@@ -10,16 +10,17 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
+import ru.babobka.nodeift.container.AbstractContainerITCase;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -31,8 +32,9 @@ import static org.junit.Assert.*;
 /**
  * Created by 123 on 01.07.2018.
  */
-public class NodeUserRestITCase {
+public class NodeUserRestITCase extends AbstractContainerITCase {
 
+    private static final GenericContainer postgresContainer = createPostgres();
     private static MasterServer masterServer;
     private static NodeUsersService nodeUsersService;
     private static int userCounter;
@@ -41,8 +43,9 @@ public class NodeUserRestITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), NodeUserRestITCase.class.getSimpleName());
-        MasterServerRunner.init();
+        postgresContainer.start();
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getLogFolder(), NodeUserRestITCase.class.getSimpleName());
+        MasterServerRunner.initWithRealDb();
         masterServer = MasterServerRunner.runMasterServer();
         nodeUsersService = Container.getInstance().get(NodeUsersServiceImpl.class);
         config = Container.getInstance().get(MasterServerConfig.class);
@@ -56,6 +59,8 @@ public class NodeUserRestITCase {
 
     @AfterClass
     public static void tearDown() throws InterruptedException {
+        postgresContainer.stop();
+        Thread.sleep(15_000);
         masterServer.interrupt();
         masterServer.join();
         Container.getInstance().clear();
@@ -78,7 +83,7 @@ public class NodeUserRestITCase {
         JSONObject result = new JSONObject(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + user.getId())
                 .execute().returnContent().toString());
         assertEquals(result.get("name"), user.getName());
-        assertEquals(result.get("id"), user.getId().toString());
+        assertEquals(result.get("id"), user.getId());
     }
 
     @Test
@@ -145,8 +150,13 @@ public class NodeUserRestITCase {
 
     @Test
     public void testPostUserNotFound() throws IOException {
-        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + UUID.randomUUID())
-                .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_NOT_FOUND);
+        addRandomUsers(1);
+        User user = nodeUsersService.getList().get(0);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId() + "abcxyz");
+        userDTO.setName("abcxyz");
+        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
+                .bodyString(GSON.toJson(userDTO), ContentType.APPLICATION_JSON).execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
     @Test
@@ -154,8 +164,9 @@ public class NodeUserRestITCase {
         addRandomUsers(1);
         User user = nodeUsersService.getList().get(0);
         UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
         userDTO.setEmail("invalid.email");
-        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + user.getId())
+        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
                 .bodyString(GSON.toJson(userDTO), ContentType.APPLICATION_JSON).execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
@@ -165,7 +176,8 @@ public class NodeUserRestITCase {
         User user = nodeUsersService.getList().get(0);
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail("xyz@abc.com");
-        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + user.getId())
+        userDTO.setId(user.getId());
+        assertEquals(Request.Post("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
                 .bodyString(GSON.toJson(userDTO), ContentType.APPLICATION_JSON).execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_OK);
         user = nodeUsersService.getList().get(0);
         assertEquals(user.getEmail(), userDTO.getEmail());
@@ -186,7 +198,7 @@ public class NodeUserRestITCase {
 
     private static void clearAllUsers() {
         for (User user : nodeUsersService.getList()) {
-            nodeUsersService.remove(user.getId());
+            nodeUsersService.remove(UUID.fromString(user.getId()));
         }
     }
 }

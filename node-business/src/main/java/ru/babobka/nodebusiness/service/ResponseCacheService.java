@@ -1,6 +1,6 @@
 package ru.babobka.nodebusiness.service;
 
-import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.Serializable;

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class MasterApp extends CLI {
 
-    private static Logger logger = Logger.getLogger(MasterApp.class);
+    private static final Logger logger = Logger.getLogger(MasterApp.class);
 
     private static void init() {
         Container.getInstance().put(container -> {

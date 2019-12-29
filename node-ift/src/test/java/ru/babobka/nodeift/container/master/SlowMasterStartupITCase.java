@@ -22,11 +22,13 @@ import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
 
 public class SlowMasterStartupITCase extends AbstractContainerITCase {
 
+    private static final GenericContainer postgres = createPostgres();
     private static final GenericContainer master = createMaster();
     private static final GenericContainer slave = createSlave();
 
     @BeforeClass
     public static void runContainers() throws InterruptedException {
+        postgres.start();
         slave.start();
         Thread.sleep(SLAVE_SERVER_WAIT_MILLIS);
         master.start();
@@ -35,6 +37,7 @@ public class SlowMasterStartupITCase extends AbstractContainerITCase {
 
     @AfterClass
     public static void stopContainer() {
+        postgres.stop();
         master.close();
         slave.close();
     }

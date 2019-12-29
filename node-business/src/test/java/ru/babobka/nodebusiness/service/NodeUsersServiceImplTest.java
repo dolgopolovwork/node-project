@@ -2,12 +2,13 @@ package ru.babobka.nodebusiness.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodebusiness.dao.NodeUsersDAO;
+import ru.babobka.nodebusiness.dao.user.NodeUsersDAO;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.util.TextUtil;
 
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
@@ -47,10 +48,10 @@ public class NodeUsersServiceImplTest {
     }
 
     @Test
-    public void testGet() throws InvalidKeySpecException {
+    public void testGet() {
         User user = createUser();
         UUID uuid = UUID.randomUUID();
-        user.setId(uuid);
+        user.setId(uuid.toString());
         when(nodeUsersDAO.get(uuid)).thenReturn(user);
         assertEquals(user, nodeUsersService.get(uuid));
     }
@@ -87,8 +88,8 @@ public class NodeUsersServiceImplTest {
         User user = new User();
         user.setEmail("abc@xyz.ru");
         user.setName("abc");
-        user.setPublicKey(KeyDecoder.generateKeyPair().getPublic());
-        user.setId(UUID.randomUUID());
+        user.setPublicKeyBase64(TextUtil.toBase64(KeyDecoder.generateKeyPair().getPublic().getEncoded()));
+        user.setId(UUID.randomUUID().toString());
         return user;
     }
 

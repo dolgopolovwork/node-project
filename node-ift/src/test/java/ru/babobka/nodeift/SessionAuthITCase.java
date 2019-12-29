@@ -4,17 +4,16 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
-import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -38,7 +37,7 @@ public class SessionAuthITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), SessionAuthITCase.class.getSimpleName());
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getLogFolder(), SessionAuthITCase.class.getSimpleName());
         MasterServerRunner.init();
         Container.getInstance().get(MasterServerConfig.class).getModes().setSingleSessionMode(true);
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
@@ -49,6 +48,7 @@ public class SessionAuthITCase {
 
     @AfterClass
     public static void tearDown() throws InterruptedException {
+        Thread.sleep(15_000);
         masterServer.interrupt();
         masterServer.join();
         Container.getInstance().clear();

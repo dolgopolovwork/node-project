@@ -17,9 +17,9 @@ public interface NodeUsersService {
 
     boolean remove(UUID id);
 
-    void add(UserDTO user);
+    boolean add(UserDTO user);
 
-    boolean update(UUID id, UserDTO user);
+    boolean update(UserDTO user);
 
-    void createDebugUser();
+    boolean createDebugUser();
 }

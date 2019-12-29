@@ -14,6 +14,15 @@ public class MasterServerConfig implements NodeConfiguration {
     private Base64KeyPair keyPair;
     private FolderConfig folders;
     private RmqConfig rmq;
+    private DBConfig dbConfig;
+
+    public DBConfig getDbConfig() {
+        return dbConfig;
+    }
+
+    public void setDbConfig(DBConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
 
     public ModeConfig getModes() {
         return modes;
@@ -103,6 +112,9 @@ public class MasterServerConfig implements NodeConfiguration {
         }
         if (this.rmq != null) {
             masterServerConfig.setRmq(this.rmq.copy());
+        }
+        if (this.dbConfig != null) {
+            masterServerConfig.setDbConfig(this.dbConfig.copy());
         }
         return masterServerConfig;
     }

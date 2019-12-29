@@ -1,4 +1,4 @@
-package ru.babobka.nodebusiness.dao;
+package ru.babobka.nodebusiness.dao.cache;
 
 import java.io.Closeable;
 import java.io.Serializable;

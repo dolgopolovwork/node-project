@@ -10,8 +10,21 @@ import java.io.IOException;
  */
 public class MasterServerRunner {
 
+    public static TesterMasterServerApplicationContainer initWithRealDb() {
+        return init(true);
+    }
+
     public static TesterMasterServerApplicationContainer init() {
-        TesterMasterServerApplicationContainer container = new TesterMasterServerApplicationContainer();
+        return init(false);
+    }
+
+    private static TesterMasterServerApplicationContainer init(boolean realDb) {
+        TesterMasterServerApplicationContainer container;
+        if (realDb) {
+            container = TesterMasterServerApplicationContainer.withRealDb();
+        } else {
+            container = TesterMasterServerApplicationContainer.withNoDb();
+        }
         Container.getInstance().put(container);
         return container;
     }

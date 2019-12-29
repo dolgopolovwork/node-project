@@ -1,8 +1,9 @@
-package ru.babobka.nodebusiness.dao;
+package ru.babobka.nodebusiness.dao.cache;
 
 
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;

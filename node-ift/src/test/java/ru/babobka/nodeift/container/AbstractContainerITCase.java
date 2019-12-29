@@ -3,7 +3,9 @@ package ru.babobka.nodeift.container;
 import com.google.gson.Gson;
 import lombok.NonNull;
 import org.apache.http.client.fluent.Request;
+import org.mockito.stubbing.Answer;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.OutputFrame;
@@ -18,6 +20,8 @@ import ru.babobka.nodeutils.util.TextUtil;
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import static org.mockito.Mockito.*;
+
 public abstract class AbstractContainerITCase {
 
     private static final Network NETWORK = Network.SHARED;
@@ -25,7 +29,7 @@ public abstract class AbstractContainerITCase {
     protected static final int SLAVE_SERVER_WAIT_MILLIS = 10_000;
     protected static final String RPC_REPLY_QUEUE = "rpc_reply_queue";
 
-    static {
+    {
         LoggerInit.initConsoleLogger();
         Container.getInstance().put(container -> {
             container.put(new StreamUtil());
@@ -40,6 +44,19 @@ public abstract class AbstractContainerITCase {
                 .withExposedPorts(ContainerConfigs.DEFAULT_RMQ_PORT)
                 .withNetwork(NETWORK)
                 .withNetworkAliases(ContainerConfigs.RMQ_NETWORK_ALIAS);
+    }
+
+    protected static GenericContainer createPostgres() {
+        GenericContainer container = spy(new FixedHostPortGenericContainer("postgres:9.5")
+                .withFixedExposedPort(ContainerConfigs.DEFAULT_POSTGRES_PORT, ContainerConfigs.DEFAULT_POSTGRES_PORT));
+        container
+                .withNetworkAliases(ContainerConfigs.POSTGRES_NETWORK_ALIAS)
+                .withNetwork(NETWORK)
+                .withEnv("POSTGRES_PASSWORD", "test")
+                .withEnv("POSTGRES_USER", "test");
+        container.addFileSystemBind(TextUtil.getEnv(Env.NODE_PROJECT_FOLDER) + "/init.sql", "/docker-entrypoint-initdb.d/init.sql", BindMode.READ_ONLY);
+        initLogConsumer(container);
+        return container;
     }
 
     protected static GenericContainer createMaster() {
@@ -113,9 +130,9 @@ public abstract class AbstractContainerITCase {
 
     private static void mountLogsAndTasks(@NonNull GenericContainer container) {
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_LOGS), "/logs", BindMode.READ_WRITE);
+                TextUtil.getLogFolder(), "/logs", BindMode.READ_WRITE);
         container.addFileSystemBind(
-                TextUtil.getEnv(Env.NODE_TASKS), "/tasks", BindMode.READ_ONLY);
+                TextUtil.getTasksFolder(), "/tasks", BindMode.READ_ONLY);
     }
 
     private static void initLogConsumer(@NonNull GenericContainer container) {
@@ -164,7 +181,7 @@ public abstract class AbstractContainerITCase {
     }
 
     private static int getClusterSize(int port) throws IOException {
-        return Integer.valueOf(Request.Get("http://localhost:" + port + "/clustersize")
+        return Integer.parseInt(Request.Get("http://localhost:" + port + "/clustersize")
                 .execute().returnContent().asString());
     }
 
