@@ -26,9 +26,11 @@ public class MasterBadNetworkITCase extends AbstractContainerITCase {
     private static GenericContainer master = createMaster();
     private static final List<GenericContainer> slaves
             = Arrays.asList(createSlave(), createSlave(), createSlave());
+    private static final GenericContainer postgres = createPostgres();
 
     @BeforeClass
     public static void runContainers() throws InterruptedException {
+        postgres.start();
         master.start();
         Thread.sleep(MASTER_SERVER_WAIT_MILLIS);
         slaves.forEach(GenericContainer::start);
@@ -37,6 +39,7 @@ public class MasterBadNetworkITCase extends AbstractContainerITCase {
 
     @AfterClass
     public static void stopContainer() {
+        postgres.stop();
         master.close();
         slaves.forEach(GenericContainer::stop);
     }

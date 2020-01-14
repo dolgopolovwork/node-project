@@ -9,7 +9,7 @@ import ru.babobka.nodeutils.time.inter.RunnableInvoker;
  * Created by 123 on 06.08.2018.
  */
 public class TimerInvoker {
-    private static Logger logger = Logger.getLogger(TimerInvoker.class);
+    private static final Logger logger = Logger.getLogger(TimerInvoker.class);
     private final int maxDelayMillis;
 
     private TimerInvoker(int maxDelayMillis) {

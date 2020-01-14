@@ -22,6 +22,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>ru.babobka.masternoderun</groupId>
+            <artifactId>master-node-run</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>ru.babobka.nodebusiness</groupId>
             <artifactId>node-business</artifactId>
             <version>1.0-SNAPSHOT</version>

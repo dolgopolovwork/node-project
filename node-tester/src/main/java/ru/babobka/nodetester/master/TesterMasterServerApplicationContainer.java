@@ -1,6 +1,8 @@
 package ru.babobka.nodetester.master;
 
+import ru.babobka.masternoderun.MasterServerApplicationContainer;
 import ru.babobka.nodebusiness.NodeBusinessApplicationContainer;
+import ru.babobka.nodebusiness.dao.user.DBNodeUserDAOImpl;
 import ru.babobka.nodeconfigs.master.*;
 import ru.babobka.nodeconfigs.master.validation.MasterServerConfigValidator;
 import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
@@ -8,12 +10,12 @@ import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
+import ru.babobka.nodetester.dao.DummyNodeUserDAOImpl;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodeweb.NodeWebApplicationContainer;
@@ -25,6 +27,20 @@ import java.security.KeyPair;
  */
 public class TesterMasterServerApplicationContainer extends AbstractApplicationContainer {
 
+    private final boolean realDataBase;
+
+    private TesterMasterServerApplicationContainer(boolean realDataBase) {
+        this.realDataBase = realDataBase;
+    }
+
+    public static TesterMasterServerApplicationContainer withRealDb() {
+        return new TesterMasterServerApplicationContainer(true);
+    }
+
+    public static TesterMasterServerApplicationContainer withNoDb() {
+        return new TesterMasterServerApplicationContainer(false);
+    }
+
     @Override
     protected void containImpl(Container container) {
         container.put(new NodeUtilsApplicationContainer());
@@ -32,6 +48,13 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
         container.putIfAbsent(new NodeConnectionFactory());
         new MasterServerConfigValidator().validate(config);
         container.put(config);
+        if (realDataBase) {
+            container.put(MasterServerApplicationContainer.createSessionFactory(config));
+            container.put(new DBNodeUserDAOImpl());
+        } else {
+            container.put(new DummyNodeUserDAOImpl());
+        }
+
         container.put(new SecurityApplicationContainer());
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
@@ -41,10 +64,9 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
 
     private static MasterServerConfig createTestConfig() {
         MasterServerConfig config = new MasterServerConfig();
-
         FolderConfig folderConfig = new FolderConfig();
-        folderConfig.setTasksFolder(TextUtil.getEnv(Env.NODE_TASKS));
-        folderConfig.setLoggerFolder(TextUtil.getEnv(Env.NODE_LOGS));
+        folderConfig.setTasksFolder(TextUtil.getTasksFolder());
+        folderConfig.setLoggerFolder(TextUtil.getLogFolder());
         config.setFolders(folderConfig);
 
         TimeConfig timeConfig = new TimeConfig();
@@ -72,8 +94,14 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
         base64KeyPair.setPrivKey(TextUtil.toBase64(keyPair.getPrivate().getEncoded()));
         base64KeyPair.setPubKey(TextUtil.toBase64(keyPair.getPublic().getEncoded()));
         config.setKeyPair(base64KeyPair);
+
+        DBConfig dbConfig = new DBConfig();
+        dbConfig.setUser("test");
+        dbConfig.setPassword("test");
+        dbConfig.setHost("localhost");
+        dbConfig.setPort(5432);
+        config.setDbConfig(dbConfig);
+
         return config;
     }
-
-
 }

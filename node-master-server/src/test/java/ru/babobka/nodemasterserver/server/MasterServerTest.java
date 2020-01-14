@@ -4,7 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.ModeConfig;

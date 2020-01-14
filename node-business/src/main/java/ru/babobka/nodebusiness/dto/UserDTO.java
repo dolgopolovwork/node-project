@@ -12,6 +12,7 @@ public class UserDTO implements Serializable {
     private String name;
     private String base64PubKey;
     private String email;
+    private String id;
 
     public String getName() {
         return name;
@@ -35,5 +36,13 @@ public class UserDTO implements Serializable {
 
     public void setBase64PubKey(String base64PubKey) {
         this.base64PubKey = base64PubKey;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

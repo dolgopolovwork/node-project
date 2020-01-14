@@ -51,7 +51,13 @@ public class KeyDecoder {
 
     public static PublicKey decodePublicKey(@NonNull String base64)
             throws InvalidKeySpecException {
-        return createKeyFactory().generatePublic(new X509EncodedKeySpec(fromBase64(base64)));
+        byte[] decodedKey;
+        try {
+            decodedKey = fromBase64(base64);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidKeySpecException(ex);
+        }
+        return createKeyFactory().generatePublic(new X509EncodedKeySpec(decodedKey));
     }
 
     public static PublicKey decodePublicKeyUnsafe(@NonNull String base64) {

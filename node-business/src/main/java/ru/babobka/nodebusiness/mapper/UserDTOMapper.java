@@ -19,15 +19,11 @@ public class UserDTOMapper extends Mapper<UserDTO, User> {
         if (userDTO.getName() != null)
             user.setName(userDTO.getName());
         if (userDTO.getBase64PubKey() != null) {
-            try {
-                user.setPublicKey(KeyDecoder.decodePublicKey(userDTO.getBase64PubKey()));
-            } catch (InvalidKeySpecException e) {
-                throw new IllegalArgumentException("cannot map user", e);
-            }
+            user.setPublicKeyBase64(userDTO.getBase64PubKey());
         }
         if (userDTO.getEmail() != null)
             user.setEmail(userDTO.getEmail());
-        user.setId(UUID.randomUUID());
+        user.setId(userDTO.getId());
         return user;
     }
 }

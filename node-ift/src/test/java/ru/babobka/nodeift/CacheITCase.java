@@ -5,21 +5,20 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodetask.service.TaskService;
-import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.key.TesterKey;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -42,7 +41,7 @@ public class CacheITCase {
 
     @BeforeClass
     public static void setUp() throws IOException {
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), CacheITCase.class.getSimpleName());
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getLogFolder(), CacheITCase.class.getSimpleName());
         Properties.put(TesterKey.ENABLE_CACHE, true);
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);

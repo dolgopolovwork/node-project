@@ -17,6 +17,7 @@ public class MasterServerConfigValidator extends Validator<MasterServerConfig> {
                 new PortValidationRule(),
                 new TimeValidationRule(),
                 new KeyConfigValidationRule(),
-                new RmqConfigValidationRule()));
+                new RmqConfigValidationRule(),
+                new DBConfigValidationRule()));
     }
 }

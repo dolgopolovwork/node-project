@@ -134,7 +134,7 @@ public class MasterTaskService implements TaskService {
 
     private void waitForGoodTimes() {
         try {
-            Thread.sleep(200);
+            Thread.sleep(1000);
         } catch (InterruptedException expected) {
             //that's ok
         }

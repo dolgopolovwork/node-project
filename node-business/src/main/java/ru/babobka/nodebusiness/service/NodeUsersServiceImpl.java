@@ -1,7 +1,8 @@
 package ru.babobka.nodebusiness.service;
 
 
-import ru.babobka.nodebusiness.dao.NodeUsersDAO;
+import ru.babobka.nodebusiness.dao.user.NodeUsersDAO;
+import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.mapper.UserDTOMapper;
@@ -36,24 +37,25 @@ public class NodeUsersServiceImpl implements NodeUsersService {
     }
 
     @Override
-    public void add(UserDTO user) {
-        userDAO.add(userDTOMapper.map(user));
+    public boolean add(UserDTO user) {
+        User userToCreate = userDTOMapper.map(user);
+        userToCreate.setId(UUID.randomUUID().toString());
+        return userDAO.add(userToCreate);
     }
 
     @Override
-    public boolean update(UUID id, UserDTO user) {
-        return userDAO.update(id, userDTOMapper.map(user));
+    public boolean update(UserDTO user) {
+        return userDAO.update(userDTOMapper.map(user));
     }
 
     @Override
-    public void createDebugUser() {
-
+    public boolean createDebugUser() {
         User user = new User();
         user.setName(DebugCredentials.USER_NAME);
         user.setEmail("test@email.com");
-        user.setId(UUID.randomUUID());
-        user.setPublicKey(DebugCredentials.PUB_KEY);
-        userDAO.add(user);
+        user.setId(UUID.randomUUID().toString());
+        user.setPublicKeyBase64(DebugBase64KeyPair.DEBUG_PUB_KEY);
+        return userDAO.add(user);
     }
 
 }

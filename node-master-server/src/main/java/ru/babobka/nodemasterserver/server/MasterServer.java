@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.server;
 
 import com.sun.net.httpserver.HttpServer;
 import org.apache.log4j.Logger;
-import ru.babobka.nodebusiness.dao.CacheDAO;
+import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;

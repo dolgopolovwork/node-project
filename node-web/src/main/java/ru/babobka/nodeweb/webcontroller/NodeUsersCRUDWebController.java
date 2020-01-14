@@ -67,18 +67,12 @@ public class NodeUsersCRUDWebController extends WebController {
     @Override
     public void onPost(HttpExchange httpExchange) throws IOException {
         try {
-            String uuidParam = getUriParam(httpExchange, "id");
-            if (TextUtil.isEmpty(uuidParam)) {
-                sendBadRequest(httpExchange, "Parameter 'id' was not set");
-                return;
-            }
-            UUID id = UUID.fromString(uuidParam);
             UserDTO user = readJson(httpExchange, UserDTO.class);
             updateUserValidator.validate(user);
-            if (nodeUsersService.update(id, user)) {
+            if (nodeUsersService.update(user)) {
                 sendOk(httpExchange);
             } else {
-                sendNotFound(httpExchange, "No user with id '" + id + "' was found");
+                sendNotFound(httpExchange, "No user with id '" + user.getId() + "' was found");
             }
         } catch (IllegalArgumentException e) {
             logger.error("cannot update user", e);

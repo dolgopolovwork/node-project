@@ -4,18 +4,17 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.service.TaskService;
-import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -41,7 +40,7 @@ public class EllipticCurveITCase {
 
     @BeforeClass
     public static void setUp() throws InvalidKeySpecException, IOException {
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), EllipticCurveITCase.class.getSimpleName());
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getLogFolder(), EllipticCurveITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         PublicKey serverPubKey = KeyDecoder.decodePublicKey(masterServerConfig.getKeyPair().getPubKey());

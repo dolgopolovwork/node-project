@@ -14,6 +14,11 @@ public class ContainerConfigs {
     public static final String MASTER_SERVER_CONFIG_ENV_PREFIX = MasterServerConfig.class.getSimpleName().toUpperCase();
     public static final String SLAVE_SERVER_CONFIG_ENV_PREFIX = SlaveServerConfig.class.getSimpleName().toUpperCase();
 
+    public static final String RMQ_NETWORK_ALIAS = "rmq";
+    public static final String POSTGRES_NETWORK_ALIAS = "postgres";
+    public static final int DEFAULT_RMQ_PORT = 5672;
+    public static final int DEFAULT_POSTGRES_PORT = 5432;
+
     static final String MASTER_SERVER_NETWORK_ALIAS = "master-host";
     static final int MASTER_CLIENT_PORT = 17070;
     static final int MASTER_WEB_PORT = 18080;
@@ -22,6 +27,7 @@ public class ContainerConfigs {
     static final Map<String, String> MASTER_ENV = new HashMap<>();
 
     static {
+        MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_DBCONFIG_HOST", POSTGRES_NETWORK_ALIAS);
         MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_TESTUSERMODE", "true");
         MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_CACHEMODE", "false");
         MASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_SINGLESESSIONMODE", "false");
@@ -33,9 +39,6 @@ public class ContainerConfigs {
     }
 
     static final Map<String, String> MASTER_RMQ_ENV = new HashMap<>();
-
-    public static final String RMQ_NETWORK_ALIAS = "rmq";
-    public static final int DEFAULT_RMQ_PORT = 5672;
 
     static {
         MASTER_RMQ_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_RMQ_HOST", RMQ_NETWORK_ALIAS);
@@ -61,6 +64,7 @@ public class ContainerConfigs {
     static final Map<String, String> SUBMASTER_ENV = new HashMap<>();
 
     static {
+        SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_DBCONFIG_HOST", POSTGRES_NETWORK_ALIAS);
         SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_TESTUSERMODE", "true");
         SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_CACHEMODE", "false");
         SUBMASTER_ENV.put(MASTER_SERVER_CONFIG_ENV_PREFIX + "_MODES_SINGLESESSIONMODE", "false");

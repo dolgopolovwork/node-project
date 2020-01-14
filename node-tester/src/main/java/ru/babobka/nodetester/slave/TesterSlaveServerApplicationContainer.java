@@ -65,8 +65,8 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
         keyPair.setPrivKey(DebugBase64KeyPair.DEBUG_PRIV_KEY);
         keyPair.setPubKey(DebugBase64KeyPair.DEBUG_PUB_KEY);
         config.setKeyPair(keyPair);
-        config.setTasksFolder(TextUtil.getEnv(Env.NODE_TASKS));
-        config.setLoggerFolder(TextUtil.getEnv(Env.NODE_LOGS));
+        config.setTasksFolder(TextUtil.getTasksFolder());
+        config.setLoggerFolder(TextUtil.getLogFolder());
         config.setAuthTimeOutMillis(15_000);
         config.setRequestTimeoutMillis(30_000);
         config.setMasterServerHost("localhost");

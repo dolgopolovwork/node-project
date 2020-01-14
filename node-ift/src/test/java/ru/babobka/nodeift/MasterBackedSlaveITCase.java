@@ -1,6 +1,7 @@
 package ru.babobka.nodeift;
 
 import org.junit.*;
+import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
@@ -9,13 +10,11 @@ import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
 import ru.babobka.nodeslaveserver.controller.AbstractSocketController;
 import ru.babobka.nodeslaveserver.controller.MasterBackedSocketController;
-import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.network.TestableNodeConnection;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodetester.slave.cluster.SlaveServerCluster;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.enums.Env;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.react.PubSub;
@@ -59,7 +58,7 @@ public class MasterBackedSlaveITCase {
     @BeforeClass
     public static void setUp() throws IOException {
         Container.getInstance().clear();
-        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getEnv(Env.NODE_LOGS), MasterBackedSlaveITCase.class.getSimpleName());
+        LoggerInit.initPersistentConsoleDebugLogger(TextUtil.getLogFolder(), MasterBackedSlaveITCase.class.getSimpleName());
         MasterServerRunner.init();
         MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
         PublicKey serverPublicKey = KeyDecoder.decodePublicKeyUnsafe(masterServerConfig.getKeyPair().getPubKey());

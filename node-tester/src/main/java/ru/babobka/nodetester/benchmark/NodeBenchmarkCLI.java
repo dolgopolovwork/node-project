@@ -21,7 +21,7 @@ import java.util.List;
 public abstract class NodeBenchmarkCLI extends CLI {
 
     static {
-        LoggerInit.initPersistentNoConsoleLogger(TextUtil.getEnv(Env.NODE_LOGS), "benchmark");
+        LoggerInit.initPersistentNoConsoleLogger(TextUtil.getLogFolder(), "benchmark");
     }
 
     private static final String TESTS_OPTION = "tests";

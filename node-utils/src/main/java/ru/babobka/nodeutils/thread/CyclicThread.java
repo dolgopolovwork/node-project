@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class CyclicThread extends Thread {
 
-    private static Logger logger = Logger.getLogger(CyclicThread.class);
+    private static final Logger logger = Logger.getLogger(CyclicThread.class);
 
     @Override
     public final void run() {

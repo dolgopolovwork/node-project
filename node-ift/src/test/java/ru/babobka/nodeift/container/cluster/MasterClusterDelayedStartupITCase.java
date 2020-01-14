@@ -22,6 +22,7 @@ import static ru.babobka.nodeift.container.ContainerConfigs.SLAVE_SERVER_CONFIG_
 
 public class MasterClusterDelayedStartupITCase extends AbstractContainerITCase {
 
+    private static final GenericContainer postgres = createPostgres();
     private static final Logger logger = Logger.getLogger(MasterClusterDelayedStartupITCase.class);
     private static final String FIRST_REGION = "first.region";
     private static final String SECOND_REGION = "second.region";
@@ -33,11 +34,13 @@ public class MasterClusterDelayedStartupITCase extends AbstractContainerITCase {
 
     @BeforeClass
     public static void runContainers() {
+        postgres.start();
         rmq.start();
     }
 
     @AfterClass
     public static void stopContainer() {
+        postgres.stop();
         masterFirstRegion.close();
         masterSecondRegion.close();
         rmq.close();
