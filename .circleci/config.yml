@@ -15,6 +15,9 @@ jobs:
           name: Run tests and create jars
           command: mvn clean install
       - run:
+          name: Run cache integration test
+          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.CacheITCase
+      - run:
           name: Run core client integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.ClientITCase
       - run:
