@@ -5,6 +5,7 @@ import ru.babobka.nodeutils.thread.ThreadPoolService;
 import ru.babobka.primecounter.callable.PrimeCounterCallable;
 import ru.babobka.primecounter.model.Range;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -35,8 +36,13 @@ public class PrimeCounterTaskService extends ThreadPoolService<Range, Integer> {
     @Override
     protected Integer executeImpl(Range range) {
         int result = 0;
-        List<Range> ranges = Range.getRanges(range.getBegin(), range.getEnd(), getCores());
-        List<Future<Integer>> futureList = submit(PrimeCounterCallable.createCalls(done, ranges));
+        List<Future<Integer>> futureList;
+        if (range.getEnd() - range.getBegin() < 65536) {
+            futureList = submit(PrimeCounterCallable.createCalls(done, Collections.singletonList(range)));
+        } else {
+            List<Range> ranges = Range.getRanges(range.getBegin(), range.getEnd(), getCores());
+            futureList = submit(PrimeCounterCallable.createCalls(done, ranges));
+        }
         try {
             for (Future<Integer> future : futureList) {
                 result += future.get();
