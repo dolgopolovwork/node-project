@@ -22,7 +22,10 @@ public class NodeWebApplicationContainer extends AbstractApplicationContainer {
         container.put(new AddUserValidator(
                 new EmailValidationRule(), new NameValidationRule(), new PubKeyValidationRule()));
         container.put(new UpdateUserValidator(
-                new NullableEmailValidationRule(), new NullableNameValidationRule(), new NullablePubKeyValidationRule(), new IdValidationRule()));
+                new NullableEmailValidationRule(),
+                new NullableNameValidationRule(),
+                new NullablePubKeyValidationRule(),
+                new IdValidationRule()));
         container.put(new NodeUsersServiceImpl());
     }
 }

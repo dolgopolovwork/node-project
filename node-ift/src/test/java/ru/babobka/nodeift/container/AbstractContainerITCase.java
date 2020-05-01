@@ -3,7 +3,6 @@ package ru.babobka.nodeift.container;
 import com.google.gson.Gson;
 import lombok.NonNull;
 import org.apache.http.client.fluent.Request;
-import org.mockito.stubbing.Answer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -20,7 +19,7 @@ import ru.babobka.nodeutils.util.TextUtil;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
 
 public abstract class AbstractContainerITCase {
 
@@ -173,7 +172,7 @@ public abstract class AbstractContainerITCase {
     }
 
     private static boolean isHealthy(int port) throws IOException {
-        return Request.Get("http://localhost:" + port + "/healthcheck")
+        return Request.Get("http://localhost:" + port + "/monitoring/healthcheck")
                 .execute()
                 .returnResponse()
                 .getStatusLine()
@@ -181,12 +180,12 @@ public abstract class AbstractContainerITCase {
     }
 
     private static int getClusterSize(int port) throws IOException {
-        return Integer.parseInt(Request.Get("http://localhost:" + port + "/clustersize")
+        return Integer.parseInt(Request.Get("http://localhost:" + port + "/monitoring/clustersize")
                 .execute().returnContent().asString());
     }
 
     private static TaskMonitoringData getTaskMonitoringData(int port) throws IOException {
-        return gson.fromJson(Request.Get("http://localhost:" + port + "/monitoring")
+        return gson.fromJson(Request.Get("http://localhost:" + port + "/monitoring/tasks")
                 .execute().returnContent().asString(), TaskMonitoringData.class);
     }
 

@@ -50,9 +50,20 @@ public class NodeInfoWebControllerITCase {
         int slaves = 5;
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
             slaveServerCluster.start();
-            String content = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/clustersize")
+            String content = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/clustersize")
                     .execute().returnContent().toString();
             assertEquals(slaves, Integer.valueOf(content).intValue());
+        }
+    }
+
+    @Test
+    public void testHealthCheck() throws IOException {
+        int slaves = 5;
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+            slaveServerCluster.start();
+            int status = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/healthcheck")
+                    .execute().returnResponse().getStatusLine().getStatusCode();
+            assertEquals(200, status);
         }
     }
 }

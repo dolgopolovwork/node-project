@@ -6,7 +6,6 @@ import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;

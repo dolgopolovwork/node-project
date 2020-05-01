@@ -5,7 +5,7 @@ import ru.babobka.nodebusiness.dao.user.NodeUsersDAO;
 import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.debug.DebugCredentials;
 import ru.babobka.nodebusiness.dto.UserDTO;
-import ru.babobka.nodebusiness.mapper.UserDTOMapper;
+import ru.babobka.nodebusiness.mapper.UserDTOToEntityMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodeutils.container.Container;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class NodeUsersServiceImpl implements NodeUsersService {
-    private final UserDTOMapper userDTOMapper = Container.getInstance().get(UserDTOMapper.class);
+    private final UserDTOToEntityMapper userDTOToEntityMapper = Container.getInstance().get(UserDTOToEntityMapper.class);
     private final NodeUsersDAO userDAO = Container.getInstance().get(NodeUsersDAO.class);
 
     @Override
@@ -38,14 +38,14 @@ public class NodeUsersServiceImpl implements NodeUsersService {
 
     @Override
     public boolean add(UserDTO user) {
-        User userToCreate = userDTOMapper.map(user);
+        User userToCreate = userDTOToEntityMapper.map(user);
         userToCreate.setId(UUID.randomUUID().toString());
         return userDAO.add(userToCreate);
     }
 
     @Override
     public boolean update(UserDTO user) {
-        return userDAO.update(userDTOMapper.map(user));
+        return userDAO.update(userDTOToEntityMapper.map(user));
     }
 
     @Override

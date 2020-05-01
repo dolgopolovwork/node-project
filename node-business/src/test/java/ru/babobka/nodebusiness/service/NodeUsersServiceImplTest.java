@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.user.NodeUsersDAO;
 import ru.babobka.nodebusiness.dto.UserDTO;
-import ru.babobka.nodebusiness.mapper.UserDTOMapper;
+import ru.babobka.nodebusiness.mapper.UserDTOToEntityMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.container.Container;
@@ -24,16 +24,16 @@ import static org.mockito.Mockito.*;
 public class NodeUsersServiceImplTest {
 
     private NodeUsersDAO nodeUsersDAO;
-    private UserDTOMapper userDTOMapper;
+    private UserDTOToEntityMapper userDTOToEntityMapper;
     private NodeUsersService nodeUsersService;
 
     @Before
     public void setUp() {
         nodeUsersDAO = mock(NodeUsersDAO.class);
-        userDTOMapper = mock(UserDTOMapper.class);
+        userDTOToEntityMapper = mock(UserDTOToEntityMapper.class);
         Container.getInstance().put(container -> {
             container.put(nodeUsersDAO);
-            container.put(userDTOMapper);
+            container.put(userDTOToEntityMapper);
         });
 
         nodeUsersService = new NodeUsersServiceImpl();
@@ -79,7 +79,7 @@ public class NodeUsersServiceImplTest {
     @Test
     public void testAdd() {
         UserDTO userDTO = new UserDTO();
-        when(userDTOMapper.map(userDTO)).thenReturn(new User());
+        when(userDTOToEntityMapper.map(userDTO)).thenReturn(new User());
         nodeUsersService.add(userDTO);
         verify(nodeUsersDAO).add(any(User.class));
     }

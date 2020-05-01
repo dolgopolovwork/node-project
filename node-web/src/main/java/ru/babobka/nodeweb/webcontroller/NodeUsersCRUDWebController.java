@@ -1,8 +1,10 @@
 package ru.babobka.nodeweb.webcontroller;
 
-import com.sun.net.httpserver.HttpExchange;
+import io.javalin.http.Context;
+import io.javalin.plugin.openapi.annotations.*;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dto.UserDTO;
+import ru.babobka.nodebusiness.mapper.UserEntityToDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeutils.container.Container;
@@ -10,73 +12,123 @@ import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
 
-import java.io.IOException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class NodeUsersCRUDWebController extends WebController {
+public class NodeUsersCRUDWebController {
 
     private static final Logger logger = Logger.getLogger(NodeUsersCRUDWebController.class);
     private final AddUserValidator addUserValidator = Container.getInstance().get(AddUserValidator.class);
     private final UpdateUserValidator updateUserValidator = Container.getInstance().get(UpdateUserValidator.class);
     private final NodeUsersService nodeUsersService = Container.getInstance().get(NodeUsersService.class);
+    private final UserEntityToDTOMapper userEntityToDTOMapper = Container.getInstance().get(UserEntityToDTOMapper.class);
 
-    @Override
-    public void onGet(HttpExchange httpExchange) throws IOException {
-        String uuidParam = getUriParam(httpExchange, "id");
-        if (TextUtil.isEmpty(uuidParam)) {
-            sendJson(httpExchange, nodeUsersService.getList());
-        } else {
-            UUID id = UUID.fromString(uuidParam);
-            User user = nodeUsersService.get(id);
-            if (user == null) {
-                sendNotFound(httpExchange, "User not found");
-                return;
-            }
-            sendJson(httpExchange, user);
-        }
+    @OpenApi(
+            path = "/users/all",
+            method = HttpMethod.GET,
+            summary = "Get all users",
+            operationId = "getAllUsers",
+            tags = {"Users"},
+            responses = {@OpenApiResponse(status = "200", content = {@OpenApiContent(from = UserDTO[].class)})}
+    )
+    public void getAllUsers(Context context) {
+        context.json(nodeUsersService.getList()
+                .stream()
+                .map(userEntityToDTOMapper::map)
+                .collect(Collectors.toList()));
     }
 
-    @Override
-    public void onDelete(HttpExchange httpExchange) throws IOException {
-        String uuidParam = getUriParam(httpExchange, "id");
+    @OpenApi(
+            pathParams = {@OpenApiParam(name = "id", type = Integer.class, description = "The user ID")},
+            method = HttpMethod.GET,
+            path = "/users/:id",
+            summary = "Get a user",
+            operationId = "getUser",
+            tags = {"Users"},
+            responses = {@OpenApiResponse(status = "200", content = {@OpenApiContent(from = UserDTO.class)})}
+    )
+    public void getUser(Context context) {
+        String uuidParam = context.pathParam("id");
+        UUID id = UUID.fromString(uuidParam);
+        User user = nodeUsersService.get(id);
+        if (user == null) {
+            context.result("User not found");
+            context.status(404);
+            return;
+        }
+        context.json(userEntityToDTOMapper.map(user));
+    }
+
+    @OpenApi(
+            pathParams = {@OpenApiParam(name = "id", type = Integer.class, description = "The user ID")},
+            method = HttpMethod.DELETE,
+            path = "/users/:id",
+            summary = "Remove a user",
+            operationId = "removeUser",
+            tags = {"Users"},
+            responses = {@OpenApiResponse(status = "200")}
+    )
+    public void deleteUser(Context context) {
+        String uuidParam = context.pathParam("id");
         if (TextUtil.isEmpty(uuidParam)) {
-            sendBadRequest(httpExchange, "Parameter 'id' was not set");
+            context.result("Parameter 'id' was not set");
+            context.status(400);
             return;
         }
         UUID id = UUID.fromString(uuidParam);
         if (nodeUsersService.remove(id)) {
-            sendOk(httpExchange);
+            context.result("Ok");
         } else {
-            sendNotFound(httpExchange, "User with id '" + id + "' doesn't exist");
+            context.result("User with id '" + id + "' doesn't exist");
+            context.status(404);
         }
     }
 
-    @Override
-    public void onPut(HttpExchange httpExchange) throws IOException {
+    @OpenApi(
+            path = "/users",
+            method = HttpMethod.PUT,
+            summary = "Create a user",
+            operationId = "createUser",
+            tags = {"Users"},
+            requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = UserDTO.class)}),
+            responses = {@OpenApiResponse(status = "200")}
+    )
+    public void createUser(Context context) {
         try {
-            UserDTO user = readJson(httpExchange, UserDTO.class);
+            UserDTO user = context.bodyAsClass(UserDTO.class);
             addUserValidator.validate(user);
             nodeUsersService.add(user);
-            sendOk(httpExchange);
+            context.result("Ok");
         } catch (IllegalArgumentException e) {
             logger.error("cannot create user", e);
-            sendBadRequest(httpExchange, "Bad request");
+            context.result("Bad request");
+            context.status(400);
         }
     }
 
-    @Override
-    public void onPost(HttpExchange httpExchange) throws IOException {
+    @OpenApi(
+            path = "/users",
+            method = HttpMethod.POST,
+            summary = "Update a user",
+            operationId = "updateUser",
+            tags = {"Users"},
+            requestBody = @OpenApiRequestBody(content = {@OpenApiContent(from = UserDTO.class)}),
+            responses = {@OpenApiResponse(status = "200")}
+    )
+    public void updateUser(Context context) {
         try {
-            UserDTO user = readJson(httpExchange, UserDTO.class);
+            UserDTO user = context.bodyAsClass(UserDTO.class);
             updateUserValidator.validate(user);
             if (nodeUsersService.update(user)) {
-                sendOk(httpExchange);
+                context.result("Ok");
             } else {
-                sendNotFound(httpExchange, "No user with id '" + user.getId() + "' was found");
+                context.result("No user with id '" + user.getId() + "' was found");
+                context.status(404);
             }
         } catch (IllegalArgumentException e) {
             logger.error("cannot update user", e);
-            sendBadRequest(httpExchange, "Bad request");
+            context.result("Bad request");
+            context.status(400);
         }
     }
 }

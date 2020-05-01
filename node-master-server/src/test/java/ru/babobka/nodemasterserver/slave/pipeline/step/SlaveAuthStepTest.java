@@ -9,7 +9,6 @@ import ru.babobka.nodemasterserver.service.MasterAuthService;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodeutils.container.Container;
-
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;

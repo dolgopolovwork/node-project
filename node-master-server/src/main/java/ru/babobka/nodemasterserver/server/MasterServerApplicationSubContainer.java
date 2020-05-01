@@ -1,6 +1,10 @@
 package ru.babobka.nodemasterserver.server;
 
-import com.sun.net.httpserver.HttpServer;
+import io.javalin.Javalin;
+import io.javalin.plugin.openapi.OpenApiOptions;
+import io.javalin.plugin.openapi.OpenApiPlugin;
+import io.javalin.plugin.openapi.ui.SwaggerOptions;
+import io.swagger.v3.oas.models.info.Info;
 import lombok.NonNull;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
@@ -26,13 +30,10 @@ import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.thread.PrettyNamedThreadPoolFactory;
 import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeweb.webcontroller.NodeClusterSizeWebController;
-import ru.babobka.nodeweb.webcontroller.NodeHealthCheckWebController;
-import ru.babobka.nodeweb.webcontroller.NodeTaskMonitoringWebController;
+import ru.babobka.nodeweb.webcontroller.NodeMonitoringWebController;
 import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import static io.javalin.apibuilder.ApiBuilder.*;
 
 /**
  * Created by 123 on 18.02.2018.
@@ -77,18 +78,40 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
                 masterServerConfig.getPorts().getSlaveListenerPort())));
         container.put(new OnTaskIsReady());
         container.put(new OnRaceStyleTaskIsReady());
-        container.put(createWebServer(container, masterServerConfig));
+        container.put(new NodeMasterInfoServiceImpl());
+        container.put(createWebServer());
     }
 
-    private static HttpServer createWebServer(Container container, MasterServerConfig config) throws IOException {
-        container.put(new NodeMasterInfoServiceImpl());
-        HttpServer webServer = HttpServer.create();
-        webServer.bind(new InetSocketAddress(config.getPorts().getWebListenerPort()), 0);
-        webServer.createContext("/users", new NodeUsersCRUDWebController());
-        webServer.createContext("/monitoring", new NodeTaskMonitoringWebController());
-        webServer.createContext("/healthcheck", new NodeHealthCheckWebController());
-        webServer.createContext("/clustersize", new NodeClusterSizeWebController());
-        webServer.setExecutor(PrettyNamedThreadPoolFactory.singleDaemonThreadPool("http-server"));
-        return webServer;
+    private static Javalin createWebServer() {
+        NodeUsersCRUDWebController nodeUsersCRUDWebController = new NodeUsersCRUDWebController();
+        NodeMonitoringWebController nodeMonitoringWebController = new NodeMonitoringWebController();
+        return Javalin.create(conf -> {
+            conf.registerPlugin(getConfiguredOpenApiPlugin());
+            conf.defaultContentType = "application/json";
+        }).routes(() -> {
+            path("users", () -> {
+                get("all", nodeUsersCRUDWebController::getAllUsers);
+                path(":id", () -> {
+                    get(nodeUsersCRUDWebController::getUser);
+                    delete(nodeUsersCRUDWebController::deleteUser);
+                });
+                post(nodeUsersCRUDWebController::updateUser);
+                put(nodeUsersCRUDWebController::createUser);
+            });
+            path("monitoring", () -> {
+                get("tasks", nodeMonitoringWebController::getTasksMonitoringData);
+                get("clustersize", nodeMonitoringWebController::getClusterSize);
+                get("healthcheck", nodeMonitoringWebController::healthCheck);
+            });
+        });
+    }
+
+    private static OpenApiPlugin getConfiguredOpenApiPlugin() {
+        Info info = new Info().version("1.0").description("Master-server API");
+        OpenApiOptions options = new OpenApiOptions(info)
+                .activateAnnotationScanningFor("ru.babobka.nodeweb")
+                .path("/swagger-docs")
+                .swagger(new SwaggerOptions("/swagger-ui"));
+        return new OpenApiPlugin(options);
     }
 }

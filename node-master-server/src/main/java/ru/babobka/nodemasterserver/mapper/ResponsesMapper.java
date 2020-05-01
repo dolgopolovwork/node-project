@@ -3,11 +3,11 @@ package ru.babobka.nodemasterserver.mapper;
 import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodemasterserver.model.Responses;
-import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.util.List;

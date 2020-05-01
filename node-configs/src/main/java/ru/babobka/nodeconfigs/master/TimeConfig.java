@@ -2,7 +2,6 @@ package ru.babobka.nodeconfigs.master;
 
 import ru.babobka.nodeconfigs.NodeConfiguration;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**

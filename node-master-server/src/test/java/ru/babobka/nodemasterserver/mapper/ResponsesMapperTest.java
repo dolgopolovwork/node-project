@@ -2,11 +2,11 @@ package ru.babobka.nodemasterserver.mapper;
 
 import org.junit.Test;
 import ru.babobka.nodemasterserver.model.Responses;
-import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodetask.exception.ReducingException;
 import ru.babobka.nodetask.model.Reducer;
 import ru.babobka.nodetask.model.SubTask;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeutils.time.Timer;
 
 import java.io.Serializable;

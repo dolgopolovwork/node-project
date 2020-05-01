@@ -40,7 +40,6 @@ import ru.babobka.dlp.service.pollard.parallel.ParallelPollardDlpService;
 import ru.babobka.dlp.service.pollard.parallel.PrimeDistinguishable;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.key.UtilKey;
-
 import ru.babobka.nodeutils.math.Fp;
 import ru.babobka.nodeutils.math.SafePrime;
 import ru.babobka.nodeutils.thread.ThreadPoolService;

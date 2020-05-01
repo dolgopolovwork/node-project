@@ -7,7 +7,8 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.EntryUnit;
 import org.ehcache.config.units.MemoryUnit;
 import ru.babobka.nodebusiness.dao.cache.EHCacheDAOImpl;
-import ru.babobka.nodebusiness.mapper.UserDTOMapper;
+import ru.babobka.nodebusiness.mapper.UserDTOToEntityMapper;
+import ru.babobka.nodebusiness.mapper.UserEntityToDTOMapper;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodebusiness.service.ResponseCacheService;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
@@ -22,7 +23,8 @@ public class NodeBusinessApplicationContainer extends AbstractApplicationContain
 
     @Override
     protected void containImpl(Container container) {
-        container.put(new UserDTOMapper());
+        container.put(new UserDTOToEntityMapper());
+        container.put(new UserEntityToDTOMapper());
         container.put(createCacheManager());
         container.put(new EHCacheDAOImpl());
         container.put(new NodeUsersServiceImpl());

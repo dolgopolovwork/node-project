@@ -1,6 +1,9 @@
 package ru.babobka.nodemasterserver.slave.pipeline;
 
-import ru.babobka.nodemasterserver.slave.pipeline.step.*;
+import ru.babobka.nodemasterserver.slave.pipeline.step.CommonTasksStep;
+import ru.babobka.nodemasterserver.slave.pipeline.step.SlaveAuthStep;
+import ru.babobka.nodemasterserver.slave.pipeline.step.SlaveCreateStep;
+import ru.babobka.nodemasterserver.slave.pipeline.step.SlaveRunStep;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
 
 /**

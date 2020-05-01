@@ -14,18 +14,18 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by 123 on 12.08.2017.
  */
-public class UserDTOMapperTest {
+public class UserDTOToEntityMapperTest {
 
-    private UserDTOMapper userDTOMapper;
+    private UserDTOToEntityMapper userDTOToEntityMapper;
 
     @Before
     public void setUp() {
-        userDTOMapper = new UserDTOMapper();
+        userDTOToEntityMapper = new UserDTOToEntityMapper();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testMapNull() {
-        userDTOMapper.map(null);
+        userDTOToEntityMapper.map(null);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class UserDTOMapperTest {
         userDTO.setName("abc");
         userDTO.setEmail("abc@xyz.ru");
         userDTO.setBase64PubKey(TextUtil.toBase64(KeyDecoder.generateKeyPair().getPublic().getEncoded()));
-        User user = userDTOMapper.map(userDTO);
+        User user = userDTOToEntityMapper.map(userDTO);
         assertEquals(userDTO.getName(), user.getName());
         assertEquals(user.getPublicKey(), KeyDecoder.decodePublicKey(userDTO.getBase64PubKey()));
         assertEquals(userDTO.getEmail(), user.getEmail());

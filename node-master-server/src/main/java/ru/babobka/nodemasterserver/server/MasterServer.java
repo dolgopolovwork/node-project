@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
-import com.sun.net.httpserver.HttpServer;
+import io.javalin.Javalin;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
@@ -31,7 +31,7 @@ public class MasterServer extends Thread {
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
-    private final HttpServer webServer = Container.getInstance().get(HttpServer.class);
+    private final Javalin webServer = Container.getInstance().get(Javalin.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private static final Logger logger = Logger.getLogger(MasterServer.class);
@@ -57,7 +57,8 @@ public class MasterServer extends Thread {
             incomingClientsThread.start();
             incomingSlavesThread.start();
             heartBeatingThread.start();
-            webServer.start();
+            // TODO hide the port
+            webServer.start(masterServerConfig.getPorts().getWebListenerPort());
             if (rpcServer != null) {
                 rpcServer.start();
             }
@@ -79,7 +80,7 @@ public class MasterServer extends Thread {
         if (rpcServer != null) {
             rpcServer.close();
         }
-        webServer.stop(0);
+        webServer.stop();
         clear();
     }
 

@@ -5,11 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.key.MasterServerKey;
-import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
+import ru.babobka.nodetask.service.TaskService;
 import ru.babobka.nodeutils.container.Container;
-
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
