@@ -7,7 +7,8 @@ import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.util.concurrent.Future;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class NodeFutureTest {
 

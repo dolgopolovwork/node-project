@@ -7,7 +7,6 @@ import ru.babobka.nodetester.benchmark.NodeBenchmark;
 import ru.babobka.nodetester.benchmark.NodeBenchmarkCLI;
 import ru.babobka.nodeutils.util.TextUtil;
 
-import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.List;
 

@@ -2,7 +2,6 @@ package ru.babobka.nodeift.container.submaster;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;

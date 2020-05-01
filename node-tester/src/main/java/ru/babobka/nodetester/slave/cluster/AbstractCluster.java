@@ -1,11 +1,9 @@
 package ru.babobka.nodetester.slave.cluster;
 
-import lombok.NonNull;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.security.PrivateKey;
 
 /**
  * Created by 123 on 01.02.2018.

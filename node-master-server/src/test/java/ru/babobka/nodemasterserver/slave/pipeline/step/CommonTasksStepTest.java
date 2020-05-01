@@ -6,7 +6,6 @@ import org.junit.Test;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;
-
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;

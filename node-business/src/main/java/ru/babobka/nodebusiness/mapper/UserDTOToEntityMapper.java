@@ -2,16 +2,12 @@ package ru.babobka.nodebusiness.mapper;
 
 import ru.babobka.nodebusiness.dto.UserDTO;
 import ru.babobka.nodebusiness.model.User;
-import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeutils.func.Mapper;
-
-import java.security.spec.InvalidKeySpecException;
-import java.util.UUID;
 
 /**
  * Created by 123 on 09.08.2017.
  */
-public class UserDTOMapper extends Mapper<UserDTO, User> {
+public class UserDTOToEntityMapper extends Mapper<UserDTO, User> {
 
     @Override
     public User mapImpl(UserDTO userDTO) {

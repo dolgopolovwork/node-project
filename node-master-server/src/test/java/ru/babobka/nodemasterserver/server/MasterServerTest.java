@@ -1,6 +1,6 @@
 package ru.babobka.nodemasterserver.server;
 
-import com.sun.net.httpserver.HttpServer;
+import io.javalin.Javalin;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +8,7 @@ import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.ModeConfig;
+import ru.babobka.nodeconfigs.master.PortConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
 import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
@@ -28,11 +29,10 @@ public class MasterServerTest {
     private Thread incomingClientsThread;
     private Thread heartBeatingThread;
     private Thread slaveListenerThread;
-    private HttpServer webServer;
     private SlavesStorage slavesStorage;
     private MasterServerConfig masterServerConfig;
     private NodeUsersService nodeUsersService;
-
+    private Javalin javalin;
     private CacheDAO cacheDAO;
     private ClientStorage clientStorage;
 
@@ -44,20 +44,24 @@ public class MasterServerTest {
         heartBeatingThread = mock(HeartBeatingThread.class);
         slaveListenerThread = mock(IncomingSlaveListenerThread.class);
         cacheDAO = mock(CacheDAO.class);
-        webServer = mock(HttpServer.class);
+        javalin = mock(Javalin.class);
         incomingClientsThread = mock(IncomingClientListenerThread.class);
         slavesStorage = mock(SlavesStorage.class);
-
+        PortConfig portConfig = new PortConfig();
+        portConfig.setWebListenerPort(123);
+        portConfig.setClientListenerPort(456);
+        portConfig.setSlaveListenerPort(789);
+        when(masterServerConfig.getPorts()).thenReturn(portConfig);
         Container.getInstance().put(container -> {
             container.put(nodeUsersService);
             container.put(heartBeatingThread);
             container.put(incomingClientsThread);
             container.put(slaveListenerThread);
             container.put(masterServerConfig);
-            container.put(webServer);
             container.put(slavesStorage);
             container.put(clientStorage);
             container.put(cacheDAO);
+            container.put(javalin);
         });
         masterServer = spy(new MasterServer());
     }
@@ -74,7 +78,7 @@ public class MasterServerTest {
         masterServer.run();
         verify(slaveListenerThread).start();
         verify(heartBeatingThread).start();
-        verify(webServer).start();
+        verify(javalin).start(masterServerConfig.getPorts().getWebListenerPort());
     }
 
     @Test
@@ -97,7 +101,7 @@ public class MasterServerTest {
     @Test
     public void testInterrupt() {
         masterServer.interrupt();
-        verify(webServer).stop(anyInt());
+        verify(javalin).stop();
         verify(masterServer).clear();
     }
 

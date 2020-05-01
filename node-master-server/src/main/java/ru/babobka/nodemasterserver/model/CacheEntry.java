@@ -1,8 +1,8 @@
 package ru.babobka.nodemasterserver.model;
 
 import lombok.NonNull;
-import ru.babobka.nodetask.service.TaskExecutionResult;
 import ru.babobka.nodeserials.data.Data;
+import ru.babobka.nodetask.service.TaskExecutionResult;
 
 import java.io.Serializable;
 

@@ -70,7 +70,7 @@ public class NodeUserRestITCase extends AbstractContainerITCase {
     public void testGetList() throws IOException {
         int users = 10;
         addRandomUsers(users);
-        JSONArray result = new JSONArray(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
+        JSONArray result = new JSONArray(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users/all")
                 .execute().returnContent().toString());
         assertEquals(result.length(), users);
     }
@@ -80,7 +80,7 @@ public class NodeUserRestITCase extends AbstractContainerITCase {
         int users = 10;
         addRandomUsers(users);
         User user = nodeUsersService.getList().get(0);
-        JSONObject result = new JSONObject(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + user.getId())
+        JSONObject result = new JSONObject(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users/" + user.getId())
                 .execute().returnContent().toString());
         assertEquals(result.get("name"), user.getName());
         assertEquals(result.get("id"), user.getId());
@@ -88,18 +88,9 @@ public class NodeUserRestITCase extends AbstractContainerITCase {
 
     @Test
     public void testGetEmpty() throws IOException {
-        JSONArray result = new JSONArray(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
+        JSONArray result = new JSONArray(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users/all")
                 .execute().returnContent().toString());
         assertEquals(result.length(), 0);
-    }
-
-    @Test
-    public void testDeleteBadRequest() throws IOException {
-        int users = 10;
-        addRandomUsers(users);
-        assertEquals(Request.Delete("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users")
-                .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-        assertEquals(nodeUsersService.getList().size(), users);
     }
 
     @Test
@@ -107,7 +98,7 @@ public class NodeUserRestITCase extends AbstractContainerITCase {
         int users = 10;
         addRandomUsers(users);
         User user = nodeUsersService.getList().get(0);
-        assertEquals(Request.Delete("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + user.getId())
+        assertEquals(Request.Delete("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users/" + user.getId())
                 .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_OK);
         assertEquals(nodeUsersService.getList().size(), users - 1);
         assertNull(nodeUsersService.get(user.getId()));
@@ -117,7 +108,7 @@ public class NodeUserRestITCase extends AbstractContainerITCase {
     public void testDeleteNotFound() throws IOException {
         int users = 10;
         addRandomUsers(users);
-        assertEquals(Request.Delete("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users?id=" + UUID.randomUUID())
+        assertEquals(Request.Delete("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/users/" + UUID.randomUUID())
                 .execute().returnResponse().getStatusLine().getStatusCode(), HttpStatus.SC_NOT_FOUND);
         assertEquals(nodeUsersService.getList().size(), users);
     }

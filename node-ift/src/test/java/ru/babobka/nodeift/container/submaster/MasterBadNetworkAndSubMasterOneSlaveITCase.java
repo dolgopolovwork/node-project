@@ -2,14 +2,12 @@ package ru.babobka.nodeift.container.submaster;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.GenericContainer;
 import ru.babobka.nodeclient.Client;
 import ru.babobka.nodeift.container.AbstractContainerITCase;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
-import ru.babobka.nodeserials.enumerations.ResponseStatus;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -20,8 +18,6 @@ import java.util.concurrent.Future;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static ru.babobka.nodeift.EllipticCurveITCase.createFactorTest;
-import static ru.babobka.nodeift.PrimeCounterITCase.PRIME_COUNTER_LARGE_RANGE_ANSWER;
-import static ru.babobka.nodeift.PrimeCounterITCase.getLargeRangeRequest;
 
 public class MasterBadNetworkAndSubMasterOneSlaveITCase extends AbstractContainerITCase {
 
