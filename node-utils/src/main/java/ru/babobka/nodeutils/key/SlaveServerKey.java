@@ -1,4 +1,4 @@
-package ru.babobka.nodeslaveserver.key;
+package ru.babobka.nodeutils.key;
 
 import ru.babobka.nodeutils.container.Key;
 

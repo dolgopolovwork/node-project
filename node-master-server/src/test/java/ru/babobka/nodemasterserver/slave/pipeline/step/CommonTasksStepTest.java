@@ -15,7 +15,7 @@ import java.util.Set;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-import static ru.babobka.nodemasterserver.key.MasterServerKey.MASTER_SERVER_TASK_POOL;
+import static ru.babobka.nodeutils.key.MasterServerKey.MASTER_SERVER_TASK_POOL;
 
 /**
  * Created by 123 on 08.06.2018.

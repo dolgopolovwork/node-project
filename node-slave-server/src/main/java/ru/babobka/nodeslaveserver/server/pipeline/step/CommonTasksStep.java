@@ -1,7 +1,7 @@
 package ru.babobka.nodeslaveserver.server.pipeline.step;
 
 import org.apache.log4j.Logger;
-import ru.babobka.nodeslaveserver.key.SlaveServerKey;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodeutils.container.Container;

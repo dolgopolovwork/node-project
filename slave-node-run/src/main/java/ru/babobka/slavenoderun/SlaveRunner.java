@@ -2,7 +2,7 @@ package ru.babobka.slavenoderun;
 
 import org.apache.log4j.Logger;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
-import ru.babobka.nodeslaveserver.key.SlaveServerKey;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.waiter.Waiter;

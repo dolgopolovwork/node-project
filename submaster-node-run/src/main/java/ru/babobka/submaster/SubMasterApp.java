@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_CREATION_WAITER;
+import static ru.babobka.nodeutils.key.SlaveServerKey.SLAVE_CREATION_WAITER;
 
 public class SubMasterApp extends CLI {
 

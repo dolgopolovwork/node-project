@@ -16,7 +16,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static ru.babobka.nodeslaveserver.key.SlaveServerKey.SLAVE_SERVER_TASK_POOL;
+import static ru.babobka.nodeutils.key.SlaveServerKey.SLAVE_SERVER_TASK_POOL;
 
 /**
  * Created by 123 on 09.06.2018.

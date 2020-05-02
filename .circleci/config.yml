@@ -28,7 +28,7 @@ jobs:
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthCommonTasksITCase
       - run:
           name: Run node info web controller integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeInfoWebControllerITCase
+          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeMasterMonitoringWebControllerITCase
       - run:
           name: Run auth integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthITCase

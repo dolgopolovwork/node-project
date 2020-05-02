@@ -50,7 +50,7 @@ public class SlavesStorage {
         }
     }
 
-    synchronized List<Slave> getFullList() {
+    public synchronized List<Slave> getFullList() {
         List<Slave> fullSlaveList = new ArrayList<>(this.slaves.size());
         for (Slave slave : slaves) {
             if (!slave.isInterrupted()) {
