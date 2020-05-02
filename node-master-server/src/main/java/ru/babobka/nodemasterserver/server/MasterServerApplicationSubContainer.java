@@ -10,7 +10,7 @@ import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
-import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
 import ru.babobka.nodemasterserver.listener.OnTaskIsReady;
@@ -99,9 +99,12 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
                 put(nodeUsersCRUDWebController::createUser);
             });
             path("monitoring", () -> {
-                get("tasks", nodeMonitoringWebController::getTasksMonitoringData);
+                get("tasksStats", nodeMonitoringWebController::getTasksMonitoringData);
                 get("clustersize", nodeMonitoringWebController::getClusterSize);
                 get("healthcheck", nodeMonitoringWebController::healthCheck);
+                get("startTime", nodeMonitoringWebController::getStartTime);
+                get("taskNames", nodeMonitoringWebController::getTaskNames);
+                get("slaves", nodeMonitoringWebController::getSlaves);
             });
         });
     }

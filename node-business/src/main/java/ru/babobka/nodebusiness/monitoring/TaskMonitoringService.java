@@ -1,5 +1,6 @@
 package ru.babobka.nodebusiness.monitoring;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -64,6 +65,11 @@ public class TaskMonitoringService implements TaskMonitoringServiceMBean {
     @Override
     public int getCacheHitCount() {
         return cacheHitCount.get();
+    }
+
+    @Override
+    public Set<String> registeredTasks() {
+        return null;
     }
 
     public TaskMonitoringData getTaskMonitoringData() {

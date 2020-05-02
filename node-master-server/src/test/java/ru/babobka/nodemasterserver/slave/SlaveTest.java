@@ -62,18 +62,23 @@ public class SlaveTest {
 
     @Test(expected = NullPointerException.class)
     public void testConstructorNullAvailableTasks() {
-        new Slave(null, mock(NodeConnection.class));
+        new Slave("some user name", null, mock(NodeConnection.class));
     }
 
     @Test(expected = NullPointerException.class)
     public void testConstructorNullNodeConnection() {
-        new Slave(new HashSet<>(), null);
+        new Slave("some user name", new HashSet<>(), null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testConstructorNullUserName() {
+        new Slave(null, new HashSet<>(), mock(NodeConnection.class));
     }
 
     @Test
     public void testInterrupt() {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = new Slave(new HashSet<>(), connection);
+        Slave slave = new Slave("some user name", new HashSet<>(), connection);
         slave.interrupt();
         verify(connection).close();
     }
@@ -82,13 +87,13 @@ public class SlaveTest {
     public void testClosedConnection() {
         NodeConnection connection = mock(NodeConnection.class);
         when(connection.isClosed()).thenReturn(true);
-        new Slave(new HashSet<>(), connection);
+        new Slave("some user name", new HashSet<>(), connection);
     }
 
     @Test
     public void testSendHeartBeating() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = new Slave(new HashSet<>(), connection);
+        Slave slave = new Slave("some user name", new HashSet<>(), connection);
         slave.sendHeartBeating();
         verify(connection).send(any(NodeRequest.class));
     }
@@ -96,7 +101,7 @@ public class SlaveTest {
     @Test
     public void testProcessConnectionDeath() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         TimeConfig timeConfig = new TimeConfig();
         timeConfig.setDataOutDateMillis(10_000);
         when(masterServerConfig.getTime()).thenReturn(timeConfig);
@@ -112,7 +117,7 @@ public class SlaveTest {
     @Test
     public void testProcessConnectionHeartBeating() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         TimeConfig timeConfig = new TimeConfig();
         when(masterServerConfig.getTime()).thenReturn(timeConfig);
         NodeResponse response = mock(NodeResponse.class);
@@ -126,7 +131,7 @@ public class SlaveTest {
     @Test
     public void testProcessConnectionOutDated() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         TimeConfig timeConfig = new TimeConfig();
         timeConfig.setDataOutDateMillis(0);
         when(masterServerConfig.getTime()).thenReturn(timeConfig);
@@ -143,7 +148,7 @@ public class SlaveTest {
     @Test
     public void testProcessConnection() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         TimeConfig timeConfig = new TimeConfig();
         timeConfig.setDataOutDateMillis(10_000);
         when(masterServerConfig.getTime()).thenReturn(timeConfig);
@@ -163,7 +168,7 @@ public class SlaveTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "task name";
         NodeRequest request = NodeRequest.regular(taskId, taskName, null);
-        Slave slave = new Slave(new HashSet<>(), connection);
+        Slave slave = new Slave("some user name", new HashSet<>(), connection);
         slave.executeTask(request);
         verify(connection).send(request);
     }
@@ -174,7 +179,7 @@ public class SlaveTest {
         UUID taskId = UUID.randomUUID();
         String taskName = "task name";
         NodeRequest request = NodeRequest.race(taskId, taskName, null);
-        Slave slave = new Slave(new HashSet<>(), connection);
+        Slave slave = new Slave("some user name", new HashSet<>(), connection);
         slave.executeTask(request);
         verify(connection).send(request);
     }
@@ -187,7 +192,7 @@ public class SlaveTest {
         String taskName = "task name";
         NodeRequest request = NodeRequest.race(taskId, taskName, null);
         when(responseStorage.get(taskId)).thenReturn(responses);
-        Slave slave = new Slave(new HashSet<>(), connection);
+        Slave slave = new Slave("some user name", new HashSet<>(), connection);
         slave.addTask(request);
         slave.executeTask(request);
         verify(connection, never()).send(any(NodeRequest.class));
@@ -202,7 +207,7 @@ public class SlaveTest {
         when(responseStorage.exists(taskId)).thenReturn(true);
         Responses responses = mock(Responses.class);
         when(responseStorage.get(taskId)).thenReturn(responses);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         slave.onReceive(response);
         verify(slave).removeTask(response);
         verify(responses).add(response);
@@ -212,7 +217,7 @@ public class SlaveTest {
     public void testOnExitNoTasks() {
         NodeConnection connection = mock(NodeConnection.class);
         OnSlaveExitListener onSlaveExitListener = mock(OnSlaveExitListener.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection, onSlaveExitListener));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection, onSlaveExitListener));
         when(slave.isNoTasks()).thenReturn(true);
         slave.onExit();
         verify(slavesStorage).remove(slave);
@@ -223,7 +228,7 @@ public class SlaveTest {
     @Test
     public void testOnExitHaveTasks() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         when(slave.isNoTasks()).thenReturn(false);
         slave.onExit();
         verify(slavesStorage).remove(slave);
@@ -234,7 +239,7 @@ public class SlaveTest {
     @Test
     public void testOnExitHaveTasksRedistributionIOException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         when(slave.isNoTasks()).thenReturn(false);
         doThrow(new IOException()).when(slave).redistributeTasks();
         slave.onExit();
@@ -247,7 +252,7 @@ public class SlaveTest {
     @Test
     public void testOnExitHaveTasksRedistributionDistributionException() throws IOException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         when(slave.isNoTasks()).thenReturn(false);
         doThrow(new IOException(new DistributionException())).when(slave).redistributeTasks();
         slave.onExit();
@@ -262,7 +267,7 @@ public class SlaveTest {
     @Test
     public void testRedistributeTasks() throws IOException, DistributionException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         slave.redistributeTasks();
         verify(distributionService).redistribute(slave);
     }
@@ -270,7 +275,7 @@ public class SlaveTest {
     @Test(expected = IOException.class)
     public void testRedistributeTasksException() throws IOException, DistributionException {
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         doThrow(new DistributionException()).when(distributionService).redistribute(slave);
         slave.redistributeTasks();
     }
@@ -283,7 +288,7 @@ public class SlaveTest {
                 NodeRequest.stop(UUID.randomUUID()),
                 NodeRequest.stop(UUID.randomUUID()));
         NodeConnection connection = mock(NodeConnection.class);
-        Slave slave = spy(new Slave(new HashSet<>(), connection));
+        Slave slave = spy(new Slave("some user name", new HashSet<>(), connection));
         slave.addTasks(requestList);
         Applyer<NodeRequest> applyer = mock(Applyer.class);
         slave.applyToTasks(applyer);

@@ -4,7 +4,7 @@ import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
-import ru.babobka.nodeslaveserver.key.SlaveServerKey;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeslaveserver.thread.SlaveBackedNodeRequestHandler;
 import ru.babobka.nodetask.TaskPool;
 import ru.babobka.nodetask.TasksStorage;

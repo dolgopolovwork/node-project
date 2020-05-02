@@ -18,6 +18,7 @@ import ru.babobka.nodeutils.func.Applyer;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +35,8 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
     protected final NodeConnection connection;
     private final AtomicLong lastSendRequestTime = new AtomicLong(0);
 
-    AbstractNetworkSlave(@NonNull NodeConnection connection) {
+    AbstractNetworkSlave(String userName, @NonNull NodeConnection connection) {
+        super(userName);
         if (connection.isClosed()) {
             throw new IllegalArgumentException("connection is closed");
         }
@@ -59,6 +61,10 @@ public abstract class AbstractNetworkSlave extends AbstractSlave {
             }
             logger.info("slave " + getSlaveId() + " was disconnected");
         }
+    }
+
+    public InetAddress getAddress() {
+        return connection.getAddress();
     }
 
     boolean processConnection() throws IOException {

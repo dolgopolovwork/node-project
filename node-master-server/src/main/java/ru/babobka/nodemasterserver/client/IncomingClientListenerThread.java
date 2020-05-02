@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.client;
 
 import lombok.NonNull;
 import org.apache.log4j.Logger;
-import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
 import ru.babobka.nodeutils.container.Container;

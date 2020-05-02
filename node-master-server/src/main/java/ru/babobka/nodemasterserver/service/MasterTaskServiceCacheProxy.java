@@ -2,7 +2,7 @@ package ru.babobka.nodemasterserver.service;
 
 import lombok.NonNull;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
-import ru.babobka.nodemasterserver.key.MasterServerKey;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;

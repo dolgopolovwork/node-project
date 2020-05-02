@@ -54,7 +54,7 @@ public class SlaveRunStep implements Step<PipeContext> {
 
     private boolean runNewSlave(Set<String> availableTasks, String userName, SecureNodeConnection secureNodeConnection) {
         try {
-            Slave slave = slaveFactory.create(availableTasks, secureNodeConnection, () -> {
+            Slave slave = slaveFactory.create(userName, availableTasks, secureNodeConnection, () -> {
                 if (config.getModes().isSingleSessionMode()) {
                     sessions.remove(userName);
                 }

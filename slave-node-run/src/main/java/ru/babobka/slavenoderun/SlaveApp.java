@@ -5,7 +5,7 @@ import org.apache.commons.cli.Option;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
-import ru.babobka.nodeslaveserver.key.SlaveServerKey;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.StreamUtil;
 import ru.babobka.slavenoderun.factory.PlainSlaveServerFactory;

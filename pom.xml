@@ -42,7 +42,7 @@
         <module>node-task-modules/dlp/dlp-benchmark</module>
         <module>node-task-modules/dlp/dlp</module>
         <!-- Web -->
-        <module>node-web</module>
+        <module>node-master-web</module>
     </modules>
 
     <build>

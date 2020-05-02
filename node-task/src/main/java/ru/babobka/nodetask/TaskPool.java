@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Created by dolgopolov.a on 09.07.15.
  */
-public class TaskPool {
+public class TaskPool implements TaskPoolReader {
 
     private static final Logger logger = Logger.getLogger(TaskPool.class);
     private final Map<String, TaskFactory> tasksMap = new HashMap<>();
@@ -48,6 +48,7 @@ public class TaskPool {
         }
     }
 
+    @Override
     public Set<String> getTaskNames() {
         return new HashSet<>(tasksMap.keySet());
     }

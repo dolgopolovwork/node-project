@@ -6,6 +6,7 @@ import ru.babobka.nodeutils.time.TimerInvoker;
 import ru.babobka.nodeutils.util.StreamUtil;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -91,6 +92,13 @@ public class NodeConnectionImpl implements NodeConnection {
     public boolean isClosed() {
         synchronized (socket) {
             return socket.isClosed();
+        }
+    }
+
+    @Override
+    public InetAddress getAddress() {
+        synchronized (socket) {
+            return socket.getInetAddress();
         }
     }
 

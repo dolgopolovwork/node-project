@@ -3,6 +3,7 @@ package ru.babobka.nodeweb;
 import ru.babobka.nodebusiness.service.NodeUsersServiceImpl;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeweb.mapper.ConnectedSlaveToDTOMapper;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.add.rule.EmailValidationRule;
 import ru.babobka.nodeweb.validation.user.add.rule.NameValidationRule;
@@ -27,5 +28,6 @@ public class NodeWebApplicationContainer extends AbstractApplicationContainer {
                 new NullablePubKeyValidationRule(),
                 new IdValidationRule()));
         container.put(new NodeUsersServiceImpl());
+        container.put(new ConnectedSlaveToDTOMapper());
     }
 }

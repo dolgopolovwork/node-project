@@ -2,6 +2,7 @@ package ru.babobka.nodeutils.network;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  * Created by 123 on 25.04.2018.
@@ -21,5 +22,7 @@ public interface NodeConnection extends Closeable {
     void close();
 
     boolean isClosed();
+
+    InetAddress getAddress();
 
 }

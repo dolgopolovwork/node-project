@@ -24,13 +24,13 @@ public class Slave extends AbstractNetworkSlave {
     private final Set<String> availableTasks = new HashSet<>();
     private final OnSlaveExitListener onSlaveExitListener;
 
-    public Slave(Set<String> availableTasks, NodeConnection connection) {
-        this(availableTasks, connection, null);
+    public Slave(String userName, Set<String> availableTasks, NodeConnection connection) {
+        this(userName, availableTasks, connection, null);
         setName("slave_" + getSlaveId());
     }
 
-    public Slave(@NonNull Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {
-        super(connection);
+    public Slave(String userName, @NonNull Set<String> availableTasks, NodeConnection connection, OnSlaveExitListener onSlaveExitListener) {
+        super(userName, connection);
         this.availableTasks.addAll(availableTasks);
         this.onSlaveExitListener = onSlaveExitListener;
 

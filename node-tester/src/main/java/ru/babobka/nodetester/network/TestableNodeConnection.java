@@ -6,6 +6,7 @@ import ru.babobka.nodeutils.func.Callback;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class TestableNodeConnection implements NodeConnection {
 
@@ -58,5 +59,10 @@ public class TestableNodeConnection implements NodeConnection {
     @Override
     public boolean isClosed() {
         return false;
+    }
+
+    @Override
+    public InetAddress getAddress() {
+        return null;
     }
 }

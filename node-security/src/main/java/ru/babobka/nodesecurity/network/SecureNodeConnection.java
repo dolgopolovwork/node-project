@@ -13,6 +13,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -117,6 +118,11 @@ public class SecureNodeConnection implements NodeConnection {
     @Override
     public boolean isClosed() {
         return connection.isClosed();
+    }
+
+    @Override
+    public InetAddress getAddress() {
+        return connection.getAddress();
     }
 
     @Override

@@ -185,7 +185,7 @@ public abstract class AbstractContainerITCase {
     }
 
     private static TaskMonitoringData getTaskMonitoringData(int port) throws IOException {
-        return gson.fromJson(Request.Get("http://localhost:" + port + "/monitoring/tasks")
+        return gson.fromJson(Request.Get("http://localhost:" + port + "/monitoring/tasksStats")
                 .execute().returnContent().asString(), TaskMonitoringData.class);
     }
 

@@ -6,10 +6,7 @@ import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.func.Applyer;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -18,10 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractSlave extends Thread {
 
     private final UUID slaveId;
+    private final String userName;
     private final Map<UUID, NodeRequest> tasks = new ConcurrentHashMap<>();
 
-    AbstractSlave() {
+    AbstractSlave(@NonNull String userName) {
         this.slaveId = UUID.randomUUID();
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     void applyToTasks(Applyer<NodeRequest> applyer) {
@@ -40,7 +43,7 @@ public abstract class AbstractSlave extends Thread {
 
         AbstractSlave that = (AbstractSlave) o;
 
-        return slaveId.equals(that.slaveId);
+        return slaveId.equals(that.slaveId) && userName.equals(that.userName);
     }
 
     public boolean isNoTasks() {
@@ -104,12 +107,12 @@ public abstract class AbstractSlave extends Thread {
 
     @Override
     public int hashCode() {
-        return slaveId.hashCode();
+        return Objects.hash(slaveId, userName);
     }
 
     @Override
     public String toString() {
-        return slaveId.toString();
+        return slaveId.toString() + ":" + userName;
     }
 
     public UUID getSlaveId() {
