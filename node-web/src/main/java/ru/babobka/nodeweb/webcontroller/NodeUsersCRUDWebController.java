@@ -8,7 +8,6 @@ import ru.babobka.nodebusiness.mapper.UserEntityToDTOMapper;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeutils.container.Container;
-import ru.babobka.nodeutils.util.TextUtil;
 import ru.babobka.nodeweb.validation.user.add.AddUserValidator;
 import ru.babobka.nodeweb.validation.user.update.UpdateUserValidator;
 
@@ -39,7 +38,7 @@ public class NodeUsersCRUDWebController {
     }
 
     @OpenApi(
-            pathParams = {@OpenApiParam(name = "id", type = Integer.class, description = "The user ID")},
+            pathParams = {@OpenApiParam(name = "id", description = "The user ID")},
             method = HttpMethod.GET,
             path = "/users/:id",
             summary = "Get a user",
@@ -48,8 +47,14 @@ public class NodeUsersCRUDWebController {
             responses = {@OpenApiResponse(status = "200", content = {@OpenApiContent(from = UserDTO.class)})}
     )
     public void getUser(Context context) {
-        String uuidParam = context.pathParam("id");
-        UUID id = UUID.fromString(uuidParam);
+        UUID id;
+        try {
+            id = UUID.fromString(context.pathParam("id"));
+        } catch (IllegalArgumentException ex) {
+            context.result("Invalid id");
+            context.status(400);
+            return;
+        }
         User user = nodeUsersService.get(id);
         if (user == null) {
             context.result("User not found");
@@ -60,7 +65,7 @@ public class NodeUsersCRUDWebController {
     }
 
     @OpenApi(
-            pathParams = {@OpenApiParam(name = "id", type = Integer.class, description = "The user ID")},
+            pathParams = {@OpenApiParam(name = "id", description = "The user ID")},
             method = HttpMethod.DELETE,
             path = "/users/:id",
             summary = "Remove a user",
@@ -69,13 +74,14 @@ public class NodeUsersCRUDWebController {
             responses = {@OpenApiResponse(status = "200")}
     )
     public void deleteUser(Context context) {
-        String uuidParam = context.pathParam("id");
-        if (TextUtil.isEmpty(uuidParam)) {
-            context.result("Parameter 'id' was not set");
+        UUID id;
+        try {
+            id = UUID.fromString(context.pathParam("id"));
+        } catch (IllegalArgumentException ex) {
+            context.result("Invalid id");
             context.status(400);
             return;
         }
-        UUID id = UUID.fromString(uuidParam);
         if (nodeUsersService.remove(id)) {
             context.result("Ok");
         } else {
@@ -94,16 +100,17 @@ public class NodeUsersCRUDWebController {
             responses = {@OpenApiResponse(status = "200")}
     )
     public void createUser(Context context) {
+        UserDTO user = context.bodyAsClass(UserDTO.class);
         try {
-            UserDTO user = context.bodyAsClass(UserDTO.class);
             addUserValidator.validate(user);
-            nodeUsersService.add(user);
-            context.result("Ok");
         } catch (IllegalArgumentException e) {
             logger.error("cannot create user", e);
             context.result("Bad request");
             context.status(400);
+            return;
         }
+        nodeUsersService.add(user);
+        context.result("Ok");
     }
 
     @OpenApi(
@@ -116,19 +123,20 @@ public class NodeUsersCRUDWebController {
             responses = {@OpenApiResponse(status = "200")}
     )
     public void updateUser(Context context) {
+        UserDTO user = context.bodyAsClass(UserDTO.class);
         try {
-            UserDTO user = context.bodyAsClass(UserDTO.class);
             updateUserValidator.validate(user);
-            if (nodeUsersService.update(user)) {
-                context.result("Ok");
-            } else {
-                context.result("No user with id '" + user.getId() + "' was found");
-                context.status(404);
-            }
         } catch (IllegalArgumentException e) {
             logger.error("cannot update user", e);
             context.result("Bad request");
             context.status(400);
+            return;
+        }
+        if (nodeUsersService.update(user)) {
+            context.result("Ok");
+        } else {
+            context.result("No user with id '" + user.getId() + "' was found");
+            context.status(404);
         }
     }
 }
