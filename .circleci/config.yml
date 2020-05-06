@@ -32,3 +32,6 @@ jobs:
       - run:
           name: Run auth integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthITCase
+      - run:
+          name: Run DSA manager integration test
+          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerITCase

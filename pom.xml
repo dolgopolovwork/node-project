@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.babobka.node</groupId>
     <artifactId>node-project</artifactId>
@@ -9,19 +10,19 @@
     <description>Node project is a little framework for building distributed lightweight applications.</description>
     <modules>
         <module>node-master-server</module>
-        <module>node-security</module>
         <module>node-serials</module>
         <module>node-slave-server</module>
         <module>node-utils</module>
         <module>node-task</module>
         <module>node-ift</module>
         <module>node-business</module>
-        <module>master-node-run</module>
-        <module>slave-node-run</module>
-        <module>submaster-node-run</module>
         <module>node-client</module>
         <module>node-tester</module>
         <module>node-configs</module>
+        <!-- Runners -->
+        <module>master-node-run</module>
+        <module>slave-node-run</module>
+        <module>submaster-node-run</module>
         <!-- Factorization -->
         <module>node-task-modules/factoring/factor</module>
         <module>node-task-modules/factoring/factor-service</module>
@@ -43,6 +44,9 @@
         <module>node-task-modules/dlp/dlp</module>
         <!-- Web -->
         <module>node-master-web</module>
+        <!-- Security -->
+        <module>node-security</module>
+        <module>node-dsa-manager</module>
     </modules>
 
     <build>

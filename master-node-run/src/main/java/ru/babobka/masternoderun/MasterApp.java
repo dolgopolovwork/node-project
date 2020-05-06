@@ -2,7 +2,6 @@ package ru.babobka.masternoderun;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
-import org.apache.log4j.Logger;
 import ru.babobka.nodeclient.console.CLI;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
@@ -20,8 +19,6 @@ import java.util.List;
  * Created by 123 on 06.12.2017.
  */
 public class MasterApp extends CLI {
-
-    private static final Logger logger = Logger.getLogger(MasterApp.class);
 
     private static void init() {
         Container.getInstance().put(container -> {

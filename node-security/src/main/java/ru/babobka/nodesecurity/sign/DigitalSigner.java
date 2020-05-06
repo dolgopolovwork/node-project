@@ -15,50 +15,41 @@ public class DigitalSigner {
 
     private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
-
-    public SecureNodeRequest sign(@NonNull NodeRequest request, @NonNull PrivateKey privateKey) throws IOException {
+    public byte[] createSignature(@NonNull byte[] data, @NonNull PrivateKey privateKey) throws IOException {
         try {
             Signature privateSignature = Signature.getInstance(SIGNATURE_ALGORITHM);
             privateSignature.initSign(privateKey);
-            privateSignature.update(buildHash(request));
-            byte[] signature = privateSignature.sign();
-            return new SecureNodeRequest(request, signature);
-
+            privateSignature.update(data);
+            return privateSignature.sign();
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
             throw new IOException(e);
         }
+    }
+
+    public SecureNodeRequest sign(@NonNull NodeRequest request, @NonNull PrivateKey privateKey) throws IOException {
+        byte[] signature = createSignature(buildHash(request), privateKey);
+        return new SecureNodeRequest(request, signature);
     }
 
     public SecureNodeResponse sign(@NonNull NodeResponse response, @NonNull PrivateKey privateKey) throws IOException {
-        try {
-            Signature privateSignature = Signature.getInstance(SIGNATURE_ALGORITHM);
-            privateSignature.initSign(privateKey);
-            privateSignature.update(buildHash(response));
-            byte[] signature = privateSignature.sign();
-            return new SecureNodeResponse(response, signature);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new IOException(e);
-        }
-
+        byte[] signature = createSignature(buildHash(response), privateKey);
+        return new SecureNodeResponse(response, signature);
     }
 
     public boolean isValid(@NonNull SecureNodeRequest request, @NonNull PublicKey publicKey) throws IOException {
-        try {
-            Signature publicSignature = Signature.getInstance(SIGNATURE_ALGORITHM);
-            publicSignature.initVerify(publicKey);
-            publicSignature.update(buildHash(request));
-            return publicSignature.verify(request.getSignature());
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new IOException(e);
-        }
+        return isValid(buildHash(request), request.getSignature(), publicKey);
     }
 
     public boolean isValid(@NonNull SecureNodeResponse response, @NonNull PublicKey publicKey) throws IOException {
+        return isValid(buildHash(response), response.getSignature(), publicKey);
+    }
+
+    public boolean isValid(@NonNull byte[] data, @NonNull byte[] signature, @NonNull PublicKey publicKey) throws IOException {
         try {
             Signature publicSignature = Signature.getInstance(SIGNATURE_ALGORITHM);
             publicSignature.initVerify(publicKey);
-            publicSignature.update(buildHash(response));
-            return publicSignature.verify(response.getSignature());
+            publicSignature.update(data);
+            return publicSignature.verify(signature);
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
             throw new IOException(e);
         }
