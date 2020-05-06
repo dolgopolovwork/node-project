@@ -1,17 +1,14 @@
-package ru.babobka.nodeconfigs.slave.validation.rule;
+package ru.babobka.nodeconfigs.dsa.validation.rule;
 
-import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
+import ru.babobka.nodeconfigs.dsa.DSAServerConfig;
 import ru.babobka.nodeutils.validation.ValidationRule;
 
 import java.io.File;
 
-/**
- * Created by 123 on 03.09.2017.
- */
-public class LoggerFolderValidationRule implements ValidationRule<SlaveServerConfig> {
+public class LoggerFolderConfigValidationRule implements ValidationRule<DSAServerConfig> {
     @Override
-    public void validate(SlaveServerConfig data) {
-        String loggerFolder = data.getLoggerFolder();
+    public void validate(DSAServerConfig config) {
+        String loggerFolder = config.getLoggerFolder();
         if (loggerFolder == null) {
             throw new IllegalArgumentException("path to log folder was not specified.");
         } else {
