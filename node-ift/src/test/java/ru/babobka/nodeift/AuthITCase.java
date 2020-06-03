@@ -8,16 +8,20 @@ import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodemasterserver.server.MasterServer;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
+import ru.babobka.nodesecurity.sign.DefaultDigitalSigner;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeslaveserver.exception.SlaveAuthException;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.master.MasterServerRunner;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,25 +57,13 @@ public class AuthITCase {
 
     @Test(expected = SlaveAuthException.class)
     public void testAuthFail() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login", KeyDecoder.generateKeyPair().getPrivate());
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad login");
         interruptAndJoin(slaveServer);
     }
 
     @Test
     public void testAuthSuccess() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
-        interruptAndJoin(slaveServer);
-    }
-
-    @Test
-    public void testAuth() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
-        interruptAndJoin(slaveServer);
-    }
-
-    @Test(expected = SlaveAuthException.class)
-    public void testAuthBadPrivateKey() throws IOException {
-        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, KeyDecoder.generateKeyPair().getPrivate());
+        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
         interruptAndJoin(slaveServer);
     }
 
@@ -80,7 +72,7 @@ public class AuthITCase {
         int slaves = getTests();
         List<SlaveServer> slaveServerList = new ArrayList<>(slaves);
         for (int i = 0; i < slaves; i++) {
-            slaveServerList.add(SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY));
+            slaveServerList.add(SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME));
         }
         interruptAndJoin(slaveServerList);
     }
@@ -97,7 +89,7 @@ public class AuthITCase {
                         break;
                     }
                     try {
-                        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+                        SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
                         interruptAndJoin(slaveServer);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -117,7 +109,7 @@ public class AuthITCase {
         int slaves = getTests();
         for (int i = 0; i < slaves; i++) {
             try {
-                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user", KeyDecoder.generateKeyPair().getPrivate());
+                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer("bad_user");
                 interruptAndJoin(slaveServer);
                 fail();
             } catch (SlaveStartupException e) {
@@ -129,14 +121,22 @@ public class AuthITCase {
     @Test
     public void testMassAuthFailBadPrivateKey() throws IOException {
         int slaves = getTests();
-        for (int i = 0; i < slaves; i++) {
-            try {
-                SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, KeyDecoder.generateKeyPair().getPrivate());
-                interruptAndJoin(slaveServer);
-                fail();
-            } catch (SlaveStartupException e) {
-                //that's ok
+        Signer signer = Container.getInstance().get(SlaveServerKey.SLAVE_DSA_MANAGER);
+        try {
+            PrivateKey privKey = KeyDecoder.generateKeyPair().getPrivate();
+            Signer badPrivateKeySigner = new DefaultDigitalSigner(privKey);
+            Container.getInstance().put(SlaveServerKey.SLAVE_DSA_MANAGER, badPrivateKeySigner);
+            for (int i = 0; i < slaves; i++) {
+                try {
+                    SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
+                    interruptAndJoin(slaveServer);
+                    fail();
+                } catch (SlaveStartupException e) {
+                    //that's ok
+                }
             }
+        } finally {
+            Container.getInstance().put(SlaveServerKey.SLAVE_DSA_MANAGER, signer);
         }
     }
 
@@ -145,7 +145,7 @@ public class AuthITCase {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         try {
             slaveServerConfig.setMasterServerBase64PublicKey(TextUtil.toBase64(KeyDecoder.generateKeyPair().getPublic().getEncoded()));
-            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+            SlaveServer slaveServer = SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
             interruptAndJoin(slaveServer);
         } finally {
             //возвращаем публичный ключ обратно

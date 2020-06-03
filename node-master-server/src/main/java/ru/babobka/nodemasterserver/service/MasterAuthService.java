@@ -3,16 +3,16 @@ package ru.babobka.nodemasterserver.service;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.model.User;
 import ru.babobka.nodebusiness.service.NodeUsersService;
-import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.slave.Sessions;
 import ru.babobka.nodesecurity.auth.AuthHelper;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
-import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class MasterAuthService extends AuthHelper {
     private static final Logger logger = Logger.getLogger(MasterAuthService.class);
     private final NodeUsersService usersService = Container.getInstance().get(NodeUsersService.class);
     private final Sessions sessions = Container.getInstance().get(Sessions.class);
-    private final MasterServerConfig masterServerConfig = Container.getInstance().get(MasterServerConfig.class);
+    private final Signer signer = Container.getInstance().get(MasterServerKey.MASTER_DSA_MANAGER);
 
     public AuthResult authClient(NodeConnection connection) throws IOException {
         String login = connection.receive();
@@ -49,8 +49,8 @@ public class MasterAuthService extends AuthHelper {
 
     private AuthResult checkUser(NodeConnection connection, User user) throws IOException {
         try {
-            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(
-                    connection, KeyDecoder.decodePrivateKey(masterServerConfig.getKeyPair().getPrivKey()), user.getPublicKey());
+            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(signer,
+                    connection, user.getPublicKey());
             UUID nonceId = UUID.randomUUID();
             secureNodeConnection.send(NodeResponse.dummy(nonceId));
             SecureNodeResponse userResponse = secureNodeConnection.receiveNoClose();

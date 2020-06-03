@@ -88,7 +88,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             taskService.executeTask(request,
@@ -102,7 +102,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLittleRangeTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             taskService.executeTask(request,
@@ -116,7 +116,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLittleRangeOneSlaveMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -132,7 +132,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLittleRangeTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -148,7 +148,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesRangeTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -164,7 +164,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLittleRangeTwoSlavesMassiveGlitched() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2, true)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -180,7 +180,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeTwoSlavesMassiveGlitched() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 150; i++) {
                 NodeRequest request = getLargeRangeRequest();
@@ -198,7 +198,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeThreeSlavesMassiveGlitchedParallel() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 3, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 3, true)) {
             final AtomicInteger failedTest = new AtomicInteger();
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
@@ -231,7 +231,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitchedParallel() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2, true)) {
             final AtomicInteger failedTest = new AtomicInteger();
             slaveServerCluster.start();
             Thread[] threads = new Thread[5];
@@ -263,7 +263,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesExtraLargeRangeTwoSlavesMassiveGlitched() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2, true)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2, true)) {
             slaveServerCluster.start();
             for (int i = 0; i < 25; i++) {
                 NodeRequest request = getExtraLargeRangeRequest();
@@ -281,7 +281,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeOneSlaveMassive() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -297,7 +297,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesLargeRangeTwoSlavesMassive() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < 50; i++) {
@@ -313,7 +313,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeInvalidRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = createPrimeCounterRequest(100L, 0L);
             taskService.executeTask(request,
@@ -327,7 +327,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeInvalidRangeTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = createPrimeCounterRequest(100L, 0L);
             taskService.executeTask(request, response -> fail(), error -> {
@@ -337,7 +337,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimesMediumRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getMediumRangeRequest();
             taskService.executeTask(request,
@@ -351,7 +351,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeLargeRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             taskService.executeTask(request,
@@ -365,7 +365,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeLargeRangeTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             taskService.executeTask(request,
@@ -379,7 +379,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCancelNotExistingTask() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             taskService.cancelTask(UUID.randomUUID(), Assert::assertFalse, error -> {
                 logger.error(error);
@@ -390,7 +390,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCancelTask() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
@@ -415,7 +415,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCancelTaskTwoSlaves() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             final AtomicBoolean taskFail = new AtomicBoolean(false);
             slaveServerCluster.start();
             NodeRequest request = getEnormousRangeRequest();
@@ -441,7 +441,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCancelTaskOneSlaveMassive() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
@@ -471,7 +471,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCancelTaskTwoSlavesMassive() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             for (int i = 0; i < 15; i++) {
                 final AtomicBoolean taskFail = new AtomicBoolean(false);
@@ -500,7 +500,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeLargeRangeThreeSlavesMassiveParallel() throws IOException, InterruptedException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 3)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 3)) {
             final AtomicInteger failedTests = new AtomicInteger();
             slaveServerCluster.start();
             Thread[] threads = new Thread[10];
@@ -529,7 +529,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeLittleRangeTwoSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 2)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 2)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             taskService.executeTask(request,
@@ -543,7 +543,7 @@ public class PrimeCounterITCase {
 
     @Test
     public void testCountPrimeLargeRangeThreeSlaves() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, 3)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, 3)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             taskService.executeTask(request,

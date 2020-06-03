@@ -64,7 +64,7 @@ public class NodeMasterMonitoringWebControllerITCase {
     @Test
     public void testGetClusterSize() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
             slaveServerCluster.start();
             String content = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/clustersize")
                     .execute().returnContent().toString();
@@ -75,7 +75,7 @@ public class NodeMasterMonitoringWebControllerITCase {
     @Test
     public void testHealthCheck() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
             slaveServerCluster.start();
             int status = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/healthcheck")
                     .execute().returnResponse().getStatusLine().getStatusCode();
@@ -86,7 +86,7 @@ public class NodeMasterMonitoringWebControllerITCase {
     @Test
     public void testStartTime() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
             slaveServerCluster.start();
             long startTime = Long.parseLong(Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/startTime")
                     .execute().returnContent().toString());
@@ -101,7 +101,7 @@ public class NodeMasterMonitoringWebControllerITCase {
     @Test
     public void testGetTaskNames() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
             slaveServerCluster.start();
             Set<String> actualTasks = taskPoolReader.getTaskNames();
             assertFalse(actualTasks.isEmpty());
@@ -116,7 +116,7 @@ public class NodeMasterMonitoringWebControllerITCase {
     @Test
     public void testGetSlaves() throws IOException {
         int slaves = 5;
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY, slaves)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
             slaveServerCluster.start();
             String connectedSlavesJson = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/slaves")
                     .execute().returnContent().toString();

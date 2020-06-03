@@ -3,9 +3,12 @@ package ru.babobka.nodeslaveserver.server.pipeline.step;
 import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthResult;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
+import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.time.ServerTime;
 
@@ -17,6 +20,7 @@ import java.io.IOException;
 public class GetServerTimeStep implements Step<PipeContext> {
 
     private static final Logger logger = Logger.getLogger(GetServerTimeStep.class);
+    private final Signer signer = Container.getInstance().get(SlaveServerKey.SLAVE_DSA_MANAGER);
 
     @Override
     public boolean execute(PipeContext pipeContext) {
@@ -25,8 +29,8 @@ public class GetServerTimeStep implements Step<PipeContext> {
         try {
             SecureNodeConnection secureNodeConnection =
                     new SecureNodeConnection(
+                            signer,
                             connection,
-                            pipeContext.getCredentials().getPrivateKey(),
                             authResult.getPublicKey());
             ServerTime serverTime = getServerTime(secureNodeConnection);
             pipeContext.setServerTime(serverTime);

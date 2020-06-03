@@ -4,7 +4,7 @@ import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.checker.SecureDataChecker;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
-import ru.babobka.nodesecurity.sign.DigitalSigner;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.enumerations.RequestStatus;
@@ -14,7 +14,6 @@ import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
@@ -23,21 +22,20 @@ import java.security.PublicKey;
 public class SecureNodeConnection implements NodeConnection {
 
     private static final Logger logger = Logger.getLogger(SecureNodeConnection.class);
-    private final DigitalSigner digitalSigner = Container.getInstance().get(DigitalSigner.class);
+    private final Signer digitalSigner;
     private final SecureDataChecker dataChecker = Container.getInstance().get(SecureDataChecker.class);
-    private final PrivateKey privateKey;
     private final PublicKey publicKey;
     private final NodeConnection connection;
 
-    public SecureNodeConnection(@NonNull NodeConnection nodeConnection,
-                                @NonNull PrivateKey privateKey,
+    public SecureNodeConnection(@NonNull Signer digitalSigner,
+                                @NonNull NodeConnection nodeConnection,
                                 @NonNull PublicKey publicKey) {
         if (nodeConnection.isClosed()) {
             throw new IllegalArgumentException("nodeConnection is closed");
         }
-        this.privateKey = privateKey;
         this.publicKey = publicKey;
         this.connection = nodeConnection;
+        this.digitalSigner = digitalSigner;
     }
 
     @Override
@@ -96,7 +94,7 @@ public class SecureNodeConnection implements NodeConnection {
 
     protected void send(NodeRequest request) throws IOException {
         if (request.getRequestStatus() != RequestStatus.HEART_BEAT) {
-            connection.send(digitalSigner.sign(request, privateKey));
+            connection.send(digitalSigner.sign(request));
         } else {
             connection.send(request);
         }
@@ -104,7 +102,7 @@ public class SecureNodeConnection implements NodeConnection {
 
     protected void send(NodeResponse response) throws IOException {
         if (response.getStatus() != ResponseStatus.HEART_BEAT) {
-            connection.send(digitalSigner.sign(response, privateKey));
+            connection.send(digitalSigner.sign(response));
         } else {
             connection.send(response);
         }

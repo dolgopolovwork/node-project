@@ -9,6 +9,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import ru.babobka.nodesecurity.network.ClientSecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.controller.ControllerFactory;
 import ru.babobka.nodeslaveserver.exception.SlaveStartupException;
@@ -16,12 +17,12 @@ import ru.babobka.nodeslaveserver.server.pipeline.PipeContext;
 import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.PrivateKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -36,15 +37,18 @@ public class SlaveServerTest {
     private NodeConnectionFactory nodeConnectionFactory;
     private SlavePipelineFactory slavePipelineFactory;
     private ClientSecureNodeConnection clientSecureNodeConnection;
+    private Signer signer;
 
     @Before
     public void setUp() {
         clientSecureNodeConnection = mock(ClientSecureNodeConnection.class);
         slavePipelineFactory = mock(SlavePipelineFactory.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
+        signer = mock(Signer.class);
         Container.getInstance().put(container -> {
             container.put(nodeConnectionFactory);
             container.put(slavePipelineFactory);
+            container.put(SlaveServerKey.SLAVE_DSA_MANAGER, signer);
         });
     }
 
@@ -61,7 +65,7 @@ public class SlaveServerTest {
         Socket socket = mock(Socket.class);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        new SlaveServer(socket, "abc", mock(PrivateKey.class), mock(ControllerFactory.class));
+        new SlaveServer(socket, "abc", mock(ControllerFactory.class));
     }
 
     @Test
@@ -93,8 +97,8 @@ public class SlaveServerTest {
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         PowerMockito.mockStatic(SlaveServer.class);
-        BDDMockito.given(SlaveServer.createClientConnection(eq(connection), any(PipeContext.class))).willReturn(clientSecureNodeConnection);
-        return spy(new SlaveServer(socket, "abc", mock(PrivateKey.class), mock(ControllerFactory.class)));
+        BDDMockito.given(SlaveServer.createClientConnection(eq(signer), eq(connection), any(PipeContext.class))).willReturn(clientSecureNodeConnection);
+        return spy(new SlaveServer(socket, "abc", mock(ControllerFactory.class)));
     }
 
 }

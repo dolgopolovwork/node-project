@@ -68,7 +68,7 @@ public class CacheITCase {
 
     @Test
     public void testCacheCountPrimesLittleRangeOneSlave() throws IOException {
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLittleRangeRequest();
             for (int i = 0; i < getTests(); i++) {
@@ -86,7 +86,7 @@ public class CacheITCase {
     @Test
     public void testCacheCountPrimesLargeRangeOneSlave() throws IOException {
         final int requests = getTests();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             NodeRequest request = getLargeRangeRequest();
             for (int i = 0; i < requests; i++) {
@@ -105,7 +105,7 @@ public class CacheITCase {
     public void testCacheCountPrimesLargeRangeOneSlaveClosedCluster() throws IOException {
         final int requests = getTests();
         NodeRequest request = getLargeRangeRequest();
-        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY)) {
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME)) {
             slaveServerCluster.start();
             taskService.executeTask(request,
                     result -> assertEquals((int) result.getData().get("primeCount"), PRIME_COUNTER_LARGE_RANGE_ANSWER),

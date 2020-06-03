@@ -7,7 +7,6 @@ import ru.babobka.nodeutils.container.Container;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
@@ -20,15 +19,15 @@ public class SlaveServerRunner {
         return container;
     }
 
-    public static SlaveServer runSlaveServer(String login, PrivateKey privateKey) throws IOException {
-        SlaveServer slaveServer = getSlaveServer(login, privateKey);
+    public static SlaveServer runSlaveServer(String login) throws IOException {
+        SlaveServer slaveServer = getSlaveServer(login);
         slaveServer.start();
         return slaveServer;
     }
 
-    public static SlaveServer getSlaveServer(String login, PrivateKey privateKey) throws IOException {
+    public static SlaveServer getSlaveServer(String login) throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         Socket socket = new Socket(slaveServerConfig.getMasterServerHost(), slaveServerConfig.getMasterServerPort());
-        return SlaveServerFactory.slaveBacked(socket, login, privateKey);
+        return SlaveServerFactory.slaveBacked(socket, login);
     }
 }

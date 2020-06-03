@@ -4,7 +4,6 @@ import ru.babobka.nodeconfigs.exception.EnvConfigCreationException;
 import ru.babobka.nodeconfigs.service.ConfigProvider;
 import ru.babobka.nodeconfigs.slave.SlaveServerConfig;
 import ru.babobka.nodeconfigs.slave.validation.SlaveServerConfigValidator;
-import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.log.LoggerInit;
@@ -12,7 +11,6 @@ import ru.babobka.slavenoderun.SlaveServerApplicationContainer;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -27,8 +25,7 @@ public abstract class SlaveServerRunnerFactory {
 
     protected abstract SlaveServer create(String masterServerHost,
                                           int masterServerPort,
-                                          String login,
-                                          PrivateKey privateKey) throws IOException;
+                                          String login) throws IOException;
 
     public SlaveServer build() throws GeneralSecurityException, IOException, EnvConfigCreationException {
         Container container = Container.getInstance();
@@ -42,8 +39,7 @@ public abstract class SlaveServerRunnerFactory {
         return create(
                 config.getMasterServerHost(),
                 config.getMasterServerPort(),
-                config.getSlaveLogin(),
-                KeyDecoder.decodePrivateKey(config.getKeyPair().getPrivKey()));
+                config.getSlaveLogin());
     }
 
     private SlaveServerApplicationContainer createSlaveServerContainer() {

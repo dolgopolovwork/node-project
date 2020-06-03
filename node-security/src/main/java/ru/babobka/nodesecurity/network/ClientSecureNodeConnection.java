@@ -1,11 +1,11 @@
 package ru.babobka.nodesecurity.network;
 
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.time.ServerTime;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
@@ -15,11 +15,11 @@ public class ClientSecureNodeConnection extends SecureNodeConnection {
     private final ServerTime serverTime;
 
     public ClientSecureNodeConnection(
+            Signer signer,
             ServerTime serverTime,
             NodeConnection nodeConnection,
-            PrivateKey privateKey,
             PublicKey publicKey) {
-        super(nodeConnection, privateKey, publicKey);
+        super(signer, nodeConnection, publicKey);
         this.serverTime = serverTime;
     }
 

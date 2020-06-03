@@ -10,6 +10,4 @@ import java.security.PublicKey;
  */
 public interface DebugCredentials {
     String USER_NAME = "test_user";
-    PrivateKey PRIV_KEY = KeyDecoder.decodePrivateKeyUnsafe(DebugBase64KeyPair.DEBUG_PRIV_KEY);
-    PublicKey PUB_KEY = KeyDecoder.decodePublicKeyUnsafe(DebugBase64KeyPair.DEBUG_PUB_KEY);
 }

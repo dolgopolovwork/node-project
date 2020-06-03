@@ -3,7 +3,7 @@ package ru.babobka.nodedsa.server.webcontroller;
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.annotations.*;
 import org.apache.log4j.Logger;
-import ru.babobka.nodesecurity.sign.DigitalSigner;
+import ru.babobka.nodesecurity.sign.SignUtil;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.util.TextUtil;
 
@@ -13,7 +13,6 @@ import java.security.PublicKey;
 import java.util.UUID;
 
 public class NodeDataSignerWebController {
-    private DigitalSigner digitalSigner = Container.getInstance().get(DigitalSigner.class);
     private PublicKey publicKey = Container.getInstance().get(PublicKey.class);
     private PrivateKey privateKey = Container.getInstance().get(PrivateKey.class);
     private static final Logger logger = Logger.getLogger(NodeDataSignerWebController.class);
@@ -32,7 +31,7 @@ public class NodeDataSignerWebController {
         UUID operationId = UUID.randomUUID();
         try {
             logger.info("Operation id:" + operationId + ". Sign data  '" + context.body() + "'");
-            byte[] signature = digitalSigner.createSignature(contentToSign, privateKey);
+            byte[] signature = SignUtil.createSignature(contentToSign, privateKey);
             logger.info("Operation id:" + operationId + ". Signed.");
             context.result(TextUtil.toBase64(signature));
         } catch (IOException e) {

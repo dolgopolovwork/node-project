@@ -27,7 +27,7 @@ jobs:
           name: Run auth common tasks integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthCommonTasksITCase
       - run:
-          name: Run node info web controller integration test
+          name: Run node info web-based monitoring service integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeMasterMonitoringWebControllerITCase
       - run:
           name: Run auth integration test
@@ -35,3 +35,6 @@ jobs:
       - run:
           name: Run DSA manager integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerITCase
+      - run:
+          name: Run DSA manager client integration test
+          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerClientITCase
