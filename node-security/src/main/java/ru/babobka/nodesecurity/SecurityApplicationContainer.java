@@ -1,7 +1,6 @@
 package ru.babobka.nodesecurity;
 
 import ru.babobka.nodesecurity.checker.SecureDataChecker;
-import ru.babobka.nodesecurity.sign.DigitalSigner;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
@@ -11,7 +10,6 @@ import ru.babobka.nodeutils.container.Container;
 public class SecurityApplicationContainer extends AbstractApplicationContainer {
     @Override
     protected void containImpl(Container container) {
-        container.put(new DigitalSigner());
         container.put(new SecureDataChecker());
     }
 }

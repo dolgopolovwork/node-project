@@ -8,15 +8,15 @@ import ru.babobka.nodemasterserver.slave.SlaveFactory;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.slave.pipeline.PipeContext;
 import ru.babobka.nodesecurity.auth.AuthResult;
-import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Step;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Set;
 
 /**
@@ -28,6 +28,7 @@ public class SlaveRunStep implements Step<PipeContext> {
     private final SlaveFactory slaveFactory = Container.getInstance().get(SlaveFactory.class);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final MasterServerConfig config = Container.getInstance().get(MasterServerConfig.class);
+    private final Signer signer = Container.getInstance().get(MasterServerKey.MASTER_DSA_MANAGER);
 
     @Override
     public boolean execute(PipeContext pipeContext) {
@@ -36,7 +37,7 @@ public class SlaveRunStep implements Step<PipeContext> {
         Set<String> availableTasks = pipeContext.getAvailableTasks();
         try {
             SecureNodeConnection secureNodeConnection = new SecureNodeConnection(
-                    connection, KeyDecoder.decodePrivateKey(config.getKeyPair().getPrivKey()), authResult.getPublicKey());
+                    signer, connection, authResult.getPublicKey());
             if (!runNewSlave(availableTasks, authResult.getUserName(), secureNodeConnection)) {
                 logger.warn("cannot run slave");
                 sessions.remove(authResult.getUserName());
@@ -46,7 +47,7 @@ public class SlaveRunStep implements Step<PipeContext> {
             connection.send(true);
             secureNodeConnection.send(NodeRequest.time());
             return true;
-        } catch (IOException | InvalidKeySpecException e) {
+        } catch (IOException e) {
             logger.error("cannot run slave due to network error", e);
             return false;
         }

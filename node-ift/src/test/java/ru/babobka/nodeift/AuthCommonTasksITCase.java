@@ -59,7 +59,7 @@ public class AuthCommonTasksITCase {
     @Test(expected = SlaveStartupException.class)
     public void testNoTasks() throws IOException {
         when(taskPool.getTaskNames()).thenReturn(new HashSet<>());
-        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
     }
 
     @Test(expected = SlaveStartupException.class)
@@ -68,7 +68,7 @@ public class AuthCommonTasksITCase {
         availableTasks.add("abc");
         availableTasks.add("xyz");
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class AuthCommonTasksITCase {
         TaskPool masterSlaveTaskPool = Container.getInstance().get(MasterServerKey.MASTER_SERVER_TASK_POOL);
         availableTasks.add(masterSlaveTaskPool.getTaskNames().iterator().next());
         when(taskPool.getTaskNames()).thenReturn(availableTasks);
-        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME, DebugCredentials.PRIV_KEY);
+        SlaveServerRunner.runSlaveServer(DebugCredentials.USER_NAME);
     }
 
 }

@@ -10,6 +10,9 @@ import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
 import ru.babobka.nodemasterserver.client.IncomingClientListenerThread;
+import ru.babobka.nodesecurity.keypair.KeyDecoder;
+import ru.babobka.nodesecurity.sign.DefaultDigitalSigner;
+import ru.babobka.nodesecurity.sign.SignatureValidator;
 import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodemasterserver.listener.CacheRequestListener;
 import ru.babobka.nodemasterserver.listener.OnRaceStyleTaskIsReady;
@@ -48,6 +51,7 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
     @Override
     protected void containImpl(Container container) throws Exception {
         StreamUtil streamUtil = container.get(StreamUtil.class);
+        container.put(new SignatureValidator());
         container.put(new NodeResponseErrorMapper());
         container.put(new Sessions());
         container.put(new SlavesStorage());
@@ -65,6 +69,7 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         } else {
             container.put(new MasterTaskService());
         }
+        container.put(MasterServerKey.MASTER_DSA_MANAGER, new DefaultDigitalSigner(KeyDecoder.decodePrivateKey(masterServerConfig.getKeyPair().getPrivKey())));
         container.put(new StoppedTasks());
         container.put(new SlaveFactory());
         container.put(MasterServerKey.CLIENTS_THREAD_POOL,

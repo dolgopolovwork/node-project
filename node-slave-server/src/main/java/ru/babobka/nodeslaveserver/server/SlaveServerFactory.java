@@ -8,27 +8,22 @@ import ru.babobka.nodeutils.thread.PrettyNamedThreadPoolFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.PrivateKey;
 
 public interface SlaveServerFactory {
 
     static SlaveServer slaveBacked(Socket socket,
-                                   String login,
-                                   PrivateKey privateKey) throws IOException {
+                                   String login) throws IOException {
         return new SlaveServer(socket,
                 login,
-                privateKey,
                 (connection, tasksStorage) -> new SlaveBackedSocketController(connection,
                         tasksStorage,
                         PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("sb-socket_controller")));
     }
 
     static SlaveServer masterBacked(Socket socket,
-                                    String login,
-                                    PrivateKey privateKey) throws IOException {
+                                    String login) throws IOException {
         return new SlaveServer(socket,
                 login,
-                privateKey,
                 (connection, tasksStorage) -> new MasterBackedSocketController(connection,
                         PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("mb-socket_controller"),
                         new PubSub<NodeRequest>()));

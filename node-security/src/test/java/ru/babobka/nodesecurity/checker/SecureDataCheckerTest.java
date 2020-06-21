@@ -6,7 +6,7 @@ import org.junit.Test;
 import ru.babobka.nodesecurity.data.SecureNodeRequest;
 import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
-import ru.babobka.nodesecurity.sign.DigitalSigner;
+import ru.babobka.nodesecurity.sign.SignatureValidator;
 import ru.babobka.nodeserials.NodeRequest;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeserials.data.Data;
@@ -23,15 +23,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SecureDataCheckerTest {
-    private DigitalSigner digitalSigner;
+    private SignatureValidator signatureValidator;
     private SecureDataChecker secureDataChecker;
     private KeyPair keyPair;
 
     @Before
     public void setUp() {
         keyPair = KeyDecoder.generateKeyPair();
-        digitalSigner = mock(DigitalSigner.class);
-        Container.getInstance().put(digitalSigner);
+        signatureValidator = mock(SignatureValidator.class);
+        Container.getInstance().put(container -> {
+            container.put(signatureValidator);
+        });
         secureDataChecker = new SecureDataChecker();
     }
 
@@ -70,7 +72,7 @@ public class SecureDataCheckerTest {
     @Test
     public void testIsSecureRequest() throws IOException {
         SecureNodeRequest secureNodeRequest = mock(SecureNodeRequest.class);
-        when(digitalSigner.isValid(eq(secureNodeRequest), eq(keyPair.getPublic()))).thenReturn(true);
+        when(signatureValidator.isValid(eq(secureNodeRequest), eq(keyPair.getPublic()))).thenReturn(true);
         assertTrue(secureDataChecker.isSecure(
                 secureNodeRequest,
                 keyPair.getPublic()));
@@ -79,7 +81,7 @@ public class SecureDataCheckerTest {
     @Test
     public void testIsNotSecureRequest() throws IOException {
         SecureNodeRequest secureNodeRequest = mock(SecureNodeRequest.class);
-        when(digitalSigner.isValid(eq(secureNodeRequest), eq(keyPair.getPublic()))).thenReturn(false);
+        when(signatureValidator.isValid(eq(secureNodeRequest), eq(keyPair.getPublic()))).thenReturn(false);
         assertFalse(secureDataChecker.isSecure(
                 secureNodeRequest,
                 keyPair.getPublic()));
@@ -88,7 +90,7 @@ public class SecureDataCheckerTest {
     @Test
     public void testIsSecureResponse() throws IOException {
         SecureNodeResponse secureNodeResponse = mock(SecureNodeResponse.class);
-        when(digitalSigner.isValid(eq(secureNodeResponse), eq(keyPair.getPublic()))).thenReturn(true);
+        when(signatureValidator.isValid(eq(secureNodeResponse), eq(keyPair.getPublic()))).thenReturn(true);
         assertTrue(secureDataChecker.isSecure(
                 secureNodeResponse,
                 keyPair.getPublic()));
@@ -97,7 +99,7 @@ public class SecureDataCheckerTest {
     @Test
     public void testIsNotSecureResponse() throws IOException {
         SecureNodeResponse secureNodeResponse = mock(SecureNodeResponse.class);
-        when(digitalSigner.isValid(eq(secureNodeResponse), eq(keyPair.getPublic()))).thenReturn(false);
+        when(signatureValidator.isValid(eq(secureNodeResponse), eq(keyPair.getPublic()))).thenReturn(false);
         assertFalse(secureDataChecker.isSecure(
                 secureNodeResponse,
                 keyPair.getPublic()));

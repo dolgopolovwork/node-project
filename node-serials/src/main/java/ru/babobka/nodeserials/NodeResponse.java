@@ -2,6 +2,7 @@ package ru.babobka.nodeserials;
 
 import ru.babobka.nodeserials.data.Data;
 import ru.babobka.nodeserials.enumerations.ResponseStatus;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -136,5 +137,15 @@ public class NodeResponse extends NodeData {
                 ", status=" + status +
                 ", message='" + message + '\'' +
                 "} " + super.toString();
+    }
+
+    @Override
+    public byte[] buildHash() {
+        byte[] baseHash = super.buildHash();
+        byte[] smallHash = HashUtil.sha2(
+                this.getStatus().ordinal(),
+                HashUtil.safeHashCode(this.getMessage()),
+                (int) this.getTimeTakes());
+        return HashUtil.sha2(baseHash, smallHash);
     }
 }

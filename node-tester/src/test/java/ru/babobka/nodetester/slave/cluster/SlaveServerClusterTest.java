@@ -12,7 +12,6 @@ import ru.babobka.nodetester.slave.GlitchThread;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 
 import static org.mockito.Mockito.*;
 
@@ -32,24 +31,24 @@ public class SlaveServerClusterTest {
         glitchThread = mock(GlitchThread.class);
         PowerMockito.mockStatic(SlaveServerRunner.class);
         PowerMockito.mockStatic(SlaveServerCluster.class);
-        BDDMockito.given(SlaveServerRunner.getSlaveServer(anyString(), any())).willReturn(slaveServer);
-        BDDMockito.given(SlaveServerCluster.createGlitchThread(anyString(), any(), anyList())).willReturn(glitchThread);
+        BDDMockito.given(SlaveServerRunner.getSlaveServer(anyString())).willReturn(slaveServer);
+        BDDMockito.given(SlaveServerCluster.createGlitchThread(anyString(), anyList())).willReturn(glitchThread);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullArgs() throws IOException {
-        new SlaveServerCluster(null, null, 1);
+        new SlaveServerCluster(null, 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNegativeSlaves() throws IOException {
-        new SlaveServerCluster("abc", mock(PrivateKey.class), -1);
+        new SlaveServerCluster("abc", -1);
     }
 
     @Test
     public void testStart() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves);
         cluster.start();
         verify(slaveServer, times(slaves)).start();
     }
@@ -57,7 +56,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testStartTwice() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves);
         cluster.start();
         cluster.start();
         verify(slaveServer, times(slaves)).start();
@@ -66,7 +65,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testStartGlitchy() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves, true);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves, true);
         cluster.start();
         verify(glitchThread).start();
     }
@@ -74,7 +73,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testStartNotGlitchy() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves);
         cluster.start();
         verify(glitchThread, never()).start();
     }
@@ -82,7 +81,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testClose() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves);
         cluster.close();
         verify(slaveServer, times(slaves)).interrupt();
     }
@@ -90,7 +89,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testCloseTwice() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves);
         cluster.close();
         cluster.close();
         verify(slaveServer, times(slaves)).interrupt();
@@ -99,7 +98,7 @@ public class SlaveServerClusterTest {
     @Test
     public void testCloseGlitchy() throws IOException {
         int slaves = 3;
-        SlaveServerCluster cluster = new SlaveServerCluster("abc", mock(PrivateKey.class), slaves, true);
+        SlaveServerCluster cluster = new SlaveServerCluster("abc", slaves, true);
         cluster.close();
         cluster.close();
         verify(glitchThread).interrupt();

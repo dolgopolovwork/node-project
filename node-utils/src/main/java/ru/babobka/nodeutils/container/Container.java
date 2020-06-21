@@ -141,7 +141,6 @@ public class Container {
                 }
             });
         }
-
         static final Container HOLDER_INSTANCE = new Container();
     }
 }

@@ -9,6 +9,7 @@ import ru.babobka.nodemasterserver.server.MasterServerApplicationSubContainer;
 import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
+import ru.babobka.nodesecurity.sign.SignatureValidator;
 import ru.babobka.nodetask.NodeTaskApplicationContainer;
 import ru.babobka.nodetester.dao.DummyNodeUserDAOImpl;
 import ru.babobka.nodetester.key.TesterKey;
@@ -44,6 +45,7 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
     @Override
     protected void containImpl(Container container) {
         container.put(new NodeUtilsApplicationContainer());
+        container.put(new SignatureValidator());
         MasterServerConfig config = createTestConfig();
         container.putIfAbsent(new NodeConnectionFactory());
         new MasterServerConfigValidator().validate(config);

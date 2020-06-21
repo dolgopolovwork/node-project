@@ -3,6 +3,7 @@ package ru.babobka.nodeutils.util;
 import lombok.NonNull;
 import ru.babobka.nodeutils.enums.Env;
 
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -39,6 +40,18 @@ public class TextUtil {
             return "";
         }
         return s;
+    }
+
+    public static String readStream(InputStream inputStream) throws IOException {
+        StringBuilder textBuilder = new StringBuilder();
+        try (Reader reader = new BufferedReader(
+                new InputStreamReader(inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+            int c = 0;
+            while ((c = reader.read()) != -1) {
+                textBuilder.append((char) c);
+            }
+        }
+        return textBuilder.toString();
     }
 
     public static boolean isNumber(String text) {

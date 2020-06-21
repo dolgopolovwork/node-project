@@ -1,12 +1,10 @@
 package ru.babobka.nodetester.slave.cluster;
 
-import lombok.NonNull;
 import ru.babobka.nodeslaveserver.server.SlaveServer;
 import ru.babobka.nodetester.slave.GlitchThread;
 import ru.babobka.nodetester.slave.SlaveServerRunner;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,28 +15,28 @@ public class SlaveServerCluster extends AbstractCluster {
     private final List<SlaveServer> slaveServerList = new ArrayList<>();
     private final Thread glitchThread;
 
-    public SlaveServerCluster(String login, @NonNull PrivateKey privateKey, int slaves, boolean glitchMode) throws IOException {
+    public SlaveServerCluster(String login, int slaves, boolean glitchMode) throws IOException {
         super(login, slaves);
         for (int i = 0; i < slaves; i++) {
-            slaveServerList.add(SlaveServerRunner.getSlaveServer(login, privateKey));
+            slaveServerList.add(SlaveServerRunner.getSlaveServer(login));
         }
         if (glitchMode) {
-            glitchThread = createGlitchThread(login, privateKey, slaveServerList);
+            glitchThread = createGlitchThread(login, slaveServerList);
         } else {
             glitchThread = null;
         }
     }
 
-    static GlitchThread createGlitchThread(String login, PrivateKey privateKey, List<SlaveServer> slaveServerList) {
-        return new GlitchThread(login, privateKey, slaveServerList);
+    static GlitchThread createGlitchThread(String login, List<SlaveServer> slaveServerList) {
+        return new GlitchThread(login, slaveServerList);
     }
 
-    public SlaveServerCluster(String login, PrivateKey privateKey, int slaves) throws IOException {
-        this(login, privateKey, slaves, false);
+    public SlaveServerCluster(String login, int slaves) throws IOException {
+        this(login, slaves, false);
     }
 
-    public SlaveServerCluster(String login, PrivateKey privateKey) throws IOException {
-        this(login, privateKey, 1, false);
+    public SlaveServerCluster(String login) throws IOException {
+        this(login, 1, false);
     }
 
     @Override

@@ -9,12 +9,13 @@ import ru.babobka.nodesecurity.data.SecureNodeResponse;
 import ru.babobka.nodesecurity.exception.NodeSecurityException;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
 import ru.babobka.nodesecurity.network.SecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.UUID;
@@ -27,22 +28,23 @@ public class SlaveAuthService extends AuthHelper {
     private final SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
 
     public AuthResult authClient(@NonNull NodeConnection connection,
-                                 @NonNull String login,
-                                 @NonNull PrivateKey privateKey) throws IOException {
+                                 @NonNull String login) throws IOException {
         connection.send(login);
         boolean ableToLogin = connection.receive();
         if (!ableToLogin) {
             logger.error("cannot login as '" + login + "'");
             return AuthResult.fail();
         }
-        return checkServer(connection, login, privateKey);
+        return checkServer(connection, login);
     }
 
     private AuthResult checkServer(
-            @NonNull NodeConnection connection, @NonNull String login, @NonNull PrivateKey privateKey) throws IOException {
+            @NonNull NodeConnection connection, @NonNull String login) throws IOException {
         try {
             PublicKey serverPubKey = KeyDecoder.decodePublicKey(slaveServerConfig.getMasterServerBase64PublicKey());
-            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(connection, privateKey, serverPubKey);
+            SecureNodeConnection secureNodeConnection = new SecureNodeConnection(Container.getInstance().get(
+                    SlaveServerKey.SLAVE_DSA_MANAGER),
+                    connection, serverPubKey);
             SecureNodeResponse serverNonceChallenge = secureNodeConnection.receiveNoClose();
             secureNodeConnection.send(serverNonceChallenge);
             if (!(boolean) connection.receive()) {

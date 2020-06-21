@@ -8,7 +8,6 @@ import io.swagger.v3.oas.models.info.Info;
 import ru.babobka.nodeconfigs.ConfigsApplicationContainer;
 import ru.babobka.nodeconfigs.dsa.validation.DSAServerConfigValidator;
 import ru.babobka.nodedsa.server.webcontroller.NodeDataSignerWebController;
-import ru.babobka.nodesecurity.SecurityApplicationContainer;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 
@@ -19,9 +18,7 @@ public class NodeDSAApplicationContainer extends AbstractApplicationContainer {
     @Override
     protected void containImpl(Container container) {
         container.put(new ConfigsApplicationContainer());
-
         container.put(new DSAServerConfigValidator());
-        container.put(new SecurityApplicationContainer());
     }
 
     public static Javalin createWebServer() {

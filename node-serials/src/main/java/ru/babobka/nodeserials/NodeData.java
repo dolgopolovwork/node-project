@@ -1,6 +1,7 @@
 package ru.babobka.nodeserials;
 
 import ru.babobka.nodeserials.data.Data;
+import ru.babobka.nodeutils.util.HashUtil;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -84,6 +85,16 @@ public class NodeData implements Serializable {
         result = 31 * result + (int) (timeStamp ^ (timeStamp >>> 32));
         result = 31 * result + (data != null ? data.hashCode() : 0);
         return result;
+    }
+
+    public byte[] buildHash() {
+        byte[] metaHash = HashUtil.sha2(
+                HashUtil.safeHashCode(this.getId()),
+                HashUtil.safeHashCode(this.getTaskId()),
+                HashUtil.safeHashCode(this.getTaskName()),
+                (int) this.getTimeStamp());
+        byte[] dataHash = HashUtil.sha2(this.getData().getIterator());
+        return HashUtil.sha2(dataHash, metaHash);
     }
 
     @Override

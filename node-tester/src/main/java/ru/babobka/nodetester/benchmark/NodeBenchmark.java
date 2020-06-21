@@ -58,7 +58,7 @@ public class NodeBenchmark {
             Container.getInstance().put(UtilKey.SERVICE_THREADS_NUM, serviceThreads);
             MasterServer masterServer = MasterServerRunner.runMasterServer();
             try (SlaveServerCluster slaveServerCluster = createCluster(
-                    LOGIN, KeyDecoder.decodePrivateKey(DebugBase64KeyPair.DEBUG_PRIV_KEY), slaves)) {
+                    LOGIN, slaves)) {
                 slaveServerCluster.start();
                 BenchmarkData benchmarkData = executeCycledBenchmark(masterServerConfig.getPorts(), tests, benchmarkPerformer);
                 if (benchmarkData != null) {
@@ -76,8 +76,8 @@ public class NodeBenchmark {
         MasterServer.runMBeanServer();
     }
 
-    SlaveServerCluster createCluster(String login, PrivateKey privateKey, int slaves) throws IOException {
-        return new SlaveServerCluster(login, privateKey, slaves);
+    SlaveServerCluster createCluster(String login, int slaves) throws IOException {
+        return new SlaveServerCluster(login, slaves);
     }
 
 }

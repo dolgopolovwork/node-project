@@ -10,7 +10,7 @@ import ru.babobka.nodeconfigs.dsa.DSAServerConfig;
 import ru.babobka.nodedsa.server.NodeDSAApplicationContainer;
 import ru.babobka.nodesecurity.keypair.Base64KeyPair;
 import ru.babobka.nodesecurity.keypair.KeyDecoder;
-import ru.babobka.nodesecurity.sign.DigitalSigner;
+import ru.babobka.nodesecurity.sign.SignatureValidator;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.log.LoggerInit;
 import ru.babobka.nodeutils.util.TextUtil;
@@ -24,9 +24,9 @@ import static org.junit.Assert.assertTrue;
 
 public class NodeDSAManagerITCase {
 
-    private static final DigitalSigner digitalSigner = new DigitalSigner();
     private static final DSAServerConfig config = new DSAServerConfig();
     private static final KeyPair keyPair = KeyDecoder.generateKeyPair();
+    private static final SignatureValidator signatureValidator = new SignatureValidator();
     private static Javalin webServer;
 
     @BeforeClass
@@ -66,7 +66,7 @@ public class NodeDSAManagerITCase {
         String signatureBase64 = Request.Post("http://127.0.0.1:" + config.getPort() + "/dsa/sign")
                 .bodyString(dataToSignBase64, ContentType.TEXT_PLAIN)
                 .execute().returnContent().toString();
-        assertTrue(digitalSigner.isValid(TextUtil.fromBase64(dataToSignBase64), TextUtil.fromBase64(signatureBase64), keyPair.getPublic()));
+        assertTrue(signatureValidator.isValid(TextUtil.fromBase64(dataToSignBase64), TextUtil.fromBase64(signatureBase64), keyPair.getPublic()));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class NodeDSAManagerITCase {
             String signatureBase64 = Request.Post("http://127.0.0.1:" + config.getPort() + "/dsa/sign")
                     .bodyString(dataToSignBase64, ContentType.TEXT_PLAIN)
                     .execute().returnContent().toString();
-            assertTrue(digitalSigner.isValid(data, TextUtil.fromBase64(signatureBase64), keyPair.getPublic()));
+            assertTrue(signatureValidator.isValid(data, TextUtil.fromBase64(signatureBase64), keyPair.getPublic()));
         }
     }
 }

@@ -4,6 +4,7 @@ import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
 import ru.babobka.nodesecurity.network.ClientSecureNodeConnection;
+import ru.babobka.nodesecurity.sign.Signer;
 import ru.babobka.nodeserials.NodeResponse;
 import ru.babobka.nodeslaveserver.controller.AbstractSocketController;
 import ru.babobka.nodeslaveserver.controller.ControllerFactory;
@@ -14,12 +15,12 @@ import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
+import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.PrivateKey;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static ru.babobka.nodeutils.util.StreamUtil.isClosedConnectionException;
@@ -30,17 +31,16 @@ public class SlaveServer extends Thread {
     private static final Logger logger = Logger.getLogger(SlaveServer.class);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final SlavePipelineFactory slavePipelineFactory = Container.getInstance().get(SlavePipelineFactory.class);
+    private final Signer signer = Container.getInstance().get(SlaveServerKey.SLAVE_DSA_MANAGER);
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
     private final ControllerFactory controllerFactory;
 
     SlaveServer(@NonNull Socket socket,
                 @NonNull String login,
-                @NonNull PrivateKey privateKey,
                 @NonNull ControllerFactory controllerFactory) throws IOException {
-
         NodeConnection connection = nodeConnectionFactory.create(socket);
-        AuthCredentials credentials = new AuthCredentials(login, privateKey);
+        AuthCredentials credentials = new AuthCredentials(login);
         PipeContext pipeContext = new PipeContext(connection, credentials);
         Pipeline<PipeContext> slaveCreationPipeline = slavePipelineFactory.create(pipeContext);
         if (!slaveCreationPipeline.execute(pipeContext)) {
@@ -49,16 +49,16 @@ public class SlaveServer extends Thread {
             }
             throw new SlaveStartupException("cannot start slave due to pipeline failure");
         }
-        this.connection = createClientConnection(connection, pipeContext);
+        this.connection = createClientConnection(signer, connection, pipeContext);
         this.controllerFactory = controllerFactory;
         tasksStorage = new TasksStorage();
         setName("slave_server_" + SLAVE_ID.getAndIncrement());
     }
 
-    static ClientSecureNodeConnection createClientConnection(NodeConnection connection, PipeContext pipeContext) {
+    static ClientSecureNodeConnection createClientConnection(Signer signer, NodeConnection connection, PipeContext pipeContext) {
         return new ClientSecureNodeConnection(
+                signer,
                 pipeContext.getServerTime(), connection,
-                pipeContext.getCredentials().getPrivateKey(),
                 pipeContext.getAuthResult().getPublicKey());
     }
 
