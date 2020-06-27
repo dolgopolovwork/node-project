@@ -5,6 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.babobka.nodebusiness.dao.cache.CacheDAO;
+import ru.babobka.nodebusiness.service.NodeMasterReadySetter;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodeconfigs.master.ModeConfig;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
 public class MasterServerTest {
 
     private MasterServer masterServer;
+    private NodeMasterReadySetter nodeMasterReadySetter;
     private Thread incomingClientsThread;
     private Thread heartBeatingThread;
     private Thread slaveListenerThread;
@@ -43,6 +45,7 @@ public class MasterServerTest {
         masterServerConfig = mock(MasterServerConfig.class);
         heartBeatingThread = mock(HeartBeatingThread.class);
         slaveListenerThread = mock(IncomingSlaveListenerThread.class);
+        nodeMasterReadySetter = mock(NodeMasterReadySetter.class);
         cacheDAO = mock(CacheDAO.class);
         javalin = mock(Javalin.class);
         incomingClientsThread = mock(IncomingClientListenerThread.class);
@@ -62,6 +65,7 @@ public class MasterServerTest {
             container.put(clientStorage);
             container.put(cacheDAO);
             container.put(javalin);
+            container.put(nodeMasterReadySetter);
         });
         masterServer = spy(new MasterServer());
     }
@@ -79,6 +83,7 @@ public class MasterServerTest {
         verify(slaveListenerThread).start();
         verify(heartBeatingThread).start();
         verify(javalin).start(masterServerConfig.getPorts().getWebListenerPort());
+        verify(nodeMasterReadySetter).claimReady();
     }
 
     @Test
@@ -88,6 +93,7 @@ public class MasterServerTest {
         doThrow(new RuntimeException()).when(slaveListenerThread).start();
         masterServer.run();
         verify(masterServer).clear();
+        verify(nodeMasterReadySetter, never()).claimReady();
     }
 
     @Test

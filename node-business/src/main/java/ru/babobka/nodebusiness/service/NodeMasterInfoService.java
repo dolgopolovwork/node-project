@@ -17,4 +17,6 @@ public interface NodeMasterInfoService {
 
     long getMasterStartTime();
 
+    boolean isReady();
+
 }
