@@ -107,6 +107,7 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
                 get("tasksStats", nodeMonitoringWebController::getTasksMonitoringData);
                 get("clustersize", nodeMonitoringWebController::getClusterSize);
                 get("healthcheck", nodeMonitoringWebController::healthCheck);
+                get("ready", nodeMonitoringWebController::readinessCheck);
                 get("startTime", nodeMonitoringWebController::getStartTime);
                 get("taskNames", nodeMonitoringWebController::getTaskNames);
                 get("slaves", nodeMonitoringWebController::getSlaves);

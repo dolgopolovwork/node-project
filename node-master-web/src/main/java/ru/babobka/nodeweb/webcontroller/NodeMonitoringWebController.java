@@ -100,4 +100,21 @@ public class NodeMonitoringWebController {
     public void healthCheck(Context context) {
         context.result("ok");
     }
+
+    @OpenApi(
+            method = HttpMethod.GET,
+            path = "/monitoring/ready",
+            summary = "Readiness check",
+            operationId = "getReadiness",
+            tags = {"Monitoring"},
+            responses = {@OpenApiResponse(status = "200")}
+    )
+    public void readinessCheck(Context context) {
+        if (nodeMasterInfoService.isReady()) {
+            context.result("ready");
+        } else {
+            context.status(503).result("not ready");
+        }
+    }
+
 }

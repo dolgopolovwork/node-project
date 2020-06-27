@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import org.apache.log4j.Logger;
 import ru.babobka.nodebusiness.dao.cache.CacheDAO;
 import ru.babobka.nodebusiness.monitoring.TaskMonitoringService;
+import ru.babobka.nodebusiness.service.NodeMasterReadySetter;
 import ru.babobka.nodebusiness.service.NodeUsersService;
 import ru.babobka.nodeconfigs.master.MasterServerConfig;
 import ru.babobka.nodemasterserver.client.ClientStorage;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MasterServer extends Thread {
 
     private static final AtomicInteger MASTER_SERVER_ID = new AtomicInteger();
+    private final NodeMasterReadySetter nodeMasterReadySetter = Container.getInstance().get(NodeMasterReadySetter.class);
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
@@ -63,6 +65,7 @@ public class MasterServer extends Thread {
                 rpcServer.start();
             }
             logger.info(TextUtil.WELCOME_TEXT);
+            nodeMasterReadySetter.claimReady();
         } catch (Exception e) {
             logger.error("exception thrown", e);
             clear();

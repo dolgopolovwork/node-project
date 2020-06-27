@@ -84,6 +84,17 @@ public class NodeMasterMonitoringWebControllerITCase {
     }
 
     @Test
+    public void testReadinessCheck() throws IOException {
+        int slaves = 5;
+        try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
+            slaveServerCluster.start();
+            int status = Request.Get("http://127.0.0.1:" + config.getPorts().getWebListenerPort() + "/monitoring/ready")
+                    .execute().returnResponse().getStatusLine().getStatusCode();
+            assertEquals(200, status);
+        }
+    }
+
+    @Test
     public void testStartTime() throws IOException {
         int slaves = 5;
         try (SlaveServerCluster slaveServerCluster = new SlaveServerCluster(DebugCredentials.USER_NAME, slaves)) {
