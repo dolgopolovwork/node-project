@@ -1,5 +1,8 @@
 package ru.babobka.nodesecurity.sign;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.vavr.CheckedFunction0;
+import io.vavr.control.Try;
 import lombok.NonNull;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -17,21 +20,31 @@ import ru.babobka.nodeutils.util.TextUtil;
 import java.io.IOException;
 
 public class DSAManagerSigner implements Signer {
+
     private final DSAManagerConfig config = Container.getInstance().get(DSAManagerConfig.class);
+
+    private final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("dsaManagerBreaker");
 
     @Override
     public SecureNodeRequest sign(NodeRequest request) throws IOException {
         String hashBase64 = TextUtil.toBase64(request.buildHash());
-        return new SecureNodeRequest(request, getSignature(hashBase64));
+        return new SecureNodeRequest(request, getSignatureResilient(hashBase64));
     }
 
     @Override
     public SecureNodeResponse sign(@NonNull NodeResponse response) throws IOException {
         String hashBase64 = TextUtil.toBase64(response.buildHash());
-        return new SecureNodeResponse(response, getSignature(hashBase64));
+        return new SecureNodeResponse(response, getSignatureResilient(hashBase64));
     }
 
-    private byte[] getSignature(String hashBase64) throws IOException {
+    byte[] getSignatureResilient(String hashBase64) throws IOException {
+        CheckedFunction0<byte[]> decoratedSupplier = CircuitBreaker
+                .decorateCheckedSupplier(circuitBreaker, () -> getSignature(hashBase64));
+        Try<byte[]> result = Try.of(decoratedSupplier);
+        return result.getOrElseThrow((e) -> new IOException("Failed to sign", e));
+    }
+
+    public byte[] getSignature(String hashBase64) throws IOException {
         return Request.Post("http://" + config.getHost() + ":" + config.getPort() + "/dsa/sign")
                 .bodyString(hashBase64, ContentType.TEXT_PLAIN)
                 .execute()
