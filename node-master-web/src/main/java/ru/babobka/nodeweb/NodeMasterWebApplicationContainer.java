@@ -17,7 +17,7 @@ import ru.babobka.nodeweb.validation.user.update.rule.NullablePubKeyValidationRu
 /**
  * Created by 123 on 04.11.2017.
  */
-public class NodeWebApplicationContainer extends AbstractApplicationContainer {
+public class NodeMasterWebApplicationContainer extends AbstractApplicationContainer {
     @Override
     protected void containImpl(Container container) {
         container.put(new AddUserValidator(

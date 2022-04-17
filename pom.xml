@@ -44,6 +44,7 @@
         <module>node-task-modules/dlp/dlp</module>
         <!-- Web -->
         <module>node-master-web</module>
+        <module>node-slave-web</module>
         <!-- Security -->
         <module>node-security</module>
         <module>node-dsa-manager</module>

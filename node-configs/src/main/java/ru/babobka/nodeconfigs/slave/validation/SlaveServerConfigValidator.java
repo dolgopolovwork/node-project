@@ -13,12 +13,13 @@ public class SlaveServerConfigValidator extends Validator<SlaveServerConfig> {
     public SlaveServerConfigValidator() {
         super(Arrays.asList(
                 new KeyConfigValidationRule(),
-                new ServerPortValidationRule(),
+                new MasterServerPortValidationRule(),
                 new AuthTimeoutMillisValidationRule(),
                 new LoggerFolderValidationRule(),
                 new RequestTimeoutMillisValidationRule(),
                 new TasksFolderValidationRule(),
-                new ServerPublicKeyValidationRule())
+                new ServerPublicKeyValidationRule(),
+                new WebServerPortValidationRule())
         );
     }
 }

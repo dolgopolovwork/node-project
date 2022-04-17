@@ -33,8 +33,8 @@ import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.thread.PrettyNamedThreadPoolFactory;
 import ru.babobka.nodeutils.util.StreamUtil;
-import ru.babobka.nodeweb.webcontroller.NodeMonitoringWebController;
-import ru.babobka.nodeweb.webcontroller.NodeUsersCRUDWebController;
+import ru.babobka.nodeweb.webcontroller.slave.NodeMasterMonitoringWebController;
+import ru.babobka.nodeweb.webcontroller.slave.NodeUsersCRUDWebController;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -51,7 +51,6 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
     @Override
     protected void containImpl(Container container) throws Exception {
         StreamUtil streamUtil = container.get(StreamUtil.class);
-        container.put(new SignatureValidator());
         container.put(new NodeResponseErrorMapper());
         container.put(new Sessions());
         container.put(new SlavesStorage());
@@ -84,12 +83,12 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
         container.put(new OnTaskIsReady());
         container.put(new OnRaceStyleTaskIsReady());
         container.put(new NodeMasterInfoServiceImpl());
-        container.put(createWebServer());
+        container.put(MasterServerKey.MASTER_SERVER_WEB, createWebServer());
     }
 
     private static Javalin createWebServer() {
         NodeUsersCRUDWebController nodeUsersCRUDWebController = new NodeUsersCRUDWebController();
-        NodeMonitoringWebController nodeMonitoringWebController = new NodeMonitoringWebController();
+        NodeMasterMonitoringWebController nodeMasterMonitoringWebController = new NodeMasterMonitoringWebController();
         return Javalin.create(conf -> {
             conf.registerPlugin(getConfiguredOpenApiPlugin());
             conf.defaultContentType = "application/json";
@@ -104,13 +103,13 @@ public class MasterServerApplicationSubContainer extends AbstractApplicationCont
                 put(nodeUsersCRUDWebController::createUser);
             });
             path("monitoring", () -> {
-                get("tasksStats", nodeMonitoringWebController::getTasksMonitoringData);
-                get("clustersize", nodeMonitoringWebController::getClusterSize);
-                get("healthcheck", nodeMonitoringWebController::healthCheck);
-                get("ready", nodeMonitoringWebController::readinessCheck);
-                get("startTime", nodeMonitoringWebController::getStartTime);
-                get("taskNames", nodeMonitoringWebController::getTaskNames);
-                get("slaves", nodeMonitoringWebController::getSlaves);
+                get("tasksStats", nodeMasterMonitoringWebController::getTasksMonitoringData);
+                get("clustersize", nodeMasterMonitoringWebController::getClusterSize);
+                get("healthcheck", nodeMasterMonitoringWebController::healthCheck);
+                get("ready", nodeMasterMonitoringWebController::readinessCheck);
+                get("startTime", nodeMasterMonitoringWebController::getStartTime);
+                get("taskNames", nodeMasterMonitoringWebController::getTaskNames);
+                get("slaves", nodeMasterMonitoringWebController::getSlaves);
             });
         });
     }

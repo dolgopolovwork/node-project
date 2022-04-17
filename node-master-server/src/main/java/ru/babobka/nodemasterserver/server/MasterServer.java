@@ -14,6 +14,7 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodeutils.util.TextUtil;
 
 import javax.management.MBeanServer;
@@ -33,7 +34,7 @@ public class MasterServer extends Thread {
     private final Thread heartBeatingThread = Container.getInstance().get(HeartBeatingThread.class);
     private final Thread incomingClientsThread = Container.getInstance().get(IncomingClientListenerThread.class);
     private final Thread incomingSlavesThread = Container.getInstance().get(IncomingSlaveListenerThread.class);
-    private final Javalin webServer = Container.getInstance().get(Javalin.class);
+    private final Javalin webServer = Container.getInstance().get(MasterServerKey.MASTER_SERVER_WEB);
     private final SlavesStorage slavesStorage = Container.getInstance().get(SlavesStorage.class);
     private final ClientStorage clientStorage = Container.getInstance().get(ClientStorage.class);
     private static final Logger logger = Logger.getLogger(MasterServer.class);
@@ -59,7 +60,6 @@ public class MasterServer extends Thread {
             incomingClientsThread.start();
             incomingSlavesThread.start();
             heartBeatingThread.start();
-            // TODO hide the port
             webServer.start(masterServerConfig.getPorts().getWebListenerPort());
             if (rpcServer != null) {
                 rpcServer.start();

@@ -14,7 +14,7 @@ import ru.babobka.nodeutils.NodeUtilsApplicationContainer;
 import ru.babobka.nodeutils.container.AbstractApplicationContainer;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
-import ru.babobka.nodeweb.NodeWebApplicationContainer;
+import ru.babobka.nodeweb.NodeMasterWebApplicationContainer;
 
 import java.util.Properties;
 
@@ -33,7 +33,7 @@ public class MasterServerApplicationContainer extends AbstractApplicationContain
         container.put(new NodeUtilsApplicationContainer());
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
-        container.put(new NodeWebApplicationContainer());
+        container.put(new NodeMasterWebApplicationContainer());
         container.put(new MasterServerApplicationSubContainer(config));
     }
 

@@ -19,7 +19,7 @@ import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.container.Properties;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
 import ru.babobka.nodeutils.util.TextUtil;
-import ru.babobka.nodeweb.NodeWebApplicationContainer;
+import ru.babobka.nodeweb.NodeMasterWebApplicationContainer;
 
 import java.security.KeyPair;
 
@@ -60,7 +60,7 @@ public class TesterMasterServerApplicationContainer extends AbstractApplicationC
         container.put(new SecurityApplicationContainer());
         container.put(new NodeTaskApplicationContainer());
         container.put(new NodeBusinessApplicationContainer());
-        container.put(new NodeWebApplicationContainer());
+        container.put(new NodeMasterWebApplicationContainer());
         container.put(new MasterServerApplicationSubContainer(config));
     }
 

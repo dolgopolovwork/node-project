@@ -25,7 +25,8 @@ public abstract class SlaveServerRunnerFactory {
 
     protected abstract SlaveServer create(String masterServerHost,
                                           int masterServerPort,
-                                          String login) throws IOException;
+                                          String login,
+                                          int webPort) throws IOException;
 
     public SlaveServer build() throws GeneralSecurityException, IOException, EnvConfigCreationException {
         Container container = Container.getInstance();
@@ -39,7 +40,8 @@ public abstract class SlaveServerRunnerFactory {
         return create(
                 config.getMasterServerHost(),
                 config.getMasterServerPort(),
-                config.getSlaveLogin());
+                config.getSlaveLogin(),
+                config.getWebPort());
     }
 
     private SlaveServerApplicationContainer createSlaveServerContainer() {

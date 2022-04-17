@@ -1,4 +1,4 @@
-package ru.babobka.nodeweb.webcontroller;
+package ru.babobka.nodeweb.webcontroller.slave;
 
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.annotations.HttpMethod;
@@ -16,7 +16,7 @@ import ru.babobka.nodeweb.mapper.ConnectedSlaveToDTOMapper;
 
 import java.util.stream.Collectors;
 
-public class NodeMonitoringWebController {
+public class NodeMasterMonitoringWebController {
 
     private final ConnectedSlaveToDTOMapper connectedSlaveToDTOMapper = Container.getInstance().get(ConnectedSlaveToDTOMapper.class);
     private final TaskMonitoringService taskMonitoringService =

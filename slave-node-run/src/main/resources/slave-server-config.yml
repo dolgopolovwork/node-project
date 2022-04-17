@@ -1,5 +1,7 @@
 # port of master server
 masterServerPort: 19090
+# port of web server
+webPort: 37070
 # host of master server
 masterServerHost: master-host
 # master server RSA public key is Base64 format

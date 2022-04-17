@@ -1,5 +1,6 @@
 package ru.babobka.nodetester.slave;
 
+import io.javalin.Javalin;
 import lombok.NonNull;
 import ru.babobka.nodebusiness.debug.DebugBase64KeyPair;
 import ru.babobka.nodebusiness.debug.DebugCredentials;
@@ -28,10 +29,14 @@ import ru.babobka.nodeutils.util.TextUtil;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
+import static org.mockito.Mockito.mock;
+
 /**
  * Created by 123 on 05.11.2017.
  */
 public class TesterSlaveServerApplicationContainer extends AbstractApplicationContainer {
+
+    private static final int DEFAULT_WEB_PORT = 666;
 
     private final PublicKey serverPubKey;
 
@@ -43,6 +48,7 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
     protected void containImpl(Container container) throws InvalidKeySpecException {
         Properties.put(UtilKey.SERVICE_THREADS_NUM, Runtime.getRuntime().availableProcessors());
         container.put(new SignatureValidator());
+        container.put(SlaveServerKey.SLAVE_WEB, mock(Javalin.class));
         container.put(new NodeUtilsApplicationContainer());
         container.put(new SecurityApplicationContainer());
         container.putIfAbsent(new NodeConnectionFactory());
@@ -72,6 +78,7 @@ public class TesterSlaveServerApplicationContainer extends AbstractApplicationCo
         config.setMasterServerHost("localhost");
         config.setMasterServerPort(19090);
         config.setMasterServerBase64PublicKey(TextUtil.toBase64(serverPubKey.getEncoded()));
+        config.setWebPort(DEFAULT_WEB_PORT);
         return config;
     }
 }

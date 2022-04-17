@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.server;
 
+import io.javalin.Javalin;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.*;
 @PrepareForTest(SlaveServer.class)
 public class SlaveServerTest {
 
+    private Javalin webServer;
     private NodeConnectionFactory nodeConnectionFactory;
     private SlavePipelineFactory slavePipelineFactory;
     private ClientSecureNodeConnection clientSecureNodeConnection;
@@ -44,11 +46,13 @@ public class SlaveServerTest {
         clientSecureNodeConnection = mock(ClientSecureNodeConnection.class);
         slavePipelineFactory = mock(SlavePipelineFactory.class);
         nodeConnectionFactory = mock(NodeConnectionFactory.class);
+        webServer = mock(Javalin.class);
         signer = mock(Signer.class);
         Container.getInstance().put(container -> {
             container.put(nodeConnectionFactory);
             container.put(slavePipelineFactory);
             container.put(SlaveServerKey.SLAVE_DSA_MANAGER, signer);
+            container.put(SlaveServerKey.SLAVE_WEB, webServer);
         });
     }
 
@@ -65,7 +69,7 @@ public class SlaveServerTest {
         Socket socket = mock(Socket.class);
         NodeConnection connection = mock(NodeConnection.class);
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
-        new SlaveServer(socket, "abc", mock(ControllerFactory.class));
+        new SlaveServer(socket, "abc", mock(ControllerFactory.class), 123);
     }
 
     @Test
@@ -87,6 +91,7 @@ public class SlaveServerTest {
         slaveServer.interrupt();
         verify(slaveServer.getConnection()).send(any(NodeResponse.class));
         verify(slaveServer).clear();
+        verify(webServer).stop();
     }
 
     private SlaveServer prepareValidSlaveServer() throws IOException {
@@ -98,7 +103,7 @@ public class SlaveServerTest {
         when(nodeConnectionFactory.create(socket)).thenReturn(connection);
         PowerMockito.mockStatic(SlaveServer.class);
         BDDMockito.given(SlaveServer.createClientConnection(eq(signer), eq(connection), any(PipeContext.class))).willReturn(clientSecureNodeConnection);
-        return spy(new SlaveServer(socket, "abc", mock(ControllerFactory.class)));
+        return spy(new SlaveServer(socket, "abc", mock(ControllerFactory.class), 666));
     }
 
 }

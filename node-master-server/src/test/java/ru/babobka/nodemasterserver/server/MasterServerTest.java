@@ -16,6 +16,7 @@ import ru.babobka.nodemasterserver.slave.IncomingSlaveListenerThread;
 import ru.babobka.nodemasterserver.slave.SlavesStorage;
 import ru.babobka.nodemasterserver.thread.HeartBeatingThread;
 import ru.babobka.nodeutils.container.Container;
+import ru.babobka.nodeutils.key.MasterServerKey;
 
 import java.io.IOException;
 
@@ -64,7 +65,7 @@ public class MasterServerTest {
             container.put(slavesStorage);
             container.put(clientStorage);
             container.put(cacheDAO);
-            container.put(javalin);
+            container.put(MasterServerKey.MASTER_SERVER_WEB, javalin);
             container.put(nodeMasterReadySetter);
         });
         masterServer = spy(new MasterServer());
