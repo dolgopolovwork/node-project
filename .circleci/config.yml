@@ -38,3 +38,6 @@ jobs:
       - run:
           name: Run DSA manager client integration test
           command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerClientITCase
+      - run:
+          name: Run DSA manager client reslielency integration test
+          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerClientResiliencyITCase
