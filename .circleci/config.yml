@@ -1,8 +1,9 @@
 version: 2
 jobs:
   build:
-    docker:
+    machine:
       - image: circleci/openjdk:8-jdk-stretch
+      - image: docker:17.05.0-ce-git
     working_directory: ~/repo
 
     environment:
@@ -12,35 +13,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Run tests and create jars
+          name: Run tests and compile
           command: mvn clean install
       - run:
-          name: Run cache integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.CacheITCase
+          name: Where am I?
+          command: ls
       - run:
-          name: Run core client integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.ClientITCase
+          name: Create runnable JARs
+          command: mvn clean compile assembly:single -f master-node-run/pom.xml && mvn clean compile assembly:single -f slave-node-run/pom.xml && mvn clean compile assembly:single -f submaster-node-run/pom.xml
       - run:
-          name: Run auth session integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.SessionAuthITCase
+          name: Create testing docker containers
+          command: docker build -f master-node-run/Dockerfile -t test/node-project-master ./master-node-run && docker build -f slave-node-run/Dockerfile -t test/node-project-slave ./slave-node-run && docker build -f submaster-node-run/Dockerfile -t test/node-project-submaster ./submaster-node-run
       - run:
-          name: Run auth common tasks integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthCommonTasksITCase
-      - run:
-          name: Run master node info web-based monitoring service integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeMasterMonitoringWebControllerITCase
-      - run:
-          name: Run slave node info web-based monitoring service integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeSlaveMonitoringWebControllerITCase
-      - run:
-          name: Run auth integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.AuthITCase
-      - run:
-          name: Run DSA manager integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerITCase
-      - run:
-          name: Run DSA manager client integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerClientITCase
-      - run:
-          name: Run DSA manager client reslielency integration test
-          command: mvn test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.NodeDSAManagerClientResiliencyITCase
+          name: Run containers tests
+          command: mvn -X test-compile failsafe:integration-test failsafe:verify -f node-ift -Dit.test=ru.babobka.nodeift.container.master.MasterThreeSlavesITCase
