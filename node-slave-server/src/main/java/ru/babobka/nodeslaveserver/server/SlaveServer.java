@@ -1,5 +1,6 @@
 package ru.babobka.nodeslaveserver.server;
 
+import io.javalin.Javalin;
 import lombok.NonNull;
 import org.apache.log4j.Logger;
 import ru.babobka.nodesecurity.auth.AuthCredentials;
@@ -15,6 +16,7 @@ import ru.babobka.nodeslaveserver.server.pipeline.SlavePipelineFactory;
 import ru.babobka.nodetask.TasksStorage;
 import ru.babobka.nodeutils.container.Container;
 import ru.babobka.nodeutils.func.pipeline.Pipeline;
+import ru.babobka.nodeutils.key.MasterServerKey;
 import ru.babobka.nodeutils.key.SlaveServerKey;
 import ru.babobka.nodeutils.network.NodeConnection;
 import ru.babobka.nodeutils.network.NodeConnectionFactory;
@@ -29,16 +31,19 @@ public class SlaveServer extends Thread {
 
     private static final AtomicInteger SLAVE_ID = new AtomicInteger();
     private static final Logger logger = Logger.getLogger(SlaveServer.class);
+    private final Javalin webServer = Container.getInstance().get(SlaveServerKey.SLAVE_WEB);
     private final NodeConnectionFactory nodeConnectionFactory = Container.getInstance().get(NodeConnectionFactory.class);
     private final SlavePipelineFactory slavePipelineFactory = Container.getInstance().get(SlavePipelineFactory.class);
     private final Signer signer = Container.getInstance().get(SlaveServerKey.SLAVE_DSA_MANAGER);
     private final NodeConnection connection;
     private final TasksStorage tasksStorage;
     private final ControllerFactory controllerFactory;
+    private final int webPort;
 
     SlaveServer(@NonNull Socket socket,
                 @NonNull String login,
-                @NonNull ControllerFactory controllerFactory) throws IOException {
+                @NonNull ControllerFactory controllerFactory,
+                int webPort) throws IOException {
         NodeConnection connection = nodeConnectionFactory.create(socket);
         AuthCredentials credentials = new AuthCredentials(login);
         PipeContext pipeContext = new PipeContext(connection, credentials);
@@ -53,6 +58,7 @@ public class SlaveServer extends Thread {
         this.controllerFactory = controllerFactory;
         tasksStorage = new TasksStorage();
         setName("slave_server_" + SLAVE_ID.getAndIncrement());
+        this.webPort = webPort;
     }
 
     static ClientSecureNodeConnection createClientConnection(Signer signer, NodeConnection connection, PipeContext pipeContext) {
@@ -64,6 +70,7 @@ public class SlaveServer extends Thread {
 
     @Override
     public void run() {
+        webServer.start(this.webPort);
         try (AbstractSocketController controller = controllerFactory.create(connection, tasksStorage)) {
             while (!isInterrupted() && !connection.isClosed()) {
                 controller.control();
@@ -86,6 +93,7 @@ public class SlaveServer extends Thread {
         } catch (IOException e) {
             logger.warn("cannot send death message", e);
         }
+        webServer.stop();
         clear();
     }
 

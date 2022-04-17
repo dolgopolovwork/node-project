@@ -1,4 +1,4 @@
-package ru.babobka.nodeweb.webcontroller;
+package ru.babobka.nodeweb.webcontroller.slave;
 
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.annotations.*;

@@ -11,8 +11,9 @@ public class PlainSlaveServerFactory extends SlaveServerRunnerFactory {
     @Override
     public SlaveServer create(String masterHost,
                               int masterPort,
-                              String login) throws IOException {
+                              String login,
+                              int webPort) throws IOException {
         return SlaveServerFactory.slaveBacked(
-                new Socket(masterHost, masterPort), login);
+                new Socket(masterHost, masterPort), login, webPort);
     }
 }

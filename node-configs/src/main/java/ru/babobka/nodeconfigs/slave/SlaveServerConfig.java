@@ -7,8 +7,9 @@ import java.util.Objects;
 
 public class SlaveServerConfig implements NodeConfiguration {
 
-    private static final long serialVersionUID = 9130829367317179440L;
+    private static final long serialVersionUID = 9130829367317179441L;
     private int masterServerPort;
+    private int webPort;
     private String masterServerHost;
     private String masterServerBase64PublicKey;
     private int requestTimeoutMillis;
@@ -17,6 +18,10 @@ public class SlaveServerConfig implements NodeConfiguration {
     private String tasksFolder;
     private String slaveLogin;
     private Base64KeyPair keyPair;
+
+    public int getWebPort() { return webPort; }
+
+    public void setWebPort(int webPort) { this.webPort = webPort; }
 
     public int getRequestTimeoutMillis() {
         return requestTimeoutMillis;
@@ -108,7 +113,7 @@ public class SlaveServerConfig implements NodeConfiguration {
 
     @Override
     public int hashCode() {
-        return Objects.hash(masterServerPort, masterServerHost, masterServerBase64PublicKey, requestTimeoutMillis, authTimeOutMillis, loggerFolder, tasksFolder, slaveLogin, keyPair);
+        return Objects.hash(masterServerPort, masterServerHost, masterServerBase64PublicKey, requestTimeoutMillis, authTimeOutMillis, loggerFolder, tasksFolder, slaveLogin, keyPair, webPort);
     }
 
     @Override
@@ -128,6 +133,7 @@ public class SlaveServerConfig implements NodeConfiguration {
         slaveServerConfig.setTasksFolder(this.tasksFolder);
         slaveServerConfig.setMasterServerBase64PublicKey(this.masterServerBase64PublicKey);
         slaveServerConfig.setMasterServerHost(this.masterServerHost);
+        slaveServerConfig.setWebPort(this.webPort);
         return slaveServerConfig;
     }
 }

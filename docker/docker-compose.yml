@@ -36,6 +36,7 @@ services:
     env_file:
       - .env_slave
     environment:
+      - SLAVESERVERCONFIG_WEBPORT=28080
       - WAIT_HOSTS=master-host:19090
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=3
@@ -53,6 +54,7 @@ services:
     env_file:
       - .env_submaster_slave
     environment:
+      - SLAVESERVERCONFIG_WEBPORT=28080
       - WAIT_HOSTS=submaster-host:29090
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=3

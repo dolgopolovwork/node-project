@@ -12,20 +12,24 @@ import java.net.Socket;
 public interface SlaveServerFactory {
 
     static SlaveServer slaveBacked(Socket socket,
-                                   String login) throws IOException {
+                                   String login,
+                                   int webPort) throws IOException {
         return new SlaveServer(socket,
                 login,
                 (connection, tasksStorage) -> new SlaveBackedSocketController(connection,
                         tasksStorage,
-                        PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("sb-socket_controller")));
+                        PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("sb-socket_controller")),
+                webPort);
     }
 
     static SlaveServer masterBacked(Socket socket,
-                                    String login) throws IOException {
+                                    String login,
+                                    int webPort) throws IOException {
         return new SlaveServer(socket,
                 login,
                 (connection, tasksStorage) -> new MasterBackedSocketController(connection,
                         PrettyNamedThreadPoolFactory.fixedDaemonThreadPool("mb-socket_controller"),
-                        new PubSub<NodeRequest>()));
+                        new PubSub<NodeRequest>()),
+                webPort);
     }
 }

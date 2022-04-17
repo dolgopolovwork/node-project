@@ -28,6 +28,6 @@ public class SlaveServerRunner {
     public static SlaveServer getSlaveServer(String login) throws IOException {
         SlaveServerConfig slaveServerConfig = Container.getInstance().get(SlaveServerConfig.class);
         Socket socket = new Socket(slaveServerConfig.getMasterServerHost(), slaveServerConfig.getMasterServerPort());
-        return SlaveServerFactory.slaveBacked(socket, login);
+        return SlaveServerFactory.slaveBacked(socket, login, slaveServerConfig.getWebPort());
     }
 }
